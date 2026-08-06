@@ -1,0 +1,40 @@
+# Sequential nofu GRPO sweep: kl=1e-3, det=1, seeds 1-3, 200 train steps.
+# No custom probe manifest -- reuses/caches the standard mbpp_probe dataset
+# under directory_save_prefix=trial3_nofu_mbpp with retrain=false.
+#
+# Note: the archived script never exported W&B metrics (only trained +
+# cleaned up); export_metrics: true here is a deliberate improvement.
+#
+# Superseded (archived): experiments/archive/grpo_det1_nofu_sweep.sh
+
+sweep_name: det1_nofu_sweep
+output_dir: trials/trial3/rounds/det1_nofu_sweep
+min_responses: 180  # MAX_STEPS(200) - 20, matching the archived script's completion check
+
+probe:
+  directory_save_prefix: trial3_nofu_mbpp
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 1
+  training.num_epochs: 25
+  training.max_steps: 200
+  grpo.num_epochs: 25
+  grpo.optimizer.max_steps: 200
+
+runs:
+  - run_key: kl1e-3-det1-s1-mbpp-nofu
+    overrides:
+      training.seed: 1
+  - run_key: kl1e-3-det1-s2-mbpp-nofu
+    overrides:
+      training.seed: 2
+  - run_key: kl1e-3-det1-s3-mbpp-nofu
+    overrides:
+      training.seed: 3
+
+cleanup: true
+export_metrics: true
+on_failure: stop  # matches the archived script, which aborted the whole sweep on any failure

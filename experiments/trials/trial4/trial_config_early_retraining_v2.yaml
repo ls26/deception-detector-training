@@ -1,0 +1,41 @@
+# Early-retraining branch of trial 4, reimplemented on the standard (sigmoid) probe
+# penalty after the calibrated-penalty variant (`early_retraining`) was discontinued --
+# see docs/EXPERIMENT_LOG.md methodology #22. Identical lineage/hyperparameters to the
+# main trial 4 branch (`use_calibrated_penalty: false`, same seeds/KL/dataset strategy),
+# plus early stopping during GRPO: if the mean training-batch detector score
+# (rewards_metrics/detector_score) stays below early_stop_detector_threshold for
+# early_stop_detector_patience consecutive steps (checked only after early_stop_min_steps
+# have run), training stops early and the current model becomes the round's final
+# checkpoint. The next round then proceeds normally (default probe retraining) from
+# that checkpoint.
+#
+# early_stop_threshold_from_train_min: true means early_stop_detector_threshold is not
+# set directly -- instead, after Phase-0 trains its probe each round,
+# train_grpo_model_against_probe.py computes it dynamically as
+# max(min(current round's on-policy training rows' probe scores), early_stop_threshold_floor).
+# This is because, unlike the calibrated penalty, the regular sigmoid probe score doesn't
+# reliably converge to a threshold-independent scale run-to-run, so a single fixed
+# threshold (like the old variant's 0.06) isn't meaningful across rounds/lineages.
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false
+
+early_stop_threshold_from_train_min: true
+early_stop_threshold_floor: 0.05
+early_stop_detector_patience: 10
+early_stop_min_steps: 20

@@ -1,0 +1,27 @@
+# Round-1 GRPO from the base model, part of the code-length-penalty ablation
+# family (see docs/EXPERIMENT_LOG.md "Round 1 ablation — no code length
+# penalty, p25"). Same kl=1e-3 (default), det=3, data.seed=53 (default),
+# training.seed=42, mixed_reward_pass_all_prob=0.20, nofu, nofu_mixed probe
+# manifest (300/class, Phase-0 cache reuse) as the rest of that family, but
+# with code_length_penalty=0.001 instead of 0 (no-CLP) or 0.003 (default) --
+# an intermediate point between the two, at the same p=0.20/seed=42
+# combination as the killed `round1_no-clp_p20_s42` run.
+
+run_key: round1_clp1e-3_p20_s42
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.20
+  code_length_penalty: 0.001
+
+cleanup: true
+export_metrics: true

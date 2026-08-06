@@ -1,0 +1,21 @@
+# Round-1 GRPO one-off: clp=2e-3, p=25 (75/25), seed=56.
+# Same base setup as round1_clp2e-3_p25_s52.yaml.
+
+run_key: round1_clp2e-3_p25_s56
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null
+
+overrides:
+  loss.detector: 3
+  training.seed: 56
+  task_args.mixed_reward_pass_all_prob: 0.25
+  code_length_penalty: 0.002
+
+cleanup: true
+export_metrics: true

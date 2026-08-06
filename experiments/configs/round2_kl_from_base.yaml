@@ -1,0 +1,29 @@
+# KL-from-base ablation of round 2: GRPO with the KL penalty measured against
+# the base model instead of the round 1 checkpoint. Everything else matches
+# trial 3's round 2 (same round-2 probe manifest, same round-1 checkpoint as
+# the policy's starting point, same hyperparams). The only difference is
+# ++grpo.model.kl_reference_from_base=true, which zeroes the reference
+# adapter's LoRA weights after loading so the KL penalty is computed relative
+# to the pristine base model while the policy still starts from round 1's
+# weights.
+#
+# Superseded (archived): experiments/archive/run_round2_kl_from_base.py
+
+run_key: trial3_round2_kl_from_base
+output_dir: trials/trial3/rounds/round2_kl_from_base
+
+probe:
+  manifest: trials/trial3/rounds/round2/probe_train_dataset.json
+  directory_save_prefix: trial3_round2_kl_from_base
+  retrain: false
+
+checkpoint: /workspace/results/run_results/full_grpo_runs/trigger_none_model_62es59py_layers_32/checkpoints/final
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.3
+  ++grpo.model.kl_reference_from_base: true
+
+cleanup: true
+export_metrics: true

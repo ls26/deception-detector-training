@@ -1,0 +1,24 @@
+# Same as det0_ceiling.yaml but with code_length_penalty=0, so the reward is
+# a pure binary passes_all_tests signal (1.0/0.0) with no per-character
+# length shaping.
+#
+# Superseded (archived): experiments/archive/run_det0_ceiling_no_len_penalty.py
+
+run_key: trial3_det0_ceiling_no_len_penalty
+output_dir: trials/trial3/rounds/det0_ceiling
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 0
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 1.0
+  code_length_penalty: 0
+
+cleanup: true
+export_metrics: true

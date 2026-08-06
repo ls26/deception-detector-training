@@ -1,0 +1,41 @@
+# Round-1 GRPO sweep at the p20 mixed-reward point (80/20), otherwise
+# identical to the p25 seed family (round1_clp1e-3_p25_sweep.yaml):
+# kl=1e-3 (default), det=3, data.seed=53 (default), nofu, nofu_mixed probe
+# manifest (300/class, Phase-0 cache reuse), base model start,
+# code_length_penalty=0.001.
+# Uses methodology #21's EOT-append fix for truncated rollouts.
+# Requires the advantage-normalization epsilon in afterburner/grpo_trainer.py
+# to still be reverted to 1e-4 (not 0.05) — same code state as the p25 seeds.
+
+sweep_name: round1_clp1e-3_p20_sweep
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.20
+
+runs:
+  - run_key: round1_clp1e-3_p20_s50
+    overrides:
+      training.seed: 50
+  - run_key: round1_clp1e-3_p20_s51
+    overrides:
+      training.seed: 51
+  - run_key: round1_clp1e-3_p20_s52
+    overrides:
+      training.seed: 52
+  - run_key: round1_clp1e-3_p20_s53
+    overrides:
+      training.seed: 53
+
+cleanup: true
+export_metrics: true
+on_failure: continue

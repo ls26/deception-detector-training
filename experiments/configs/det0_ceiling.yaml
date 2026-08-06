@@ -1,0 +1,23 @@
+# No-detector-penalty ceiling: GRPO from the base model with loss.detector=0
+# and mixed_reward_pass_all_prob=1.0, so every training prompt is scored on
+# passes_all_tests (honest-only reward). Otherwise identical to det0_baseline.
+#
+# Superseded (archived): experiments/archive/run_det0_ceiling.py
+
+run_key: trial3_det0_ceiling
+output_dir: trials/trial3/rounds/det0_ceiling
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 0
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 1.0
+
+cleanup: true
+export_metrics: true

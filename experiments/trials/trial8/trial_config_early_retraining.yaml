@@ -1,0 +1,26 @@
+# Trial 8 — early_retraining style (dynamic p10 early stop).
+# Round 1 is t1656g8a (round1_clp3e-3_p25_s53).
+# NOTE: round 1 used clp=3e-3; rounds 2+ use clp=1e-3 (deliberate).
+
+training_seed: 53
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.25
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false
+
+early_stop_threshold_from_train_min: true
+early_stop_threshold_floor: 0.05
+early_stop_detector_patience: 10
+early_stop_min_steps: 20

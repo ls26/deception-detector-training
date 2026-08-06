@@ -1,0 +1,39 @@
+# Fourth seed for the advantage-normalization epsilon control run (see
+# docs/EXPERIMENT_LOG.md #13 Aug 2, 2026 update). Identical to
+# round1_clp1e-3_p20_s45_eps1e-4.yaml / round1_clp1e-3_p20_s46_eps1e-4.yaml /
+# round1_clp1e-3_p20_s47_eps1e-4.yaml (kl=1e-3 default, det=3, data.seed=53
+# default, nofu, nofu_mixed probe manifest (300/class, Phase-0 cache reuse),
+# base model start, code_length_penalty=0.001,
+# mixed_reward_pass_all_prob=0.20), but with training.seed=48 instead of
+# 45/46/47. Notes on prior attempts at this hyperparameter point:
+# - s46 (run gu2bnqu1, Aug 2) crashed at step 121/128 when /workspace disk
+#   filled; run directory subsequently deleted before completion, not redone.
+# - s47 (run yrpbprb9, Aug 2) killed manually at step ~67/128 because it
+#   wasn't trending toward an obfuscated policy; run directory deleted
+#   (no final checkpoint was ever written).
+# Requires the advantage-normalization epsilon in afterburner/grpo_trainer.py
+# to still be reverted to 1e-4 (not 0.05) — same code state as s45/46/47.
+
+sweep_name: round1_clp1e-3_p20_s48_eps1e-4
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.20
+
+runs:
+  - run_key: round1_clp1e-3_p20_s48_eps1e-4
+    overrides:
+      training.seed: 48
+
+cleanup: true
+export_metrics: true
+on_failure: continue

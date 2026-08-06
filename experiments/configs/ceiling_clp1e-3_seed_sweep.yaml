@@ -1,0 +1,38 @@
+# Ceiling sweep (pass_all-only reward) at code_length_penalty=0.001, across
+# training.seed 42/43/44. Same as det0_ceiling.yaml (loss.detector=0,
+# mixed_reward_pass_all_prob=1.0, base model, nofu_mixed Phase-0 probe
+# manifest for monitoring only) but with code_length_penalty=0.001 instead
+# of the default 0.003 — an intermediate point between the standard ceiling
+# run (fr8qbmvo, CLP=0.003) and the no-length-penalty ceiling run (yqy9nb9x,
+# CLP=0). See docs/EXPERIMENT_LOG.md "Trial 3 baseline — no-detector-penalty
+# ceiling (pass_all-only reward)".
+
+sweep_name: ceiling_clp1e-3_seed_sweep
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 0
+  task_args.mixed_reward_pass_all_prob: 1.0
+  code_length_penalty: 0.001
+
+runs:
+  - run_key: ceiling_clp1e-3_s42
+    overrides:
+      training.seed: 42
+  - run_key: ceiling_clp1e-3_s43
+    overrides:
+      training.seed: 43
+  - run_key: ceiling_clp1e-3_s44
+    overrides:
+      training.seed: 44
+
+cleanup: true
+export_metrics: true
+on_failure: continue

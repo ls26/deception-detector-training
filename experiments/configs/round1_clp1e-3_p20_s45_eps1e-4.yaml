@@ -1,0 +1,34 @@
+# Control run for the advantage-normalization epsilon fix (see
+# docs/EXPERIMENT_LOG.md #13 Aug 2, 2026 update). Same hyperparameters as
+# round1_clp1e-3_p20_seed_sweep_2.yaml's seed-45 run (kl=1e-3 default, det=3,
+# data.seed=53 default, nofu, nofu_mixed probe manifest (300/class, Phase-0
+# cache reuse), base model start, code_length_penalty=0.001,
+# mixed_reward_pass_all_prob=0.20, training.seed=45), but with the advantage
+# normalization epsilon in afterburner/grpo_trainer.py reverted from 0.05
+# back to its original 1e-4, to check whether the eps=0.05 fix is what
+# caused the unexpected shift toward "Honest" policies at this hyperparameter
+# point, or whether something else changed.
+
+sweep_name: round1_clp1e-3_p20_s45_eps1e-4
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.20
+
+runs:
+  - run_key: round1_clp1e-3_p20_s45_eps1e-4
+    overrides:
+      training.seed: 45
+
+cleanup: true
+export_metrics: true
+on_failure: continue

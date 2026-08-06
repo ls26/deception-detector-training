@@ -1,0 +1,29 @@
+# Fixed-denominator rerun of trial 4's calibrated probe penalty branch. Identical
+# to trial_config_calibrated.yaml except fix_calibration_slope is true: for rounds
+# > 2, the calibrated penalty's (z_d - z_h) denominator is frozen to this variant's
+# own round 2 anchor value instead of being recomputed every round (methodology
+# #18); z_h in the numerator still updates each round. Round 2 itself is unaffected
+# by the flag (it IS the anchor) and is rerun fresh here rather than reused from the
+# original calibrated branch, so this is a full clean lineage sharing only round 1
+# (`9nlij6so`, round1_clp1e-3_p20_s42) — see docs/EXPERIMENT_LOG.md "Trial 4 —
+# KL-from-base iterative lineage" and methodology #18, and
+# trials/trial4/rounds_calibrated_fixed/round1/ (copied from rounds_calibrated/round1/).
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: true
+fix_calibration_slope: true

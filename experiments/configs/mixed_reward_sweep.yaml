@@ -1,0 +1,49 @@
+# Sequential mixed-reward GRPO sweep: kl=1e-3, det=3, 128 steps,
+# mixed_reward_pass_all_prob = 0.35 (s41, s42) -> 0.40 (s41, s42). All runs
+# use the nofu mixed-probe manifest (300/class Phase-0 probe), no prompt
+# mixing (shown_prompt_ratio left at default 1.0).
+#
+# Note: the archived script never exported W&B metrics (only trained +
+# cleaned up); export_metrics: true here is a deliberate improvement.
+#
+# Superseded (archived): experiments/archive/grpo_mixed_reward_sweep.sh
+
+sweep_name: mixed_reward_sweep
+output_dir: trials/trial3/rounds/mixed_reward_sweep
+min_responses: 108  # MAX_STEPS(128) - 20, matching the archived script's completion check
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  training.num_epochs: 16
+  training.max_steps: 128
+  grpo.num_epochs: 16
+  grpo.optimizer.max_steps: 128
+
+runs:
+  - run_key: mixed-reward-p35-kl1e-3-det-3-s41
+    overrides:
+      training.seed: 41
+      task_args.mixed_reward_pass_all_prob: 0.35
+  - run_key: mixed-reward-p35-kl1e-3-det-3-s42
+    overrides:
+      training.seed: 42
+      task_args.mixed_reward_pass_all_prob: 0.35
+  - run_key: mixed-reward-p40-kl1e-3-det-3-s41
+    overrides:
+      training.seed: 41
+      task_args.mixed_reward_pass_all_prob: 0.40
+  - run_key: mixed-reward-p40-kl1e-3-det-3-s42
+    overrides:
+      training.seed: 42
+      task_args.mixed_reward_pass_all_prob: 0.40
+
+cleanup: true
+export_metrics: true
+on_failure: stop  # matches the archived script, which aborted the whole sweep on any failure

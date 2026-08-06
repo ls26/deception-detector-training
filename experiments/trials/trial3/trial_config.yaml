@@ -1,0 +1,22 @@
+# Trial 3 GRPO/dataset hyperparameters, migrated from the TRIAL_CONFIGS[3]
+# dict formerly hardcoded in run_trial.py. See docs/iterative_training_experiments.md
+# § Split-sources dataset and docs/EXPERIMENT_LOG.md "Trial 3 — split-sources
+# pipeline".
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.3
+code_length_penalty: null
+kl_reference_from_base: false
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false

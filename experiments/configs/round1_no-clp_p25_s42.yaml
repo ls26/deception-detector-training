@@ -1,0 +1,27 @@
+# Round-1 GRPO from the base model, replicating round1_p25_s42
+# (1x7lo8e0 -> Obfuscated policy: pass_only_shown=0.41, pass_all=0.17) with
+# code_length_penalty=0 added on top. Same kl=1e-3 (default), det=3,
+# data.seed=53 (default), training.seed=42, mixed_reward_pass_all_prob=0.25,
+# nofu, nofu_mixed probe manifest (300/class, Phase-0 cache reuse). Isolates
+# the effect of removing the code length penalty on this seed/probability
+# combination. See docs/EXPERIMENT_LOG.md "Round 1 ablation — seed/mixed-reward
+# replication" for the baseline this ablates.
+
+run_key: round1_no-clp_p25_s42
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.25
+  code_length_penalty: 0
+
+cleanup: true
+export_metrics: true

@@ -1,0 +1,38 @@
+# Round 2 with calibrated probe penalty: GRPO using
+# clip((z_agg - z_h) / (z_d - z_h), 0, 1) instead of sigmoid(z) for the
+# per-layer probe penalty. Everything else matches trial 3's round 2 (same
+# round-2 probe manifest, same round-1 checkpoint as the policy starting
+# point, same hyperparams).
+#
+# PREREQUISITE: probe_metrics.json at the manifest's round dir must already
+# contain a "calibration_logits": {"z_h": ..., "z_d": ...} entry (computed by
+# compute_calibration_logits() in probe_training.py). This config does NOT
+# compute it -- unlike the archived script, which had a
+# ensure_calibration_logits() preprocessing step that ran before GRPO. As of
+# this config's authoring, trials/trial3/rounds/round2/probe_metrics.json
+# already has calibration_logits (z_h=-0.2407, z_d=-0.0919), so no
+# preprocessing is needed to re-run this exact config. If you build a new
+# calibrated-penalty config from a different round's probe, you must first
+# populate that round's probe_metrics.json (see the archived script or move
+# ensure_calibration_logits() into probe_training.py).
+#
+# Superseded (archived): experiments/archive/run_round2_calibrated_penalty.py
+
+run_key: trial3_round2_calibrated_penalty
+output_dir: trials/trial3/rounds/round2_calibrated_penalty
+
+probe:
+  manifest: trials/trial3/rounds/round2/probe_train_dataset.json
+  directory_save_prefix: trial3_round2_calibrated_penalty
+  retrain: false
+
+checkpoint: /workspace/results/run_results/full_grpo_runs/trigger_none_model_62es59py_layers_32/checkpoints/final
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.3
+  ++detector.calibration_logits_path: /workspace/experiments/trials/trial3/rounds/round2/probe_metrics.json
+
+cleanup: true
+export_metrics: true

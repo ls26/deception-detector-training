@@ -1,0 +1,26 @@
+# No-detector-penalty baseline: GRPO from the base model with loss.detector=0.
+# Same hyperparams as trial 3 (kl=0.001, seed=42, data.seed=53, mixed reward
+# 0.3, nofu, pass_only_shown) but with loss.detector=0 and no reference
+# adapter, so training starts fresh from the base Instruct model. Reuses the
+# existing nofu_mixed Phase-0 probe cache purely for monitoring/post-eval --
+# it has zero effect on training since loss.detector=0.
+#
+# Superseded (archived): experiments/archive/run_det0_baseline.py
+
+run_key: trial3_det0_baseline
+output_dir: trials/trial3/rounds/det0_baseline
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 0
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.3
+
+cleanup: true
+export_metrics: true

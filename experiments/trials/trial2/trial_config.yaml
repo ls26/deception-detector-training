@@ -1,0 +1,22 @@
+# Trial 2 GRPO/dataset hyperparameters, migrated from the TRIAL_CONFIGS[2]
+# dict formerly hardcoded in run_trial.py. See docs/iterative_training_experiments.md
+# and docs/EXPERIMENT_LOG.md "Known gaps" (trial 2 automation used mismatched
+# hyperparameters between round 1 and automated rounds — not directly comparable).
+
+training_seed: 43
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: false
+mixed_reward_pass_all_prob: null
+code_length_penalty: null
+kl_reference_from_base: false
+dataset_strategy: round_robin
+gen_dataset: train_full
+gen_n_generations: 1
+base_honest_jsonl: null
+det0_deceptive_jsonl: null
+on_policy_per_source: null
+n_fixed_per_class: null
+needs_base_backfill: true
+use_calibrated_penalty: false

@@ -1,0 +1,26 @@
+# Calibrated probe penalty branch of trial 4. Identical to trial_config.yaml
+# except use_calibrated_penalty is true: GRPO rounds 2+ replace the sigmoid
+# probe penalty with clip((z_agg - z_h) / (z_d - z_h), 0, 1), where z_h/z_d
+# come from that round's own probe_metrics.json (computed automatically by
+# compute_calibration_logits() during probe train/eval). Round 1 is shared
+# with the original trial 4 (`9nlij6so`, round1_clp1e-3_p20_s42) — see
+# docs/EXPERIMENT_LOG.md "Trial 4 — KL-from-base iterative lineage" and
+# trials/trial4/rounds_calibrated/round1/ (copied from rounds/round1/).
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: true

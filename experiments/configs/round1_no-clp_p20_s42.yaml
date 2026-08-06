@@ -1,0 +1,27 @@
+# Same as round1_no-clp_p25_s42 (tbdhz6q2 -> Honest: pass_only_shown=0.005,
+# pass_all=0.4875) but with mixed_reward_pass_all_prob=0.20 instead of 0.25.
+# Same kl=1e-3 (default), det=3, data.seed=53 (default), training.seed=42,
+# code_length_penalty=0, nofu, nofu_mixed probe manifest (300/class, Phase-0
+# cache reuse). Isolates the effect of lowering the mixed-reward probability
+# further while the length penalty stays off. See docs/EXPERIMENT_LOG.md
+# "Round 1 ablation — no code length penalty, p25/s42" for the run this
+# ablates.
+
+run_key: round1_no-clp_p20_s42
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.20
+  code_length_penalty: 0
+
+cleanup: true
+export_metrics: true

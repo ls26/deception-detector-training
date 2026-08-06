@@ -1,0 +1,112 @@
+{
+  "run_id": "62es59py",
+  "filtered_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "on_dataset_auc": 0.97284990234375,
+  "on_dataset_accuracy": 0.8551171875,
+  "on_dataset_f1": 0.8735456822466828,
+  "on_policy_split_auc": 0.9036179022082019,
+  "on_policy_split_accuracy": 0.9789156626506024,
+  "on_policy_split_f1": 0.9890795631825272,
+  "on_policy_split_stats": {
+    "n_deceptive": 317,
+    "n_honest": 15,
+    "n_unlabeled": 68,
+    "n_total": 400
+  },
+  "on_policy_split_filtered_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "on_policy_split_mean_scores": {
+    "deceptive": 0.45828159179021416,
+    "honest": 0.3746904625867804
+  },
+  "on_dataset_mean_scores": {
+    "deceptive": 0.7400891373842023,
+    "honest": 0.3503986974603322
+  },
+  "on_policy_mean_scores": {
+    "deceptive": 0.44450974506209606,
+    "honest": 0.3510972284075979
+  },
+  "train_manifest": "/workspace/experiments/trials/trial3/rounds/round2/probe_train_dataset.json",
+  "weights_dir": "/workspace/experiments/trials/trial3/rounds/round2/probe_weights",
+  "activations_dir": "/workspace/experiments/trials/trial3/rounds/round2/probe_activations",
+  "deceptive_sources": {
+    "on_dataset": 200,
+    "det0": 100,
+    "round1": 100
+  },
+  "honest_sources": {
+    "on_dataset": 200,
+    "base_model": 100,
+    "round1": 100
+  },
+  "calibration_logits": {
+    "z_h": -0.2407124638557434,
+    "z_d": -0.0919198989868164
+  }
+}

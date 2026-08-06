@@ -1,0 +1,36 @@
+# Seed replication sweep for the code-length-penalty ablation's
+# clp1e-3/p20 point (see docs/EXPERIMENT_LOG.md "Round 1 ablation — code
+# length penalty sweep"). Same hyperparameters as round1_clp1e-3_p20_s42
+# (kl=1e-3 default, det=3, data.seed=53 default, nofu, nofu_mixed probe
+# manifest (300/class, Phase-0 cache reuse), base model start,
+# code_length_penalty=0.001, mixed_reward_pass_all_prob=0.20), varying only
+# training.seed to check whether s42's Obfuscated-policy outcome
+# (9nlij6so: pass_all=0.10, pass_only_shown=0.67) replicates or is seed
+# variance.
+
+sweep_name: round1_clp1e-3_p20_seed_sweep
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.20
+
+runs:
+  - run_key: round1_clp1e-3_p20_s43
+    overrides:
+      training.seed: 43
+  - run_key: round1_clp1e-3_p20_s44
+    overrides:
+      training.seed: 44
+
+cleanup: true
+export_metrics: true
+on_failure: continue

@@ -1,0 +1,47 @@
+# Seed replication sweep for the code-length-penalty ablation's
+# clp1e-3/p20 point (see docs/EXPERIMENT_LOG.md "Round 1 ablation — code
+# length penalty sweep"). Same hyperparameters as
+# round1_clp1e-3_p20_seed_sweep.yaml (kl=1e-3 default, det=3, data.seed=53
+# default, nofu, nofu_mixed probe manifest (300/class, Phase-0 cache
+# reuse), base model start, code_length_penalty=0.001,
+# mixed_reward_pass_all_prob=0.20), extending the seed sweep to 45/46/47/48.
+# Originally tried loss.scale_rewards=false to prevent the reward-std
+# amplification collapse (docs/EXPERIMENT_LOG.md #13), then
+# grpo.optimizer.skip_degenerate_groups=true — both abandoned (see log
+# entry for why). Final fix is a hardcoded epsilon change in
+# afterburner/grpo_trainer.py (1e-4 -> 0.05), so this sweep needs no
+# scale_rewards/skip_degenerate_groups override at all; scale_rewards
+# stays at its default (true).
+
+sweep_name: round1_clp1e-3_p20_seed_sweep_2
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.20
+
+runs:
+  - run_key: round1_clp1e-3_p20_s45
+    overrides:
+      training.seed: 45
+  - run_key: round1_clp1e-3_p20_s46
+    overrides:
+      training.seed: 46
+  - run_key: round1_clp1e-3_p20_s47
+    overrides:
+      training.seed: 47
+  - run_key: round1_clp1e-3_p20_s48
+    overrides:
+      training.seed: 48
+
+cleanup: true
+export_metrics: true
+on_failure: continue

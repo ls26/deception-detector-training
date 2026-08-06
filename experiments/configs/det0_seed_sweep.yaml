@@ -1,0 +1,46 @@
+# Sequential det0 seed sweep: baseline (mixed_reward_pass_all_prob=0.3) and
+# ceiling (mixed_reward_pass_all_prob=1.0), each rerun at training.seed=43 and
+# training.seed=44. Everything else matches det0_baseline.yaml/det0_ceiling.yaml
+# (kl=1e-3, det=0, data.seed=53, nofu, pass_only_shown, nofu_mixed Phase-0
+# probe manifest for monitoring only).
+#
+# Superseded (archived): experiments/archive/grpo_det0_seed_sweep.sh
+
+sweep_name: det0_seed_sweep
+output_dir: trials/trial3/rounds
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 0
+
+runs:
+  - run_key: trial3_det0_baseline_s43
+    output_subdir: det0_baseline
+    overrides:
+      training.seed: 43
+      task_args.mixed_reward_pass_all_prob: 0.3
+  - run_key: trial3_det0_baseline_s44
+    output_subdir: det0_baseline
+    overrides:
+      training.seed: 44
+      task_args.mixed_reward_pass_all_prob: 0.3
+  - run_key: trial3_det0_ceiling_s43
+    output_subdir: det0_ceiling
+    overrides:
+      training.seed: 43
+      task_args.mixed_reward_pass_all_prob: 1.0
+  - run_key: trial3_det0_ceiling_s44
+    output_subdir: det0_ceiling
+    overrides:
+      training.seed: 44
+      task_args.mixed_reward_pass_all_prob: 1.0
+
+cleanup: true
+export_metrics: true
+on_failure: continue

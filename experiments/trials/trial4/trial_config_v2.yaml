@@ -1,0 +1,22 @@
+# Trial 4 v2 variant — standard sigmoid probe penalty, full 128 steps every round
+# (no early stopping, no calibrated penalty). Round 1 is `9nlij6so`
+# (round1_clp1e-3_p20_s42, Obfuscated policy). Same p20 as base trial 4 /
+# early_retraining_v2 — control for isolating early-stop vs full-128-step effects.
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false

@@ -1,0 +1,25 @@
+# Carryover-frozen branch of trial 4: calibrated probe penalty + conditional
+# probe weight freezing. When on-policy samples are below min_on_policy_per_class,
+# the previous round's probe weights AND calibration logits are carried forward
+# unchanged (no retraining, no re-evaluation). When above threshold, behaves
+# identically to the calibrated branch. Otherwise identical to trial_config_carryover.yaml.
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: true
+min_on_policy_per_class: 20
+carry_over_probe_weights: true

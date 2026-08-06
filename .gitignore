@@ -1,0 +1,64 @@
+# ── Caches & environments ──
+.venv
+.cache/
+.uv-cache/
+.uv-python/
+hf_cache/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+
+# ── IDE / local tooling ──
+.cursor/
+.jupyter/
+.vscode/
+
+# ── Secrets (API keys, tokens) ──
+.env
+atlas_setup.sh
+
+# ── Large run outputs ──
+results/
+artifacts/
+scratch/
+
+# ── Top-level junk files ──
+*.log
+*.pdf
+
+# ── obfuscation-atlas build/runtime artifacts ──
+obfuscation-atlas/.venv
+obfuscation-atlas/__pycache__/
+obfuscation-atlas/*.egg-info/
+obfuscation-atlas/wandb/
+obfuscation-atlas/outputs/
+obfuscation-atlas/test-results/
+obfuscation-atlas/.wandb_cache/
+obfuscation-atlas/artifacts/
+obfuscation-atlas/checkpoints/
+obfuscation-atlas/.claude
+obfuscation-atlas/.DS_Store
+obfuscation-atlas/output.txt
+obfuscation-atlas/vaibhav.txt
+obfuscation-atlas/Solution.py
+obfuscation-atlas/.cursorrules
+
+# ── Experiment binary artifacts (keep code/configs, exclude regenerable data) ──
+*.memmap
+*.pt
+**/buffer/
+**/buffer_*/
+**/probe_activations/
+**/probe_weights/
+**/base_activations/
+**/det0_activations/
+**/on_dataset_activations/
+experiments/**/*.log
+*.bak
+
+# ── Experiment generated data (probe manifests, split JSONs — large & regenerable) ──
+**/probe_train_dataset.json
+**/*split*.json
+**/metadata.json

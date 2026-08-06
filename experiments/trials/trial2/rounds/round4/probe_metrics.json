@@ -1,0 +1,96 @@
+{
+  "run_id": "5dzpnz24",
+  "filtered_layers": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "on_dataset_auc": 0.9963377604166667,
+  "on_dataset_accuracy": 0.9429166666666666,
+  "on_dataset_f1": 0.947467735070547,
+  "on_policy_split_auc": 0.7480740495786793,
+  "on_policy_split_accuracy": 0.7745098039215687,
+  "on_policy_split_f1": 0.5399999999999999,
+  "on_policy_split_stats": {
+    "n_deceptive": 42,
+    "n_honest": 162,
+    "n_unlabeled": 196,
+    "n_total": 400
+  },
+  "on_policy_split_filtered_layers": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "on_policy_split_mean_scores": {
+    "deceptive": 0.4480768102738593,
+    "honest": 0.397786376905846
+  },
+  "on_dataset_mean_scores": {
+    "deceptive": 0.798208811992469,
+    "honest": 0.2721348141690638
+  },
+  "on_policy_mean_scores": {
+    "deceptive": 0.4173033167856435,
+    "honest": 0.272326104688885
+  },
+  "train_manifest": "/workspace/experiments/trials/trial2/rounds/round4/probe_train_dataset.json",
+  "weights_dir": "/workspace/experiments/trials/trial2/rounds/round4/probe_weights",
+  "activations_dir": "/workspace/experiments/trials/trial2/rounds/round4/probe_activations",
+  "deceptive_sources": {
+    "on_dataset": 200,
+    "base_model": 75,
+    "round1": 75,
+    "round2": 75,
+    "round3": 75
+  },
+  "honest_sources": {
+    "on_dataset": 200,
+    "base_model": 75,
+    "round1": 75,
+    "round2": 75,
+    "round3": 75
+  }
+}

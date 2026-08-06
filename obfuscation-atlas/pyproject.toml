@@ -1,0 +1,110 @@
+[project]
+name = "obfuscation-atlas"
+version = "0.1.0"
+description = "The Obfuscation Atlas: Mapping Where Honesty Emerges in RLVR with Deception Probes"
+requires-python = "==3.12.*"
+dependencies = [
+    "torch==2.9.0",
+    "transformers==4.56.1",
+    "trl==0.19.1",
+    "numpy==2.2",
+    "pandas",
+    "wandb",
+    "scikit-learn",
+    "peft",
+    "matplotlib",
+    "seaborn",
+    "openai",
+    "anthropic",
+    "plotly==6.3.0",
+    "fire",
+    "hydra-core>=1.3",
+    "tensordict",
+    "beautifulsoup4",
+    "dill",
+    "filelock",
+    "jsonschema",
+    "names-dataset",
+    "numba",
+    "psutil",
+    "requests",
+    "scipy",
+    "datasets<4.0",
+    "pyyaml",
+    "vllm==0.13.0; sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "vllm; sys_platform != 'linux' or platform_machine != 'x86_64'"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pyright",
+    "pytest",
+    "pytest-cov",
+    "ruff==0.12.8",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-asyncio",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-m 'not slow and not integration'"
+markers = [
+    "slow: marks tests as slow (>5s runtime, e.g. model loading, training loops)",
+    "integration: marks tests requiring external APIs or datasets",
+]
+
+[tool.ruff]
+line-length = 120
+src = ["obfuscation_atlas"]
+exclude = ["third_party"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["obfuscation_atlas"]
+known-third-party = ["afterburner"]
+
+[tool.uv]
+index-strategy = "unsafe-first-match"
+environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+
+[[tool.uv.index]]
+name = "default"
+url = "https://pypi.org/simple"
+explicit = false
+
+[[tool.uv.index]]
+name = "public-far-cpu"
+url = "https://us-south1-python.pkg.dev/far-cluster/public-far-cpu/simple/"
+explicit = true
+
+[tool.uv.sources]
+vllm = [
+    { index = "public-far-cpu", marker = "platform_machine == 'x86_64' and sys_platform != 'linux'" },
+    { index = "public-far-cpu", marker = "platform_machine != 'x86_64'" },
+]
+
+[tool.pyright]
+exclude = [
+    "third_party",
+    "obfuscation_atlas/automated_redteaming/**",
+    "obfuscation_atlas/notebooks/**",
+]

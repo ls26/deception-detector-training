@@ -1,0 +1,40 @@
+# Sequential prompt-mix GRPO sweep: kl=1e-3, det=3, seed=43, shown ratios
+# 0.5 / 0.7 / 0.8. The archived script also had a shown_prompt_ratio=0.6 step
+# that resumed a specific interrupted W&B run (5grn9xef) -- that was a one-off
+# recovery action, not a repeatable ablation, so it is not replicated here.
+# Re-add a `shown_prompt_ratio: 0.6` run below if you want a fresh 60% run.
+#
+# Note: the archived script never exported W&B metrics (only trained +
+# cleaned up); export_metrics: true here is a deliberate improvement.
+#
+# Superseded (archived): experiments/archive/grpo_prompt_mix_sweep.sh
+
+sweep_name: prompt_mix_sweep
+output_dir: trials/trial3/rounds/prompt_mix_sweep
+min_responses: 108  # MAX_STEPS(128) - 20, matching the archived script's completion check
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  training.seed: 43
+
+runs:
+  - run_key: prompt-mix-shown50-kl1e-3-det-3-s43
+    overrides:
+      task_args.shown_prompt_ratio: 0.5
+  - run_key: prompt-mix-shown70-kl1e-3-det-3-s43
+    overrides:
+      task_args.shown_prompt_ratio: 0.7
+  - run_key: prompt-mix-shown80-kl1e-3-det-3-s43
+    overrides:
+      task_args.shown_prompt_ratio: 0.8
+
+cleanup: true
+export_metrics: true
+on_failure: stop  # matches the archived script, which aborted the whole sweep on any failure

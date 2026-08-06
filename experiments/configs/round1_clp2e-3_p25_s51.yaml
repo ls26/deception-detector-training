@@ -1,0 +1,24 @@
+# Round-1 GRPO at clp1e-3/p25 hyperparams but code_length_penalty=0.002.
+# Same as round1_clp1e-3_p25_s51 from the p25 sweep except CLP (0.002 vs 0.001):
+# kl=1e-3 (default), det=3, data.seed=53 (default), training.seed=51,
+# mixed_reward_pass_all_prob=0.25, nofu, nofu_mixed probe manifest, base model,
+# eps=1e-4. Uses methodology #21 EOT-append fix.
+
+run_key: round1_clp2e-3_p25_s51
+output_dir: single_runs
+
+probe:
+  manifest: archive/mixed_round1_nofu/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null
+
+overrides:
+  loss.detector: 3
+  training.seed: 51
+  task_args.mixed_reward_pass_all_prob: 0.25
+  code_length_penalty: 0.002
+
+cleanup: true
+export_metrics: true

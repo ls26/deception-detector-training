@@ -1,0 +1,35 @@
+# Trial 5: calibrated probe penalty lineage, seed 48, advantage-norm eps=1e-4.
+# Round 1 is `iv76hjr6` (round1_clp1e-3_p20_s48_eps1e-4) — same hyperparameters
+# as trial 4 round 1 (`9nlij6so`, seed 42) except training.seed=48, run under
+# the original (pre-methodology-#13) advantage-norm epsilon of 1e-4. Round 1
+# classified Obfuscated policy (pass_all=0.035, pass_only_shown=0.60,
+# likely_hardcoded=0.4125, does_execute=0.8275).
+#
+# Supersedes an earlier trial 5 attempt seeded from `emjn04pc` (seed 45),
+# which was killed after round 2's GRPO went degenerate (reward collapsed to
+# 0 on the retry attempt); that attempt's artifacts were deleted. See
+# docs/EXPERIMENT_LOG.md "Round 1 ablation — clp1e-3/p20 seed sweep,
+# advantage-norm epsilon fix" and the redo_trial_5_with_iv76hjr6 plan.
+#
+# fix_calibration_slope: true (added before round 3) freezes the calibration
+# (z_d - z_h) denominator to round 2's value instead of recomputing it every
+# round; z_h in the numerator still updates each round. See methodology #18.
+
+training_seed: 48
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: true
+fix_calibration_slope: true

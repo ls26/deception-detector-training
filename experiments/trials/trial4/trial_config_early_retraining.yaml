@@ -1,0 +1,35 @@
+# Early-retraining branch of trial 4. Uses default probe retraining every
+# round (no carryover/frozen-probe logic -- see docs/EXPERIMENT_LOG.md for
+# why those were scrapped) plus the calibrated probe penalty (methodology
+# #12, same as the calibrated branch) plus early stopping during GRPO: if
+# the mean training-batch detector score (rewards_metrics/detector_score)
+# stays below early_stop_detector_threshold for early_stop_detector_patience
+# consecutive steps (checked only after early_stop_min_steps have run),
+# training stops early and the current model becomes the final checkpoint
+# for that round. The next round then proceeds normally from that checkpoint.
+#
+# fix_calibration_slope: true freezes the calibration (z_d - z_h) denominator to
+# round 2's value (the round where calibration_logits are first computed) instead
+# of recomputing it every round; z_h in the numerator still updates each round.
+
+training_seed: 42
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.20
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: true
+fix_calibration_slope: true
+early_stop_detector_threshold: 0.06
+early_stop_detector_patience: 10
+early_stop_min_steps: 20

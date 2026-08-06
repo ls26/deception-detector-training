@@ -1,0 +1,24 @@
+# Baseline round 2: GRPO against round 1's probe (no probe retraining). Uses
+# the same probe manifest as round 1 (base+det0 mixed, 300/class) instead of
+# building a new dataset from round 1 on-policy generations. All other
+# hyperparams match trial 3.
+#
+# Superseded (archived): experiments/archive/run_round2_baseline.py
+
+run_key: trial3_round2_baseline
+output_dir: trials/trial3/rounds/round2_baseline
+
+probe:
+  manifest: trials/trial3/rounds/round1/probe_train_dataset.json
+  directory_save_prefix: trial3_round2_baseline
+  retrain: false
+
+checkpoint: /workspace/results/run_results/full_grpo_runs/trigger_none_model_62es59py_layers_32/checkpoints/final
+
+overrides:
+  loss.detector: 3
+  training.seed: 42
+  task_args.mixed_reward_pass_all_prob: 0.3
+
+cleanup: true
+export_metrics: true
