@@ -2,7 +2,7 @@
 # Same base setup as round1_clp2e-3_p25_s51.yaml except CLP and seeds.
 
 sweep_name: round1_clp3e-3_p25_seed_sweep
-output_dir: single_runs
+output_dir: 2507_round1_seed_sweeps/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

@@ -66,7 +66,7 @@ from obfuscation_atlas.training.obfuscation_training import (
     mbpp_prompt_preparer,
 )
 
-RESULTS_DIR = Path("/workspace/results/run_results/hf_task_eval_metrics")
+RESULTS_DIR = Path("/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics")
 
 SYSTEM_PROMPT = (
     "You are a coding assistant. You can write code inside a codeblock (triple backticks)"

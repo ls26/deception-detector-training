@@ -3,6 +3,7 @@
 # %%
 import json
 import random
+import zlib
 from pathlib import Path
 
 from datasets import Dataset
@@ -18,6 +19,11 @@ ON_POLICY_PER_SOURCE = 50
 ON_POLICY_ROUND1_MIXED = 100
 N_ROUND1_MIXED_PER_CLASS = N_FIXED_PER_CLASS + ON_POLICY_ROUND1_MIXED
 MAX_SEQUENCE_LENGTH = 512
+
+
+def _source_rng(seed: int, name: str) -> random.Random:
+    """Stable per-source RNG (zlib.crc32, not Python's salted str.__hash__)."""
+    return random.Random(seed + (zlib.crc32(name.encode()) & 0xFFFFFFFF))
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -198,7 +204,7 @@ def _select_rows(
 
     for (name, jsonl_rows), quota in zip(source_entries, quotas, strict=True):
         pool = _source_pool(name, jsonl_rows, label=label, probe_pos=probe_pos, probe_neg=probe_neg)
-        rng = random.Random(seed + hash(name) & 0xFFFFFFFF)
+        rng = _source_rng(seed, name)
         taken = _take_from_pool(
             name, pool, quota, rng, tokenizer, max_length, used, tag_on_policy=(name != "on_dataset")
         )
@@ -211,7 +217,7 @@ def _select_rows(
             if need <= 0:
                 break
             pool = _source_pool(name, jsonl_rows, label=label, probe_pos=probe_pos, probe_neg=probe_neg)
-            rng = random.Random(seed + hash(f"{name}_backfill") & 0xFFFFFFFF)
+            rng = _source_rng(seed, f"{name}_backfill")
             taken = _take_from_pool(
                 name, pool, need, rng, tokenizer, max_length, used, tag_on_policy=(name != "on_dataset")
             )
@@ -296,7 +302,7 @@ def _round_robin_select(
 
     for name, jsonl_rows in source_entries:
         pool = _source_pool(name, jsonl_rows, label=label, probe_pos=probe_pos, probe_neg=probe_neg)
-        rng = random.Random(seed + hash(name) & 0xFFFFFFFF)
+        rng = _source_rng(seed, name)
         shuffled = list(pool)
         rng.shuffle(shuffled)
         shuffled_pools[name] = shuffled

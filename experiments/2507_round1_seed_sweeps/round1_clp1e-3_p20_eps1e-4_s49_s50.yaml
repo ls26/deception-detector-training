@@ -9,7 +9,7 @@
 # to still be reverted to 1e-4 (not 0.05) — same code state as s45-s48.
 
 sweep_name: round1_clp1e-3_p20_eps1e-4_s49_s50
-output_dir: single_runs
+output_dir: 2507_round1_seed_sweeps/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

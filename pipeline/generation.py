@@ -119,7 +119,6 @@ def load_probe_prompts(tokenizer, *, seed: int = SEED):
     _, (probe_pos, probe_neg), _ = prepare_dataset(cfg.data, tokenizer=tokenizer)
     assert len(probe_pos) == len(probe_neg) == 200
     assert probe_pos["task_id"] == probe_neg["task_id"]
-    print("OK: loaded 200 probe-train prompts via prepare_dataset (disjoint from val)")
     print(f"Sample prompt (first 300 chars):\n  {probe_pos[0]['prompt'][:300]}...")
     return probe_pos
 
@@ -422,8 +421,11 @@ def run_dry_generation(
         seed=seed,
     )
     assert len(responses) == n_gen
-    if n_gen > 1:
-        assert len(set(responses)) > 1
+    if n_gen > 1 and len(set(responses)) <= 1:
+        print(
+            f"WARN: [{run_id}] dry run: all {n_gen} primary samples identical "
+            "(policy may be near-deterministic); continuing"
+        )
 
     alt_responses = generate_with_vllm(
         [alt_prompt],

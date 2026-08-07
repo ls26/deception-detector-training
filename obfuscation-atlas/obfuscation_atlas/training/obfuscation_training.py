@@ -1054,6 +1054,8 @@ def log_detector_metrics(
     layerwise_metrics = defaultdict(dict)
     train_losses = {}
     train_lrs = {}
+    # Nest all stage artifacts under {save_path}/{prefix}/
+    save_path = os.path.join(save_path, prefix)
     os.makedirs(save_path, exist_ok=True)
     # Unpack results: train_dynamics = step-wise training curves (losses, lr per step)
     for detector_key, (_, (metrics, train_dynamics, train_eval_metrics)) in eval_results_and_detectors.items():  # type: ignore
@@ -1091,10 +1093,8 @@ def log_detector_metrics(
             averaged_train_metrics=averaged_train,
             filtered_layers=filtered_layers_d,
         )
-        # Save averaged violin plot and metadata to storage
-        violin_file_name = os.path.join(save_path, f"averaged_violin_{prefix}_{detector_key}.pdf")
-        violin_png_file_name = violin_file_name.replace(".pdf", ".png")
-        averaged_violin_fig.savefig(violin_file_name, bbox_inches="tight", format="pdf")
+        # Save averaged violin plot and metadata to storage (PNG only; W&B gets the same image)
+        violin_png_file_name = os.path.join(save_path, f"averaged_violin_{prefix}_{detector_key}.png")
         averaged_violin_fig.savefig(violin_png_file_name, dpi=300, bbox_inches="tight")
         plt.close(averaged_violin_fig)
         # Save filtered layers metadata
@@ -1528,20 +1528,26 @@ def run_on_policy_split_eval(
 def load_eval_results_and_detectors(
     results_path: str, load_detectors: bool = True, prefix: str = "before_training"
 ) -> dict[str, Any]:
-    manifest_path = os.path.join(results_path, f"f1_and_recall_plot_{prefix}__manifest.json")
+    """Load probe-eval artifacts for ``prefix``.
 
-    # Primary path: load via manifest
-    if os.path.exists(manifest_path):
+    Prefers the nested layout ``{results_path}/{prefix}/``, then falls back to the
+    legacy flat layout (files directly under ``results_path``) for older caches.
+    """
+    nested_dir = os.path.join(results_path, prefix)
+    for load_dir in (nested_dir, results_path):
+        manifest_path = os.path.join(load_dir, f"f1_and_recall_plot_{prefix}__manifest.json")
+        if not os.path.exists(manifest_path):
+            continue
         with open(manifest_path, "r", encoding="utf-8") as mf:
             manifest: dict[str, str] = json.load(mf)
         reconstructed: dict[str, Any] = {}
         missing_files: list[str] = []
         for key, filename in manifest.items():
-            per_key_path = os.path.join(results_path, filename)
+            per_key_path = os.path.join(load_dir, filename)
             if not os.path.exists(per_key_path):
                 missing_files.append(per_key_path)
                 continue
-            detector_path = os.path.join(results_path, f"detector_{prefix}__{key}")
+            detector_path = os.path.join(load_dir, f"detector_{prefix}__{key}")
             try:
                 detector = load_model(detector_path) if load_detectors else None
                 with open(per_key_path, "rb") as f:
@@ -1557,7 +1563,7 @@ def load_eval_results_and_detectors(
             )
         if reconstructed:
             print(
-                f"Loaded eval results and detectors for {len(reconstructed)} detectors from manifest in {results_path}"
+                f"Loaded eval results and detectors for {len(reconstructed)} detectors from manifest in {load_dir}"
             )
             return reconstructed
     print(f"No eval results and detectors found at {results_path} for prefix '{prefix}'.")
@@ -1574,7 +1580,7 @@ def init_wandb_with_checkpoint_resuming(run_args: SFTConfig, WANDB_RUN_NAME: str
     save_path_base = run_args.training.save_path_base
     wandb_project = run_args.wandb.project
     wandb_group = run_args.wandb.group
-    total_layers = len(activation_layers)
+    _ = activation_layers  # retained in signature for call-site compatibility
     transient_keys = {
         "resume_from_checkpoint",
         "save_path_base",
@@ -1657,10 +1663,11 @@ def init_wandb_with_checkpoint_resuming(run_args: SFTConfig, WANDB_RUN_NAME: str
     wandb_run.summary["resume_count"] = current_resume_count
 
     group_name = wandb_run.group if wandb_run.group else "default"
+    run_name_prefix = run_args.wandb.run_name_prefix or "rl"
 
     save_path = os.path.join(
         save_path_base,
-        f"{group_name}/trigger_{run_args.data.trigger_type}_model_{wandb_run_id}_layers_{total_layers}".lstrip("/"),
+        f"{group_name}/{run_name_prefix}_{wandb_run_id}".lstrip("/"),
     )
     os.makedirs(save_path, exist_ok=True)
     if not should_resume:
@@ -1959,7 +1966,7 @@ def exclude_same_test_output_rows(dataset: Dataset) -> Dataset:
     removed = original_len - filtered_len
     if removed:
         print(
-            f"Filtered dataset from {original_len} to {filtered_len} examples (removed {removed})"
+            f"Filtered dataset from {original_len} to {filtered_len} examples for probe train/eval pool (removed {removed})"
         )
         print(
             f"  unparseable: {counts['unparseable']}, "

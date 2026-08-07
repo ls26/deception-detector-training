@@ -30,6 +30,11 @@ class RoundConfig:
         return f"trial{self.trial}_round{self.round}"
 
     @property
+    def wandb_group(self) -> str:
+        """W&B group and on-disk nest under run_results/: trial{N}/{variant|original}."""
+        return f"trial{self.trial}/{self.variant or 'original'}"
+
+    @property
     def producer_round(self) -> int:
         return self.round - 1
 
@@ -42,10 +47,7 @@ class RoundConfig:
 
     @property
     def checkpoint_final(self) -> Path:
-        return (
-            self.workspace
-            / f"results/run_results/full_grpo_runs/trigger_none_model_{self.previous_run_id}_layers_32/checkpoints/final"
-        )
+        return resolve_checkpoint_final(self.workspace, self.previous_run_id, trial=self.trial)
 
     @property
     def adapter_path(self) -> Path:
@@ -90,3 +92,78 @@ class RoundConfig:
     @property
     def run_metrics(self) -> Path:
         return self.round_dir / f"run_metrics_{self.run_key}.json"
+
+
+_NON_RUN_GROUP_DIRS = frozenset(
+    {
+        "hf_checkpoint_evals",
+    }
+)
+
+
+def resolve_checkpoint_final(
+    workspace: Path,
+    run_id: str,
+    *,
+    trial: int | None = None,
+) -> Path:
+    """Locate ``checkpoints/final`` for a GRPO run id.
+
+    Search order (shallow globs only — avoid recursive walks on network FS):
+    1. ``run_results/trial{N}/{variant}/*_{run_id}/checkpoints/final``
+    2. ``run_results/trial*/{variant}/*_{run_id}/checkpoints/final`` (cross-trial)
+    3. ``run_results/{experiment_group}/*_{run_id}/checkpoints/final``
+    4. Legacy ``run_results/full_grpo_runs/trigger_none_model_{run_id}_layers_32/checkpoints/final``
+    """
+    runs_base = workspace / "results/run_results"
+
+    def _first_existing(paths) -> Path | None:
+        for path in paths:
+            if path.is_dir():
+                return path
+        return None
+
+    if trial is not None:
+        found = _first_existing(
+            runs_base.glob(f"trial{trial}/*/*_{run_id}/checkpoints/final")
+        )
+        if found is not None:
+            return found
+
+    found = _first_existing(runs_base.glob(f"trial*/*/*_{run_id}/checkpoints/final"))
+    if found is not None:
+        return found
+
+    if runs_base.is_dir():
+        for group_dir in runs_base.iterdir():
+            if not group_dir.is_dir():
+                continue
+            if group_dir.name.startswith("trial") or group_dir.name in _NON_RUN_GROUP_DIRS:
+                continue
+            if group_dir.name.startswith("base_results_and_detectors"):
+                continue
+            found = _first_existing(group_dir.glob(f"*_{run_id}/checkpoints/final"))
+            if found is not None:
+                return found
+
+    legacy = (
+        runs_base
+        / "full_grpo_runs"
+        / f"trigger_none_model_{run_id}_layers_32"
+        / "checkpoints"
+        / "final"
+    )
+    if legacy.is_dir():
+        return legacy
+
+    # Prefer a new-layout miss path for clearer errors after migration.
+    if trial is not None:
+        return (
+            runs_base
+            / f"trial{trial}"
+            / "original"
+            / f"trial{trial}_round1_{run_id}"
+            / "checkpoints"
+            / "final"
+        )
+    return legacy

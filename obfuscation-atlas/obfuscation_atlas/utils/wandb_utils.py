@@ -175,8 +175,9 @@ def find_wandb_id_in_directory(
 
 
 def checkpoint_path_from_wandb_id(wandb_id: str, save_path_base: str) -> str:
+    # Match both legacy dirs (...model_{id}_layers_...) and new dirs (..._{id}).
     model_dir = find_wandb_id_in_directory(
-        wandb_id, base_path=save_path_base, is_file=False, prefix_before_wandb_id="model_"
+        wandb_id, base_path=save_path_base, is_file=False, prefix_before_wandb_id="_"
     )
     assert model_dir is not None, f"Could not find directory for wandb id {wandb_id} under {save_path_base}"
     checkpoint_dir = os.path.join(model_dir, "checkpoints")

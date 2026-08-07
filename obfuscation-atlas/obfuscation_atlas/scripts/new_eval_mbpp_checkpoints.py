@@ -1,8 +1,8 @@
 """Post-RL-aligned MBPP checkpoint eval on the 400 held-out MBPP test cases.
 
 Matches local post-RL task eval where possible: temperature=1.0,
-max_tokens=1024, EOT stop, EOS strip, token-ID prompts. Writes to new_hf_task_eval_metrics/
-so existing hf_task_eval_metrics/ is never overwritten.
+max_tokens=1024, EOT stop, EOS strip, token-ID prompts. Writes to hf_checkpoint_evals/new_hf_task_eval_metrics/
+so existing hf_checkpoint_evals/hf_task_eval_metrics/ is never overwritten.
 
 Residual differences vs post-RL (documented):
 - In-process vLLM here vs HTTP vLLM server during GRPO post-eval.
@@ -69,8 +69,10 @@ from obfuscation_atlas.training.obfuscation_training import (
     mbpp_prompt_preparer,
 )
 
-RESULTS_DIR = Path("/workspace/results/run_results/new_hf_task_eval_metrics")
-LEGACY_BASE_JSONL = Path("/workspace/results/run_results/hf_task_eval_metrics/base_model.jsonl")
+RESULTS_DIR = Path("/workspace/results/run_results/hf_checkpoint_evals/new_hf_task_eval_metrics")
+LEGACY_BASE_JSONL = Path(
+    "/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics/base_model.jsonl"
+)
 EOT_TOKEN = "<|eot_id|>"
 
 SYSTEM_PROMPT = (

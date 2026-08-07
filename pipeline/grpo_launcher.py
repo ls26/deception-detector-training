@@ -28,8 +28,14 @@ WANDB_ENTITY = "lilylixin6-the-harker-school"
 WANDB_PROJECT = "deception_detection"
 VLLM_MODELS_URL = "http://127.0.0.1:8000/v1/models"
 
-RUNS_BASE = WORKSPACE / "results/run_results/full_grpo_runs"
-GRPO_RUN_ID_RE = re.compile(r"setting up run ([a-z0-9]{8})|trigger_none_model_([a-z0-9]+)_layers_32")
+RUNS_BASE = WORKSPACE / "results/run_results"
+# Primary: wandb "setting up run {id}". Secondary: new save-path .../{run_key}_{id}/.
+# Legacy: trigger_none_model_{id}_layers_32 (pre-migration dirs).
+GRPO_RUN_ID_RE = re.compile(
+    r"setting up run ([a-z0-9]{8})"
+    r"|/([A-Za-z0-9_.-]+)_([a-z0-9]{8})(?:/|\s|$)"
+    r"|trigger_none_model_([a-z0-9]+)_layers_32"
+)
 
 # Defaults for the crash/degeneracy retry loop in `launch()` (and mirrored in
 # run_trial.py's run_single_round()). See docs/EXPERIMENT_LOG.md #13: the
@@ -40,17 +46,17 @@ DEFAULT_MAX_GRPO_RETRIES = 3
 DEFAULT_MIN_VAL_DOES_EXECUTE = 0.3
 
 # Hydra overrides applied to every GRPO run unless a config's `overrides:`
-# (or top-level `nofu:`) explicitly replaces them. See plan section 7 for the
-# rationale behind each of these.
+# (or top-level `nofu:` / `group:`) explicitly replaces them. See plan section 7 for the
+# rationale behind each of these. `wandb.group` is set per-run from config["group"]
+# (derived from the YAML parent folder by run_ablation.py).
 GRPO_DEFAULTS: dict[str, str] = {
     "+model_preset": "llama3_8b",
     "+data/probe_dataset": "mbpp_probe",
     "grpo.model.attn_implementation": "sdpa",
-    "training.save_path_base": str(WORKSPACE / "results/run_results"),
+    "training.save_path_base": str(RUNS_BASE),
     "detector.model_cache_path": "/workspace/results/activations",
     "misalignment_eval.enabled": "false",
     "wandb.project": WANDB_PROJECT,
-    "wandb.group": "full_grpo_runs",
     "++training.resume_from_checkpoint": "False",
     "corrected_detector_gradient": "false",
     "loss.kl": "0.001",
@@ -136,8 +142,15 @@ def build_grpo_args(config: dict) -> list[str]:
         merged["++grpo.model.reference_adapter_path"] = str(checkpoint_path)
 
     merged["wandb.run_name_prefix"] = config["run_key"]
+    group = config.get("group")
+    if not group:
+        raise GrpoLaunchError(
+            "Config missing required key: 'group' "
+            "(set it explicitly, or launch via run_ablation.py which derives it from the YAML folder)"
+        )
+    merged["wandb.group"] = group
 
-    # User overrides win over every default above, including nofu/probe/checkpoint keys.
+    # User overrides win over every default above, including nofu/probe/checkpoint/group keys.
     for key, value in config.get("overrides", {}).items():
         merged[key] = str(value)
 
@@ -186,7 +199,7 @@ def run_grpo_subprocess(args: list[str]) -> tuple[int, str]:
 
 def extract_run_id(output: str) -> str | None:
     for match in GRPO_RUN_ID_RE.finditer(output):
-        run_id = match.group(1) or match.group(2)
+        run_id = match.group(1) or match.group(3) or match.group(4)
         if run_id:
             return run_id
     return None
@@ -213,8 +226,50 @@ def resolve_run_id(run_key: str, output: str | None = None) -> str:
     return matching[0].id
 
 
-def run_dir_for_id(run_id: str) -> Path:
-    return RUNS_BASE / f"trigger_none_model_{run_id}_layers_32"
+def run_dir_for_id(
+    run_id: str,
+    *,
+    group: str | None = None,
+    run_key: str | None = None,
+) -> Path:
+    """Resolve the local run directory for a W&B run id.
+
+    Prefer the explicit new layout ``run_results/{group}/{run_key}_{run_id}``
+    when group + run_key are known. Otherwise search under RUNS_BASE with
+    shallow globs (trial variant nests + experiment groups + legacy).
+    """
+    if group is not None and run_key is not None:
+        return RUNS_BASE / group / f"{run_key}_{run_id}"
+
+    legacy = RUNS_BASE / "full_grpo_runs" / f"trigger_none_model_{run_id}_layers_32"
+    if legacy.is_dir():
+        return legacy
+
+    matches = [p for p in RUNS_BASE.glob(f"trial*/*/*_{run_id}") if p.is_dir()]
+    if RUNS_BASE.is_dir():
+        for group_dir in RUNS_BASE.iterdir():
+            if not group_dir.is_dir() or group_dir.name.startswith("trial"):
+                continue
+            if group_dir.name in {
+                "hf_checkpoint_evals",
+            } or group_dir.name.startswith("base_results_and_detectors"):
+                continue
+            matches.extend(p for p in group_dir.glob(f"*_{run_id}") if p.is_dir())
+    # Deduplicate
+    uniq: list[Path] = []
+    seen: set[Path] = set()
+    for p in matches:
+        rp = p.resolve()
+        if rp not in seen:
+            seen.add(rp)
+            uniq.append(p)
+    if len(uniq) == 1:
+        return uniq[0]
+    if len(uniq) > 1:
+        raise GrpoLaunchError(
+            f"Ambiguous run directories for run_id={run_id}: {[str(m) for m in uniq]}"
+        )
+    return legacy
 
 
 def _final_adapter_exists(run_dir: Path) -> bool:
@@ -230,8 +285,14 @@ def _count_response_steps(run_dir: Path) -> int:
     return len(list(responses_dir.glob("step_*.jsonl")))
 
 
-def verify_run_complete(run_id: str, *, min_responses: int = 0) -> Path:
-    run_dir = run_dir_for_id(run_id)
+def verify_run_complete(
+    run_id: str,
+    *,
+    min_responses: int = 0,
+    group: str | None = None,
+    run_key: str | None = None,
+) -> Path:
+    run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
     if not run_dir.is_dir():
         raise GrpoLaunchError(f"Run directory missing: {run_dir}")
     if not _final_adapter_exists(run_dir):
@@ -245,10 +306,15 @@ def verify_run_complete(run_id: str, *, min_responses: int = 0) -> Path:
     return run_dir
 
 
-def cleanup_intermediates(run_id: str) -> None:
+def cleanup_intermediates(
+    run_id: str,
+    *,
+    group: str | None = None,
+    run_key: str | None = None,
+) -> None:
     """Remove checkpoints/lora/ and checkpoints/step_*/ after verification.
     Never touches checkpoints/final/, checkpoints/responses/, or eval artifacts."""
-    run_dir = run_dir_for_id(run_id)
+    run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
     if not run_dir.is_relative_to(RUNS_BASE):
         raise GrpoLaunchError(f"Refusing to clean up run_dir outside {RUNS_BASE}: {run_dir}")
     if not _final_adapter_exists(run_dir):
@@ -292,7 +358,12 @@ def rename_degenerate_metrics(metrics_path: Path, attempt: int) -> Path:
     return degenerate_path
 
 
-def cleanup_crashed_run_dir(output: str) -> None:
+def cleanup_crashed_run_dir(
+    output: str,
+    *,
+    group: str | None = None,
+    run_key: str | None = None,
+) -> None:
     """Best-effort cleanup of a crashed (non-zero exit) run's partial
     directory to reclaim disk space. Never removes a directory that has a
     final adapter -- if one somehow exists despite the non-zero exit, leave
@@ -301,7 +372,7 @@ def cleanup_crashed_run_dir(output: str) -> None:
     if not run_id:
         print("WARNING: could not parse run_id from crashed GRPO output; skipping directory cleanup")
         return
-    run_dir = run_dir_for_id(run_id)
+    run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
     if not run_dir.is_dir():
         print(f"  no partial run directory found for crashed run {run_id}")
         return
@@ -312,25 +383,55 @@ def cleanup_crashed_run_dir(output: str) -> None:
     print(f"  removed partial run directory for crashed run {run_id}: {run_dir}")
 
 
-def export_wandb_metrics(run_id: str, output_path: Path) -> None:
+def export_wandb_metrics(
+    run_id: str,
+    output_path: Path,
+    *,
+    max_retries: int = 1,
+    retry_delay_s: int = 60,
+    expected_run_id: str | None = None,
+) -> None:
+    """Export W&B run metrics to ``output_path``.
+
+    Retries on non-zero exit (transient W&B sync delays). Default ``max_retries=1``
+    preserves the previous single-attempt ablation behavior; ``run_trial`` passes
+    ``max_retries=3``. When ``expected_run_id`` is set, also verifies the exported
+    JSON's ``run_id`` matches.
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [
-            "python",
-            "-m",
-            "obfuscation_atlas.scripts.export_wandb_run_metrics",
-            "--entity",
-            WANDB_ENTITY,
-            "--project",
-            WANDB_PROJECT,
-            f"--run-id={run_id}",
-            f"--output={output_path}",
-        ],
-        cwd=OBFUSCATION_ATLAS_DIR,
-        check=True,
-    )
+    cmd = [
+        "python",
+        "-m",
+        "obfuscation_atlas.scripts.export_wandb_run_metrics",
+        "--entity",
+        WANDB_ENTITY,
+        "--project",
+        WANDB_PROJECT,
+        f"--run-id={run_id}",
+        f"--output={output_path}",
+    ]
+    result = None
+    for attempt in range(1, max_retries + 1):
+        result = subprocess.run(cmd, cwd=OBFUSCATION_ATLAS_DIR)
+        if result.returncode == 0:
+            break
+        if attempt < max_retries:
+            print(
+                f"WARN: export_wandb_run_metrics attempt {attempt}/{max_retries} failed "
+                f"(exit {result.returncode}); retrying in {retry_delay_s}s..."
+            )
+            time.sleep(retry_delay_s)
+    else:
+        assert result is not None
+        raise subprocess.CalledProcessError(result.returncode, cmd)
     if not output_path.exists():
         raise GrpoLaunchError(f"Export claimed success but {output_path} is missing")
+    if expected_run_id is not None:
+        exported = json.loads(output_path.read_text())
+        if exported.get("run_id") != expected_run_id:
+            raise GrpoLaunchError(
+                f"run_metrics run_id {exported.get('run_id')!r} != {expected_run_id!r}"
+            )
     print(f"OK: exported metrics to {output_path}")
 
 
@@ -344,12 +445,18 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
 
     Optional config keys: `max_grpo_retries` (default 3) and
     `min_val_does_execute` (default 0.3, ignored if `export_metrics=False`
-    since there would be no metrics to inspect)."""
+    since there would be no metrics to inspect).
+
+    NOTE: The retry loop below is intentionally parallel to
+    ``run_trial.run_single_round``'s GRPO retry loop. Update both together if
+    the crash/degeneracy policy changes.
+    """
     for key in REQUIRED_KEYS:
         if key not in config:
             raise GrpoLaunchError(f"Config missing required key: {key!r}")
 
     run_key = config["run_key"]
+    group = config.get("group")
     output_dir = _resolve(config["output_dir"])
     output_dir.mkdir(parents=True, exist_ok=True)
     run_metrics_path = output_dir / f"run_metrics_{run_key}.json"
@@ -362,8 +469,14 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
     print(f"\n{'=' * 60}\n=== {run_key} ===\n{'=' * 60}")
 
     args = build_grpo_args(config)
+    # Re-read group after build_grpo_args validates it (and so overrides can win).
+    group = next(
+        (a.split("=", 1)[1] for a in args if a.startswith("wandb.group=")),
+        group,
+    )
     print(f"Manifest: {config['probe'].get('manifest') or 'none (default mbpp_probe dataset)'}")
     print(f"Checkpoint: {config.get('checkpoint') or 'base model (no reference adapter)'}")
+    print(f"W&B group: {group}")
     print(f"Output dir: {output_dir}")
 
     max_retries = config.get("max_grpo_retries")
@@ -375,6 +488,7 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
     max_attempts = max_retries + 1
     attempt_summaries: list[str] = []
 
+    # Intentionally parallel to run_trial.run_single_round's GRPO retry loop.
     for attempt in range(1, max_attempts + 1):
         preflight(min_free_gb=min_free_gb)
 
@@ -388,7 +502,7 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
 
         if exit_code != 0:
             print(f"CRASH: {run_key} attempt {attempt} failed with exit code {exit_code}")
-            cleanup_crashed_run_dir(output)
+            cleanup_crashed_run_dir(output, group=group, run_key=run_key)
             attempt_summaries.append(f"attempt {attempt}: crashed (exit={exit_code})")
             if attempt < max_attempts:
                 continue
@@ -399,7 +513,12 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
 
         run_id = resolve_run_id(run_key, output)
         print(f"Completed {run_key} -> run_id={run_id}")
-        verify_run_complete(run_id, min_responses=config.get("min_responses", 0))
+        verify_run_complete(
+            run_id,
+            min_responses=config.get("min_responses", 0),
+            group=group,
+            run_key=run_key,
+        )
 
         if export_metrics:
             export_wandb_metrics(run_id, run_metrics_path)
@@ -410,7 +529,7 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
                     f"val_does_execute={val_does_execute:.4f} < {min_val_does_execute} "
                     "-- collapse, see docs/EXPERIMENT_LOG.md #13"
                 )
-                cleanup_intermediates(run_id)
+                cleanup_intermediates(run_id, group=group, run_key=run_key)
                 rename_degenerate_metrics(run_metrics_path, attempt)
                 attempt_summaries.append(
                     f"attempt {attempt}: degenerate (run_id={run_id}, val_does_execute={val_does_execute:.4f})"
@@ -423,7 +542,7 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
                 )
 
         if config.get("cleanup", True):
-            cleanup_intermediates(run_id)
+            cleanup_intermediates(run_id, group=group, run_key=run_key)
 
         return run_id
 

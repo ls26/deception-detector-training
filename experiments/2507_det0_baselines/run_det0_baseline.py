@@ -18,6 +18,8 @@ WORKSPACE = Path(__file__).resolve().parents[2]  # archive/ is one level deeper 
 TRIAL_DIR = WORKSPACE / "experiments/trials/trial3"
 OUTPUT_DIR = TRIAL_DIR / "rounds/det0_baseline"
 
+# NOTE: The probe data in archive/mixed_round1_nofu/ was deleted during cleanup.
+# To re-run this script, regenerate the probe manifest first (see 2507_nofu_probe/).
 PROBE_MANIFEST = WORKSPACE / "experiments/archive/mixed_round1_nofu/probe_train_dataset.json"
 
 RUN_KEY = "trial3_det0_baseline"

@@ -71,11 +71,12 @@ BASE_PROBE = {
 
 PROBE_EVAL_SAVE_BASE = Path("/workspace/results/run_results")
 ACTIVATION_CACHE = Path("/workspace/results/activations")
-PROBE_RESULTS_DIR = Path("/workspace/results/run_results/hf_probe_eval_runs/extracted_results")
+HF_EVALS_DIR = PROBE_EVAL_SAVE_BASE / "hf_checkpoint_evals"
+PROBE_RESULTS_DIR = HF_EVALS_DIR / "hf_probe_eval_runs" / "extracted_results"
 STATE_DIR = PROBE_RESULTS_DIR / ".state"
 LOG_DIR = PROBE_EVAL_SAVE_BASE / "logs"
-MBPP_SUMMARY = Path("/workspace/results/run_results/hf_task_eval_metrics/summary.json")
-MBPP_JSONL_DIR = Path("/workspace/results/run_results/hf_task_eval_metrics")
+MBPP_SUMMARY = HF_EVALS_DIR / "hf_task_eval_metrics" / "summary.json"
+MBPP_JSONL_DIR = HF_EVALS_DIR / "hf_task_eval_metrics"
 SWEEP_STATUS_PATH = PROBE_RESULTS_DIR / "sweep_status.json"
 DEFAULT_HF_HOME = Path("/workspace/hf_cache")
 
@@ -230,10 +231,12 @@ def parse_wandb_run_id(output: str) -> str | None:
 
 
 def find_base_probe_manifest(probe_dataset: str) -> Path | None:
+    stage = "initial_detector.base_model.on_dataset"
     for base_dir in PROBE_EVAL_SAVE_BASE.glob(BASE_PROBE[probe_dataset]["glob"]):
-        manifest = base_dir / MANIFEST_NAME
-        if manifest.exists():
-            return manifest
+        # Nested layout first, then legacy flat layout
+        for manifest in (base_dir / stage / MANIFEST_NAME, base_dir / MANIFEST_NAME):
+            if manifest.exists():
+                return manifest
     return None
 
 
@@ -423,11 +426,19 @@ def print_skip_summary(status: SweepStatus, to_run_count: int) -> None:
 
 
 def verify_phase1(run_id: str, log_output: str | None = None) -> None:
-    art_dir = PROBE_EVAL_SAVE_BASE / WANDB_GROUP / f"trigger_none_model_{run_id}_layers_32"
+    candidates = [
+        PROBE_EVAL_SAVE_BASE / WANDB_GROUP / f"trigger_none_model_{run_id}_layers_32",
+        *PROBE_EVAL_SAVE_BASE.glob(f"{WANDB_GROUP}/*_{run_id}"),
+        HF_EVALS_DIR / "hf_probe_eval_runs" / f"trigger_none_model_{run_id}_layers_32",
+    ]
+    art_dir = next((p for p in candidates if p.is_dir()), candidates[0])
     if not art_dir.exists():
         raise FileNotFoundError(f"Phase 1 artifacts dir missing: {art_dir}")
 
     manifests = list(art_dir.glob("f1_and_recall_plot_*__manifest.json"))
+    if not manifests:
+        # Nested per-stage layout: {art_dir}/{stage}/f1_and_recall_plot_*__manifest.json
+        manifests = list(art_dir.glob("*/f1_and_recall_plot_*__manifest.json"))
     if len(manifests) != EXPECTED_MANIFEST_COUNT:
         raise RuntimeError(
             f"Expected {EXPECTED_MANIFEST_COUNT} manifest files, found {len(manifests)} in {art_dir}"

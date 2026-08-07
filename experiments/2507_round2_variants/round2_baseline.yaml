@@ -13,7 +13,7 @@ probe:
   directory_save_prefix: trial3_round2_baseline
   retrain: false
 
-checkpoint: /workspace/results/run_results/full_grpo_runs/trigger_none_model_62es59py_layers_32/checkpoints/final
+checkpoint: /workspace/results/run_results/trial3/original/trial3_round1_62es59py/checkpoints/final
 
 overrides:
   loss.detector: 3

@@ -5,7 +5,7 @@
 # base model start, code_length_penalty=0.002, mixed_reward_pass_all_prob=0.25.
 
 sweep_name: round1_clp2e-3_p25_s54_s55_s57_sweep
-output_dir: single_runs
+output_dir: 2507_round1_seed_sweeps/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

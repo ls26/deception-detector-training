@@ -33,7 +33,7 @@ python -m obfuscation_atlas.scripts.eval_probe_checkpoints [flags]
 **Primary deliverable:** one classified JSON per grid cell:
 
 ```
-/workspace/results/run_results/hf_probe_eval_runs/extracted_results/run_metrics_{SHORT_NAME}.json
+/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/run_metrics_{SHORT_NAME}.json
 ```
 
 There is **no** `--force-reeval`. Existing exports are never overwritten.
@@ -70,8 +70,8 @@ Adapters must be cached under `/workspace/hf_cache/` (via
 
 Required files per checkpoint:
 
-- `/workspace/results/run_results/hf_task_eval_metrics/summary.json`
-- `/workspace/results/run_results/hf_task_eval_metrics/{checkpoint_name}.jsonl`
+- `/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics/summary.json`
+- `/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics/{checkpoint_name}.jsonl`
 
 Cells without a summary entry are **skipped_invalid**.
 
@@ -110,7 +110,7 @@ exists:
 | `mbpp_probe` | `base_results_and_detectors_*mbpp-hardcode*` |
 | `diverse_deception_probe` | `base_results_and_detectors_*local-diverse_deception*` |
 
-Manifest file: `f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json`
+Manifest file: `initial_detector.base_model.on_dataset/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json` (legacy caches have it flat in the cache dir; both layouts are accepted)
 
 If missing, the batch script runs Phase 0 automatically (~30+ min per probe type).
 
@@ -206,9 +206,9 @@ write sweep_status.json (once, at end of entire run)
 ### Phase 1 success criteria
 
 - Artifacts dir:
-  `/workspace/results/run_results/hf_probe_eval/trigger_none_model_{RUN_ID}_layers_32/`
-  (historical runs may also have dirs under `hf_probe_eval_runs/`)
-- Exactly **5** `f1_and_recall_plot_*__manifest.json` files
+  `/workspace/results/run_results/hf_probe_eval/{SHORT_NAME}_{RUN_ID}/`
+  (legacy runs: `hf_probe_eval/trigger_none_model_{RUN_ID}_layers_32/`)
+- Exactly **5** `f1_and_recall_plot_*__manifest.json` files (nested one per stage subdir; legacy runs have them flat)
 
 ### Export gate
 
@@ -273,7 +273,7 @@ Verify the export:
 ```bash
 python - <<'PY'
 import json
-p="/workspace/results/run_results/hf_probe_eval_runs/extracted_results/run_metrics_kl1e-4-det0-s1-ddp.json"
+p="/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/run_metrics_kl1e-4-det0-s1-ddp.json"
 d=json.load(open(p)); m,c=d["metrics"],d["classification"]
 assert m["val_success"]>0 and c["policy_type"]
 print("OK:", c["policy_type"])
@@ -298,7 +298,7 @@ Do **not** rely solely on `sweep_status.json` (see below). Verify exports direct
 python - <<'PY'
 import json, glob
 paths = sorted(glob.glob(
-    "/workspace/results/run_results/hf_probe_eval_runs/extracted_results/run_metrics_*.json"
+    "/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/run_metrics_*.json"
 ))
 print(f"total exports: {len(paths)}")
 for p in paths[-5:]:
@@ -335,7 +335,7 @@ PY
 **Purpose:** Resume export after Phase 1 succeeded but export did not complete.
 
 Location:
-`/workspace/results/run_results/hf_probe_eval_runs/extracted_results/.state/{SHORT_NAME}.json`
+`/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/.state/{SHORT_NAME}.json`
 
 Contents: W&B run ID, checkpoint name, probe dataset, timestamp.
 
@@ -352,7 +352,7 @@ and export. It does not mean nothing has run.
 ### `sweep_status.json`
 
 Location:
-`/workspace/results/run_results/hf_probe_eval_runs/extracted_results/sweep_status.json`
+`/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/sweep_status.json`
 
 Written **once at the very end** of `main()`, not after each cell. If the
 process is killed (disk full, OOM, manual interrupt), this file reflects the
@@ -388,10 +388,9 @@ Exit code is **1** if any cell in the plan failed, even when most succeeded.
 | Sweep summary | `.../extracted_results/sweep_status.json` (unreliable if crashed) |
 | Per-cell Phase 1 log | `/workspace/results/run_results/logs/{SHORT_NAME}.log` |
 | Phase 0 log | `/workspace/results/run_results/logs/phase0_{base-mbpp,base-ddp}.log` |
-| Phase 1 artifacts | `/workspace/results/run_results/hf_probe_eval/trigger_none_model_{RUN_ID}_layers_32/` |
-| Historical Phase 1 artifacts | `/workspace/results/run_results/hf_probe_eval_runs/trigger_none_model_{RUN_ID}_layers_32/` |
+| Phase 1 artifacts | `/workspace/results/run_results/hf_probe_eval/{SHORT_NAME}_{RUN_ID}/` (legacy: `hf_probe_eval/trigger_none_model_{RUN_ID}_layers_32/`) |
 | Base probe cache | `/workspace/results/run_results/base_results_and_detectors_*/` |
-| Activation cache | `/workspace/results/activations/` |
+| Activation cache | `/workspace/results/activations/` (deleted automatically at the end of each successful run) |
 | W&B | project `deception_detection`, group `hf_probe_eval` |
 
 ---
@@ -432,19 +431,15 @@ Known zero-pass-first (Phase 1 may run; export always fails):
 Single export:
 
 ```bash
-python /workspace/scratch/extract_one_run_results.py
-# Set RUN_METRICS_PATH to the export JSON
+# Use helpers in pipeline/extract_run_results.py (e.g. build_run_metrics_df)
+# against a run_metrics JSON under results/run_results/.../extracted_results/
 ```
 
-Multi-export comparison:
-
-```bash
-python /workspace/scratch/extract_multiple_runs_results.py
-# Globs hf_probe_eval_runs/extracted_results/run_metrics_*.json by default
-```
+Multi-export comparison: load the exported `run_metrics_*.json` files under
+`hf_probe_eval_runs/extracted_results/` with the same helpers.
 
 MBPP task metrics for cross-check:
-`/workspace/results/run_results/hf_task_eval_metrics/summary.csv`
+`/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics/summary.csv`
 
 ---
 
@@ -464,7 +459,7 @@ Typical cases:
 
 | Check | Path / note |
 |-------|-------------|
-| Final adapter | `…/trigger_none_model_{TRAIN_RUN_ID}_layers_32/checkpoints/final/lora/adapter_model.bin` |
+| Final adapter | `…/run_results/{wandb.group}/{run_key}_{TRAIN_RUN_ID}/checkpoints/final/lora/adapter_model.bin` |
 | Same config as training | Match `loss.kl`, `loss.detector`, `+data/probe_dataset`, `training.seed`, `data.seed` |
 | Phase-0 cache (if mixed probe) | Set `detector.directory_save_prefix` and `++detector.mixed_probe_manifest_path` as in training |
 | GPU | Two-GPU: vLLM on GPU 1 (above). Single-GPU: see [Single-GPU probe eval](#single-gpu-probe-eval). |
@@ -480,13 +475,12 @@ source /workspace/atlas_setup.sh
 source /workspace/obfuscation-atlas/.venv/bin/activate
 cd /workspace/obfuscation-atlas
 
-# Canonical post-fix disjoint probe run:
-#   mtzvz59v  (kl1e-3-det3-s43-mbpp-disjoint)
-# Canonical mixed nofu probe run:
-#   2hgfj4k7  (nofu_mixed_kl1e-3-det-3-s43)
+# Training run dir: run_results/{wandb.group}/{run_key}_{TRAIN_RUN_ID}
+# e.g. /workspace/results/run_results/trial1/original/trial1_round1_mtzvz59v
+TRAIN_RUN_DIR=/workspace/results/run_results/{wandb.group}/{run_key}_{TRAIN_RUN_ID}
 
-TRAIN_RUN_ID=2hgfj4k7   # finished local GRPO run (mixed nofu probe)
-
+# Match ALL detector/probe flags (loss.*, seeds, directory_save_prefix,
+# mixed_probe_manifest_path) to the training run's config.
 python -m obfuscation_atlas.scripts.train_grpo_model_against_probe \
     +model_preset=llama3_8b \
     loss.kl=0.001 \
@@ -498,27 +492,27 @@ python -m obfuscation_atlas.scripts.train_grpo_model_against_probe \
     training.save_path_base=/workspace/results/run_results \
     detector.model_cache_path=/workspace/results/activations \
     detector.directory_save_prefix=nofu_mixed \
-    ++detector.mixed_probe_manifest_path=/workspace/experiments/archive/mixed_round1_nofu/probe_train_dataset.json \
+    ++detector.mixed_probe_manifest_path=/workspace/experiments/trials/trial3/rounds/round1/probe_train_dataset.json \
     ++training.only_eval_from_other_run=True \
     ++training.resume_from_checkpoint=False \
-    ++grpo.model.reference_adapter_path=/workspace/results/run_results/full_grpo_runs/trigger_none_model_${TRAIN_RUN_ID}_layers_32/checkpoints/final \
+    ++grpo.model.reference_adapter_path=${TRAIN_RUN_DIR}/checkpoints/final \
     corrected_detector_gradient=false \
     misalignment_eval.enabled=false \
     wandb.project=deception_detection \
-    wandb.group=full_grpo_runs \
-    wandb.run_name_prefix=nofu_mixed_kl1e-3-det-3-s43-split-eval
+    wandb.group=scratch \
+    wandb.run_name_prefix={run_key}-split-eval
 ```
 
-Record **EVAL_RUN_ID** from the W&B URL. Artifacts land under
-`trigger_none_model_{EVAL_RUN_ID}_layers_32/` — the original
-`trigger_none_model_{TRAIN_RUN_ID}_layers_32/` dir is untouched.
+Record **EVAL_RUN_ID** from the W&B URL. Artifacts land in a new
+`run_results/{wandb.group}/{run_name_prefix}_{EVAL_RUN_ID}/` dir — the original
+training run dir is untouched.
 
 ### Success criteria
 
 | Output | Expect |
 |--------|--------|
-| Manifests | 5 × `f1_and_recall_plot_*__manifest.json` in new run dir |
-| Split JSONs (Jul 2026+) | 3 × `on_policy_split_*.json` |
+| Manifests | 5 × `f1_and_recall_plot_*__manifest.json` in new run dir (one per stage subdir) |
+| Split metrics | `probes/eval_*.split*` keys in W&B (local `on_policy_split_*.json` no longer written as of Aug 7, 2026) |
 | Stage F | `OK: on-policy split labels`; deceptive + honest + unlabeled == 400 |
 | W&B | `eval_obfuscation/*` in summary; state `finished` |
 | Exit code | 0 |
@@ -540,14 +534,14 @@ python -m obfuscation_atlas.scripts.export_wandb_run_metrics \
     --project deception_detection \
     --run-id {EVAL_RUN_ID} \
     --task-metrics-run-id {TRAIN_RUN_ID} \
-    --output /workspace/results/run_results/full_grpo_runs/extracted_results/run_metrics_nofu_mixed_kl1e-3-det-3-s43-split-eval.json
+    --output /workspace/experiments/extracted_results/run_metrics_nofu_mixed_kl1e-3-det-3-s43-split-eval.json
 ```
 
 If train and eval completed in one W&B run, omit `--task-metrics-run-id`.
 
 **Historical examples:**
-- **Disjoint probe (`mtzvz59v`):** `kl1e-3-det3-s43-mbpp-disjoint` — canonical post-fix disjoint probe run (Jul 14, 2026). Obfuscated policy. Adapter: `…/trigger_none_model_mtzvz59v_layers_32/checkpoints/final/`.
-- **Mixed nofu probe (`2hgfj4k7`):** `nofu_mixed_kl1e-3-det-3-s43` — canonical mixed nofu probe run (Jul 23, 2026). Obfuscated policy. Adapter: `…/trigger_none_model_2hgfj4k7_layers_32/checkpoints/final/`.
+- **Disjoint probe (`mtzvz59v`):** `kl1e-3-det3-s43-mbpp-disjoint` — canonical post-fix disjoint probe run (Jul 14, 2026). Obfuscated policy. Adapter: `run_results/trial1/original/trial1_round1_mtzvz59v/checkpoints/final/`.
+- **Mixed nofu probe (`2hgfj4k7`):** `nofu_mixed_kl1e-3-det-3-s43` — canonical mixed nofu probe run (Jul 23, 2026). Obfuscated policy. Local run dir deleted in the Aug 7, 2026 cleanup; metrics: `experiments/extracted_results/run_metrics_nofu_mixed_kl1e-3-det-3-s43.json`.
 - **Earlier (`8mca01b3`):** pre-nofu mixed initial probe GRPO (Jul 14, 2026); eval-only split rerun `11ftrshu` completed with 5 manifests + 3 split JSONs.
 
 ---
@@ -681,7 +675,7 @@ python -m obfuscation_atlas.scripts.train_grpo_model_against_probe \
     +model_preset=llama3_8b loss.kl=0.001 loss.detector=3 +data/probe_dataset=mbpp_probe \
     training.seed=43 data.seed=53 \
     ++training.only_eval_from_other_run=True ++training.resume_from_checkpoint=False \
-    ++grpo.model.reference_adapter_path=/workspace/results/run_results/full_grpo_runs/trigger_none_model_{TRAIN_RUN_ID}_layers_32/checkpoints/final \
+    ++grpo.model.reference_adapter_path=/workspace/results/run_results/{wandb.group}/{run_key}_{TRAIN_RUN_ID}/checkpoints/final \
     training.save_path_base=/workspace/results/run_results \
     detector.model_cache_path=/workspace/results/activations
 

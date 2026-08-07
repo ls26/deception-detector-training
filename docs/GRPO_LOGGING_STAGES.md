@@ -1,7 +1,7 @@
 # train_grpo_model_against_probe — logging map
 
 What each stage writes locally and to W&B for one full run (train + post-eval).
-Paths use `RUN_ID` = W&B run id. Group is whatever you set (e.g. `full_grpo_runs`).
+Paths use `RUN_ID` = W&B run id. Group is whatever you set (e.g. `trial6/frozen`, `2507_det0_baselines`, `scratch`).
 
 Source script: `[obfuscation_atlas/scripts/train_grpo_model_against_probe.py](../obfuscation-atlas/obfuscation_atlas/scripts/train_grpo_model_against_probe.py)`.
 
@@ -14,13 +14,16 @@ Related: [CONTEXT.md](./CONTEXT.md), [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md).
 
 | Root                  | Path                                                                                   |
 | --------------------- | -------------------------------------------------------------------------------------- |
-| **Run dir**           | `{save_path_base}/{wandb.group}/trigger_none_model_{RUN_ID}_layers_32/`                |
+| **Run dir**           | `{save_path_base}/{wandb.group}/{run_name_prefix}_{RUN_ID}/`                            |
+| **Stage subdirs**     | `{run_dir}/{prefix}/` — probe-eval artifacts nested per stage prefix                   |
 | **Shared base probe** | `{save_path_base}/base_results_and_detectors_{model}_{trigger}_{probe}_detector-lp_…/` (default runs only) |
-| **Activation caches** | `{model_cache_path}/activations_{RUN_ID}_{stage}_{train|test}`                         |
+| **Activation caches** | `{model_cache_path}/activations_{RUN_ID}_*` (and Phase-0 `*_base_activations_*`) — deleted at end of a successful run |
 | **Resume map**        | `{save_path_base}/wandb_resume_map.json`                                               |
 
 
-Example: `/workspace/results/run_results/full_grpo_runs/trigger_none_model_c3akfszd_layers_32/`
+Example: `/workspace/results/run_results/trial6/frozen/trial6_frozen_round5_8bc0jgn2/`
+
+`wandb.group` may contain `/` (e.g. `trial6/frozen`), which nests folders under `run_results/`.
 
 On a clean full run: **1 W&B run**, **5 probe stages** (via `log_detector_metrics`), **~128** per-step GRPO metric logs. Default runs use **2 local roots** (run dir + shared base probe); with `detector.directory_save_prefix` set, Phase-0 artifacts also live in the run dir.
 
@@ -28,15 +31,15 @@ On a clean full run: **1 W&B run**, **5 probe stages** (via `log_detector_metric
 
 ## Shared pattern: every detector stage
 
-Stages B, D, E, G, H all go through `log_detector_metrics`. Same local file set and W&B key families; only `{prefix}` changes.
+Stages B, D, E, G, H all go through `log_detector_metrics`. Same local file set and W&B key families; only `{prefix}` changes. Local files are written under `{save_root}/{prefix}/` (filenames still include `{prefix}` for clarity). On-policy split aggregates are logged to W&B only (no local `on_policy_split_*.json`).
 
 
-| Local                                                             | W&B                                                                | Meaning                                                                           |
+| Local (under `{prefix}/`)                                         | W&B                                                                | Meaning                                                                           |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
 | `f1_and_recall_plot_{prefix}.png`                                 | `f1_and_recall_plot/{prefix}`                                      | Layer-wise AUC / recall@FPR / accuracy curves                                     |
 | `f1_and_recall_plot_{prefix}__{detector}.pkl` + `__manifest.json` | — (local only)                                                     | Full per-layer metrics + score arrays (dill); manifest maps detector keys → files |
 | `detector_{prefix}__{detector}/` (weights)                        | — (local only)                                                     | Saved probe weights (only when stage trains a detector)                           |
-| `averaged_violin_{prefix}_{detector}.{pdf,png}`                   | `violin_scores/{prefix}/{detector}_averaged`                       | Score distributions averaged over filtered layers (pos vs neg)                    |
+| `averaged_violin_{prefix}_{detector}.png`                         | `violin_scores/{prefix}/{detector}_averaged`                       | Score distributions averaged over filtered layers (pos vs neg)                    |
 | `averaged_over_{prefix}_{detector}.txt`                           | — (local only)                                                     | Which layer indices were averaged                                                 |
 | —                                                                 | `violin_scores/{prefix}/{detector}`                                | Per-layer violin image (subset of layers)                                         |
 | —                                                                 | `probes/eval_{prefix}/{detector}/`* (x-axis: `layer_{prefix}`)     | Per-layer AUC, AP, recall@FPR, F1, threshold, mean scores, score hist images      |
@@ -248,17 +251,20 @@ If post-eval crashes and you re-run with `only_eval_from_other_run`, stages D–
 ## Quick path cheat sheet
 
 ```text
-# After a clean full run with group=full_grpo_runs and id=abc123:
-results/run_results/full_grpo_runs/trigger_none_model_abc123_layers_32/
-  checkpoints/final/lora/          # adapter
+# After a clean trial run with group=trial6/frozen, run_key=trial6_frozen_round5, id=abc123:
+results/run_results/trial6/frozen/trial6_frozen_round5_abc123/
+  checkpoints/final/               # adapter (+ tokenizer)
   checkpoints/responses/step_*.jsonl
-  f1_and_recall_plot_*.png/.pkl    # stages B (if directory_save_prefix), D,E,G,H
-  averaged_violin_*.png
-  detector_fresh_detector…/        # fresh probe weights
-  detector_initial_detector…/      # phase-0 weights (if directory_save_prefix)
+  fresh_detector.final_model.on_dataset/   # stage D: plots, .pkl, detector weights
+  initial_detector.final_model.on_dataset/ # stage E
+  initial_detector.final_model.on_policy/  # stage G
+  fresh_detector.final_model.on_policy/    # stage G
+  initial_detector.base_model.on_policy/   # stage H
+  # (+ initial_detector.base_model.on_dataset/ when directory_save_prefix is set)
 
-results/run_results/base_results_and_detectors_*_{probe}/   # stage B only (default runs)
-results/activations/activations_abc123_*                   # act caches
-W&B run abc123: train curves + all post-eval keys above
+results/run_results/base_results_and_detectors_*_{probe}/
+  initial_detector.base_model.on_dataset/  # stage B shared cache (default runs)
+# Activation caches under results/activations/ are deleted after a successful run
+W&B run abc123 (group trial6/frozen): train curves + all post-eval keys above
 ```
 

@@ -116,9 +116,9 @@ The operational `DECEPTIVE_REWARD_KEY` is now `rewards_metrics/pass_only_shown_d
 
 W&B keys: `probes/eval_*.{detector}.on_policy.split/...`, `aggregated_detector_eval_metrics/.../on_policy.split/...`
 
-Local artifact: `{run_dir}/on_policy_split_{plot_key}.split.json`
+Local artifact: none from GRPO runs (W&B only as of Aug 7, 2026). The pipeline replica (`pipeline/probe_training.py`) still writes `on_policy_split_*.json` locally.
 
-**Caveat:** If the honest class is tiny (e.g. 3/400 on `viudg2wu` val), split AUC is unstable. Check `stats.n_honest` in the JSON.
+**Caveat:** If the honest class is tiny (e.g. 3/400 on `viudg2wu` val), split AUC is unstable. Check the `n_honest` stat (W&B / exported metrics).
 
 ---
 
@@ -138,7 +138,7 @@ Optional reuse: `training.model_wandb_id` fetches a prior run’s `on_policy_res
 
 **Hidden vs shown eval:** On-dataset probe stages (B, D, E) always cache activations from shown dataset prompts. Only stage F uses hidden prompts when configured. Log `DEBUG (process_data)` dumps during on-dataset caching will still show `== expected` — that is expected; check stage F generation logs for hidden assert lines.
 
-Scratch equivalent: `scratch/on_policy_generation.py` → `on_policy_val_generations_{RUN_ID}.jsonl` (400 graded rows).
+Pipeline equivalent: `pipeline/generation.py` → on-policy JSONLs under `experiments/trials/.../buffer/`.
 
 ---
 
@@ -192,7 +192,7 @@ test_completion_columns = ("hardcode", "code")
 - `eval_multiple_detectors`, `log_detector_metrics`, `eval_detectors_helper`
 - Stage I obfuscation decomposition (still uses all 400 positive scores)
 - `eval_probe_checkpoints.py` manifest count
-- `export_wandb_run_metrics.py` (split keys not exported yet)
+- `export_wandb_run_metrics.py` (split keys exported as `on_policy_split_*` fields)
 
 ### Split artifacts vs standard artifacts
 
@@ -200,7 +200,7 @@ test_completion_columns = ("hardcode", "code")
 |----------|----------------------|---------------------------|
 | Local pkl + manifest | Yes | **No** |
 | f1/recall PNG, violins | Yes | **No** |
-| Local JSON | No (metrics in pkl) | **`on_policy_split_{prefix}.json`** |
+| Local JSON | No (metrics in pkl) | No (W&B only; pipeline replica still writes JSON) |
 | W&B scalars | Yes + histogram images | **Scalars only** |
 | Activation cache | New cache per prefix | **Reuses** standard on-policy cache |
 
@@ -222,26 +222,24 @@ test_completion_columns = ("hardcode", "code")
 
 - Runs `train_grpo_model_against_probe.py` with `only_eval_from_other_run=True` + `reference_adapter_path` = downloaded LoRA.
 - Phase 0 base probe from shared cache if present.
-- Post-eval produces 5 manifest stages; split adds 3 JSON files per run (initial/fresh on final, initial on base).
+- Post-eval produces 5 manifest stages (one subdir per stage); split metrics logged to W&B (initial/fresh on final, initial on base).
 - Requires vLLM for stage F generation (unless reusing W&B artifact).
 - MBPP task metrics overlaid at export time from `hf_task_eval_metrics/summary.json`.
 
 ---
 
-## Scratch replica
+## Pipeline replica (no W&B)
 
-**Scripts:** `scratch/on_policy_generation.py`, `scratch/train_fresh_probe2.py`
+**Modules:** `pipeline/generation.py`, `pipeline/probe_training.py` (or `pipeline/run_round1_probe.py` end-to-end).
 
 Mirrors official fresh-probe pipeline without W&B:
 
-1. Generate/load val JSONL (`on_policy_val_generations_*.jsonl`)
+1. Generate/load val JSONL under `experiments/trials/.../buffer/`
 2. Train probe via `train_and_eval_multiple_detectors` (on-dataset eval)
 3. On-policy eval via `eval_multiple_detectors` (same test set as official G fresh)
 4. **`run_on_policy_split_eval`** with `plot_key="fresh_detector.final_model.on_policy"` (same as official)
 
-Split JSON example:
-
-`scratch/fresh_probe2_mixed_activations/on_policy_split_fresh_detector.final_model.on_policy.split.json`
+Split JSON example lands under the round's `probe_activations/` (or similar) next to the probe weights.
 
 ---
 
@@ -252,7 +250,7 @@ Policy/obfuscation typing in `utils/wandb_api_cache_utils.py` reads **standard**
 - `base_model_mean_score`, `final_model_mean_score` (from `mean_score_positive` on all 400 gens)
 - `representation_change`, `eval_obfuscation/*`
 
-Split metrics are for analysis/debugging until wired into export script.
+Split metrics are exported by `export_wandb_run_metrics.py` as `on_policy_split_*` fields.
 
 ---
 
@@ -260,10 +258,10 @@ Split metrics are for analysis/debugging until wired into export script.
 
 | Item | Path pattern |
 |------|----------------|
-| GRPO run dir | `results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/` |
-| Standard on-policy artifacts | `f1_and_recall_plot_{prefix}__*` under run dir |
-| Split JSON | `on_policy_split_{prefix}.split.json` under run dir |
-| Activation cache | `results/activations/activations_{RUN_ID}_{prefix}_test` |
+| GRPO run dir | `results/run_results/{wandb.group}/{run_key}_{RUN_ID}/` |
+| Standard on-policy artifacts | `{prefix}/f1_and_recall_plot_{prefix}__*` under run dir |
+| Split metrics | W&B only (`probes/eval_{prefix}.split*`); local JSONs no longer written |
+| Activation cache | `results/activations/activations_{RUN_ID}_{prefix}_test` (deleted after a successful run) |
 | Shared base probe | `results/run_results/base_results_and_detectors_*` |
 
 ---
@@ -277,4 +275,4 @@ Split metrics are for analysis/debugging until wired into export script.
 | Logging + split helpers | `training/obfuscation_training.py` |
 | Code-exec labels | `tasks/code_generation.py` → `compute_code_generation_rewards` |
 | Obfuscation decomposition | `training/grpo_obfuscation_utils.py` |
-| Scratch test of split | `scratch/train_fresh_probe2.py` |
+| Pipeline test of split | `pipeline/probe_training.py` / `pipeline/run_round1_probe.py` |

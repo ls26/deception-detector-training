@@ -8,7 +8,7 @@
 # ceiling (pass_all-only reward)".
 
 sweep_name: ceiling_clp1e-3_seed_sweep
-output_dir: single_runs
+output_dir: 2507_det0_baselines/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

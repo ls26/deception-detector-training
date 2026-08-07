@@ -9,7 +9,7 @@
 # variance.
 
 sweep_name: round1_clp1e-3_p20_seed_sweep
-output_dir: single_runs
+output_dir: 2507_round1_seed_sweeps/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

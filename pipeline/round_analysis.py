@@ -24,7 +24,7 @@ else:
 TRIAL_DIR = WORKSPACE / f"experiments/trials/trial{TRIAL}"
 ROUNDS_DIR = TRIAL_DIR / (f"rounds_{VARIANT}" if VARIANT else "rounds")
 BUFFER_DIR = TRIAL_DIR / (f"buffer_{VARIANT}" if VARIANT else "buffer")
-OUTPUT_CSV = WORKSPACE / "experiments/trial_results" / (
+OUTPUT_CSV = TRIAL_DIR / "results" / (
     f"round_analysis_trial{TRIAL}{f'_{VARIANT}' if VARIANT else ''}.csv"
 )
 WANDB_PROJECT_PATH = "lilylixin6-the-harker-school/deception_detection"
@@ -50,7 +50,7 @@ DET0_BASELINE_METRICS = [
 # longer the right comparison point. See EXPERIMENT_LOG.md "Trial 3 baseline —
 # no-detector-penalty ceiling" (intermediate CLP seed sweep).
 DET0_CEILING_METRICS = [
-    WORKSPACE / "experiments/single_runs" / f"run_metrics_ceiling_clp1e-3_s{seed}.json"
+    WORKSPACE / "experiments/2507_det0_baselines/single_runs" / f"run_metrics_ceiling_clp1e-3_s{seed}.json"
     for seed in (42, 43, 44)
 ]
 
@@ -531,6 +531,7 @@ numeric_cols = [c for c in BASE_COLUMNS if c not in ("round", "run_id")]
 for col in numeric_cols:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
+OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
 df.to_csv(OUTPUT_CSV, index=False)
 print(f"Wrote {len(df)} rows to {OUTPUT_CSV}")
 style_table(df)

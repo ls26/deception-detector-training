@@ -21,10 +21,20 @@ import yaml
 from pipeline import grpo_launcher as gl
 
 
+def default_group_from_config_path(path: Path) -> str:
+    """Derive the W&B / on-disk group from the YAML's parent folder under experiments/.
+
+    e.g. experiments/2507_det0_baselines/det0_ceiling.yaml -> 2507_det0_baselines
+    """
+    return path.resolve().parent.name
+
+
 def load_config(path: Path) -> dict:
     config = yaml.safe_load(path.read_text())
     if not isinstance(config, dict):
         raise gl.GrpoLaunchError(f"{path}: top-level YAML must be a mapping")
+    # Optional YAML key `group` overrides the folder-derived default.
+    config.setdefault("group", default_group_from_config_path(path))
     return config
 
 
@@ -41,6 +51,7 @@ def build_run_config(sweep_config: dict, run_entry: dict) -> dict:
     return {
         "run_key": run_entry["run_key"],
         "output_dir": output_dir,
+        "group": run_entry.get("group", sweep_config.get("group")),
         "probe": sweep_config["probe"],
         "checkpoint": run_entry.get("checkpoint", sweep_config.get("checkpoint")),
         "nofu": run_entry.get("nofu", sweep_config.get("nofu", True)),

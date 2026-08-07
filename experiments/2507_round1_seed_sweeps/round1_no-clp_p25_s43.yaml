@@ -4,7 +4,7 @@
 # Phase-0 cache reuse), code_length_penalty=0.
 
 run_key: round1_no-clp_p25_s43
-output_dir: single_runs
+output_dir: 2507_round1_seed_sweeps/single_runs
 
 probe:
   manifest: archive/mixed_round1_nofu/probe_train_dataset.json

@@ -10,23 +10,19 @@ YAML configs, small wrapper scripts, and output data.
 ## Layout
 
 - **`trials/trial{N}/`** — Per-trial state (`trial_state.json`, `trial_config.yaml`),
-  `buffer/` (on-policy generations), and `rounds/round{R}/` (probe weights,
-  activations, GRPO run metrics) for `pipeline/run_trial.py`'s automated
+  `buffer/` (on-policy generations), `rounds/round{R}/` (probe weights,
+  activations, GRPO run metrics), and `results/` (exported
+  `round_analysis.py` CSVs) for `pipeline/run_trial.py`'s automated
   multi-round loop. Never move or rename — trial state/configs reference
   these paths directly, and some contain absolute paths.
 - **`artifacts/`** — Shared on-policy JSONLs (base + det0 × train/eval) reused
   across trials/configs as fixed anchor sources.
-- **`single_runs/`** — Standalone `run_ablation.py` run outputs that don't
-  belong to a specific trial.
-- **`trial_results/`** — Exported analysis CSVs (`round_analysis.py` output).
 - **`run_round_manual.py`** — Active cell-by-cell (`# %%`) scratch driver for
   manually walking through a round when the automated loop needs a one-off
   deviation.
-- **`archive/`** — Superseded by `pipeline/run_ablation.py` + YAML configs, kept
-  for reference. `archive/mixed_round1_nofu/` and `archive/nofu_probe/` are
-  **data**, not scripts (probe weights/activations/manifests still referenced
-  by configs below) — never move or rename these two.
-- **`2507_*/`** — Past experiment groups (see below).
+- **`2507_*/`** — Past experiment groups (see below). Each may contain a
+  `single_runs/` subfolder for that group's standalone `run_ablation.py`
+  outputs.
 
 ## Past experiment groups (`2507_*/`)
 
@@ -56,8 +52,7 @@ configs, wrapper scripts, logs, and notebooks — numbered (`1_generate.sh`,
 `2_analyze.ipynb`) when order matters. Prefer duplicating a config/script over
 building shared abstractions across experiment folders; core, genuinely
 reusable logic belongs in `pipeline/` instead. The data directories listed
-above (`trials/`, `artifacts/`, `single_runs/`, `trial_results/`,
-`archive/mixed_round1_nofu/`, `archive/nofu_probe/`) must never move.
+above (`trials/`, `artifacts/`) must never move.
 
 ## Running the pipeline
 

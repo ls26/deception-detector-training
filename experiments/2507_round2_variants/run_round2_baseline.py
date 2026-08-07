@@ -17,8 +17,8 @@ OUTPUT_DIR = TRIAL_DIR / "rounds/round2_baseline"
 
 CHECKPOINT_FINAL = (
     WORKSPACE
-    / "results/run_results/full_grpo_runs"
-    / "trigger_none_model_62es59py_layers_32/checkpoints/final"
+    / "results/run_results/trial3/original"
+    / "trial3_round1_62es59py/checkpoints/final"
 )
 
 RUN_KEY = "trial3_round2_baseline"

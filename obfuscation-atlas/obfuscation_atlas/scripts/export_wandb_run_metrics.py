@@ -29,8 +29,8 @@ Usage:
         --entity lilylixin6-the-harker-school \\
         --project deception_detection \\
         --run-id abc123 \\
-        --task-metrics-json /workspace/results/run_results/hf_probe_eval_runs/extracted_results/task_metrics_kl1e-3-det3-s1-mbpp.json \\
-        --output /workspace/results/run_results/hf_probe_eval_runs/extracted_results/run_metrics_kl1e-3-det3-s1-mbpp.json
+        --task-metrics-json /workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/task_metrics_kl1e-3-det3-s1-mbpp.json \\
+        --output /workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/run_metrics_kl1e-3-det3-s1-mbpp.json
 """
 
 from __future__ import annotations

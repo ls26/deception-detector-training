@@ -87,15 +87,15 @@ flowchart TB
 │           ├── probe_metrics.json
 │           └── run_metrics_trial{N}_round{R}.json
 ├── results/
-│   ├── run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/
-│   └── activations/{run_key}_*/   # GRPO Phase-0 caches (not probe_activations/)
+│   ├── run_results/trial{N}/{variant|original}/{run_key}_{RUN_ID}/
+│   └── activations/{run_key}_*/   # GRPO Phase-0 caches (deleted after a successful run)
 └── obfuscation-atlas/             # upstream; GRPO subprocess cwd
 ```
 
-GRPO checkpoints are **global** (not per-trial):
+GRPO checkpoints live under `run_results` grouped by trial/variant:
 
 ```
-results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/checkpoints/final/
+results/run_results/trial{N}/{variant|original}/{run_key}_{RUN_ID}/checkpoints/final/
 ```
 
 ---
@@ -156,7 +156,7 @@ If vLLM dies mid-trial, restart it before retrying the failed step.
 Round 1 is **outside** `run_trial.py`. Run GRPO manually (see [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md)), then:
 
 1. Export metrics to `experiments/trials/trial{N}/rounds/round1/run_metrics_trial{N}_round1.json`
-2. Confirm checkpoint exists at `full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/checkpoints/final/`
+2. Confirm checkpoint exists at `run_results/trial{N}/{variant|original}/{run_key}_{RUN_ID}/checkpoints/final/`
 3. Record the W&B run id as **`round1_run_id`**
 
 ### 5. Base backfill (once per trial)
@@ -271,7 +271,7 @@ python -m pipeline.run_trial --trial N --variant {variant} --num-rounds 4
 | File | Variant-aware? |
 |------|----------------|
 | `trial_state_{variant}.json` | Yes — separate handoff state, same `round1_run_id` |
-| `trial_config_{variant}.yaml` | Yes — `load_trial_config()` falls back to `trial_config.yaml` if the variant file is absent |
+| `trial_config_{variant}.yaml` | Yes — required; missing file raises `FileNotFoundError` (no silent fallback to `trial_config.yaml`) |
 | `rounds_{variant}/round{R}/` | Yes |
 | `buffer_{variant}/` | Yes, **must be seeded** with the round-1 files above — round 2's on-policy generation for the producer key (`trial{N}_round1`) will otherwise regenerate them from scratch instead of reusing the original branch's identical output. Rounds 2+ always generate fresh into this dir, so it never collides with the original `buffer/`. |
 
@@ -426,7 +426,7 @@ RoundConfig(trial=N, round=R, previous_run_id=state["previous_run_id"])
 |----------|--------------------------------------------------------|
 | `run_key` | `trial{N}_round2` |
 | `producer_key` | `trial{N}_round1` (generates buffer for this round) |
-| `checkpoint_final` | `.../trigger_none_model_ABCD1234_layers_32/checkpoints/final` |
+| `checkpoint_final` | `.../trial{N}/{variant}/*_ABCD1234/checkpoints/final` (glob-resolved; legacy fallbacks) |
 | `eval_jsonl` | `buffer/trial{N}_round1_eval_generations.jsonl` |
 | `probe_train_dataset` | `rounds/round2/probe_train_dataset.json` |
 | `run_metrics` | `rounds/round2/run_metrics_trial{N}_round2.json` |
@@ -502,7 +502,7 @@ Fix:
 ```bash
 rm -rf /workspace/results/activations/trial{N}_round{R}_*
 # Also remove partial GRPO run dir if created:
-rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{FAILED_ID}_layers_32
+rm -rf /workspace/results/run_results/trial{N}/{variant|original}/trial{N}_*_{FAILED_ID}
 ```
 
 Then `--force` re-run that round.
@@ -544,7 +544,7 @@ rm -f experiments/trials/trial{N}/buffer/trial{N}_round{2,3,4,5}_*.jsonl
 
 # 4. Remove wrong GRPO runs + activation caches (adjust ids to your failed runs)
 rm -rf /workspace/results/activations/trial{N}_round{2,3,4,5,6}_*
-rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{FAILED_RUN_IDS}_layers_32
+rm -rf /workspace/results/run_results/trial{N}/{variant|original}/trial{N}_*_{FAILED_RUN_ID}
 
 # 5. Keep: round1 checkpoint, trial{N}_round1_* buffer, base_train_generations.jsonl, round1 metrics
 
@@ -596,7 +596,7 @@ Set `RoundConfig(trial=..., round=..., previous_run_id=...)` at the top and run 
 |---------|-------|
 | Entity | `lilylixin6-the-harker-school` |
 | Project | `deception_detection` |
-| Group | `full_grpo_runs` |
+| Group | `trial{N}/{variant|original}` (set automatically by `run_trial.py`) |
 | Run name prefix | `{run_key}` e.g. `trial{N}_round{R}` |
 
 Resolve run id after GRPO: regex `/runs/([a-z0-9]+)` in subprocess output, else newest W&B run whose name starts with `run_key`.

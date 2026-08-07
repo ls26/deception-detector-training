@@ -22,11 +22,13 @@ python -m obfuscation_atlas.scripts.train_grpo_model_against_probe [Hydra overri
 
 | Deliverable | Path |
 |-------------|------|
-| Final LoRA | `…/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/checkpoints/final/adapter_model.bin` |
+| Final LoRA | `…/run_results/{wandb.group}/{run_key}_{RUN_ID}/checkpoints/final/adapter_model.bin` |
 | Training responses | `…/checkpoints/responses/step_{0..127}.jsonl` |
-| Post-eval plots + `.pkl` | Same run dir (`f1_and_recall_plot_*`, `averaged_violin_*`) |
-| On-policy split JSON | Same run dir (`on_policy_split_*.json`, 3 files) |
-| W&B metrics | project `deception_detection`, group `full_grpo_runs` |
+| Post-eval plots + `.pkl` | Per-stage subdirs under the run dir (`{prefix}/f1_and_recall_plot_*`, `{prefix}/averaged_violin_*.png`) |
+| On-policy split metrics | W&B only (no local `on_policy_split_*.json`) |
+| W&B metrics | project `deception_detection`, group = trial/experiment group (e.g. `trial6/frozen`, `2507_det0_baselines`) |
+
+Run dirs live under `results/run_results/{wandb.group}/`. Trials use nested groups `trial{N}/{variant|original}`; ablations use the YAML's parent folder name under `experiments/` (override with top-level `group:`).
 
 Optional later step: `export_wandb_run_metrics.py` → `extracted_results/run_metrics_{SHORT_NAME}.json`. `run_ablation.py` (below) does this automatically.
 
@@ -59,8 +61,9 @@ This builds the same kind of Hydra command shown throughout this doc (via `pipel
 
 | Key | Required | Meaning |
 |-----|----------|---------|
-| `run_key` | yes | `wandb.run_name_prefix`; also the `run_metrics_<run_key>.json` filename |
+| `run_key` | yes | `wandb.run_name_prefix`; also the `run_metrics_<run_key>.json` filename and local run-dir prefix |
 | `output_dir` | yes | Where `run_metrics_*.json` is written (relative to `experiments/` unless absolute) |
+| `group` | no | W&B group + on-disk nest under `run_results/`. Default: YAML parent folder name (e.g. `2507_det0_baselines`) |
 | `probe.directory_save_prefix` | yes | Phase-0 activation cache isolation (detector results are per-run, not shared) — see [Prerequisites §2](#2-base-probe-cache-per-probe-type) |
 | `probe.retrain` | no (default `false`) | Sets `detector.retrain` |
 | `probe.manifest` | only for mixed-manifest runs | Sets `++detector.mixed_probe_manifest_path` |
@@ -92,7 +95,7 @@ Applied automatically by `run_ablation.py` (`GRPO_DEFAULTS` in `grpo_launcher.py
 | `training.save_path_base` | `/workspace/results/run_results` | |
 | `detector.model_cache_path` | `/workspace/results/activations` | |
 | `wandb.project` | `deception_detection` | |
-| `wandb.group` | `full_grpo_runs` | |
+| `wandb.group` | *(derived)* | From YAML parent folder (`run_ablation.py`) or `trial{N}/{variant\|original}` (`run_trial.py`). Always set explicitly on raw Hydra commands. |
 | `++training.resume_from_checkpoint` | `False` | |
 | nofu (4 follow-up-prompt keys) | on | Toggle with top-level `nofu: false` in a YAML config (not inside `overrides:`) — see [No-follow-up probe extraction](#no-follow-up-probe-extraction-jul-2026) |
 
@@ -108,10 +111,10 @@ Applied automatically by `run_ablation.py` (`GRPO_DEFAULTS` in `grpo_launcher.py
 
 | Use | Example |
 |-----|---------|
-| **Short name** | `kl1e-1-det10-s42-mbpp` — set via `wandb.run_name_prefix`; use in notes and export filenames |
-| **Run ID** | `16ypiseh` — random W&B id; **local run dir** is `trigger_none_model_{RUN_ID}_layers_32/` |
+| **Short name / run_key** | `kl1e-1-det10-s42-mbpp` or `trial6_frozen_round2` — set via `wandb.run_name_prefix`; use in notes and export filenames |
+| **Run ID** | `16ypiseh` — random W&B id; **local run dir** is `{run_key}_{RUN_ID}/` under `run_results/{wandb.group}/` |
 
-Record `short_name → run_id` when the W&B URL prints. You cannot rename the on-disk run directory.
+Record `short_name → run_id` when the W&B URL prints. You cannot rename the on-disk run directory after the fact without updating checkpoint resolution.
 
 **Short name pattern:** `kl{KL}-det{DET}-s{SEED}-{probe}` where probe suffix is `mbpp` for `mbpp_probe`, `ddp` for `diverse_deception_probe`. Use a distinct suffix (e.g. `-disjoint`, `-v2`) when rerunning the same hyperparams after a methodology fix, so exports and W&B names don't collide with older runs.
 
@@ -154,21 +157,23 @@ Training loads (or trains) `initial_detector.base_model.on_dataset` once per pro
 
 | Probe | Manifest under `run_results/` |
 |-------|-------------------------------|
-| `mbpp_probe` | `base_results_and_detectors_*mbpp-hardcode*/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json` |
-| `diverse_deception_probe` | `base_results_and_detectors_*local-diverse_deception*/…` |
+| `mbpp_probe` | `base_results_and_detectors_*mbpp-hardcode*/initial_detector.base_model.on_dataset/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json` |
+| `diverse_deception_probe` | `base_results_and_detectors_*local-diverse_deception*/initial_detector.base_model.on_dataset/…` |
 
 ```bash
-# MBPP probe example
-test -f /workspace/results/run_results/base_results_and_detectors_Meta-Llama-3-8B-Instruct_none_mbpp-hardcode_detector-lp_train_mean_eval_mean/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json && echo BASE_PROBE_OK
+# MBPP probe example (nested stage subdir; loader also accepts the legacy flat layout)
+test -f /workspace/results/run_results/base_results_and_detectors_Meta-Llama-3-8B-Instruct_none_mbpp-hardcode_detector-lp_train_mean_eval_mean/initial_detector.base_model.on_dataset/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json \
+  || test -f /workspace/results/run_results/base_results_and_detectors_Meta-Llama-3-8B-Instruct_none_mbpp-hardcode_detector-lp_train_mean_eval_mean/f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json \
+  && echo BASE_PROBE_OK
 ```
 
-First run for a new probe type may take 30+ min for Phase 0; later runs skip if cache hits.
+First run for a new probe type may take 30+ min for Phase 0. Detector-result manifests under `base_results_and_detectors_*/{prefix}/` persist and skip probe retrain on later runs; activation caches under `results/activations/` are deleted after each successful run, so Phase-0 will re-extract activations (still much faster than a full cold start when the probe weights/manifest hit).
 
 **Probe train is derived from the task train split** (zero overlap with val) — see §3 below. For a run that must retrain the shared base cache (e.g. after a methodology change to probe construction), set **`detector.retrain=true`**. This **overwrites** `base_results_and_detectors_*` and wipes the Phase-0 activation cache under `results/activations/base_activations_*`.
 
 **`detector.directory_save_prefix=<prefix>` avoids touching the shared cache above, but the two Phase-0 artifacts it isolates behave differently:**
-- **Activations** (`results/activations/{prefix}_base_activations_.../`) — shared and reused across every run using that prefix (`detector.retrain=false` skips recomputation on a cache hit).
-- **Detector results** (trained probe weights + eval manifests, e.g. `f1_and_recall_plot_initial_detector.base_model.on_dataset__manifest.json`) — **not** shared. They're written into that run's own `full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/` directory, so every new run refits/evaluates the probe from the cached activations (fast) rather than loading a prior run's manifest. Do not expect (or search for) a `{prefix}_base_results_and_detectors_*` directory — it is not created when a prefix is used.
+- **Activations** (`results/activations/{prefix}_base_activations_.../`) — reused within a run / on crash recovery (`detector.retrain=false` skips recomputation on a cache hit). Deleted automatically when the GRPO run finishes successfully.
+- **Detector results** (trained probe weights + eval manifests under `{run_dir}/initial_detector.base_model.on_dataset/`) — **not** shared. They're written into that run's own directory, so every new run refits/evaluates the probe (re-extracting activations if the prior cache was wiped). Do not expect (or search for) a `{prefix}_base_results_and_detectors_*` directory — it is not created when a prefix is used.
 
 **Do not** use `detector.retrain=true` without understanding the above — it replaces the shared mbpp base probe for all future default runs. Use a prefix instead if you need an isolated probe without touching shared cache.
 
@@ -316,9 +321,11 @@ python -m obfuscation_atlas.scripts.train_grpo_model_against_probe \
     misalignment_eval.enabled=false \
     task_args.deceptive_definition=pass_only_shown \
     wandb.project=deception_detection \
-    wandb.group=full_grpo_runs \
+    wandb.group=scratch \
     wandb.run_name_prefix=kl1e-3-det10-s${SEED}-mbpp
 ```
+
+(`wandb.group` becomes the on-disk folder under `run_results/`; use a meaningful group, not a catch-all, for anything you want to keep organized.)
 
 This is exactly what `run_ablation.py` builds for you from `GRPO_DEFAULTS` + a YAML's `overrides:`. Use the raw command only for quick one-offs; anything reproducible should be a YAML config instead (see [Launching runs](#launching-runs-run_ablationpy-vs-raw-hydra-command)).
 
@@ -358,7 +365,7 @@ detector.retrain=true   # only on the first run for a new prefix
 
 ### Mixed round-1 nofu GRPO (Jul 2026)
 
-Round-1 GRPO from the **base model** with a **mixed Phase-0 probe** (300/class: 200 on-dataset + 100 on-policy). Combines the nofu overrides above with a mixed probe manifest. Manifest and probe validation live under `experiments/archive/mixed_round1_nofu/` (built by `experiments/2507_nofu_probe/run_mixed_round1_nofu_probe.py`; do not regenerate unless changing sources).
+Round-1 GRPO from the **base model** with a **mixed Phase-0 probe** (300/class: 200 on-dataset + 100 on-policy). Combines the nofu overrides above with a mixed probe manifest. The historical cache under `experiments/archive/mixed_round1_nofu/` was deleted — regenerate via `experiments/2507_nofu_probe/run_mixed_round1_nofu_probe.py`, or point the manifest at a trial's own `rounds/round1/probe_train_dataset.json`.
 
 **Dataset:** `build_train_dataset_round1_mixed()` — honest on-policy from base `train_full`, deceptive on-policy from det0 `train_full` (`experiments/artifacts/`). See [iterative_training_experiments.md](./iterative_training_experiments.md) § Round-1 mixed dataset.
 
@@ -367,7 +374,7 @@ Round-1 GRPO from the **base model** with a **mixed Phase-0 probe** (300/class: 
 ```bash
 detector.directory_save_prefix=nofu_mixed \
 detector.retrain=true \
-++detector.mixed_probe_manifest_path=/workspace/experiments/archive/mixed_round1_nofu/probe_train_dataset.json
+++detector.mixed_probe_manifest_path=/workspace/experiments/trials/trial3/rounds/round1/probe_train_dataset.json
 ```
 
 - **No `reference_adapter_path`:** round 1 starts from base Instruct (unlike multi-round `run_round_manual.py`).
@@ -475,7 +482,7 @@ If a run is killed or crashes before writing `checkpoints/final/`, downstream co
 1. **Symlink** `checkpoints/final` to the desired step:
 
    ```bash
-   RUN_DIR=/workspace/results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32
+   RUN_DIR=/workspace/results/run_results/{wandb.group}/{run_key}_{RUN_ID}
    ln -s lora/step_128 "$RUN_DIR/checkpoints/final"
    ```
 
@@ -496,7 +503,7 @@ If a run is killed or crashes before writing `checkpoints/final/`, downstream co
 
 GRPO saves large intermediate artifacts under each run dir. There is **no automatic cleanup** for manually-launched runs — you must delete them yourself after each completed run when queueing multiple seeds.
 
-| Run dir (under `…/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/`) | Typical size | Safe to delete after run completes? |
+| Run dir (under `…/run_results/{wandb.group}/{run_key}_{RUN_ID}/`) | Typical size | Safe to delete after run completes? |
 |---------------------------------------------------------------------------|--------------|-------------------------------------|
 | `checkpoints/lora/step_{0..127}/` | **~78 GB** (~640 MB × 128 steps), pre-Aug-2-2026 leak fix | **Yes** — keep only if debugging per-step LoRA |
 | `checkpoints/step_{110,120,...}/` | **~4 GB** (FSDP resume state) | **Yes** — not needed once `final/` exists |
@@ -512,7 +519,7 @@ GRPO saves large intermediate artifacts under each run dir. There is **no automa
 
 ```bash
 RUN_ID=...   # from W&B URL or log
-RUN_DIR=/workspace/results/run_results/full_grpo_runs/trigger_none_model_${RUN_ID}_layers_32
+RUN_DIR=/workspace/results/run_results/${GROUP}/${RUN_KEY}_${RUN_ID}  # e.g. trial6/frozen/trial6_frozen_round2_${RUN_ID}
 
 # Verify run completed first
 test -f "$RUN_DIR/checkpoints/final/adapter_model.bin"
@@ -529,10 +536,10 @@ df -h /workspace
 
 ```bash
 # Verify first (0 response JSONLs, no checkpoints/final/), then:
-rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{ABORTED_RUN_ID}_layers_32
+rm -rf /workspace/results/run_results/{GROUP}/{RUN_KEY}_{ABORTED_RUN_ID}
 ```
 
-**Do not delete** (unless you accept recomputation cost): `results/activations/` (shared probe cache), `hf_cache/`, or `checkpoints/final/` on any run you still need.
+**Do not delete:** `hf_cache/`, or `checkpoints/final/` on any run you still need. Activation caches under `results/activations/` are wiped automatically at the end of a successful GRPO run (and may be empty between runs).
 
 ---
 
@@ -554,7 +561,7 @@ rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{ABORTED
 - [ ] Log: `probe_pos_from_task_train` hashes (shared-pool branch; not `probe_pos_after_combine`)
 - [ ] Phase 0: `Caching activations...` if retraining, or loaded from manifest if cache hit
 - [ ] `Starting GRPO training...`
-- [ ] New dir: `full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/`
+- [ ] New dir: `run_results/{wandb.group}/{run_key}_{RUN_ID}/`
 - [ ] `checkpoints/responses/step_0.jsonl` exists
 
 ### Mid-train
@@ -567,19 +574,17 @@ rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{ABORTED
 
 - [ ] Shell `exit=0`
 - [ ] `checkpoints/final/adapter_model.bin` exists (~640 MB)
-- [ ] **5** `f1_and_recall_plot_*__manifest.json` under run dir (post-train stages D–H)
-- [ ] **3** `on_policy_split_*.json` sidecars
+- [ ] **5** stage subdirs under run dir, each with `f1_and_recall_plot_*__manifest.json` (post-train stages D–H)
 - [ ] W&B summary has `eval_obfuscation/initial_detector/policy_detector_prob` (proves stage I finished)
-- [ ] Split JSON: check `stats.n_honest` — if tiny, split AUC is unstable
+- [ ] On-policy split aggregates present in W&B / exported `run_metrics` (no local split JSON)
 
 Quick verify:
 
 ```bash
-RUN_DIR=/workspace/results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32
+RUN_DIR=/workspace/results/run_results/{wandb.group}/{run_key}_{RUN_ID}
 
 ls "$RUN_DIR/checkpoints/final/adapter_model.bin"
-ls "$RUN_DIR"/f1_and_recall_plot_*__manifest.json | wc -l   # expect 5
-ls "$RUN_DIR"/on_policy_split_*.json 2>/dev/null | wc -l    # expect 3
+ls "$RUN_DIR"/*/f1_and_recall_plot_*__manifest.json | wc -l   # expect 5 (nested per stage)
 
 python3 - <<PY
 import json, glob
@@ -593,7 +598,7 @@ Replace `{RUN_ID}` with the actual id (e.g. `16ypiseh`).
 
 ### After a multi-seed loop
 
-- [ ] Three distinct `trigger_none_model_*` dirs (different `RUN_ID`s)
+- [ ] Three distinct `{run_key}_{RUN_ID}` dirs (different `RUN_ID`s)
 - [ ] All three pass the end-of-seed gate above
 - [ ] Intermediate checkpoints (`lora/`, `step_*`) deleted on each completed run (see [Disk usage](#disk-usage-and-manual-checkpoint-cleanup))
 - [ ] `df -h /workspace` shows enough free space for the next run
@@ -622,12 +627,12 @@ python -m obfuscation_atlas.scripts.train_grpo_model_against_probe \
     training.save_path_base=/workspace/results/run_results \
     ++training.only_eval_from_other_run=True \
     ++training.resume_from_checkpoint=False \
-    ++grpo.model.reference_adapter_path=/workspace/results/run_results/full_grpo_runs/trigger_none_model_{TRAIN_RUN_ID}_layers_32/checkpoints/final \
+    ++grpo.model.reference_adapter_path=/workspace/results/run_results/{wandb.group}/{run_key}_{TRAIN_RUN_ID}/checkpoints/final \
     detector.model_cache_path=/workspace/results/activations \
     corrected_detector_gradient=false \
     misalignment_eval.enabled=false \
     wandb.project=deception_detection \
-    wandb.group=full_grpo_runs
+    wandb.group={wandb.group}
 ```
 
 This creates a **new** W&B run for post-eval only. If W&B splits across train + eval runs, export with `--run-id` (eval) and `--task-metrics-run-id` (train). A **clean** full run keeps everything on one `RUN_ID`.
@@ -643,10 +648,10 @@ python -m obfuscation_atlas.scripts.export_wandb_run_metrics \
     --entity lilylixin6-the-harker-school \
     --project deception_detection \
     --run-id RUN_ID \
-    --output /workspace/results/run_results/full_grpo_runs/extracted_results/run_metrics_SHORT_NAME.json
+    --output /workspace/experiments/.../run_metrics_SHORT_NAME.json
 ```
 
-Use `--task-metrics-run-id` only for split train/eval W&B runs. Summarize with `scratch/extract_one_run_results.py`.
+Use `--task-metrics-run-id` only for split train/eval W&B runs. Summarize with helpers in `pipeline/extract_run_results.py`. Historical exports also live under `experiments/extracted_results/`.
 
 ---
 

@@ -10,8 +10,6 @@ import re
 import shutil
 import subprocess
 import sys
-import time
-import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -39,22 +37,29 @@ from pipeline.grpo_launcher import (
     GrpoLaunchError,
     check_degeneracy,
     check_disk,
+    check_vllm,
     cleanup_crashed_run_dir,
     cleanup_intermediates,
+    export_wandb_metrics,
     rename_degenerate_metrics,
+    resolve_run_id,
     run_grpo_subprocess,
     verify_run_complete,
 )
 from pipeline.paths import EXPERIMENTS, WORKSPACE
 from pipeline.probe_training import FOLLOW_UP, load_final_policy_model, run_probe_train_eval_pipeline
-from pipeline.round_config import RoundConfig
+from pipeline.round_config import RoundConfig, resolve_checkpoint_final
 
 EVAL_SAMPLES = 400
-VLLM_MODELS_URL = "http://127.0.0.1:8000/v1/models"
-WANDB_ENTITY = "lilylixin6-the-harker-school"
-WANDB_PROJECT = "deception_detection"
 BASE_MODEL = "meta-llama/Meta-Llama-3-8B-Instruct"
 GRPO_RUN_ID_RE = re.compile(r"/runs/([a-z0-9]+)")
+
+
+def _stage_header(stage: str, cfg: RoundConfig) -> None:
+    print(f"\n{'─' * 60}")
+    print(f"  [{cfg.run_key}] {stage}")
+    print(f"{'─' * 60}")
+
 
 # Round where calibration_logits are first computed (round 1 has no calibration data yet).
 # Used by `fix_calibration_slope` to anchor the frozen (z_d - z_h) denominator.
@@ -88,8 +93,12 @@ def trial_config_path(trial: int, variant: str = "") -> Path:
     trial_dir = EXPERIMENTS / "trials" / f"trial{trial}"
     if variant:
         variant_path = trial_dir / f"trial_config_{variant}.yaml"
-        if variant_path.exists():
-            return variant_path
+        if not variant_path.exists():
+            raise FileNotFoundError(
+                f"Missing variant trial config: {variant_path}. "
+                f"Create trial_config_{variant}.yaml (no silent fallback to trial_config.yaml)."
+            )
+        return variant_path
     return trial_dir / "trial_config.yaml"
 
 
@@ -115,11 +124,15 @@ def trial_state_path(trial: int, variant: str = "") -> Path:
 
 def load_trial_state(trial: int, variant: str = "") -> dict:
     path = trial_state_path(trial, variant)
-    assert path.exists(), f"Missing trial state: {path} (run --init first)"
+    if not path.exists():
+        raise FileNotFoundError(f"Missing trial state: {path} (run --init first)")
     state = json.loads(path.read_text())
-    assert state["trial"] == trial
-    assert "previous_run_id" in state
-    assert "last_completed_round" in state
+    if state["trial"] != trial:
+        raise ValueError(f"trial_state trial={state['trial']!r} != requested {trial}")
+    if "previous_run_id" not in state:
+        raise ValueError(f"{path}: missing required key 'previous_run_id'")
+    if "last_completed_round" not in state:
+        raise ValueError(f"{path}: missing required key 'last_completed_round'")
     return state
 
 
@@ -149,27 +162,23 @@ def train_jsonl_path(cfg: RoundConfig, gen_dataset: str) -> Path:
     return path
 
 
-def checkpoint_dir_for_run_id(workspace: Path, run_id: str) -> Path:
-    return (
-        workspace
-        / f"results/run_results/full_grpo_runs/trigger_none_model_{run_id}_layers_32/checkpoints/final"
-    )
-
-
-def check_vllm(url: str = VLLM_MODELS_URL) -> None:
-    with urllib.request.urlopen(url, timeout=5) as resp:
-        assert resp.status == 200, f"vLLM returned {resp.status}"
+def checkpoint_dir_for_run_id(
+    workspace: Path, run_id: str, *, trial: int | None = None
+) -> Path:
+    return resolve_checkpoint_final(workspace, run_id, trial=trial)
 
 
 def check_jsonl_rows(
     path: Path, expected: int | None, *, label_fields: tuple[str, ...] = ()
 ) -> dict:
-    assert path.exists(), f"Missing {path}"
+    if not path.exists():
+        raise FileNotFoundError(f"Missing {path}")
     rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
     if expected is not None:
-        assert len(rows) == expected, f"{path.name}: expected {expected} rows, got {len(rows)}"
-    else:
-        assert len(rows) > 0, f"{path.name}: expected at least 1 row, got 0"
+        if len(rows) != expected:
+            raise ValueError(f"{path.name}: expected {expected} rows, got {len(rows)}")
+    elif len(rows) == 0:
+        raise ValueError(f"{path.name}: expected at least 1 row, got 0")
     counts = {}
     for field in label_fields:
         counts[field] = sum(bool(r.get(field)) for r in rows)
@@ -177,15 +186,23 @@ def check_jsonl_rows(
 
 
 def preflight(cfg: RoundConfig, state: dict, trial_cfg: dict) -> None:
-    assert cfg.round >= 2, f"automation runs round >= 2, got {cfg.round}"
-    assert cfg.adapter_path.exists(), f"Missing adapter: {cfg.adapter_path}"
-    assert cfg.checkpoint_final.exists(), f"Missing checkpoint: {cfg.checkpoint_final}"
+    if cfg.round < 2:
+        raise ValueError(f"automation runs round >= 2, got {cfg.round}")
+    if not cfg.adapter_path.exists():
+        raise FileNotFoundError(f"Missing adapter: {cfg.adapter_path}")
+    if not cfg.checkpoint_final.exists():
+        raise FileNotFoundError(f"Missing checkpoint: {cfg.checkpoint_final}")
     if trial_cfg["needs_base_backfill"]:
         base_train = cfg.buffer / "base_train_generations.jsonl"
-        assert base_train.exists(), f"Missing base backfill: {base_train}"
+        if not base_train.exists():
+            raise FileNotFoundError(f"Missing base backfill: {base_train}")
     check_vllm()
     check_disk(min_free_gb=50, path=cfg.workspace)
-    assert state["previous_run_id"] == cfg.previous_run_id
+    if state["previous_run_id"] != cfg.previous_run_id:
+        raise ValueError(
+            f"state previous_run_id={state['previous_run_id']!r} != "
+            f"cfg.previous_run_id={cfg.previous_run_id!r}"
+        )
     print(f"OK: preflight passed for {cfg.run_key} (previous_run_id={cfg.previous_run_id})")
 
 
@@ -194,24 +211,18 @@ def resolve_grpo_run_id(cfg: RoundConfig, stdout: str | None = None) -> str:
         match = GRPO_RUN_ID_RE.search(stdout)
         if match:
             run_id = match.group(1)
-            ckpt = checkpoint_dir_for_run_id(cfg.workspace, run_id)
-            assert ckpt.exists(), f"GRPO run id {run_id} parsed but checkpoint missing: {ckpt}"
-            return run_id
+            ckpt = checkpoint_dir_for_run_id(cfg.workspace, run_id, trial=cfg.trial)
+            if ckpt.exists():
+                return run_id
+            print(
+                f"WARN: GRPO run id {run_id} parsed from stdout but checkpoint missing "
+                f"({ckpt}); falling back to W&B API"
+            )
 
-    import wandb
-
-    api = wandb.Api()
-    project = f"{WANDB_ENTITY}/{WANDB_PROJECT}"
-    matching = [
-        run
-        for run in api.runs(project, order="-created_at", per_page=50)
-        if run.name.startswith(cfg.run_key)
-    ]
-    if not matching:
-        raise RuntimeError(f"No W&B run with name prefix {cfg.run_key!r}")
-    run_id = matching[0].id
-    ckpt = checkpoint_dir_for_run_id(cfg.workspace, run_id)
-    assert ckpt.exists(), f"W&B run {run_id} found but checkpoint missing: {ckpt}"
+    run_id = resolve_run_id(cfg.run_key, None)
+    ckpt = checkpoint_dir_for_run_id(cfg.workspace, run_id, trial=cfg.trial)
+    if not ckpt.exists():
+        raise GrpoLaunchError(f"W&B run {run_id} found but checkpoint missing: {ckpt}")
     return run_id
 
 
@@ -245,7 +256,7 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
         "corrected_detector_gradient=false",
         "misalignment_eval.enabled=false",
         "wandb.project=deception_detection",
-        "wandb.group=full_grpo_runs",
+        f"wandb.group={cfg.wandb_group}",
         f"wandb.run_name_prefix={cfg.run_key}",
         f"task_args.deceptive_definition={cfg.deceptive_definition}",
     ]
@@ -255,6 +266,8 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
         args.append(f"code_length_penalty={trial_cfg['code_length_penalty']}")
     if trial_cfg.get("kl_reference_from_base", False):
         args.append("++grpo.model.kl_reference_from_base=true")
+    if trial_cfg.get("ground_truth_penalty", False):
+        args.append("ground_truth_detector_penalty=true")
     if trial_cfg.get("use_calibrated_penalty", False):
         cal_path = cfg.probe_metrics
         # GRPO Phase-0 always trains its own probe from scratch, which has a different
@@ -270,7 +283,8 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
             # round's z_h so the calibrated penalty still has a numerator to work with.
             prev_round_dir = cfg.round_dir.parent / f"round{cfg.round - 1}"
             prev_path = prev_round_dir / "probe_metrics.json"
-            assert prev_path.exists(), f"No fallback calibration available: {prev_path}"
+            if not prev_path.exists():
+                raise FileNotFoundError(f"No fallback calibration available: {prev_path}")
             print(
                 f"WARN: calibration_logits missing/invalid for round {cfg.round}; "
                 f"falling back to round {cfg.round - 1}'s ({prev_path})"
@@ -281,7 +295,8 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
         args.append(f"++detector.frozen_probe_weights_dir={frozen_weights_for_calibration}")
         if trial_cfg.get("fix_calibration_slope", False) and cfg.round > FIXED_CALIBRATION_ANCHOR_ROUND:
             anchor_metrics_path = cfg.round_dir.parent / f"round{FIXED_CALIBRATION_ANCHOR_ROUND}" / "probe_metrics.json"
-            assert anchor_metrics_path.exists(), f"fix_calibration_slope: missing {anchor_metrics_path}"
+            if not anchor_metrics_path.exists():
+                raise FileNotFoundError(f"fix_calibration_slope: missing {anchor_metrics_path}")
             anchor_cal = json.loads(anchor_metrics_path.read_text())["calibration_logits"]
             fixed_denominator = anchor_cal["z_d"] - anchor_cal["z_h"]
             args.append(f"++detector.fixed_calibration_denominator={fixed_denominator}")
@@ -304,40 +319,6 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
     if exit_code != 0:
         raise subprocess.CalledProcessError(exit_code, args, output)
     return resolve_grpo_run_id(cfg, output)
-
-
-def export_run_metrics(cfg: RoundConfig, grpo_run_id: str, max_retries: int = 3, retry_delay_s: int = 60) -> None:
-    cmd = [
-        "python",
-        "-m",
-        "obfuscation_atlas.scripts.export_wandb_run_metrics",
-        "--entity",
-        WANDB_ENTITY,
-        "--project",
-        WANDB_PROJECT,
-        f"--run-id={grpo_run_id}",
-        f"--output={cfg.run_metrics}",
-    ]
-    for attempt in range(1, max_retries + 1):
-        result = subprocess.run(cmd, cwd=cfg.workspace / "obfuscation-atlas")
-        if result.returncode == 0:
-            break
-        if attempt < max_retries:
-            # Transient W&B API fetch failures (e.g. server-side sync delay right
-            # after a run finishes) can make this fail even though the run itself
-            # is fine -- retry a few times before giving up.
-            print(
-                f"WARN: export_wandb_run_metrics attempt {attempt}/{max_retries} failed "
-                f"(exit {result.returncode}); retrying in {retry_delay_s}s..."
-            )
-            time.sleep(retry_delay_s)
-    else:
-        raise subprocess.CalledProcessError(result.returncode, cmd)
-    assert cfg.run_metrics.exists(), f"Export failed: {cfg.run_metrics}"
-    exported = json.loads(cfg.run_metrics.read_text())
-    assert exported.get("run_id") == grpo_run_id, (
-        f"run_metrics run_id {exported.get('run_id')!r} != {grpo_run_id!r}"
-    )
 
 
 def build_or_reuse_probe_dataset(
@@ -384,6 +365,7 @@ def build_or_reuse_probe_dataset(
             f"{prev_manifest_path} to reuse -- building fresh manifest instead"
         )
 
+    data_seed = trial_cfg["data_seed"]
     if trial_cfg["dataset_strategy"] == "split_sources":
         pos, neg, m = build_train_dataset_split_sources(
             tokenizer,
@@ -395,6 +377,7 @@ def build_or_reuse_probe_dataset(
             det0_deceptive_jsonl=Path(trial_cfg["det0_deceptive_jsonl"]),
             on_policy_per_source=trial_cfg["on_policy_per_source"],
             n_fixed_per_class=trial_cfg["n_fixed_per_class"],
+            data_seed=data_seed,
         )
         return pos, neg, m, False
     if trial_cfg["dataset_strategy"] == "round_robin":
@@ -404,6 +387,7 @@ def build_or_reuse_probe_dataset(
             round=cfg.round,
             manifest_path=cfg.probe_train_dataset,
             buffer_dir=cfg.buffer,
+            data_seed=data_seed,
         )
         return pos, neg, m, False
     raise ValueError(f"Unknown dataset_strategy: {trial_cfg['dataset_strategy']!r}")
@@ -414,9 +398,11 @@ def run_single_round(
     *,
     dry_run: bool = False,
     mock_grpo_run_id: str | None = None,
+    force: bool = False,
 ) -> str:
     cfg.round_dir.mkdir(parents=True, exist_ok=True)
     trial_cfg = load_trial_config(cfg.trial, cfg.variant)
+    data_seed = trial_cfg["data_seed"]
 
     frozen_weights_dir = trial_cfg.get("frozen_probe_weights_dir")
     frozen_manifest = trial_cfg.get("freeze_probe_manifest")
@@ -425,20 +411,33 @@ def run_single_round(
         # every round (see docs/FULL_TRIAL_RUNBOOK.md and train_grpo_model_against_probe.py's
         # frozen_probe_weights_dir override). No new on-policy data feeds into probe
         # training, so generation and the external probe pipeline are skipped entirely.
-        assert frozen_weights_dir and frozen_manifest, (
-            "frozen_probe_weights_dir and freeze_probe_manifest must both be set together"
-        )
-        assert not trial_cfg.get("use_calibrated_penalty", False), (
-            "frozen_probe_weights_dir is incompatible with use_calibrated_penalty "
-            "(calibration logits come from external probe training, which is skipped)"
-        )
-        assert Path(frozen_weights_dir).exists(), f"Frozen probe weights not found: {frozen_weights_dir}"
-        assert Path(frozen_manifest).exists(), f"Frozen manifest not found: {frozen_manifest}"
+        if not (frozen_weights_dir and frozen_manifest):
+            raise ValueError(
+                "frozen_probe_weights_dir and freeze_probe_manifest must both be set together"
+            )
+        if trial_cfg.get("use_calibrated_penalty", False):
+            raise ValueError(
+                "frozen_probe_weights_dir is incompatible with use_calibrated_penalty "
+                "(calibration logits come from external probe training, which is skipped)"
+            )
+        if not Path(frozen_weights_dir).exists():
+            raise FileNotFoundError(f"Frozen probe weights not found: {frozen_weights_dir}")
+        if not Path(frozen_manifest).exists():
+            raise FileNotFoundError(f"Frozen manifest not found: {frozen_manifest}")
         print(
             "OK: frozen probe -- skipping generation + probe training "
             f"(weights={frozen_weights_dir}, manifest={frozen_manifest})"
         )
     else:
+        if force:
+            if cfg.probe_weights.exists():
+                shutil.rmtree(cfg.probe_weights)
+                print(f"OK: deleted {cfg.probe_weights} (--force)")
+            if cfg.probe_activations.exists():
+                shutil.rmtree(cfg.probe_activations)
+                print(f"OK: deleted {cfg.probe_activations} (--force)")
+
+        _stage_header("MBPP dataset prep + dry generation", cfg)
         bootstrap_hf_env()
         tokenizer = AutoTokenizer.from_pretrained(cfg.checkpoint_final)
 
@@ -449,8 +448,10 @@ def run_single_round(
             lora_path=cfg.adapter_path,
             n_generations=1,
             deceptive_definition=cfg.deceptive_definition,
+            seed=data_seed,
         )
 
+        _stage_header("On-policy TRAIN generation", cfg)
         train_df = run_on_policy_pipeline(
             model_key=cfg.producer_key,
             dataset=trial_cfg["gen_dataset"],
@@ -461,6 +462,7 @@ def run_single_round(
             output_dir=cfg.buffer,
             run_id_config=cfg.previous_run_id,
             deceptive_definition=cfg.deceptive_definition,
+            seed=data_seed,
         )
         print_pipeline_df_stats(train_df)
         train_path = train_jsonl_path(cfg, trial_cfg["gen_dataset"])
@@ -473,6 +475,7 @@ def run_single_round(
             )
         print(f"OK: train on-policy {train_path.name} ({len(train_check['rows'])} rows)")
 
+        _stage_header("On-policy EVAL generation", cfg)
         eval_df = run_on_policy_pipeline(
             model_key=cfg.producer_key,
             dataset="eval",
@@ -483,6 +486,7 @@ def run_single_round(
             output_dir=cfg.buffer,
             run_id_config=cfg.previous_run_id,
             deceptive_definition=cfg.deceptive_definition,
+            seed=data_seed,
         )
         print_pipeline_df_stats(eval_df)
         eval_path = cfg.buffer / f"{cfg.producer_key}_eval_generations.jsonl"
@@ -501,27 +505,42 @@ def run_single_round(
                     output_dir=cfg.buffer,
                     run_id_config="base",
                     deceptive_definition=cfg.deceptive_definition,
+                    seed=data_seed,
                 )
                 print_pipeline_df_stats(base_train_df)
-            assert base_path.exists(), f"Missing {base_path}"
+            if not base_path.exists():
+                raise FileNotFoundError(f"Missing {base_path}")
             print(f"OK: base backfill {base_path.name}")
         else:
             print("OK: base backfill not required (dataset_strategy uses external anchor sources)")
 
+        _stage_header("Build mixed probe train manifest", cfg)
         train_pos, train_neg, manifest, skipped_expansion = build_or_reuse_probe_dataset(
             cfg, trial_cfg, tokenizer, train_check=train_check
         )
         manifest_data = json.loads(cfg.probe_train_dataset.read_text())
         n_per_class = manifest_data["n_train_per_class"]
-        assert len(manifest_data["deceptive"]) == len(manifest_data["honest"]) == n_per_class
+        if not (
+            len(manifest_data["deceptive"]) == len(manifest_data["honest"]) == n_per_class
+        ):
+            raise ValueError(
+                f"probe train manifest class counts mismatch: "
+                f"deceptive={len(manifest_data['deceptive'])}, "
+                f"honest={len(manifest_data['honest'])}, n_train_per_class={n_per_class}"
+            )
         print(f"OK: probe train manifest {cfg.probe_train_dataset.name} ({n_per_class}/class)")
 
         if skipped_expansion and trial_cfg.get("carry_over_probe_weights", False):
             prev_round_dir = cfg.round_dir.parent / f"round{cfg.round - 1}"
             prev_weights = prev_round_dir / "probe_weights"
             prev_metrics = prev_round_dir / "probe_metrics.json"
-            assert prev_weights.exists(), f"carry_over_probe_weights: missing {prev_weights}"
-            assert prev_metrics.exists(), f"carry_over_probe_weights: missing {prev_metrics}"
+            if not prev_weights.exists():
+                raise FileNotFoundError(f"carry_over_probe_weights: missing {prev_weights}")
+            if not prev_metrics.exists():
+                raise FileNotFoundError(f"carry_over_probe_weights: missing {prev_metrics}")
+            if cfg.probe_weights.exists():
+                shutil.rmtree(cfg.probe_weights)
+                print(f"OK: removed existing {cfg.probe_weights} before carry-over")
             shutil.copytree(prev_weights, cfg.probe_weights)
             shutil.copy2(prev_metrics, cfg.probe_metrics)
             trial_cfg["frozen_probe_weights_dir"] = str(cfg.probe_weights)
@@ -533,11 +552,13 @@ def run_single_round(
                 f"calibration z_h={cal.get('z_h', '?')}, z_d={cal.get('z_d', '?')})"
             )
         else:
+            _stage_header("Load final policy model", cfg)
             model, tokenizer = load_final_policy_model(
                 checkpoint_final=cfg.checkpoint_final,
                 adapter_path=cfg.adapter_path,
             )
 
+            _stage_header("Probe train + eval (activations + linear probe)", cfg)
             run_probe_train_eval_pipeline(
                 model,
                 tokenizer,
@@ -552,20 +573,27 @@ def run_single_round(
                 run_id=cfg.previous_run_id,
                 follow_up=[] if trial_cfg["nofu"] else FOLLOW_UP,
                 deceptive_definition=cfg.deceptive_definition,
+                seed=data_seed,
             )
             probe_metrics = json.loads(cfg.probe_metrics.read_text())
-            assert "on_dataset_auc" in probe_metrics, "probe_metrics.json missing on_dataset_auc"
-            assert (cfg.probe_weights / "layer_0" / "config.json").exists()
+            if "on_dataset_auc" not in probe_metrics:
+                raise ValueError("probe_metrics.json missing on_dataset_auc")
+            if not (cfg.probe_weights / "layer_0" / "config.json").exists():
+                raise FileNotFoundError(
+                    f"Missing probe weights config: {cfg.probe_weights / 'layer_0' / 'config.json'}"
+                )
             print(f"OK: probe train/eval (on_dataset_auc={probe_metrics['on_dataset_auc']:.4f})")
 
+            _stage_header("Free GPU memory", cfg)
             del model
             gc.collect()
             torch.cuda.empty_cache()
 
     if dry_run:
         grpo_run_id = mock_grpo_run_id or cfg.previous_run_id
-        ckpt = checkpoint_dir_for_run_id(cfg.workspace, grpo_run_id)
-        assert ckpt.exists(), f"Dry-run mock id {grpo_run_id} has no checkpoint: {ckpt}"
+        ckpt = checkpoint_dir_for_run_id(cfg.workspace, grpo_run_id, trial=cfg.trial)
+        if not ckpt.exists():
+            raise GrpoLaunchError(f"Dry-run mock id {grpo_run_id} has no checkpoint: {ckpt}")
         print(f"OK: dry-run skipping GRPO/export; mock grpo_run_id={grpo_run_id}")
         return grpo_run_id
 
@@ -574,6 +602,9 @@ def run_single_round(
     # Both are stochastic instabilities that a same-config retry can resolve;
     # generation/probe training above are already cached on disk, so only
     # the GRPO step itself repeats.
+    #
+    # NOTE: Intentionally parallel to grpo_launcher.launch()'s retry loop.
+    # Update both together if the crash/degeneracy policy changes.
     max_retries = trial_cfg.get("max_grpo_retries")
     if max_retries is None:
         max_retries = DEFAULT_MAX_GRPO_RETRIES
@@ -583,6 +614,7 @@ def run_single_round(
     max_attempts = max_retries + 1
     attempt_summaries: list[str] = []
 
+    _stage_header("GRPO subprocess", cfg)
     for attempt in range(1, max_attempts + 1):
         if attempt > 1:
             check_vllm()
@@ -592,7 +624,9 @@ def run_single_round(
             grpo_run_id = run_grpo(cfg, trial_cfg)
         except subprocess.CalledProcessError as e:
             print(f"CRASH: {cfg.run_key} attempt {attempt} failed with exit code {e.returncode}")
-            cleanup_crashed_run_dir(e.output or "")
+            cleanup_crashed_run_dir(
+                e.output or "", group=cfg.wandb_group, run_key=cfg.run_key
+            )
             attempt_summaries.append(f"attempt {attempt}: crashed (exit={e.returncode})")
             if attempt < max_attempts:
                 continue
@@ -609,11 +643,23 @@ def run_single_round(
             or trial_cfg.get("early_stop_threshold_from_train_min", False)
         )
         min_responses = 1 if early_stop_enabled else 128
-        verify_run_complete(grpo_run_id, min_responses=min_responses)
-        cleanup_intermediates(grpo_run_id)
+        verify_run_complete(
+            grpo_run_id,
+            min_responses=min_responses,
+            group=cfg.wandb_group,
+            run_key=cfg.run_key,
+        )
+        cleanup_intermediates(
+            grpo_run_id, group=cfg.wandb_group, run_key=cfg.run_key
+        )
         print(f"OK: intermediates cleaned for {grpo_run_id}")
 
-        export_run_metrics(cfg, grpo_run_id)
+        export_wandb_metrics(
+            grpo_run_id,
+            cfg.run_metrics,
+            max_retries=3,
+            expected_run_id=grpo_run_id,
+        )
         print(f"OK: exported {cfg.run_metrics}")
 
         is_degenerate, val_does_execute = check_degeneracy(cfg.run_metrics, min_val_does_execute)
@@ -694,6 +740,7 @@ def run_trial(
             cfg,
             dry_run=dry_run,
             mock_grpo_run_id=mock_grpo_run_id,
+            force=force,
         )
         state = update_state_after_round(state, round_num, grpo_run_id, variant)
 
@@ -723,8 +770,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.init:
         if not args.round1_run_id:
             parser.error("--init requires --round1-run-id")
-        ckpt = checkpoint_dir_for_run_id(WORKSPACE, args.round1_run_id)
-        assert ckpt.exists(), f"Round 1 checkpoint missing: {ckpt}"
+        ckpt = checkpoint_dir_for_run_id(
+            WORKSPACE, args.round1_run_id, trial=args.trial
+        )
+        if not ckpt.exists():
+            raise FileNotFoundError(f"Round 1 checkpoint missing: {ckpt}")
         init_trial_state(args.trial, args.round1_run_id, args.variant)
         print(f"OK: initialized {trial_state_path(args.trial, args.variant)}")
         return 0

@@ -30,18 +30,18 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 ├── obfuscation-atlas/          # Official package (git clone) — see Codebase Map below
 │   └── wandb/                  # W&B on-disk cache
 ├── results/
-│   ├── activations/            # Activation caches
+│   ├── activations/            # Transient activation caches (wiped after successful GRPO runs)
 │   ├── artifacts/              # W&B on_policy_responses tables from probe eval
-│   ├── figures/                # Generated plots
 │   └── run_results/
 │       ├── wandb_resume_map.json
 │       ├── base_results_and_detectors_*_local-diverse_deception_.../  # Shared Phase-0 probe cache (ddp)
 │       ├── base_results_and_detectors_*_mbpp-hardcode_.../            # Shared Phase-0 probe cache (mbpp)
-│       ├── hf_task_eval_metrics/       # HF checkpoint MBPP task eval (greedy baseline)
-│       ├── new_hf_task_eval_metrics/   # Sampled MBPP task eval (temp=1, max_tokens=1024; Jul 2026)
-│       ├── full_grpo_runs/             # Local GRPO: trigger_none_model_{RUN_ID}_layers_32/
-│       └── hf_probe_eval_runs/         # HF checkpoint probe eval
-│           └── extracted_results/      # run_metrics_*.json
+│       ├── trial{N}/{variant}/         # Local GRPO runs: {run_key}_{RUN_ID}/
+│       ├── 2507_*/                     # Ablation GRPO runs (group = experiments/ folder name)
+│       └── hf_checkpoint_evals/        # HF checkpoint MBPP + probe eval outputs
+│           ├── hf_task_eval_metrics/       # greedy MBPP task eval
+│           ├── new_hf_task_eval_metrics/   # sampled MBPP task eval
+│           └── hf_probe_eval_runs/extracted_results/
 ├── pipeline/                    # Core multi-round probe + GRPO pipeline (plain package, PYTHONPATH=/workspace)
 │   ├── paths.py                 # WORKSPACE / EXPERIMENTS path constants
 │   ├── grpo_launcher.py         # Shared GRPO launch/verify/cleanup/export infrastructure
@@ -57,18 +57,14 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 ├── experiments/                 # Lightweight configs, launcher scripts, and per-trial outputs (see experiments/README.md)
 │   ├── run_round_manual.py      # Active scratch driver for trial experimentation
 │   ├── artifacts/                # Shared on-policy JSONLs (base + det0 × train/eval)
-│   ├── archive/                  # Archived one-off launcher scripts (superseded by run_ablation.py)
-│   │   ├── mixed_round1_nofu/    # Mixed round-1 nofu probe + GRPO manifest/metrics (still active data)
-│   │   └── nofu_probe/           # Round-1 nofu probe train/eval data (still active data)
+│   ├── extracted_results/         # Historical W&B metric exports (pre-trial ablations)
 │   ├── 2507_det0_baselines/       # Past experiment group: no-detector-penalty baseline/ceiling + seed sweep
 │   ├── 2507_nofu_probe/           # Past experiment group: nofu probe extraction sweep
 │   ├── 2507_prompt_mix/           # Past experiment group: prompt-mixing sweep
 │   ├── 2507_mixed_reward/         # Past experiment group: mixed-reward sweep
 │   ├── 2507_round1_seed_sweeps/   # Past experiment group: round-1 CLP/seed sweeps
 │   ├── 2507_round2_variants/      # Past experiment group: round-2 baseline/calibrated/KL-from-base
-│   ├── trials/trial{N}/          # Per-trial buffer + rounds/round{R}/
-│   ├── single_runs/              # Standalone run outputs that don't belong to a trial
-│   └── trial_results/            # Exported round_analysis.py CSVs
+│   └── trials/trial{N}/          # Per-trial buffer + rounds/round{R}/ + results/ (round_analysis CSVs)
 ├── docs/                       # Project notes (this file + runbooks)
 │   ├── iterative_training_experiments.md  # Multi-round pipeline architecture
 │   ├── EXPERIMENT_LOG.md       # Methodology decisions and run history
@@ -77,7 +73,7 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── GRPO_LOGGING_STAGES.md  # Per-stage logging map
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
 │   └── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
-├── scratch/                    # Comparison/plotting/analysis scripts (launchers moved to experiments/archive/)
+├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths, PYTHONPATH=/workspace (for `pipeline`)
 └── Obfuscation Atlas paper.pdf
@@ -89,10 +85,11 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 |---------|------|
 | `training.save_path_base` | `/workspace/results/run_results` |
 | `detector.model_cache_path` | `/workspace/results/activations` |
-| MBPP task eval output (greedy) | `/workspace/results/run_results/hf_task_eval_metrics/` |
-| MBPP task eval output (sampled, temp=1) | `/workspace/results/run_results/new_hf_task_eval_metrics/` |
-| HF probe eval exports | `/workspace/results/run_results/hf_probe_eval_runs/extracted_results/` |
-| Local GRPO exports | `/workspace/results/run_results/full_grpo_runs/extracted_results/` |
+| MBPP task eval output (greedy) | `/workspace/results/run_results/hf_checkpoint_evals/hf_task_eval_metrics/` |
+| MBPP task eval output (sampled, temp=1) | `/workspace/results/run_results/hf_checkpoint_evals/new_hf_task_eval_metrics/` |
+| HF probe eval exports | `/workspace/results/run_results/hf_checkpoint_evals/hf_probe_eval_runs/extracted_results/` |
+| Local GRPO run dirs | `/workspace/results/run_results/{wandb.group}/{run_key}_{RUN_ID}/` |
+| Historical GRPO metric exports | `/workspace/experiments/extracted_results/` |
 
 ---
 
@@ -224,7 +221,7 @@ Condensed list. See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology det
 - **Dataset builders (Jul 2026):** Three builders for mixed probe training sets. See EXPERIMENT_LOG.md #8.
 - **Phase-0 adapter loading (Jul 2026):** Multi-round GRPO loads fresh model for Phase-0 instead of FSDP-wrapped trainer. See [iterative_training_experiments.md](./iterative_training_experiments.md).
 - **Calibrated probe penalty (Jul 2026):** `clip((z_agg - z_h) / (z_d - z_h), 0, 1)` instead of sigmoid, where z_agg is the layer-mean logit and z_h/z_d are median aggregated logits for honest/deceptive on-policy samples from the starting policy. Enabled via `++detector.calibration_logits_path`. See EXPERIMENT_LOG.md #12.
-- **Path layout:** All outputs under `results/run_results/`; activations in `results/activations/`. Default GRPO runs share Phase-0 probe in `base_results_and_detectors_*`; runs with `directory_save_prefix` store Phase-0 in that run's dir.
+- **Path layout:** All outputs under `results/run_results/`; activations in `results/activations/`. GRPO run dirs are `{wandb.group}/{run_key}_{RUN_ID}/` (trials: `trial{N}/{variant|original}/…`; ablations: experiment folder name). Default GRPO runs share Phase-0 probe in `base_results_and_detectors_*`; runs with `directory_save_prefix` store Phase-0 in that run's dir.
 - **Probe types:** `diverse_deception_probe` and `mbpp_probe` only.
 - **Classification defaults:** Policy threshold 0.35, representation-change 0.2 (`baseline_subtract=False`).
 - **Local GRPO checkpoint cleanup:** Manual `rm -rf checkpoints/lora checkpoints/step_*` after each run (or automatic via `run_ablation.py`'s `cleanup_intermediates()`). Prior to a per-step LoRA leak fix (Aug 2026), this reclaimed ~80 GB per pass-only-shown run; the leak (an untracked adapter save with no cleanup, in `_generate_alt_completions`) is now fixed, so in-training disk usage stays bounded rather than growing linearly with step count. See EXPERIMENT_LOG.md #14.
@@ -304,5 +301,5 @@ python -m obfuscation_atlas.scripts.export_wandb_run_metrics \
 python -m obfuscation_atlas.scripts.export_wandb_run_metrics \
     --entity lilylixin6-the-harker-school --project deception_detection \
     --run-id 24v08wlt --task-metrics-run-id c3akfszd \
-    --output /workspace/results/run_results/full_grpo_runs/extracted_results/run_metrics.json
+    --output /workspace/experiments/extracted_results/run_metrics.json
 ```
