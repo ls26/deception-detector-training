@@ -1,0 +1,23 @@
+# Trial 6 gt_penalty variant — same as base trial 6, but replaces the probe-score
+# detector penalty with the ground-truth pass_only_shown flag * loss.detector.
+# Probe training/scoring/post-eval remain as monitoring only.
+# Round 1 is yckx0ctm (shared with base trial 6).
+
+training_seed: 50
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.25
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false
+ground_truth_penalty: true

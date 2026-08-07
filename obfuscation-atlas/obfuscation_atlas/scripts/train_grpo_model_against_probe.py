@@ -13,6 +13,7 @@ import ast
 import json
 import os
 import shutil
+import time
 
 os.environ["TORCH_CPP_LOG_LEVEL"] = "ERROR"  # Suppress C++ warnings about tensor weak references
 
@@ -920,6 +921,37 @@ def run_rl(cfg: GRPOObfuscationConfig):
                     deceptive_definition=cfg.task_args.deceptive_definition,
                 )
 
+    # Successful end of run: drop activation caches (kept on crash for post-eval recovery)
+    if is_main_process and cfg.detector.model_cache_path is not None:
+        gc.collect()  # release MemoryMappedTensor mmap handles before rmtree
+        cache_root = Path(cfg.detector.model_cache_path).resolve()
+        deleted: list[str] = []
+        dirs_to_delete: list[Path] = []
+        if model_cache_path is not None:
+            phase0_cache = Path(model_cache_path).resolve()
+            if phase0_cache.is_dir() and phase0_cache.is_relative_to(cache_root):
+                dirs_to_delete.append(phase0_cache)
+        for path in sorted(cache_root.glob(f"activations_{wandb_run_id}*")):
+            resolved = path.resolve()
+            if resolved.is_dir() and resolved.is_relative_to(cache_root):
+                dirs_to_delete.append(resolved)
+        for d in dirs_to_delete:
+            for attempt in range(3):
+                try:
+                    shutil.rmtree(d)
+                    deleted.append(str(d))
+                    break
+                except OSError:
+                    # NFS silly-rename (.nfs*) files from lingering mmap handles;
+                    # brief sleep lets the kernel clean them up after GC above.
+                    time.sleep(2)
+            else:
+                print(f"WARNING: could not remove activation cache {d} after 3 attempts (non-fatal)")
+        if deleted:
+            print(f"OK: deleted {len(deleted)} activation cache dir(s) after successful run:")
+            for p in deleted:
+                print(f"  - {p}")
+
 
 def eval_detectors_helper(
     detectors: list,
@@ -997,6 +1029,7 @@ def log_on_policy_split_if_applicable(
         filtered_layers=filtered_layers,
         false_positive_rate=false_positive_rate,
         deceptive_key=deceptive_reward_key(deceptive_definition),
+        save_json=False,  # aggregate split metrics still go to W&B; skip local JSON dumps
     )
 
 

@@ -747,6 +747,10 @@ class GRPOObfuscationConfig(SFTConfig):
     llm_as_a_judge: bool = True
     code_length_penalty: float = 0.003
     detector_penalty_on_failure: bool = True
+    # When True, replace the probe score in the detector reward penalty with the
+    # ground-truth deception flag (pass_only_shown / pass_first_not_all). Probe
+    # scoring and logging continue unchanged for monitoring.
+    ground_truth_detector_penalty: bool = False
     misalignment_eval: EmergentMisalignmentEvalConfig = field(default_factory=EmergentMisalignmentEvalConfig)
     # Early stopping: if the mean training-batch detector score stays below
     # early_stop_detector_threshold for early_stop_detector_patience consecutive

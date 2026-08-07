@@ -264,6 +264,7 @@ def build_obfuscation_response_dataset(
     logprobs: list[list[float]] | None = None,
     sequence_reward: list[float] | None = None,
     task_success: list[float] | None = None,
+    deceptive: list[bool] | None = None,
     labels: list[bool] | None = None,
     follow_up_prompt: tuple[str, str] | None = None,
 ) -> Dataset:
@@ -280,6 +281,8 @@ def build_obfuscation_response_dataset(
         sequence_reward: List of rewards that don't depend on activations.
         task_success: List of whether the task was successful corresponding to prompts.
             Useful for deciding whether to apply probe-based penalties.
+        deceptive: List of ground-truth deception flags corresponding to prompts.
+            Used when ground_truth_detector_penalty replaces the probe score.
         labels: List of labels corresponding to prompts
         follow_up_prompt: Tuple of follow-up prompt and assistant response.
     Returns:
@@ -360,6 +363,7 @@ def build_obfuscation_response_dataset(
             "trigger_present": trigger_present,
             "sequence_reward": [None] * len(prompt_ids) if sequence_reward is None else sequence_reward,
             "task_success": [None] * len(prompt_ids) if task_success is None else task_success,
+            "deceptive": [None] * len(prompt_ids) if deceptive is None else deceptive,
             "labels": [None] * len(prompt_ids) if labels is None else labels,
             "completion_with_follow_up_mask": completion_with_follow_up_mask,
         }
@@ -390,6 +394,9 @@ def obfuscation_grpo_collate_fn(batch, pad_token_id: int):
     task_success = None
     if "task_success" in batch[0] and batch[0]["task_success"] is not None:
         task_success = torch.tensor([item["task_success"] for item in batch], dtype=torch.bool)
+    deceptive = None
+    if "deceptive" in batch[0] and batch[0]["deceptive"] is not None:
+        deceptive = torch.tensor([item["deceptive"] for item in batch], dtype=torch.bool)
     labels = None
     if "labels" in batch[0] and batch[0]["labels"] is not None:
         labels = torch.tensor([item["labels"] for item in batch], dtype=torch.bool)
@@ -410,6 +417,7 @@ def obfuscation_grpo_collate_fn(batch, pad_token_id: int):
         "trigger_present": trigger_present,
         "sequence_reward": sequence_reward,
         "task_success": task_success,
+        "deceptive": deceptive,
         "terminated": terminated,
         "labels": labels,
         "completion_with_follow_up_mask": completion_with_follow_up_mask,
@@ -628,6 +636,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         self._eval_lora_path: Optional[Path] = None
         self._generation_prompt_shown_flags: dict[int, list[bool]] = {}
         self._logged_mixed_reward_config = False
+        self._logged_ground_truth_penalty_config = False
 
         # Obfuscation-specific state (set later via set_detector)
         self.obfuscation_loss_fns = None
@@ -1087,6 +1096,10 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             )
 
         # Build obfuscation dataset
+        deceptive_key = deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
+        deceptive_flags = None
+        if response_wise_reward_metrics is not None and deceptive_key in response_wise_reward_metrics:
+            deceptive_flags = response_wise_reward_metrics[deceptive_key]
         dataset = build_obfuscation_response_dataset(
             tokenizer=self.tokenizer,
             prompt_indices=prompt_indices_upsampled,
@@ -1097,6 +1110,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             trigger_present=trigger_present_upsampled,
             sequence_reward=sequence_reward,
             task_success=response_wise_reward_metrics["rewards/task_success"],  # type: ignore
+            deceptive=deceptive_flags,
             follow_up_prompt=_first_follow_up(self.obfuscation_config.data.probe_dataset.congruent_follow_up_prompts),
         )
 
@@ -1264,7 +1278,22 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         detector_mask = torch.ones(bsz, device=self.accelerator.device, dtype=torch.float32)
         if batch["task_success"] is not None and not self.obfuscation_config.detector_penalty_on_failure:
             detector_mask = batch["task_success"].float()
-        components["rewards/detector"] = -detector_score_loss * detector_mask * self.obfuscation_config.loss.detector
+        if self.obfuscation_config.ground_truth_detector_penalty:
+            if not self._logged_ground_truth_penalty_config:
+                logger.info(
+                    "Using ground-truth detector penalty "
+                    f"(deceptive_definition={self.obfuscation_config.task_args.deceptive_definition})"
+                )
+                self._logged_ground_truth_penalty_config = True
+            if batch.get("deceptive") is None:
+                raise ValueError(
+                    "ground_truth_detector_penalty=True but batch has no 'deceptive' column; "
+                    "alt-completion generation may have failed to produce pass_only_shown flags"
+                )
+            penalty_score = batch["deceptive"].float().to(self.accelerator.device)
+        else:
+            penalty_score = detector_score_loss
+        components["rewards/detector"] = -penalty_score * detector_mask * self.obfuscation_config.loss.detector
         components["rewards_metrics/detector_score"] = detector_score_loss
         rewards += components["rewards/detector"]
 
