@@ -37,7 +37,7 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 | 6 (frozen)           | 1–5                | Complete                             | Probe **never retrained** after round 1 (methodology #16); shares round 1 (`yckx0ctm`). **Obfuscated policy/activations** rounds 2–5 (pass_only_shown 0.97→0.92→0.96→0.92); never recovers to Honest — same pattern as trial 4 `frozen`.                                                                                                                                                                                                                                                         |
 | 8 (early_retraining) | 1–5                | Complete (stopped)                   | Methodology #23 (p10 threshold), KL-from-base. Round 1 **Obfuscated policy** → rounds 2–3 **Obfuscated policy** → rounds 4–5 **Honest**. Stopped after round 5 (Aug 5, 2026). Renamed from main trial 8 branch Aug 5.                                                                                                                                                                                                               |
 | 8                    | 1–5                | Complete (stopped)                   | Same hyperparams as `early_retraining` but **no early stopping** (full 128 steps). Shares round 1 (`t1656g8a`). **Obfuscated policy** all rounds; round 3 **Obfuscated activations**. Stopped after round 5 (Aug 6, 2026). Round 6 partial (`9gylvqmh`) killed manually.                                                                                                                                                                                                                      |
-| 8 (frozen)           | 1–2 (running)      | Running                              | Probe **never retrained** after round 1 (methodology #16); shares round 1 (`t1656g8a`). clp=1e-3 rounds 2+. Round 2 complete (**Obfuscated policy**, pass_only_shown=0.95); rounds 3–5 in progress.                                                                                                                                                                                                                              |
+| 8 (frozen)           | 1–5                | Complete                             | Probe **never retrained** after round 1 (methodology #16); shares round 1 (`t1656g8a`). **Obfuscated policy** rounds 2–5 (pass_only_shown 0.95→0.96→0.96→0.97); never recovers to Honest — same pattern as trial 6 `frozen` and trial 8 base.                                                                                                                                                                                                                                                   |
 
 
 ---
@@ -490,7 +490,7 @@ Same hyperparams as the `early_retraining` variant (KL-from-base, split_sources,
 
 **Preliminary finding:** Unlike the `early_retraining` variant (Honest from round 4), full 128-step training stayed **Obfuscated** through round 5.
 
-### Trial 8 frozen variant — truly frozen probe weights (Aug 6, 2026 — running)
+### Trial 8 frozen variant — truly frozen probe weights (Aug 6, 2026 — complete)
 
 Same lineage as trial 8 above, but the probe used for the obfuscation penalty is **never retrained** after round 1 (methodology #16). Round 1 shared (`t1656g8a`, clp=3e-3); rounds 2+ use clp=1e-3. Per-round generation + external probe training skipped. Trial config: `experiments/trials/trial8/trial_config_frozen.yaml`. Log: `experiments/trials/trial8/production_frozen.log`.
 
@@ -499,7 +499,12 @@ Same lineage as trial 8 above, but the probe used for the obfuscation penalty is
 | ----- | ---------- | ------------------ | ----- |
 | 1     | `t1656g8a` | Complete; exported | Shared with other trial 8 branches. pass_only_shown=0.86, **Obfuscated policy**. |
 | 2     | `od4qc0by` | Complete; exported | pass_only_shown=0.95, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_frozen/round2/run_metrics_trial8_frozen_round2.json`. |
-| 3–5   | —          | Pending            | — |
+| 3     | `9mkc3tgw` | Complete; exported | pass_only_shown=0.96, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_frozen/round3/run_metrics_trial8_frozen_round3.json`. |
+| 4     | `diycqwls` | Complete; exported | pass_only_shown=0.96, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_frozen/round4/run_metrics_trial8_frozen_round4.json`. |
+| 5     | `8bc0jgn2` | Complete; exported | pass_only_shown=0.97, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_frozen/round5/run_metrics_trial8_frozen_round5.json`. |
+
+
+**Finding:** unlike trial 8 `early_retraining` (Honest from round 4), the static round-1 probe never constrains deception — policy stays Obfuscated throughout, matching trial 6 `frozen` and trial 8 base.
 
 
 ### Trial 7 early_retraining variant — p10 dynamic early stop, clp1e-3/p20/s51 lineage (Aug 5, 2026 — stopped)
