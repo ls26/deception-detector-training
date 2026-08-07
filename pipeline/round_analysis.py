@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import PercentFormatter
 
-WORKSPACE = Path(__file__).resolve().parent.parent
+from pipeline.paths import WORKSPACE
+
 TRIAL = 8
 VARIANT = "early_retraining"  # "" for the main branch, or a named branch (e.g. "calibrated")
 if not VARIANT:

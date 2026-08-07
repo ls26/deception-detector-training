@@ -2,11 +2,12 @@
 """Launch a single GRPO ablation run or a sweep of runs from a YAML config.
 
 Usage:
-    python experiments/run_ablation.py experiments/configs/det0_ceiling.yaml
-    python experiments/run_ablation.py experiments/configs/det0_seed_sweep.yaml
+    python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_ceiling.yaml
+    python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_seed_sweep.yaml
 
-See experiments/configs/ for schema examples (single run vs sweep) and
-docs/FULL_GRPO_RUN.md for the underlying GRPO methodology.
+See experiments/ (grouped by past experiment, e.g. experiments/2507_det0_baselines/)
+for schema examples (single run vs sweep) and docs/FULL_GRPO_RUN.md for the
+underlying GRPO methodology.
 """
 
 from __future__ import annotations
@@ -17,7 +18,7 @@ from pathlib import Path
 
 import yaml
 
-import grpo_launcher as gl
+from pipeline import grpo_launcher as gl
 
 
 def load_config(path: Path) -> dict:

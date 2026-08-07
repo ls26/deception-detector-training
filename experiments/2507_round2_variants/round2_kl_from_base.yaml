@@ -7,7 +7,7 @@
 # to the pristine base model while the policy still starts from round 1's
 # weights.
 #
-# Superseded (archived): experiments/archive/run_round2_kl_from_base.py
+# Superseded (archived): experiments/2507_round2_variants/run_round2_kl_from_base.py
 
 run_key: trial3_round2_kl_from_base
 output_dir: trials/trial3/rounds/round2_kl_from_base

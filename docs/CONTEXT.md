@@ -42,24 +42,33 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │       ├── full_grpo_runs/             # Local GRPO: trigger_none_model_{RUN_ID}_layers_32/
 │       └── hf_probe_eval_runs/         # HF checkpoint probe eval
 │           └── extracted_results/      # run_metrics_*.json
-├── experiments/                # Multi-round probe + GRPO pipeline
-│   ├── grpo_launcher.py        # Shared GRPO launch/verify/cleanup/export infrastructure
-│   ├── run_ablation.py         # CLI: launch a single GRPO run or a sweep from a YAML config
-│   ├── configs/                # YAML configs for run_ablation.py (one-off runs + sweeps)
-│   ├── run_trial.py            # Multi-round orchestrator: generation → probe → GRPO per round
-│   ├── run_round_manual.py     # Active scratch driver for trial experimentation
-│   ├── run_round1_probe.py     # Round-1 on-dataset probe train/eval
-│   ├── generation.py           # On-policy generation + labeling
-│   ├── probe_training.py       # Fresh probe train/eval
-│   ├── build_dataset.py        # Mixed probe train dataset builder
-│   ├── round_config.py         # RoundConfig — derived paths/ids for one pipeline round
-│   ├── extract_run_results.py  # W&B run_metrics.json extraction helpers
-│   ├── artifacts/              # Shared on-policy JSONLs (base + det0 × train/eval)
-│   ├── archive/                # Archived one-off launcher scripts (superseded by run_ablation.py)
-│   │   └── mixed_round1_nofu/  # Mixed round-1 nofu probe + GRPO manifest/metrics (still active data)
-│   ├── buffer/                 # Per-round on-policy JSONL (by model_key)
-│   ├── trials/trial{N}/        # Per-trial buffer + rounds/round{R}/
-│   └── single_runs/            # Standalone run outputs that don't belong to a trial
+├── pipeline/                    # Core multi-round probe + GRPO pipeline (plain package, PYTHONPATH=/workspace)
+│   ├── paths.py                 # WORKSPACE / EXPERIMENTS path constants
+│   ├── grpo_launcher.py         # Shared GRPO launch/verify/cleanup/export infrastructure
+│   ├── run_ablation.py          # CLI: launch a single GRPO run or a sweep from a YAML config
+│   ├── run_trial.py             # Multi-round orchestrator: generation → probe → GRPO per round
+│   ├── run_round1_probe.py      # Round-1 on-dataset probe train/eval
+│   ├── generation.py            # On-policy generation + labeling
+│   ├── probe_training.py        # Fresh probe train/eval
+│   ├── build_dataset.py         # Mixed probe train dataset builder
+│   ├── round_config.py          # RoundConfig — derived paths/ids for one pipeline round
+│   ├── extract_run_results.py   # W&B run_metrics.json extraction helpers
+│   └── round_analysis.py        # Multi-round metrics CSV + plots
+├── experiments/                 # Lightweight configs, launcher scripts, and per-trial outputs (see experiments/README.md)
+│   ├── run_round_manual.py      # Active scratch driver for trial experimentation
+│   ├── artifacts/                # Shared on-policy JSONLs (base + det0 × train/eval)
+│   ├── archive/                  # Archived one-off launcher scripts (superseded by run_ablation.py)
+│   │   ├── mixed_round1_nofu/    # Mixed round-1 nofu probe + GRPO manifest/metrics (still active data)
+│   │   └── nofu_probe/           # Round-1 nofu probe train/eval data (still active data)
+│   ├── 2507_det0_baselines/       # Past experiment group: no-detector-penalty baseline/ceiling + seed sweep
+│   ├── 2507_nofu_probe/           # Past experiment group: nofu probe extraction sweep
+│   ├── 2507_prompt_mix/           # Past experiment group: prompt-mixing sweep
+│   ├── 2507_mixed_reward/         # Past experiment group: mixed-reward sweep
+│   ├── 2507_round1_seed_sweeps/   # Past experiment group: round-1 CLP/seed sweeps
+│   ├── 2507_round2_variants/      # Past experiment group: round-2 baseline/calibrated/KL-from-base
+│   ├── trials/trial{N}/          # Per-trial buffer + rounds/round{R}/
+│   ├── single_runs/              # Standalone run outputs that don't belong to a trial
+│   └── trial_results/            # Exported round_analysis.py CSVs
 ├── docs/                       # Project notes (this file + runbooks)
 │   ├── iterative_training_experiments.md  # Multi-round pipeline architecture
 │   ├── EXPERIMENT_LOG.md       # Methodology decisions and run history
@@ -70,7 +79,7 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   └── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
 ├── scratch/                    # Comparison/plotting/analysis scripts (launchers moved to experiments/archive/)
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
-├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths
+├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths, PYTHONPATH=/workspace (for `pipeline`)
 └── Obfuscation Atlas paper.pdf
 ```
 
@@ -168,8 +177,9 @@ obfuscation-atlas/
 | If you want to... | Start here |
 |--------------------------------------------|-----------------------------------------------------------|
 | Run or modify the main RL experiment | `scripts/train_grpo_model_against_probe.py` |
-| **Multi-round probe + GRPO loop** | [iterative_training_experiments.md](./iterative_training_experiments.md) → `experiments/run_trial.py` |
-| **Single-run / sweep ablations** | `experiments/run_ablation.py` + `experiments/configs/` |
+| **Multi-round probe + GRPO loop** | [iterative_training_experiments.md](./iterative_training_experiments.md) → `pipeline/run_trial.py` |
+| **Single-run / sweep ablations** | `pipeline/run_ablation.py` + a YAML config under `experiments/{trials,2507_*}/` |
+| **Experiments folder conventions** | [experiments/README.md](../experiments/README.md) |
 | **Full local GRPO runbook** (checks) | [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md) |
 | What each GRPO stage logs (local + W&B) | [GRPO_LOGGING_STAGES.md](./GRPO_LOGGING_STAGES.md) |
 | Probe eval pipeline (stages, classes, split) | [PROBE_EVAL_PIPELINE.md](./PROBE_EVAL_PIPELINE.md) |
@@ -241,6 +251,16 @@ CUDA_VISIBLE_DEVICES=1 python -m afterburner.generation.vllm.server \
     --model meta-llama/Meta-Llama-3-8B-Instruct \
     --max-lora-rank 128 --gpu-memory-utilization 0.95
 ```
+
+### Multi-round pipeline (from `/workspace`, after `source atlas_setup.sh`)
+
+```bash
+python -m pipeline.run_trial --trial 6 --num-rounds 4
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_baseline.yaml
+python -m pipeline.run_round1_probe --trial 6
+```
+
+See [experiments/README.md](../experiments/README.md) and [iterative_training_experiments.md](./iterative_training_experiments.md) for details.
 
 ### GRPO training
 

@@ -14,10 +14,11 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from build_dataset import build_train_dataset_round1_mixed
-from extract_run_results import build_run_metrics_df, probe_value
-from generation import bootstrap_hf_env, print_pipeline_df_stats, run_on_policy_pipeline
-from probe_training import FOLLOW_UP, run_probe_train_eval_pipeline
+from pipeline.build_dataset import build_train_dataset_round1_mixed
+from pipeline.extract_run_results import build_run_metrics_df, probe_value
+from pipeline.generation import bootstrap_hf_env, print_pipeline_df_stats, run_on_policy_pipeline
+from pipeline.paths import EXPERIMENTS
+from pipeline.probe_training import FOLLOW_UP, run_probe_train_eval_pipeline
 
 EVAL_SAMPLES = 400
 N_TRAIN_PER_CLASS = 300
@@ -34,7 +35,7 @@ REQUIRED_METRIC_KEYS = (
 
 
 def experiments_dir() -> Path:
-    return Path(__file__).resolve().parent
+    return EXPERIMENTS
 
 
 def resolve_paths(*, output_dir: Path | None = None, trial: int | None = None) -> dict[str, Path]:

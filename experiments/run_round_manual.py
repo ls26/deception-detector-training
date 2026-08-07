@@ -5,20 +5,20 @@ import subprocess
 import torch
 from transformers import AutoTokenizer
 
-from generation import (
+from pipeline.generation import (
     bootstrap_hf_env,
     print_pipeline_df_stats,
     run_dry_generation,
     run_on_policy_pipeline,
 )
-from build_dataset import build_train_dataset_split_sources
-from probe_training import (
+from pipeline.build_dataset import build_train_dataset_split_sources
+from pipeline.probe_training import (
     eval_probe_on_sources,
     load_final_policy_model,
     run_probe_train_eval_pipeline,
 )
-from extract_run_results import print_all_results
-from round_config import RoundConfig
+from pipeline.extract_run_results import print_all_results
+from pipeline.round_config import RoundConfig
 
 cfg = RoundConfig(trial=3, round=4, previous_run_id="wu6k5j61")
 # Set cfg.grpo_run_id manually to re-export; auto-resolved from W&B after GRPO otherwise.

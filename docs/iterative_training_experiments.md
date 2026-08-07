@@ -1,18 +1,19 @@
-# Multi-round experiments pipeline (`/workspace/experiments/`)
+# Multi-round experiments pipeline (`/workspace/pipeline/`)
 
 **Related docs:**
 - [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) — trial status, run history, and completed run inventory
 - [CONTEXT.md](./CONTEXT.md) — project overview and global path conventions
 - [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md) — upstream GRPO runbook
+- [experiments/README.md](../experiments/README.md) — `experiments/` folder conventions (configs, per-trial data, past-experiment groups)
 
 ---
 
 ## What this is
 
-`/workspace/experiments/` is a **refactored, multi-round version** of the scratch fresh-probe pipeline. It implements the same scientific loop as `scratch/on_policy_generation.py` + `scratch/train_fresh_probe2.py`, but:
+`/workspace/pipeline/` is a **refactored, multi-round version** of the scratch fresh-probe pipeline (core library code + CLI entry points; a plain package, `PYTHONPATH=/workspace`). `/workspace/experiments/` holds the lightweight, per-trial/per-experiment configs, state, and outputs that this code reads and writes. It implements the same scientific loop as `scratch/on_policy_generation.py` + `scratch/train_fresh_probe2.py`, but:
 
 - Library code is **import-safe** (no notebook globals; functions take explicit args)
-- A single orchestrator, **`run_round.py`**, wires one full round end-to-end
+- A single orchestrator, **`run_trial.py`** (automated, rounds ≥2) or the manual driver `experiments/run_round_manual.py`, wires one full round end-to-end
 - Paths are **derived from `RoundConfig`** (`trial`, `round`, `previous_run_id`) so rounds and trials are repeatable without hardcoded names
 - GRPO training and metrics export are wired in as the final steps of each round
 
@@ -25,25 +26,29 @@
 5. Runs **GRPO against that probe**, producing a **new checkpoint** for the next round
 6. Exports W&B metrics to `run_metrics_trial{N}_round{R}.json` and prints a summary
 
-The scratch folder is **unchanged** and remains the historical reference. New work goes in `experiments/`.
+The scratch folder is **unchanged** and remains the historical reference. New core/reusable code goes in `pipeline/`; new one-off experiment configs/scripts go in a dated `experiments/` folder (see [experiments/README.md](../experiments/README.md)).
 
 ---
 
 ## Folder layout
 
 ```
-experiments/
-├── run_round.py          # Notebook-style orchestrator (# %% cells); entry point (round ≥ 2)
+pipeline/
+├── run_trial.py          # Multi-round CLI orchestrator; entry point (round ≥ 2)
 ├── run_round1_probe.py   # Round-1 mixed probe train/eval (base model, no checkpoint)
 ├── round_config.py       # RoundConfig — derived paths from trial/round/previous_run_id
 ├── generation.py         # On-policy generation + labeling
 ├── probe_training.py     # Fresh probe train/eval
 ├── build_dataset.py      # Mixed train dataset builder (round_robin + round1_mixed)
 ├── extract_run_results.py
+└── paths.py              # WORKSPACE / EXPERIMENTS path constants
+
+experiments/
+├── run_round_manual.py   # Notebook-style manual driver (# %% cells), imports pipeline.*
 ├── artifacts/            # Shared on-policy JSONLs (base + det0)
 │   ├── base/
 │   └── det0/
-├── tests/mixed_round1_nofu/  # Round-1 mixed nofu probe + manifest (GRPO Phase 0)
+├── archive/mixed_round1_nofu/  # Round-1 mixed nofu probe + manifest (GRPO Phase 0)
 └── trials/
     └── trial{N}/
         ├── buffer/               # Per-trial on-policy JSONL
@@ -66,16 +71,16 @@ results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/checkpo
 
 Each GRPO run gets a **new wandb id**. You manually set `previous_run_id` on `RoundConfig` to that id before starting the next round.
 
-**Round 1** is the initial GRPO run — it has no `previous_run_id` checkpoint to load, so it's handled by the dedicated [`run_round1_probe.py`](#run_round1_probepy) entry point rather than `run_round.py` (which requires `round >= 2`). `run_round1_probe.py` trains/evaluates the probe on the **pristine base model** (300/class: 200 on-dataset + 100 on-policy) via `build_train_dataset_round1_mixed()` — see [Round-1 mixed dataset](#round-1-mixed-dataset-build_train_dataset_round1_mixed) below for the dataset builder and the corresponding GRPO launch (`++detector.mixed_probe_manifest_path`). Round ≥2 uses `build_train_dataset_round_robin()` via `run_round.py`.
+**Round 1** is the initial GRPO run — it has no `previous_run_id` checkpoint to load, so it's handled by the dedicated [`run_round1_probe.py`](#run_round1_probepy) entry point rather than `run_trial.py` (which requires `round >= 2`). `run_round1_probe.py` trains/evaluates the probe on the **pristine base model** (300/class: 200 on-dataset + 100 on-policy) via `build_train_dataset_round1_mixed()` — see [Round-1 mixed dataset](#round-1-mixed-dataset-build_train_dataset_round1_mixed) below for the dataset builder and the corresponding GRPO launch (`++detector.mixed_probe_manifest_path`). Round ≥2 uses `build_train_dataset_round_robin()` via `run_trial.py` (or manually via `experiments/run_round_manual.py`).
 
 ---
 
 ## Configuration model
 
-At the top of `run_round.py`, edit one `RoundConfig`:
+At the top of `experiments/run_round_manual.py` (or implicitly inside `run_trial.py`'s per-round loop), a `RoundConfig` is constructed:
 
 ```python
-from round_config import RoundConfig
+from pipeline.round_config import RoundConfig
 
 cfg = RoundConfig(trial=1, round=6, previous_run_id="xgnqzx4k")
 # cfg.grpo_run_id — set manually to re-export; auto-resolved from W&B after GRPO otherwise
@@ -172,9 +177,9 @@ flowchart TB
 
 ## Module reference
 
-### `run_round.py`
+### `run_trial.py` / `run_round_manual.py`
 
-Notebook-style script (`# %%` cells). **This is the entry point.** Cells run in order:
+`pipeline/run_trial.py` is the automated CLI entry point (rounds ≥ 2; see [FULL_TRIAL_RUNBOOK.md](./FULL_TRIAL_RUNBOOK.md)). `experiments/run_round_manual.py` is the notebook-style manual driver (`# %%` cells) used for step-by-step experimentation on the trial currently in progress. Both wire together the same underlying steps, in order:
 
 1. Bootstrap HF env + load tokenizer from checkpoint
 2. Dry generation (sanity check, 1 prompt)
@@ -187,7 +192,7 @@ Notebook-style script (`# %%` cells). **This is the entry point.** Cells run in 
 9. Export W&B metrics (auto-resolve `grpo_run_id` by `run_key` prefix if unset)
 10. Print summary via `print_all_results`
 
-Terminal equivalents for the GRPO and export subprocess calls are commented under those cells in `run_round.py`.
+Terminal equivalents for the GRPO and export subprocess calls are commented under those cells in `run_round_manual.py`.
 
 ### `run_round1_probe.py`
 
@@ -200,12 +205,12 @@ Standalone entry point for **round 1 only**. Trains and evaluates the probe **as
 ```bash
 source /workspace/atlas_setup.sh
 source /workspace/obfuscation-atlas/.venv/bin/activate
-cd /workspace/experiments
+cd /workspace
 
 # vLLM must already be up (base model, no LoRA needed for this script's generation)
-python run_round1_probe.py --trial 3
+python -m pipeline.run_round1_probe --trial 3
 # or, for an out-of-trial test dir:
-python run_round1_probe.py --output-dir experiments/archive/my_test
+python -m pipeline.run_round1_probe --output-dir experiments/single_runs/my_test
 ```
 
 | Flag | Purpose |
@@ -339,7 +344,7 @@ On-policy rows in the manifest use `"source": "on_policy"`; on-dataset rows use 
 
 ### Round-1 mixed dataset (`build_train_dataset_round1_mixed`)
 
-For **round 1 only** — not used by `run_round.py` (which starts at round ≥2). Builds **300 deceptive + 300 honest** rows:
+For **round 1 only** — not used by `run_trial.py` / `run_round_manual.py` (which start at round ≥2). Builds **300 deceptive + 300 honest** rows:
 
 | Class | On-dataset (fixed) | On-policy (100/class) |
 |-------|-------------------|------------------------|
@@ -362,7 +367,7 @@ build_train_dataset_round1_mixed(
 | Script | Role |
 |--------|------|
 | `scratch/generate_on_policy_artifacts.py` | base + det0 → `experiments/artifacts/{base,det0}/`. `DATASETS` currently `("train",)` only (200 probe-train prompts) at `n_generations=3`, `deduplicate_responses=False`; `--force` deletes+regenerates. `eval` JSONLs exist from an earlier `n_generations=1` run and are not regenerated by the current config. Old 1-sample `train` artifacts kept as `*_1_sample.jsonl`. |
-| `experiments/archive/run_mixed_round1_nofu_probe.py` (archived) | Train/eval mixed nofu probe; writes `experiments/archive/mixed_round1_nofu/` |
+| `experiments/2507_nofu_probe/run_mixed_round1_nofu_probe.py` (archived) | Train/eval mixed nofu probe; writes `experiments/archive/mixed_round1_nofu/` |
 | GRPO (upstream) | Phase 0 retrains from manifest via `++detector.mixed_probe_manifest_path=...` |
 
 **GRPO launch (round 1 from base, no `reference_adapter_path`):** see [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md) § Mixed round-1 nofu GRPO. Use a distinct `detector.directory_save_prefix` (e.g. `nofu_mixed`).
@@ -407,7 +412,7 @@ build_train_dataset_split_sources(
 
 **Manifest schema:** same as `build_train_dataset_round_robin()` plus `"strategy": "split_sources"`, `on_policy_per_source`, and separate `honest_source_paths` / `deceptive_source_paths` (rather than one shared `source_paths`).
 
-**Requires 3-sample artifacts:** `experiments/artifacts/{base,det0}/*_train_generations.jsonl` were regenerated Jul 25, 2026 with `n_generations=3` (was 1) and `deduplicate_responses=False`, restricted to `dataset="train"` (200 probe-train prompts, matching what `run_round.py`/`run_round_manual.py` generate per round — not the 466-prompt `train_full` GRPO-task pool, and no `eval`). Old single-sample files were kept as `*_1_sample.jsonl`. Regenerate via:
+**Requires 3-sample artifacts:** `experiments/artifacts/{base,det0}/*_train_generations.jsonl` were regenerated Jul 25, 2026 with `n_generations=3` (was 1) and `deduplicate_responses=False`, restricted to `dataset="train"` (200 probe-train prompts, matching what `run_round_manual.py` generates per round — not the 466-prompt `train_full` GRPO-task pool, and no `eval`). Old single-sample files were kept as `*_1_sample.jsonl`. Regenerate via:
 
 ```bash
 python scratch/generate_on_policy_artifacts.py --force
@@ -437,9 +442,9 @@ Uses official detector APIs (`train_and_eval_multiple_detectors`, `eval_multiple
 
 ### `run_round2_baseline.py` (archived)
 
-Moved to `experiments/archive/run_round2_baseline.py`; superseded by `experiments/run_ablation.py` + `experiments/configs/round2_baseline.yaml`. Description below kept for methodology reference.
+Moved to `experiments/2507_round2_variants/run_round2_baseline.py`; superseded by `pipeline/run_ablation.py` + `experiments/2507_round2_variants/round2_baseline.yaml`. Description below kept for methodology reference.
 
-Standalone script for a **no-retrain baseline** ablation, independent of `run_round.py`/`run_round_manual.py`. Runs GRPO round 2 against a specific trial's **round 1 probe manifest** unchanged, instead of building/training a new round-2 probe dataset. Since GRPO Phase 0 always retrains from whatever manifest it receives, "reusing round 1's probe" means pointing `++detector.mixed_probe_manifest_path` at `rounds/round1/probe_train_dataset.json` rather than a freshly built round-2 manifest — with the same `data.seed`, Phase 0 reproduces round 1's probe exactly.
+Standalone script for a **no-retrain baseline** ablation, independent of `run_round_manual.py`. Runs GRPO round 2 against a specific trial's **round 1 probe manifest** unchanged, instead of building/training a new round-2 probe dataset. Since GRPO Phase 0 always retrains from whatever manifest it receives, "reusing round 1's probe" means pointing `++detector.mixed_probe_manifest_path` at `rounds/round1/probe_train_dataset.json` rather than a freshly built round-2 manifest — with the same `data.seed`, Phase 0 reproduces round 1's probe exactly.
 
 Hardcoded for trial 3 (`TRIAL_DIR`, `CHECKPOINT_FINAL` for run `62es59py`, `RUN_KEY = "trial3_round2_baseline"`); adjust these constants at the top of the file to point at a different trial/round-1 checkpoint. Does not touch `RoundConfig`, `run_round_manual.py`, or any pipeline library code — it only assembles the same GRPO subprocess call and metrics export used elsewhere, reading `probe_train_dataset.json` / `probe_metrics.json` from `rounds/round1/` instead of the current round's directory.
 
@@ -447,7 +452,7 @@ Hardcoded for trial 3 (`TRIAL_DIR`, `CHECKPOINT_FINAL` for run `62es59py`, `RUN_
 
 ### `run_round2_calibrated_penalty.py` (archived)
 
-Moved to `experiments/archive/run_round2_calibrated_penalty.py`; superseded by `experiments/run_ablation.py` + `experiments/configs/round2_calibrated_penalty.yaml`. The one-off `ensure_calibration_logits()` helper (model loading + `compute_calibration_logits()` call) remains only in the archived script — if calibrated-penalty runs become routine, move it into `probe_training.py`. Description below kept for methodology reference.
+Moved to `experiments/2507_round2_variants/run_round2_calibrated_penalty.py`; superseded by `pipeline/run_ablation.py` + `experiments/2507_round2_variants/round2_calibrated_penalty.yaml`. The one-off `ensure_calibration_logits()` helper (model loading + `compute_calibration_logits()` call) remains only in the archived script — if calibrated-penalty runs become routine, move it into `pipeline/probe_training.py`. Description below kept for methodology reference.
 
 Standalone ablation: GRPO round 2 with the **calibrated probe penalty** (`clip((z_agg - z_h) / (z_d - z_h), 0, 1)` instead of `sigmoid(z)`). Everything else matches trial 3 round 2 (same checkpoint, probe manifest, hyperparameters). The script:
 
@@ -526,7 +531,7 @@ python -m obfuscation_atlas.scripts.export_wandb_run_metrics \
     --output=/workspace/experiments/trials/trial1/rounds/round6/run_metrics_trial1_round6.json
 ```
 
-If `cfg.grpo_run_id` is unset, `run_round.py` finds the most recent W&B run whose name starts with `cfg.run_key`.
+If `cfg.grpo_run_id` is unset, the driver (`run_trial.py` / `run_round_manual.py`) finds the most recent W&B run whose name starts with `cfg.run_key`.
 
 **Prerequisites:** vLLM server running (separate GPU recommended), W&B + HF tokens, obfuscation-atlas venv active. Re-run the bootstrap cell (`bootstrap_hf_env()`) before GRPO so `WANDB_API_KEY` is set in the notebook subprocess.
 
@@ -546,9 +551,9 @@ CUDA_VISIBLE_DEVICES=1 python -m afterburner.generation.vllm.server \
     --gpu-memory-utilization 0.40 \
     --tensor-parallel-size 1
 
-# Run cells in experiments/run_round.py (or execute the script)
-cd /workspace/experiments
-python run_round.py   # runs all cells sequentially if executed as script
+# Run cells in experiments/run_round_manual.py (or execute the script)
+cd /workspace
+python experiments/run_round_manual.py   # runs all cells sequentially if executed as script
 ```
 
 **GPU note:** stop or reduce vLLM memory before probe training if sharing one GPU (probe uses HF PeftModel on CUDA).
@@ -577,12 +582,13 @@ run_on_policy_pipeline(
 
 | Item | Status |
 |------|--------|
-| Refactored library modules | Done — `generation.py`, `probe_training.py`, `build_dataset.py`, `extract_run_results.py` |
+| Refactored library modules | Done — `pipeline/generation.py`, `probe_training.py`, `build_dataset.py`, `extract_run_results.py` |
 | Trial layout | Done — `experiments/trials/trial{N}/buffer` + `rounds/round{R}/` |
-| `RoundConfig` | Done — `round_config.py`; single config object in `run_round.py` |
+| `RoundConfig` | Done — `pipeline/round_config.py`; single config object per round |
 | Naming | Done — `trial{N}_round{R}_*.jsonl`, `run_metrics_trial{N}_round{R}.json`, W&B/cache prefix `{run_key}` |
 | Multi-round train dataset mixing | Done — round-aware sources in `build_dataset.py` (round ≥ 2) |
-| GRPO + export wired | Done — subprocess cells + terminal comments in `run_round.py` |
+| GRPO + export wired | Done — subprocess cells + terminal comments in `run_round_manual.py`, automated via `pipeline/run_trial.py` |
+| Core code location | Done — moved out of `experiments/` into `pipeline/` (plain package, `PYTHONPATH=/workspace`) |
 | Scratch folder | Unchanged |
 
 See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for trial status and run history.
@@ -591,24 +597,26 @@ See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for trial status and run history.
 
 ## Multi-round automation (`run_trial.py`)
 
-For unattended rounds 2+, use [`experiments/run_trial.py`](../experiments/run_trial.py). The one-round notebook [`run_round_manual.py`](../experiments/run_round_manual.py) is actively edited for step-by-step experimentation (e.g. trial 3 swapped in `build_train_dataset_split_sources()` and dropped the base-model backfill generation cell — see § Split-sources dataset). Treat it as a scratch driver for the trial currently in progress, not a stable reference.
+For unattended rounds 2+, use [`pipeline/run_trial.py`](../pipeline/run_trial.py). The one-round notebook [`run_round_manual.py`](../experiments/run_round_manual.py) is actively edited for step-by-step experimentation (e.g. trial 3 swapped in `build_train_dataset_split_sources()` and dropped the base-model backfill generation cell — see § Split-sources dataset). Treat it as a scratch driver for the trial currently in progress, not a stable reference.
 
 **Per-trial config:** `experiments/trials/trial{N}/trial_config.yaml` holds every hyperparameter that must stay consistent with that trial's round 1 (GRPO overrides, `dataset_strategy`, generation params, `code_length_penalty`, `kl_reference_from_base`, etc.) — loaded by `load_trial_config(trial)`. Full details and the field reference are in [FULL_TRIAL_RUNBOOK.md § trial_config.yaml per-trial parameters](./FULL_TRIAL_RUNBOOK.md#trial_configyaml-per-trial-parameters). `run_trial.py` also runs a disk-space preflight check and, after each GRPO run, verifies the checkpoint and cleans up intermediate (non-`final/`) checkpoints via `grpo_launcher.py` to bound disk usage; GRPO subprocess output streams live rather than being buffered until exit.
 
 **Trial state:** `experiments/trials/trial{N}/trial_state.json` tracks `previous_run_id` and `last_completed_round`.
 
 ```bash
+cd /workspace
+
 # One-time init (round 1 = bootstrap GRPO run id)
-python run_trial.py --init --trial 2 --round1-run-id lliye1cp
+python -m pipeline.run_trial --init --trial 2 --round1-run-id lliye1cp
 
 # Run 3 automated rounds (2–4 if last_completed_round=1)
-python run_trial.py --trial 2 --num-rounds 3
+python -m pipeline.run_trial --trial 2 --num-rounds 3
 
 # Dry-run: real generation + probe; skip GRPO/export; test handoff across rounds
-python run_trial.py --trial 2 --num-rounds 2 --dry-run --mock-grpo-run-id lliye1cp
+python -m pipeline.run_trial --trial 2 --num-rounds 2 --dry-run --mock-grpo-run-id lliye1cp
 
 # Re-run a completed round
-python run_trial.py --trial 2 --start-round 2 --num-rounds 1 --force
+python -m pipeline.run_trial --trial 2 --start-round 2 --num-rounds 1 --force
 ```
 
 Train on-policy generation params (`dataset`, `n_generations`) come from the trial's `trial_config.yaml` — e.g. `"train_full"`/1 gen for trial 2's round-robin strategy, `"train"`/5 gens for trials 3/4's split-sources strategy. Checks run inline after each major step (checkpoint, vLLM, disk space, row counts, probe metrics, GRPO checkpoint, export). Skip completed rounds unless `--force`. Requires vLLM server + obfuscation-atlas venv (same as manual round).
@@ -617,12 +625,12 @@ Train on-policy generation params (`dataset`, `n_generations`) come from the tri
 
 ## Relationship to scratch and upstream
 
-| | Scratch (`/workspace/scratch/`) | Experiments (`/workspace/experiments/`) |
+| | Scratch (`/workspace/scratch/`) | Pipeline + experiments (`/workspace/pipeline/`, `/workspace/experiments/`) |
 |--|----------------------------------|----------------------------------------|
 | Purpose | One-off exploration, W&B-free replication | Repeatable multi-round / multi-trial loop |
-| Orchestration | Notebook cells with globals | `run_round.py` + `RoundConfig` + importable functions |
+| Orchestration | Notebook cells with globals | `pipeline/run_trial.py` (automated) or `experiments/run_round_manual.py` (manual) + `RoundConfig` + importable functions |
 | Outputs | `scratch/on_policy_*`, `scratch/fresh_probe2_*` | `experiments/trials/trial{N}/buffer/`, `.../rounds/round{R}/` |
-| GRPO | Manual launch commands in docs | Subprocess in `run_round.py` |
+| GRPO | Manual launch commands in docs | Subprocess in `run_trial.py` / `run_round_manual.py` |
 | Modified? | Frozen reference | Active development |
 
 Upstream code (`obfuscation-atlas`) is used for: dataset prep, code grading, probe train/eval APIs, and GRPO training. No changes to upstream are required for the experiments pipeline itself.
@@ -631,7 +639,7 @@ Upstream code (`obfuscation-atlas`) is used for: dataset prep, code grading, pro
 
 ## Known limitations
 
-1. **Round 1 not in `build_train_dataset` / `run_round.py`:** those require `round >= 2`. Round 1 options: (a) default on-dataset GRPO, (b) `run_round1_probe.py` + manifest, or (c) **round-1 mixed** via `build_train_dataset_round1_mixed()` + direct GRPO with `mixed_probe_manifest_path` (see § Round-1 mixed dataset).
+1. **Round 1 not in `build_train_dataset` / `run_trial.py`:** those require `round >= 2`. Round 1 options: (a) default on-dataset GRPO, (b) `run_round1_probe.py` + manifest, or (c) **round-1 mixed** via `build_train_dataset_round1_mixed()` + direct GRPO with `mixed_probe_manifest_path` (see § Round-1 mixed dataset).
 2. **Manual checkpoint handoff:** after GRPO, copy the new wandb id into `previous_run_id` for the next round.
 3. **Skip-if-exists:** delete buffer JSONLs to force regeneration; delete `probe_weights/` to retrain probe.
 4. **Base backfill required once per trial:** `base_train_generations.jsonl` must exist in the trial buffer before round 2.

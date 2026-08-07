@@ -6,7 +6,7 @@
 # Note: the archived script never exported W&B metrics (only trained +
 # cleaned up); export_metrics: true here is a deliberate improvement.
 #
-# Superseded (archived): experiments/archive/grpo_mixed_reward_sweep.sh
+# Superseded (archived): experiments/2507_mixed_reward/grpo_mixed_reward_sweep.sh
 
 sweep_name: mixed_reward_sweep
 output_dir: trials/trial3/rounds/mixed_reward_sweep

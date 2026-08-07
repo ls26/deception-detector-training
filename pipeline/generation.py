@@ -22,7 +22,7 @@ from obfuscation_atlas.tasks.code_generation import (
 from obfuscation_atlas.training.grpo_config import VLLMConfig
 from obfuscation_atlas.training.obfuscation_training import build_mbpp_chat_prompt, prepare_dataset
 
-WORKSPACE = Path(__file__).resolve().parents[1]
+from pipeline.paths import WORKSPACE
 
 SEED = 53
 N_GENERATIONS = 2

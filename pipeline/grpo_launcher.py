@@ -20,7 +20,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-WORKSPACE = Path(__file__).resolve().parents[1]
+from pipeline.paths import EXPERIMENTS, WORKSPACE
+
 OBFUSCATION_ATLAS_DIR = WORKSPACE / "obfuscation-atlas"
 
 WANDB_ENTITY = "lilylixin6-the-harker-school"
@@ -74,7 +75,7 @@ class GrpoLaunchError(RuntimeError):
 def _resolve(path_str: str) -> Path:
     """Resolve a path relative to experiments/, unless already absolute."""
     p = Path(path_str)
-    return p if p.is_absolute() else (WORKSPACE / "experiments" / path_str)
+    return p if p.is_absolute() else (EXPERIMENTS / path_str)
 
 
 def check_vllm(url: str = VLLM_MODELS_URL) -> None:

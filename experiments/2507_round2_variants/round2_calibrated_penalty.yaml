@@ -16,7 +16,7 @@
 # populate that round's probe_metrics.json (see the archived script or move
 # ensure_calibration_logits() into probe_training.py).
 #
-# Superseded (archived): experiments/archive/run_round2_calibrated_penalty.py
+# Superseded (archived): experiments/2507_round2_variants/run_round2_calibrated_penalty.py
 
 run_key: trial3_round2_calibrated_penalty
 output_dir: trials/trial3/rounds/round2_calibrated_penalty

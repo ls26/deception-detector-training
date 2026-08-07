@@ -5,7 +5,7 @@
 # existing nofu_mixed Phase-0 probe cache purely for monitoring/post-eval --
 # it has zero effect on training since loss.detector=0.
 #
-# Superseded (archived): experiments/archive/run_det0_baseline.py
+# Superseded (archived): experiments/2507_det0_baselines/run_det0_baseline.py
 
 run_key: trial3_det0_baseline
 output_dir: trials/trial3/rounds/det0_baseline

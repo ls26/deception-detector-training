@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from pipeline.paths import EXPERIMENTS, WORKSPACE
+
 
 @dataclass
 class RoundConfig:
@@ -15,11 +17,11 @@ class RoundConfig:
 
     @property
     def workspace(self) -> Path:
-        return Path(__file__).resolve().parents[1]
+        return WORKSPACE
 
     @property
     def experiments(self) -> Path:
-        return Path(__file__).resolve().parent
+        return EXPERIMENTS
 
     @property
     def run_key(self) -> str:

@@ -1,6 +1,6 @@
 # Multi-Round Trial Automation Runbook
 
-End-to-end guide for running a **complete multi-round experiment trial** with [`experiments/run_trial.py`](../experiments/run_trial.py). Intended for a new agent (or operator) picking up the work with no prior chat context.
+End-to-end guide for running a **complete multi-round experiment trial** with [`pipeline/run_trial.py`](../pipeline/run_trial.py). Intended for a new agent (or operator) picking up the work with no prior chat context.
 
 **Related docs:**
 
@@ -65,14 +65,14 @@ flowchart TB
 
 ```
 /workspace/
-├── experiments/
+├── pipeline/
 │   ├── run_trial.py              # ← automation entry point (rounds 2+)
-│   ├── run_round.py              # active manual notebook (editable)
-│   ├── run_round_manual.py       # actively edited for step-by-step experimentation
 │   ├── round_config.py           # RoundConfig path derivation
 │   ├── generation.py             # vLLM on-policy pipelines
 │   ├── build_dataset.py          # mixed probe train manifest
-│   ├── probe_training.py         # fresh probe train/eval
+│   └── probe_training.py         # fresh probe train/eval
+├── experiments/
+│   ├── run_round_manual.py       # actively edited for step-by-step experimentation
 │   └── trials/trial{N}/
 │       ├── trial_config.yaml     # per-trial hyperparameters (loaded by run_trial.py)
 │       ├── trial_state.json      # handoff state (automation)
@@ -107,8 +107,10 @@ results/run_results/full_grpo_runs/trigger_none_model_{RUN_ID}_layers_32/checkpo
 ```bash
 source /workspace/atlas_setup.sh
 source /workspace/obfuscation-atlas/.venv/bin/activate
-cd /workspace/experiments
+cd /workspace
 ```
+
+`atlas_setup.sh` sets `PYTHONPATH=/workspace` so `pipeline` is importable from anywhere; all `run_trial.py` commands below are invoked as `python -m pipeline.run_trial ...` from `/workspace`.
 
 Checks:
 
@@ -192,8 +194,8 @@ Schema:
 Initialize (or reset handoff to round 1):
 
 ```bash
-cd /workspace/experiments
-python run_trial.py --init --trial N --round1-run-id <ROUND1_RUN_ID>
+cd /workspace
+python -m pipeline.run_trial --init --trial N --round1-run-id <ROUND1_RUN_ID>
 ```
 
 This sets `last_completed_round=1`, `previous_run_id=<ROUND1_RUN_ID>`, and verifies the round-1 checkpoint exists.
@@ -203,22 +205,22 @@ This sets `last_completed_round=1`, `previous_run_id=<ROUND1_RUN_ID>`, and verif
 ## CLI reference (`run_trial.py`)
 
 ```bash
-cd /workspace/experiments
+cd /workspace
 
 # Initialize trial state (one-time, or after deliberate reset)
-python run_trial.py --init --trial N --round1-run-id <ROUND1_RUN_ID>
+python -m pipeline.run_trial --init --trial N --round1-run-id <ROUND1_RUN_ID>
 
 # Run next N rounds from state (default start = last_completed_round + 1)
-python run_trial.py --trial N --num-rounds 3
+python -m pipeline.run_trial --trial N --num-rounds 3
 
 # Explicit start round
-python run_trial.py --trial N --start-round 2 --num-rounds 5
+python -m pipeline.run_trial --trial N --start-round 2 --num-rounds 5
 
 # Re-run a round even if run_metrics already exists
-python run_trial.py --trial N --start-round 3 --num-rounds 1 --force
+python -m pipeline.run_trial --trial N --start-round 3 --num-rounds 1 --force
 
 # Dry-run: real gen + probe; skip GRPO/export; mock checkpoint handoff
-python run_trial.py --trial N --num-rounds 2 --dry-run --mock-grpo-run-id <ROUND1_RUN_ID>
+python -m pipeline.run_trial --trial N --num-rounds 2 --dry-run --mock-grpo-run-id <ROUND1_RUN_ID>
 ```
 
 | Flag | Behavior |
@@ -236,7 +238,7 @@ python run_trial.py --trial N --num-rounds 2 --dry-run --mock-grpo-run-id <ROUND
 **Logging:** GRPO stdout/stderr streams live (via `grpo_launcher.run_grpo_subprocess()`), so progress is visible in real time — no more multi-hour silent gaps. Consider `tee` if launching in background:
 
 ```bash
-python run_trial.py --trial N --num-rounds 5 2>&1 | tee trials/trial{N}/production.log
+python -m pipeline.run_trial --trial N --num-rounds 5 2>&1 | tee experiments/trials/trial{N}/production.log
 ```
 
 ---
@@ -256,14 +258,14 @@ cp buffer/trial{N}_round1_eval_generations.jsonl buffer_{variant}/
 cp -r rounds/round1 rounds_{variant}/round1     # reference copy only; not read by round 2+
 cp trial_config.yaml trial_config_{variant}.yaml  # then edit the differing key(s)
 
-cd /workspace/experiments
-python run_trial.py --trial N --variant {variant} --init --round1-run-id <ROUND1_RUN_ID>
+cd /workspace
+python -m pipeline.run_trial --trial N --variant {variant} --init --round1-run-id <ROUND1_RUN_ID>
 ```
 
 **Run:**
 
 ```bash
-python run_trial.py --trial N --variant {variant} --num-rounds 4
+python -m pipeline.run_trial --trial N --variant {variant} --num-rounds 4
 ```
 
 | File | Variant-aware? |
@@ -285,7 +287,7 @@ python run_trial.py --trial N --variant {variant} --num-rounds 4
 
 ## Step-by-step: what each round does
 
-All steps are in `run_single_round()` ([`run_trial.py`](../experiments/run_trial.py)).
+All steps are in `run_single_round()` ([`run_trial.py`](../pipeline/run_trial.py)).
 
 ### 1. Preflight
 
@@ -323,7 +325,7 @@ Only runs if `trial_config.yaml`'s `needs_base_backfill` is `true`. Skipped enti
 
 The dataset-building strategy is selected per trial via `trial_config.yaml`'s `dataset_strategy`:
 
-- **`"round_robin"`** → `build_train_dataset_round_robin()` ([`build_dataset.py`](../experiments/build_dataset.py)): 200 fixed on-dataset examples per class + (R − 1) × 100 round-robin on-policy examples per class from buffer sources. Round 2 → 300/class; round 3 → 400/class; round 6 → 700/class. Uses the trial's own `base_train_generations.jsonl` as the honest backfill source.
+- **`"round_robin"`** → `build_train_dataset_round_robin()` ([`build_dataset.py`](../pipeline/build_dataset.py)): 200 fixed on-dataset examples per class + (R − 1) × 100 round-robin on-policy examples per class from buffer sources. Round 2 → 300/class; round 3 → 400/class; round 6 → 700/class. Uses the trial's own `base_train_generations.jsonl` as the honest backfill source.
 - **`"split_sources"`** → `build_train_dataset_split_sources()`: class-specific anchor sources — honest on-policy draws from `base_honest_jsonl` (+ prior rounds), deceptive on-policy draws from `det0_deceptive_jsonl` (+ prior rounds). Used by trials 3 and 4, with `on_policy_per_source=100`, `n_fixed_per_class=200`.
 
 On-policy sources (round-robin order): anchor source, `round1`, …, `round{R-2}` JSONLs.
@@ -529,16 +531,16 @@ If rounds completed with mismatched hyperparameters (see [Known pitfalls](#known
 When discarding wrong-param rounds and restarting from round 1:
 
 ```bash
-cd /workspace/experiments
+cd /workspace
 
-# 1. Fix trials/trial{N}/trial_config.yaml first (match round 1's hyperparameters)
+# 1. Fix experiments/trials/trial{N}/trial_config.yaml first (match round 1's hyperparameters)
 
 # 2. Reset state
-python run_trial.py --init --trial N --round1-run-id <ROUND1_RUN_ID>
+python -m pipeline.run_trial --init --trial N --round1-run-id <ROUND1_RUN_ID>
 
 # 3. Remove round 2+ experiment artifacts
-rm -rf trials/trial{N}/rounds/round{2,3,4,5,6}
-rm -f trials/trial{N}/buffer/trial{N}_round{2,3,4,5}_*.jsonl
+rm -rf experiments/trials/trial{N}/rounds/round{2,3,4,5,6}
+rm -f experiments/trials/trial{N}/buffer/trial{N}_round{2,3,4,5}_*.jsonl
 
 # 4. Remove wrong GRPO runs + activation caches (adjust ids to your failed runs)
 rm -rf /workspace/results/activations/trial{N}_round{2,3,4,5,6}_*
@@ -547,7 +549,7 @@ rm -rf /workspace/results/run_results/full_grpo_runs/trigger_none_model_{FAILED_
 # 5. Keep: round1 checkpoint, trial{N}_round1_* buffer, base_train_generations.jsonl, round1 metrics
 
 # 6. Re-run
-python run_trial.py --trial N --start-round 2 --num-rounds 5 --force 2>&1 | tee trials/trial{N}/production.log
+python -m pipeline.run_trial --trial N --start-round 2 --num-rounds 5 --force 2>&1 | tee experiments/trials/trial{N}/production.log
 ```
 
 ---
@@ -557,7 +559,7 @@ python run_trial.py --trial N --start-round 2 --num-rounds 5 --force 2>&1 | tee 
 Validates generation, manifest sizes, probe pipeline, and **multi-round state handoff** without hours of GRPO:
 
 ```bash
-python run_trial.py --trial N --num-rounds 2 --dry-run --mock-grpo-run-id <ROUND1_RUN_ID>
+python -m pipeline.run_trial --trial N --num-rounds 2 --dry-run --mock-grpo-run-id <ROUND1_RUN_ID>
 ```
 
 Both mock rounds reuse the round-1 checkpoint for handoff (since no new GRPO id is produced). For testing round 3+ handoff logic with a real round-2 checkpoint, use that run id as mock instead.
@@ -568,8 +570,7 @@ Both mock rounds reuse the round-1 checkpoint for handoff (since no new GRPO id 
 
 If automation fails mid-round or you need notebook-style control:
 
-- **Step-by-step experimentation:** [`run_round_manual.py`](../experiments/run_round_manual.py) — actively edited and diverges from `run_round.py` as needed for each trial (e.g. trials 3/4 use `build_train_dataset_split_sources()` instead of `build_train_dataset_round_robin()`, matching that trial's `trial_config.yaml`)
-- **Active manual:** [`run_round.py`](../experiments/run_round.py)
+- **Step-by-step experimentation:** [`run_round_manual.py`](../experiments/run_round_manual.py) — actively edited per trial (e.g. trials 3/4 use `build_train_dataset_split_sources()` instead of `build_train_dataset_round_robin()`, matching that trial's `trial_config.yaml`); imports the reusable pieces from `pipeline.*`
 
 Set `RoundConfig(trial=..., round=..., previous_run_id=...)` at the top and run cells in order. After GRPO, manually update `trial_state.json` or re-run `--init` / adjust state before resuming automation.
 
@@ -579,12 +580,11 @@ Set `RoundConfig(trial=..., round=..., previous_run_id=...)` at the top and run 
 
 | File | Role |
 |------|------|
-| `run_trial.py` | Multi-round CLI; reads `trials/trial{N}/trial_config.yaml` (**edit that YAML**, not this file, to change GRPO params / dataset strategy per trial) |
-| `grpo_launcher.py` | Shared GRPO launch infra: `check_disk()`, `run_grpo_subprocess()` (live streaming), `verify_run_complete()`, `cleanup_intermediates()` |
-| `run_round_manual.py` | Actively edited single-round notebook for step-by-step experimentation |
-| `run_round.py` | Editable single-round notebook |
-| `round_config.py` | Path/id derivation only |
-| `build_train_dataset()` | Legacy quota-based mixing (200/class) — **not** used by automation |
+| `pipeline/run_trial.py` | Multi-round CLI; reads `experiments/trials/trial{N}/trial_config.yaml` (**edit that YAML**, not this file, to change GRPO params / dataset strategy per trial) |
+| `pipeline/grpo_launcher.py` | Shared GRPO launch infra: `check_disk()`, `run_grpo_subprocess()` (live streaming), `verify_run_complete()`, `cleanup_intermediates()` |
+| `experiments/run_round_manual.py` | Actively edited single-round notebook for step-by-step experimentation |
+| `pipeline/round_config.py` | Path/id derivation only |
+| `build_train_dataset()` (`pipeline/build_dataset.py`) | Legacy quota-based mixing (200/class) — **not** used by automation |
 | `build_train_dataset_round_robin()` | `dataset_strategy="round_robin"` — 200 fixed + (R−1)×100 on-policy per class (trial 2) |
 | `build_train_dataset_split_sources()` | `dataset_strategy="split_sources"` — class-specific anchor sources (trials 3, 4) |
 

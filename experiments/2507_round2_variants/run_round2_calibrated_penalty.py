@@ -50,9 +50,9 @@ def ensure_calibration_logits(probe_metrics_path: Path) -> dict:
     from datasets import Dataset
     from transformers import AutoTokenizer
 
-    sys.path.insert(0, str(WORKSPACE / "experiments"))
-    from build_dataset import load_jsonl
-    from probe_training import (
+    sys.path.insert(0, str(WORKSPACE))
+    from pipeline.build_dataset import load_jsonl
+    from pipeline.probe_training import (
         EVAL_SEQUENCE_AGGREGATOR,
         FOLLOW_UP,
         MAX_SEQUENCE_LENGTH,
@@ -80,7 +80,7 @@ def ensure_calibration_logits(probe_metrics_path: Path) -> dict:
         {"prompt": [r["prompt"] for r in val_rows], "completion": [r["completion"] for r in val_rows]}
     )
     # val_honest uses on-dataset honest code (same as eval_probe_on_policy does)
-    from probe_training import load_eval_task_dataset
+    from pipeline.probe_training import load_eval_task_dataset
     eval_task_dataset = load_eval_task_dataset(tokenizer)
     _, val_neg = eval_task_dataset
     val_honest = Dataset.from_dict({"prompt": list(val_neg["prompt"]), "completion": list(val_neg["code"])})

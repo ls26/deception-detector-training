@@ -20,20 +20,20 @@ import yaml
 from datasets import Dataset
 from transformers import AutoTokenizer
 
-from build_dataset import (
+from pipeline.build_dataset import (
     build_train_dataset_round_robin,
     build_train_dataset_split_sources,
     rows_to_dataset,
 )
-from extract_run_results import print_all_results
-from generation import (
+from pipeline.extract_run_results import print_all_results
+from pipeline.generation import (
     bootstrap_hf_env,
     on_policy_output_paths,
     print_pipeline_df_stats,
     run_dry_generation,
     run_on_policy_pipeline,
 )
-from grpo_launcher import (
+from pipeline.grpo_launcher import (
     DEFAULT_MAX_GRPO_RETRIES,
     DEFAULT_MIN_VAL_DOES_EXECUTE,
     GrpoLaunchError,
@@ -45,8 +45,9 @@ from grpo_launcher import (
     run_grpo_subprocess,
     verify_run_complete,
 )
-from probe_training import FOLLOW_UP, load_final_policy_model, run_probe_train_eval_pipeline
-from round_config import RoundConfig
+from pipeline.paths import EXPERIMENTS, WORKSPACE
+from pipeline.probe_training import FOLLOW_UP, load_final_policy_model, run_probe_train_eval_pipeline
+from pipeline.round_config import RoundConfig
 
 EVAL_SAMPLES = 400
 VLLM_MODELS_URL = "http://127.0.0.1:8000/v1/models"
@@ -84,7 +85,7 @@ REQUIRED_TRIAL_CONFIG_KEYS = {
 
 
 def trial_config_path(trial: int, variant: str = "") -> Path:
-    trial_dir = Path(__file__).resolve().parent / "trials" / f"trial{trial}"
+    trial_dir = EXPERIMENTS / "trials" / f"trial{trial}"
     if variant:
         variant_path = trial_dir / f"trial_config_{variant}.yaml"
         if variant_path.exists():
@@ -107,7 +108,7 @@ def load_trial_config(trial: int, variant: str = "") -> dict:
 
 
 def trial_state_path(trial: int, variant: str = "") -> Path:
-    trial_dir = Path(__file__).resolve().parent / "trials" / f"trial{trial}"
+    trial_dir = EXPERIMENTS / "trials" / f"trial{trial}"
     name = f"trial_state_{variant}.json" if variant else "trial_state.json"
     return trial_dir / name
 
@@ -722,7 +723,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.init:
         if not args.round1_run_id:
             parser.error("--init requires --round1-run-id")
-        ckpt = checkpoint_dir_for_run_id(Path(__file__).resolve().parents[1], args.round1_run_id)
+        ckpt = checkpoint_dir_for_run_id(WORKSPACE, args.round1_run_id)
         assert ckpt.exists(), f"Round 1 checkpoint missing: {ckpt}"
         init_trial_state(args.trial, args.round1_run_id, args.variant)
         print(f"OK: initialized {trial_state_path(args.trial, args.variant)}")

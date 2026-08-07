@@ -15,9 +15,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 WORKSPACE = Path(__file__).resolve().parents[2]  # archive/ is one level deeper than scratch/ was
 EXPERIMENTS = WORKSPACE / "experiments"
-sys.path.insert(0, str(EXPERIMENTS))
+sys.path.insert(0, str(WORKSPACE))
 
-from build_dataset import (  # noqa: E402
+from pipeline.build_dataset import (  # noqa: E402
     MAX_SEQUENCE_LENGTH,
     N_FIXED_PER_CLASS,
     N_ROUND1_MIXED_PER_CLASS,
@@ -25,8 +25,8 @@ from build_dataset import (  # noqa: E402
     SEED,
     build_train_dataset_round1_mixed,
 )
-from generation import bootstrap_hf_env  # noqa: E402
-from probe_training import (  # noqa: E402
+from pipeline.generation import bootstrap_hf_env  # noqa: E402
+from pipeline.probe_training import (  # noqa: E402
     eval_probe_on_policy,
     load_eval_task_dataset,
     smoke_forward,

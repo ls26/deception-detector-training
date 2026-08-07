@@ -46,6 +46,22 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 
 Reverse-chronological. Each entry covers what changed, why, key config, and affected runs.
 
+### 24. Codebase reorganized: core pipeline moved to `pipeline/`, `experiments/` grouped by past experiment (Aug 7, 2026)
+
+**Why:** `experiments/` had accumulated both the reusable multi-round pipeline code and every one-off config/launcher script/log from every past sweep, flat in a few directories (`configs/`, `archive/`). Following the "extended project mode" structure from [Tips and Code for Empirical Research Workflows](https://www.lesswrong.com/posts/6P8GYb4AjtPXx6LLB/tips-and-code-for-empirical-research-workflows): core/reusable code should live in a real package, and experiment folders should hold only the lightweight, per-experiment configs/scripts/outputs.
+
+**What (pure refactor, no behavior change):**
+
+- New `/workspace/pipeline/` package (plain package — `__init__.py`, no `pyproject.toml`) holding the 10 core modules previously in `experiments/`: `generation.py`, `probe_training.py`, `build_dataset.py`, `round_config.py`, `grpo_launcher.py`, `extract_run_results.py`, `round_analysis.py`, `run_trial.py`, `run_ablation.py`, `run_round1_probe.py`. New `pipeline/paths.py` centralizes the `WORKSPACE`/`EXPERIMENTS` path constants that were previously derived independently (and inconsistently) via `Path(__file__).resolve()...` in several files.
+- `atlas_setup.sh` now exports `PYTHONPATH=/workspace` so `pipeline` is importable from any cwd; invocations changed from `python experiments/run_trial.py ...` to `python -m pipeline.run_trial ...` (run from `/workspace`).
+- `experiments/run_round_manual.py` (active per-trial manual driver) stays in `experiments/`, imports updated to `pipeline.*`. Two `scratch/` scripts (`compare_deception_eval.py`, `generate_on_policy_artifacts.py`) had their `generation` import updated to `pipeline.generation`; nothing else in `scratch/` was touched.
+- Past experiment configs/launchers/logs grouped into dated folders matching this log's history: `experiments/2507_det0_baselines/`, `experiments/2507_nofu_probe/`, `experiments/2507_prompt_mix/`, `experiments/2507_mixed_reward/`, `experiments/2507_round1_seed_sweeps/`, `experiments/2507_round2_variants/`. The never-move data dirs (`trials/`, `artifacts/`, `single_runs/`, `trial_results/`, `archive/mixed_round1_nofu/`, `archive/nofu_probe/`) are untouched — trial configs/state reference them by absolute or trial-relative path. Added `experiments/README.md` documenting the convention for new experiments going forward (one dated folder per experiment).
+- Docs (`CONTEXT.md`, `FULL_GRPO_RUN.md`, `FULL_TRIAL_RUNBOOK.md`, `iterative_training_experiments.md`) updated to the new module paths and invocations; historical entries in this log keep their original `experiments/...` paths as-run.
+
+**Verification:** `python -m compileall pipeline experiments` clean; every `pipeline` module imports; `pipeline.run_trial`/`run_ablation`/`run_round1_probe --help` all work; `RoundConfig` path properties resolve to byte-identical strings as before the move; `round_analysis` regenerated CSV byte-diffs clean against the pre-refactor committed CSV.
+
+**Files changed:** all 10 moved modules (import fixes only, no logic changes), `atlas_setup.sh`, `experiments/run_round_manual.py`, `scratch/compare_deception_eval.py`, `scratch/generate_on_policy_artifacts.py`, plus the archived launcher scripts' `sys.path`/import lines. See `.cursor/plans/reorganize_experiment_codebase_822db529.plan.md` for the full plan.
+
 ### 23. Early retraining reimplemented on standard sigmoid probe with dynamic threshold (Aug 4, 2026)
 
 **Why:** Methodology #17's fixed threshold (`0.06`) was tuned for the calibrated penalty's scale; on the standard sigmoid probe (`rewards_metrics/detector_score`) the per-round score scale drifts, so a single fixed cutoff is not meaningful. The calibrated `early_retraining` branch is also discontinued (methodology #22).

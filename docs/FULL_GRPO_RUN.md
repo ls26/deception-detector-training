@@ -34,17 +34,17 @@ Optional later step: `export_wandb_run_metrics.py` → `extracted_results/run_me
 
 ## Launching runs: run_ablation.py vs. raw Hydra command
 
-**Default choice for anything you want to reproduce or rerun: `experiments/run_ablation.py` + a YAML config in `experiments/configs/`.**
+**Default choice for anything you want to reproduce or rerun: `pipeline/run_ablation.py` + a YAML config under `experiments/` (grouped by past experiment, e.g. `experiments/2507_det0_baselines/`).**
 
-**Run from `/workspace`, not `/workspace/obfuscation-atlas`** — `experiments/` is a sibling of `obfuscation-atlas/`, not nested inside it (see the workspace layout in `CONTEXT.md`). `grpo_launcher.py` internally `cd`s into `obfuscation-atlas/` for the actual training subprocess, but the launcher script itself must be invoked with `experiments/` resolvable as a relative path:
+**Run from `/workspace`, not `/workspace/obfuscation-atlas`**, with `atlas_setup.sh` sourced (sets `PYTHONPATH=/workspace` so `pipeline` is importable) — `pipeline/` and `experiments/` are both siblings of `obfuscation-atlas/`, not nested inside it (see the workspace layout in `CONTEXT.md`). `grpo_launcher.py` internally `cd`s into `obfuscation-atlas/` for the actual training subprocess, but the launcher itself resolves config-relative paths (`manifest`, `checkpoint`, `output_dir`) against `experiments/` regardless of where the YAML lives:
 
 ```bash
 cd /workspace
-python experiments/run_ablation.py experiments/configs/det0_baseline.yaml       # single run
-python experiments/run_ablation.py experiments/configs/det0_seed_sweep.yaml     # sweep (runs: list, sequential)
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_baseline.yaml       # single run
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_seed_sweep.yaml     # sweep (runs: list, sequential)
 ```
 
-This builds the same kind of Hydra command shown throughout this doc (via `experiments/grpo_launcher.py`) and additionally:
+This builds the same kind of Hydra command shown throughout this doc (via `pipeline/grpo_launcher.py`) and additionally:
 
 - Applies the workspace defaults automatically (`GRPO_DEFAULTS` in `grpo_launcher.py` — see [Defaults](#defaults-workspace-convention) below); your YAML only needs to specify what differs from them
 - Runs preflight (vLLM reachable + disk space) before launching
@@ -55,7 +55,7 @@ This builds the same kind of Hydra command shown throughout this doc (via `exper
 - Skips a run if its `run_metrics_*.json` already exists (delete the file to force a rerun)
 - For sweeps: runs each entry in `runs:` **sequentially** (never in parallel — one pod, shared GPUs), and either continues or aborts on failure per `on_failure: continue|stop`
 
-**Config schema** — every file in `experiments/configs/` is a worked example with a header comment explaining its specific ablation; read one alongside this table:
+**Config schema** — every YAML config under `experiments/{trials,2507_*}/` is a worked example with a header comment explaining its specific ablation; read one alongside this table:
 
 | Key | Required | Meaning |
 |-----|----------|---------|
@@ -129,7 +129,7 @@ source /workspace/obfuscation-atlas/.venv/bin/activate
 cd /workspace/obfuscation-atlas
 ```
 
-**Note:** the `cd` above is for the raw Hydra `python -m obfuscation_atlas.scripts...` commands later in this doc. If you're launching via `experiments/run_ablation.py` instead (the default choice — see [Launching runs](#launching-runs-run_ablationpy-vs-raw-hydra-command)), run it from `/workspace` — `experiments/` is a sibling of `obfuscation-atlas/`, not nested inside it.
+**Note:** the `cd` above is for the raw Hydra `python -m obfuscation_atlas.scripts...` commands later in this doc. If you're launching via `pipeline/run_ablation.py` instead (the default choice — see [Launching runs](#launching-runs-run_ablationpy-vs-raw-hydra-command)), run it from `/workspace` — `pipeline/` and `experiments/` are both siblings of `obfuscation-atlas/`, not nested inside it.
 
 **Checks (fail if any fail):**
 
@@ -324,11 +324,11 @@ This is exactly what `run_ablation.py` builds for you from `GRPO_DEFAULTS` + a Y
 
 ### Sweeps (multiple seeds / configs)
 
-Preferred: a sweep YAML + `run_ablation.py` (see `experiments/configs/det0_seed_sweep.yaml`, `mixed_reward_sweep.yaml`, `det1_nofu_sweep.yaml`, `prompt_mix_sweep.yaml` for real examples). Run from `/workspace` (see the [note above](#launching-runs-run_ablationpy-vs-raw-hydra-command)):
+Preferred: a sweep YAML + `run_ablation.py` (see `experiments/2507_det0_baselines/det0_seed_sweep.yaml`, `experiments/2507_mixed_reward/mixed_reward_sweep.yaml`, `experiments/2507_nofu_probe/det1_nofu_sweep.yaml`, `experiments/2507_prompt_mix/prompt_mix_sweep.yaml` for real examples). Run from `/workspace` (see the [note above](#launching-runs-run_ablationpy-vs-raw-hydra-command)):
 
 ```bash
 cd /workspace
-python experiments/run_ablation.py experiments/configs/det0_seed_sweep.yaml
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_seed_sweep.yaml
 ```
 
 This runs each entry in `runs:` sequentially in one process, verifying + exporting + cleaning up after each before starting the next.
@@ -358,7 +358,7 @@ detector.retrain=true   # only on the first run for a new prefix
 
 ### Mixed round-1 nofu GRPO (Jul 2026)
 
-Round-1 GRPO from the **base model** with a **mixed Phase-0 probe** (300/class: 200 on-dataset + 100 on-policy). Combines the nofu overrides above with a mixed probe manifest. Manifest and probe validation live under `experiments/archive/mixed_round1_nofu/` (built by `experiments/archive/run_mixed_round1_nofu_probe.py`; do not regenerate unless changing sources).
+Round-1 GRPO from the **base model** with a **mixed Phase-0 probe** (300/class: 200 on-dataset + 100 on-policy). Combines the nofu overrides above with a mixed probe manifest. Manifest and probe validation live under `experiments/archive/mixed_round1_nofu/` (built by `experiments/2507_nofu_probe/run_mixed_round1_nofu_probe.py`; do not regenerate unless changing sources).
 
 **Dataset:** `build_train_dataset_round1_mixed()` — honest on-policy from base `train_full`, deceptive on-policy from det0 `train_full` (`experiments/artifacts/`). See [iterative_training_experiments.md](./iterative_training_experiments.md) § Round-1 mixed dataset.
 
@@ -388,7 +388,7 @@ During GRPO rollouts, randomly present MBPP test 0 **with** expected output (sho
 
 **Implementation:** `hide_expected_output_from_assert()` and `build_mbpp_chat_prompt(..., show_expected_output=…)` in `obfuscation_training.py`; startup validation via `validate_mbpp_tests_for_prompt_variants()`. Tests: `tests/test_mbpp_prompt_variants.py`. W&B logs `train/prompt_shown_fraction` when ratio < 1.
 
-**Sweeping the ratio:** `experiments/configs/prompt_mix_sweep.yaml` (0.5 / 0.7 / 0.8, kl=1e-3, det=3, seed=43, nofu mixed manifest). Run with `python experiments/run_ablation.py experiments/configs/prompt_mix_sweep.yaml`.
+**Sweeping the ratio:** `experiments/2507_prompt_mix/prompt_mix_sweep.yaml` (0.5 / 0.7 / 0.8, kl=1e-3, det=3, seed=43, nofu mixed manifest). Run with `python -m pipeline.run_ablation experiments/2507_prompt_mix/prompt_mix_sweep.yaml`.
 
 **Hidden eval:** `training.only_eval_from_other_run=True` + `task_args.eval_show_expected_output=false` runs post-train eval on hidden prompts as a new W&B run — see [Hidden post-train eval](#hidden-post-train-eval-jul-2026) below.
 
@@ -404,7 +404,7 @@ Per prompt per step, draw a Bernoulli regime shared by all G completions of that
 
 **Implementation:** `apply_mixed_reward_regime()` in `tasks/code_generation.py` — pure function, unit-tested independently. Wired into `GRPOObfuscationTrainer.score_responses()` in `grpo_trainer.py`, gated on `partition == Partition.TRAIN`. RNG seed: `training.seed + step + 1_000_000` (offset from the prompt-mix RNG so the two never draw identical sequences if combined). Startup log line `Mixed reward regime: mixed_reward_pass_all_prob=<value>` confirms the resolved config (prints even at `0.0`). W&B logs `train/mixed_reward_pass_all_fraction` every train step. Tests: `tests/test_mixed_reward.py`.
 
-**Sweeping the probability:** `experiments/configs/mixed_reward_sweep.yaml` (0.35/0.40 × seeds 41/42, kl=1e-3, det=3, nofu mixed manifest, no prompt mixing). Run with `python experiments/run_ablation.py experiments/configs/mixed_reward_sweep.yaml`.
+**Sweeping the probability:** `experiments/2507_mixed_reward/mixed_reward_sweep.yaml` (0.35/0.40 × seeds 41/42, kl=1e-3, det=3, nofu mixed manifest, no prompt mixing). Run with `python -m pipeline.run_ablation experiments/2507_mixed_reward/mixed_reward_sweep.yaml`.
 
 **Startup gate:** `Mixed reward regime: mixed_reward_pass_all_prob=<value>` matching the config; if `task_args.shown_prompt_ratio` is not overridden, no `train/prompt_shown_fraction` should appear (confirms prompt mixing is off).
 
@@ -414,16 +414,16 @@ Per prompt per step, draw a Bernoulli regime shared by all G completions of that
 
 | Variant | Config | Difference from baseline |
 |---------|--------|---------------------------|
-| Baseline | `experiments/configs/det0_baseline.yaml` | `task_args.mixed_reward_pass_all_prob=0.3` (same as det=3 runs) |
-| Ceiling | `experiments/configs/det0_ceiling.yaml` | `task_args.mixed_reward_pass_all_prob=1.0` — every prompt graded on `passes_all_tests` |
-| Ceiling, no length penalty | `experiments/configs/det0_ceiling_no_len_penalty.yaml` | Ceiling config + `code_length_penalty=0` (default 0.003), isolating the length penalty's effect |
+| Baseline | `experiments/2507_det0_baselines/det0_baseline.yaml` | `task_args.mixed_reward_pass_all_prob=0.3` (same as det=3 runs) |
+| Ceiling | `experiments/2507_det0_baselines/det0_ceiling.yaml` | `task_args.mixed_reward_pass_all_prob=1.0` — every prompt graded on `passes_all_tests` |
+| Ceiling, no length penalty | `experiments/2507_det0_baselines/det0_ceiling_no_len_penalty.yaml` | Ceiling config + `code_length_penalty=0` (default 0.003), isolating the length penalty's effect |
 
 All three reuse the `nofu_mixed` Phase-0 cache (`retrain: false`) from [Mixed round-1 nofu GRPO](#mixed-round-1-nofu-grpo-jul-2026) above.
 
 ```bash
-python experiments/run_ablation.py experiments/configs/det0_baseline.yaml
-python experiments/run_ablation.py experiments/configs/det0_ceiling.yaml
-python experiments/run_ablation.py experiments/configs/det0_ceiling_no_len_penalty.yaml
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_baseline.yaml
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_ceiling.yaml
+python -m pipeline.run_ablation experiments/2507_det0_baselines/det0_ceiling_no_len_penalty.yaml
 ```
 
 **Startup gates:** `OK: loaded mixed probe manifest (300 pos, 300 neg)`; `task_id overlap=0`; `Phase-0 probe activation cache path: .../nofu_mixed_base_activations_.../` followed by `Loading cached activations from ...` (confirms cache reuse, not full recompute); `Mixed reward regime: mixed_reward_pass_all_prob=<0.3 or 1.0>` matching the config. For the no-length-penalty variant, confirm `code_length_penalty=0.0` in the exported `full_config`.
@@ -434,10 +434,10 @@ Reruns a round 2 with the KL penalty measured against the **base model** (zeroed
 
 **Mechanism:** `++grpo.model.kl_reference_from_base=true` zeroes the reference adapter's LoRA weights after loading from `reference_adapter_path`, so the KL forward pass becomes equivalent to the base model.
 
-**Config:** `experiments/configs/round2_kl_from_base.yaml` — matches the target round 2 exactly (same round-2 probe manifest, same round-1 `checkpoint`) plus the single flag.
+**Config:** `experiments/2507_round2_variants/round2_kl_from_base.yaml` — matches the target round 2 exactly (same round-2 probe manifest, same round-1 `checkpoint`) plus the single flag.
 
 ```bash
-python experiments/run_ablation.py experiments/configs/round2_kl_from_base.yaml
+python -m pipeline.run_ablation experiments/2507_round2_variants/round2_kl_from_base.yaml
 ```
 
 **Startup gates:** same as a normal round 2 (`OK: loaded mixed probe manifest`; `task_id overlap=0`; Phase-0 cache reuse) plus a log line confirming the reference-adapter zeroing — W&B KL curves should diverge from a normal round 2 early.

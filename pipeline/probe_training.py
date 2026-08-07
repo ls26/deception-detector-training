@@ -32,9 +32,9 @@ from obfuscation_atlas.training.obfuscation_training import (
     run_on_policy_split_eval,
 )
 
-from build_dataset import load_jsonl
+from pipeline.build_dataset import load_jsonl
+from pipeline.paths import WORKSPACE
 
-WORKSPACE = Path(__file__).resolve().parents[1]
 SEED = 53
 MAX_SEQUENCE_LENGTH = 512
 MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
