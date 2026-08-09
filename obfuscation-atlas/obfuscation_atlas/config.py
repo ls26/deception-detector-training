@@ -765,6 +765,12 @@ class GRPOObfuscationConfig(SFTConfig):
     # early_stop_detector_threshold directly.
     early_stop_threshold_from_train_min: bool = False
     early_stop_threshold_floor: float = 0.05  # only applied when early_stop_threshold_from_train_min=True
+    # Early stopping on training-batch probe AUC: if AUC stays below
+    # early_stop_auc_threshold for early_stop_detector_patience consecutive steps
+    # (only when both classes have >= early_stop_auc_min_class_count examples),
+    # training stops. Mutually exclusive with score-based early stopping above.
+    early_stop_auc_threshold: Optional[float] = None
+    early_stop_auc_min_class_count: int = 5
 
 
 @dataclass

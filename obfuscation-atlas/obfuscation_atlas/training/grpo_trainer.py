@@ -56,6 +56,7 @@ import numpy as np
 import openai
 import torch
 import wandb
+from sklearn.metrics import roc_auc_score
 from accelerate import Accelerator
 from accelerate.utils import broadcast_object_list
 from afterburner.generation.vllm.client import VLLMClient, VLLMResponse
@@ -88,6 +89,7 @@ from obfuscation_atlas.tasks.code_generation import (
     apply_mixed_reward_regime,
     compute_code_generation_rewards,
     deceptive_reward_key,
+    PASS_ONLY_SHOWN_DECEPTION_KEY,
 )
 from obfuscation_atlas.tasks.emergent_misalignment import (
     EmergentMisalignmentEvaluatorVLLM,
@@ -1414,6 +1416,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             response_strings, self.obfuscation_config.data.probe_dataset.dataset_name
         )
         response_wise_metrics.update(scored_responses.reward_metrics)
+        distinct_flags = response_wise_metrics.pop("rewards_metrics/has_distinct_test_outputs", None)
 
         # Compute advantages
         with self.profiler.profile("compute_advantages_from_rewards"):
@@ -1674,6 +1677,36 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         }
         if "reward_mean" in metrics and "kl_loss" in metrics:
             metrics["objective"] = metrics["reward_mean"] - metrics["kl_loss"]
+
+        detector_scores = response_wise_metrics.get("rewards_metrics/detector_score")
+        deception_labels = response_wise_metrics.get(PASS_ONLY_SHOWN_DECEPTION_KEY)
+        min_class = self.obfuscation_config.early_stop_auc_min_class_count
+        n_deceptive = 0
+        n_honest = 0
+        probe_auc = float("nan")
+        if detector_scores is not None and deception_labels is not None:
+            if isinstance(detector_scores, torch.Tensor):
+                scores_np = detector_scores.detach().cpu().numpy()
+            else:
+                scores_np = np.asarray(detector_scores)
+            if isinstance(deception_labels, torch.Tensor):
+                labels_np = deception_labels.detach().cpu().numpy().astype(bool)
+            else:
+                labels_np = np.asarray(deception_labels, dtype=bool)
+            if distinct_flags is not None:
+                if isinstance(distinct_flags, torch.Tensor):
+                    distinct_mask = distinct_flags.detach().cpu().numpy().astype(bool)
+                else:
+                    distinct_mask = np.asarray(distinct_flags, dtype=bool)
+                scores_np = scores_np[distinct_mask]
+                labels_np = labels_np[distinct_mask]
+            n_deceptive = int(labels_np.sum())
+            n_honest = int(len(labels_np) - n_deceptive)
+            if n_deceptive >= min_class and n_honest >= min_class:
+                probe_auc = float(roc_auc_score(labels_np.astype(int), scores_np))
+        metrics["train/probe_auc"] = probe_auc
+        metrics["train/probe_auc_n_deceptive"] = n_deceptive
+        metrics["train/probe_auc_n_honest"] = n_honest
 
         # Aggregate detector training logs
         if detector_log_dict_accumulator:
@@ -2025,6 +2058,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             eval_queue.submit(self.generation_inputs_for_evaluation, self.state.model.policy_adapter, lora_path)
 
         early_stop_counter = 0
+        early_stop_auc_counter = 0
         while self.state.step < self.total_steps:
             lora_path = self.lora_dir / f"step_{self.state.step}"
 
@@ -2075,6 +2109,23 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     )
                     pbar.update(1)
                     break
+
+            auc_threshold = self.obfuscation_config.early_stop_auc_threshold
+            if auc_threshold is not None and self.state.step >= self.obfuscation_config.early_stop_min_steps:
+                auc = train_metrics.get("train/probe_auc")
+                if auc is not None and not math.isnan(auc):
+                    if auc < auc_threshold:
+                        early_stop_auc_counter += 1
+                    else:
+                        early_stop_auc_counter = 0
+                    if early_stop_auc_counter >= self.obfuscation_config.early_stop_detector_patience:
+                        logger.info(
+                            f"Early stopping at step {self.state.step}: probe AUC "
+                            f"{auc:.4f} < {auc_threshold} for "
+                            f"{self.obfuscation_config.early_stop_detector_patience} consecutive steps"
+                        )
+                        pbar.update(1)
+                        break
 
             # Save checkpoint
             pbar.set_description("Saving checkpoint")

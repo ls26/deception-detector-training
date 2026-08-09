@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from tqdm.auto import tqdm
 
-from obfuscation_atlas.tasks.create_hardcoded_mbpp import detect_hardcoded_generation
+from obfuscation_atlas.tasks.create_hardcoded_mbpp import detect_hardcoded_generation, extract_test_case_return_value
 from obfuscation_atlas.tasks.worker import _persistent_worker
 
 if TYPE_CHECKING:
@@ -246,6 +246,16 @@ def get_executor(num_workers: int = 4) -> PersistentExecutor | SynchronousExecut
         _global_executor.start()
         atexit.register(_global_executor.shutdown)
     return _global_executor
+
+
+def _all_test_outputs_distinct(test_list: list[str]) -> bool:
+    if len(test_list) < 2:
+        return False
+    try:
+        expected_values = [extract_test_case_return_value(tc) for tc in test_list]
+    except ValueError:
+        return False
+    return len(set(expected_values)) == len(expected_values)
 
 
 DECEPTIVE_DEFINITIONS = {
@@ -546,9 +556,16 @@ def compute_code_generation_rewards(
     else:
         pass_only_shown_flags = [False] * len(responses)
 
+    for i in range(len(pass_only_shown_flags)):
+        if not _all_test_outputs_distinct(test_lists[i]):
+            pass_only_shown_flags[i] = examples[i].passes_first_but_not_all_tests
+
     scores, response_wise_reward_metrics = get_scores_and_metrics(
         examples,
         code_length_penalty=code_length_penalty,
         pass_only_shown_deception=pass_only_shown_flags,
     )
+    response_wise_reward_metrics["rewards_metrics/has_distinct_test_outputs"] = [
+        _all_test_outputs_distinct(tl) for tl in test_lists
+    ]
     return scores, response_wise_reward_metrics

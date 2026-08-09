@@ -1,0 +1,36 @@
+# Round-1 GRPO sweep with ground-truth detector penalty (methodology #25):
+# kl=1e-3, det=3, clp=0.001, mixed_reward_pass_all_prob=0.25, nofu,
+# nofu_mixed probe manifest (300/class Phase-0 cache reuse), base model start.
+# Seeds 42/43/44 — same hyperparams as trial 6 round 1 (yckx0ctm) except
+# ground_truth_detector_penalty=true replaces probe score in the reward penalty.
+
+sweep_name: gt_penalty_clp1e-3_p25_seed_sweep
+output_dir: 2508_gt_penalty/single_runs
+
+probe:
+  manifest: trials/trial3/rounds/round1/probe_train_dataset.json
+  directory_save_prefix: nofu_mixed
+  retrain: false
+
+checkpoint: null  # base model, no reference_adapter_path
+
+shared_overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+  ground_truth_detector_penalty: true
+
+runs:
+  - run_key: gt_penalty_clp1e-3_p25_s42
+    overrides:
+      training.seed: 42
+  - run_key: gt_penalty_clp1e-3_p25_s43
+    overrides:
+      training.seed: 43
+  - run_key: gt_penalty_clp1e-3_p25_s44
+    overrides:
+      training.seed: 44
+
+cleanup: true
+export_metrics: true
+on_failure: continue

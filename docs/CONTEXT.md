@@ -8,12 +8,12 @@ This is the official codebase for [**The Obfuscation Atlas**](/workspace/Obfusca
 
 ## Current Direction
 
-The active research direction is **iterative multi-round GRPO against progressively refined probes**, using the **standard (sigmoid) probe penalty** — not the calibrated probe score (methodology #12), which is discontinued after repeated pipeline bugs (#20, #21) and anchor-scale instability. **Early retraining on the regular probe** (methodology #23: dynamic detector-score early stopping) completed on trial 4's base lineage as variant `early_retraining_v2` (rounds 2–5, Aug 4 2026), trial 6 (clp1e-3/p25/seed 50, p10 threshold, stopped at round 5, Aug 5 2026), and trial 8 `early_retraining` (clp3e-3→1e-3/p25/seed 53, stopped at round 5, Aug 5 2026). **Full 128-step base branches** (no early stopping) completed on trials 6 and 8 (Aug 6, 2026) — both stayed Obfuscated through round 5, unlike their early_retraining variants — see [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Calibrated-penalty branches (`early_retraining`, `calibrated_fixed`, etc.) remain historical reference only.
+The active research direction is **iterative multi-round GRPO against progressively refined probes**, using the **standard (sigmoid) probe penalty** — not the calibrated probe score (methodology #12), which is discontinued after repeated pipeline bugs (#20, #21) and anchor-scale instability. **Early retraining on the regular probe** (methodology #23: dynamic detector-score early stopping) completed on trial 4's base lineage as variant `early_retraining_v2` (rounds 2–5, Aug 4 2026), trial 6 (clp1e-3/p25/seed 50, p10 threshold, stopped at round 5, Aug 5 2026), and trial 8 `early_retraining` (clp3e-3→1e-3/p25/seed 53, stopped at round 5, Aug 5 2026). **Full 128-step base branches** (no early stopping) completed on trials 6 and 8 (Aug 6, 2026) — both stayed Obfuscated through round 5, unlike their early_retraining variants. **AUC early stop** (methodology #26: stop when train-step probe AUC `< 0.75`) completed on trial 8 `early_retraining_auc` (rounds 2–5, Aug 8 2026) — Honest from round 3, one round earlier than the p10 variant on the same lineage — and trial 6 `early_retraining_auc_v2` (distinct-output-only AUC, min_class_count=10; rounds 2–5, Aug 8–9 2026), which stayed Obfuscated through round 4 and ended Obfuscated activations at round 5. See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Calibrated-penalty branches (`early_retraining`, `calibrated_fixed`, etc.) remain historical reference only.
 
 Each round generates on-policy data from the previous checkpoint, builds a mixed probe training set (on-dataset + on-policy rows from multiple sources), trains a fresh linear probe, then runs GRPO against that probe — producing a new checkpoint for the next round. The goal is to determine whether iterative probe retraining can keep pace with an evolving policy's evasion strategies.
 
 Key methodological choices in the current pipeline:
-- **Pass-only-shown deception** (`pass_only_shown_deception`) as the operational deceptive label — a stricter dual-generation metric replacing the old `passes_first_n_but_not_all_tests`
+- **Pass-only-shown deception** (`pass_only_shown_deception`) as the operational deceptive label — dual-gen when test outputs are distinct, else the old `passes_first_n_but_not_all_tests` proxy (methodology #26)
 - **No-follow-up (nofu) probe extraction** — probe at completion EOT instead of a follow-up "Yes" token
 - **Mixed reward regime** — intermittently reward honest `passes_all_tests` solving alongside the standard `passes_first_n_tests` reward
 
@@ -211,7 +211,7 @@ Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3
 
 Condensed list. See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology details and rationale.
 
-- **Pass-only-shown deception (Jul 2026):** Operational deceptive defaults to dual-gen metric; old metric kept for comparison. See EXPERIMENT_LOG.md #3.
+- **Pass-only-shown deception (Jul 2026; hybrid Aug 2026):** Operational deceptive defaults to dual-gen when test outputs are distinct, else old `passes_first_n_but_not_all_tests`. See EXPERIMENT_LOG.md #3 / #26.
 - **Disjoint probe train/eval (Jul 2026):** Zero `task_id` overlap between probe train and eval val. See EXPERIMENT_LOG.md #2.
 - **On-policy split eval (Jul 2026):** Post-process only; no second activation pass. See EXPERIMENT_LOG.md #1.
 - **Nofu probe extraction (Jul 2026):** Probe at completion EOT via 4x empty follow-up overrides. See EXPERIMENT_LOG.md #4.

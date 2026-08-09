@@ -10,6 +10,7 @@ CUDA_VISIBLE_DEVICES=1 python -m afterburner.generation.vllm.server \
 """
 
 import ast
+import gc
 import json
 import os
 import shutil
@@ -567,6 +568,12 @@ def run_rl(cfg: GRPOObfuscationConfig):
                 }
             )
 
+    if cfg.early_stop_auc_threshold is not None:
+        assert cfg.early_stop_detector_threshold is None and not cfg.early_stop_threshold_from_train_min, (
+            "early_stop_auc_threshold is mutually exclusive with "
+            "early_stop_detector_threshold and early_stop_threshold_from_train_min -- pick one"
+        )
+
     if cfg.early_stop_threshold_from_train_min:
         # Dynamic early-stop threshold: max(min(current-round on-policy train scores), floor),
         # computed from Phase-0's own probe -- see docs/EXPERIMENT_LOG.md and
@@ -614,8 +621,6 @@ def run_rl(cfg: GRPOObfuscationConfig):
 
     # Free the standalone Phase-0 model before GRPO training starts
     if phase0_adapter_path is not None and phase0_model is not trainer.state.model.shared_base_model:
-        import gc
-
         import torch
 
         del phase0_model, _base

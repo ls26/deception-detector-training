@@ -1,0 +1,27 @@
+# Trial 6 — early_retraining_auc_v2 (probe-AUC early stop, updated AUC calc).
+# Round 1 is yckx0ctm (round1_clp1e-3_p25_s50).
+# Same lineage as early_retraining_auc, but uses the revised train-step probe AUC
+# calculation (methodology #26). min_class_count=10.
+
+training_seed: 50
+data_seed: 53
+loss_kl: 0.001
+loss_detector: 3
+nofu: true
+mixed_reward_pass_all_prob: 0.25
+code_length_penalty: 0.001
+kl_reference_from_base: true
+dataset_strategy: split_sources
+gen_dataset: train
+gen_n_generations: 5
+base_honest_jsonl: /workspace/experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: /workspace/experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+n_fixed_per_class: 200
+needs_base_backfill: false
+use_calibrated_penalty: false
+
+early_stop_auc_threshold: 0.75
+early_stop_auc_min_class_count: 10
+early_stop_detector_patience: 10
+early_stop_min_steps: 20

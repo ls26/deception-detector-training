@@ -314,6 +314,10 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
         args.append("early_stop_threshold_from_train_min=true")
     if trial_cfg.get("early_stop_threshold_floor") is not None:
         args.append(f"early_stop_threshold_floor={trial_cfg['early_stop_threshold_floor']}")
+    if trial_cfg.get("early_stop_auc_threshold") is not None:
+        args.append(f"early_stop_auc_threshold={trial_cfg['early_stop_auc_threshold']}")
+    if trial_cfg.get("early_stop_auc_min_class_count") is not None:
+        args.append(f"early_stop_auc_min_class_count={trial_cfg['early_stop_auc_min_class_count']}")
 
     exit_code, output = run_grpo_subprocess(args)
     if exit_code != 0:
@@ -641,6 +645,7 @@ def run_single_round(
         early_stop_enabled = (
             trial_cfg.get("early_stop_detector_threshold") is not None
             or trial_cfg.get("early_stop_threshold_from_train_min", False)
+            or trial_cfg.get("early_stop_auc_threshold") is not None
         )
         min_responses = 1 if early_stop_enabled else 128
         verify_run_complete(

@@ -283,6 +283,8 @@ python -m pipeline.run_trial --trial N --variant {variant} --num-rounds 4
 
 **Same-branch update (Aug 3, 2026):** added `fix_calibration_slope: true` to this same `trial_config_early_retraining.yaml` mid-trial (methodology #18) — freezes the calibrated penalty's `(z_d - z_h)` denominator to round 2's value for round 3 onward instead of recomputing it every round; `z_h` in the numerator still recomputes each round. Round 3's in-progress GRPO run was killed and relaunched under the new setting (round 2 needed no rerun). See EXPERIMENT_LOG.md #18.
 
+**Example (Aug 8, 2026):** trial 8's `early_retraining_auc` branch — `trial_config_early_retraining_auc.yaml` (clone of `trial_config_early_retraining.yaml`, but `early_stop_auc_threshold: 0.75` / `early_stop_auc_min_class_count: 5` instead of `early_stop_threshold_from_train_min`, methodology #26), `trial_state_early_retraining_auc.json`, `buffer_early_retraining_auc/`, `rounds_early_retraining_auc/`. Round 1 seeded from shared `t1656g8a`. See EXPERIMENT_LOG.md "Trial 8 early_retraining_auc variant".
+
 ---
 
 ## Step-by-step: what each round does
@@ -387,6 +389,10 @@ Each trial's hyperparameters live in `experiments/trials/trial{N}/trial_config.y
 | `on_policy_per_source`, `n_fixed_per_class` | `"split_sources"` strategy sizing only |
 | `needs_base_backfill` | Whether preflight/generation must ensure `buffer/base_train_generations.jsonl` exists |
 | `min_on_policy_per_class` | Optional, defaults to 0 (always retrain). If the round's on-policy generation has fewer than this many deceptive **or** honest samples, the probe manifest is carried forward from the previous round unchanged instead of being expanded with new data (the probe still retrains on the carried-forward data) — see EXPERIMENT_LOG.md #15 |
+| `early_stop_threshold_from_train_min` / `early_stop_threshold_floor` | Optional. Dynamic detector-score early stop (methodology #23): threshold = max(p10 of Phase-0 on-policy train scores, floor). Mutually exclusive with fixed `early_stop_detector_threshold` and with AUC early stop below |
+| `early_stop_auc_threshold` / `early_stop_auc_min_class_count` | Optional. AUC early stop (methodology #26): stop when train-step probe AUC stays below threshold for `early_stop_detector_patience` steps after `early_stop_min_steps`. Steps with either class below `early_stop_auc_min_class_count` (default 5) skip the AUC counter. Mutually exclusive with score-based early stop |
+| `early_stop_detector_patience` / `early_stop_min_steps` | Shared by score-based and AUC early stop (defaults 10 / 20) |
+| `ground_truth_penalty` | Optional. If `true`, GRPO reward uses hybrid `pass_only_shown_deception` instead of probe score for the detector term (methodology #25) |
 
 `load_trial_config(trial)` raises `FileNotFoundError` if `trials/trial{N}/trial_config.yaml` doesn't exist — create one before running automation on a new trial (see `trial4/trial_config.yaml` for a full example).
 
