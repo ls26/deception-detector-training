@@ -38,6 +38,7 @@ from pipeline.grpo_launcher import (
     check_degeneracy,
     check_disk,
     check_vllm,
+    cleanup_activation_caches,
     cleanup_crashed_run_dir,
     cleanup_intermediates,
     export_wandb_metrics,
@@ -318,6 +319,8 @@ def run_grpo(cfg: RoundConfig, trial_cfg: dict) -> str:
         args.append(f"early_stop_auc_threshold={trial_cfg['early_stop_auc_threshold']}")
     if trial_cfg.get("early_stop_auc_min_class_count") is not None:
         args.append(f"early_stop_auc_min_class_count={trial_cfg['early_stop_auc_min_class_count']}")
+    if trial_cfg.get("early_stop_auc_window_size") is not None:
+        args.append(f"early_stop_auc_window_size={trial_cfg['early_stop_auc_window_size']}")
 
     exit_code, output = run_grpo_subprocess(args)
     if exit_code != 0:
@@ -657,6 +660,7 @@ def run_single_round(
         cleanup_intermediates(
             grpo_run_id, group=cfg.wandb_group, run_key=cfg.run_key
         )
+        cleanup_activation_caches(grpo_run_id, run_key=cfg.run_key)
         print(f"OK: intermediates cleaned for {grpo_run_id}")
 
         export_wandb_metrics(

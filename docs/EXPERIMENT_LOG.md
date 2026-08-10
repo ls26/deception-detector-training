@@ -38,11 +38,15 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 | 6 (frozen)           | 1–5                | Complete                             | Probe **never retrained** after round 1 (methodology #16); shares round 1 (`yckx0ctm`). **Obfuscated policy/activations** rounds 2–5 (pass_only_shown 0.97→0.92→0.96→0.92); never recovers to Honest — same pattern as trial 4 `frozen`.                                                                                                                                                                                                                                                         |
 | 6 (early_retraining_auc) | 1–4            | Stopped — superseded by v2           | Pre–distinct-output AUC calc (methodology #26, min_class_count=10). Shares round 1 (`yckx0ctm`). Rounds 2–3 **Obfuscated policy** → round 4 **Honest**. Stopped before round 5 (Aug 8, 2026).                                                                                                                                                                                                                                      |
 | 6 (early_retraining_auc_v2) | 1–5         | Complete (stopped)                   | Methodology #26 with distinct-output-only train-step AUC + min_class_count=10. Shares round 1 (`yckx0ctm`). **Obfuscated policy** rounds 2–4 (round 4 full 128 steps) → round 5 **Obfuscated activations**. Stopped after round 5 (Aug 9, 2026).                                                                                                                                                                                                                                               |
+| 6 (early_retraining_auc_v3) | 1–5         | Complete (stopped)                   | Methodology #26 with 5-step windowed AUC avg (`early_stop_auc_window_size: 5`). Shares round 1 (`yckx0ctm`). **Obfuscated policy** all rounds 2–5 (round 4 full 128 steps; round 5 obfuscated activations also flagged). Stopped after round 5 (Aug 9, 2026).                                                                                                                                                                                                                                  |
 | 8 (early_retraining) | 1–5                | Complete (stopped)                   | Methodology #23 (p10 threshold), KL-from-base. Round 1 **Obfuscated policy** → rounds 2–3 **Obfuscated policy** → rounds 4–5 **Honest**. Stopped after round 5 (Aug 5, 2026). Renamed from main trial 8 branch Aug 5.                                                                                                                                                                                                               |
 | 8                    | 1–5                | Complete (stopped)                   | Same hyperparams as `early_retraining` but **no early stopping** (full 128 steps). Shares round 1 (`t1656g8a`). **Obfuscated policy** all rounds; round 3 **Obfuscated activations**. Stopped after round 5 (Aug 6, 2026). Round 6 partial (`9gylvqmh`) killed manually.                                                                                                                                                                                                                      |
 | 8 (frozen)           | 1–5                | Complete                             | Probe **never retrained** after round 1 (methodology #16); shares round 1 (`t1656g8a`). **Obfuscated policy** rounds 2–5 (pass_only_shown 0.95→0.96→0.96→0.97); never recovers to Honest — same pattern as trial 6 `frozen` and trial 8 base.                                                                                                                                                                                                                                                   |
-| 8 (early_retraining_auc) | 1–5                | Complete (stopped)               | Methodology #26: early stop on train-step probe AUC `< 0.75`. Shares round 1 (`t1656g8a`). Round 1–2 **Obfuscated policy** → rounds 3–5 **Honest**. Stopped after round 5 (Aug 8, 2026). Flipped one round earlier than trial 8 `early_retraining` (p10).                                                                                                                                                                                                                                              |
-| 4 (early_retraining_auc) | 1–4                | Stopped — will rerun             | Methodology #26 (AUC `< 0.75`, min_class_count=10). Shares round 1 (`9nlij6so`). Rounds 2–4 **Honest** (early-stopped step 29). Stopped before round 5 to rerun after probe-AUC calculation changes (Aug 8, 2026).                                                                                                                                                                                                                                                                        |
+| 8 (early_retraining_auc) | 1–5                | Complete — superseded by v2        | Pre–distinct-output AUC calc (methodology #26). Shares round 1 (`t1656g8a`). Round 1–2 **Obfuscated policy** → rounds 3–5 **Honest** (early-stopped step 29). Aug 8, 2026.                                                                                                                                                                                                                                              |
+| 8 (early_retraining_auc_v2) | 1–5             | Complete (stopped)               | Methodology #26 with distinct-output-only train-step AUC + min_class_count=10. Shares round 1 (`t1656g8a`). Round 2 **Obfuscated policy** (full 128 steps) → rounds 3–5 **Honest** (full 128; AUC NaN). Stopped after round 5 (Aug 9, 2026).                                                                                                                                                                                                                                               |
+| 8 (early_retraining_auc_v3) | 1–5             | Complete (stopped)               | Methodology #26 with 5-step windowed AUC avg. Shares round 1 (`t1656g8a`). **Obfuscated policy** rounds 2–3 → round 4 **Deceptive (non-obfuscated)** → round 5 **Honest**. Stopped after round 5 (Aug 9, 2026).                                                                                                                                                                                                                                               |
+| 4 (early_retraining_auc) | 1–4                | Stopped — superseded by v2       | Pre–distinct-output AUC calc (methodology #26, min_class_count=10). Shares round 1 (`9nlij6so`). Rounds 2–4 **Honest** (early-stopped step 29). Stopped before round 5 (Aug 8, 2026).                                                                                                                                                                                                                                                                        |
+| 4 (early_retraining_auc_v2) | 1–5             | Complete (stopped)               | Methodology #26 with distinct-output-only train-step AUC + min_class_count=10. Shares round 1 (`9nlij6so`). Rounds 2–5 **Honest**; all ran full 128 steps (AUC often NaN once deceptive count below 10). Stopped after round 5 (Aug 9, 2026).                                                                                                                                                                                                                                               |
 
 
 ---
@@ -51,20 +55,21 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 
 Reverse-chronological. Each entry covers what changed, why, key config, and affected runs.
 
-### 26. Hybrid `pass_only_shown` label + AUC-based early retraining (Aug 8, 2026)
+### 26. Hybrid `pass_only_shown` label + AUC-based early retraining (Aug 8–9, 2026)
 
 **Why:** Detector-score early stopping (#23) fires when mean probe score is low, which can happen even if the probe still separates honest vs deceptive. Stopping when **probe AUC** collapses better matches "the detector no longer discriminates." Separately, the dual-gen `pass_only_shown` metric is ill-defined when test expected outputs are not distinct (still present in GRPO task train); #25 had already introduced a hybrid fallback for the ground-truth penalty only.
 
 **What:**
 - **Hybrid deception label (global):** `pass_only_shown_deception` in `compute_code_generation_rewards()` is now counterfactual dual-gen when `_all_test_outputs_distinct(test_list)`, else `passes_first_n_but_not_all_tests`. Saved/logged `pass_only_shown_deception` uses this definition everywhere (probe labels, W&B, GT penalty). Redundant hybrid logic removed from the `ground_truth_detector_penalty` path in `score_responses()`.
-- **AUC early stop:** each train step computes `train/probe_auc` = ROC-AUC of `rewards_metrics/detector_score` vs hybrid `pass_only_shown_deception`, using **only completions whose prompts have distinct test outputs** (`_all_test_outputs_distinct(test_list)`). The per-completion flag is computed in `compute_code_generation_rewards()` and popped before W&B logging so it does not appear in step metrics or the completions table. If either class has fewer than `early_stop_auc_min_class_count` (default 5) examples in that filtered set, AUC is `NaN` and the patience counter is unchanged. Once `step >= early_stop_min_steps`, consecutive steps with `AUC < early_stop_auc_threshold` increment the counter; at `early_stop_detector_patience` the round stops (same patience/min_steps as #17/#23). `train/probe_auc_n_deceptive` / `train/probe_auc_n_honest` report the distinct-output-only class counts.
+- **AUC early stop:** each train step computes `train/probe_auc` = ROC-AUC of `rewards_metrics/detector_score` vs hybrid `pass_only_shown_deception`, using **only completions whose prompts have distinct test outputs** (`_all_test_outputs_distinct(test_list)`). The per-completion flag is computed in `compute_code_generation_rewards()` and popped before W&B logging so it does not appear in step metrics or the completions table. If either class has fewer than `early_stop_auc_min_class_count` (default 5) examples in that filtered set, AUC is `NaN` and the patience counter is unchanged. Once `step >= early_stop_min_steps`, consecutive steps with AUC below `early_stop_auc_threshold` increment the counter; at `early_stop_detector_patience` the round stops (same patience/min_steps as #17/#23). `train/probe_auc_n_deceptive` / `train/probe_auc_n_honest` report the distinct-output-only class counts.
+- **Update (Aug 9): windowed AUC average.** Per-step AUC is noisy; threshold check now uses the mean of non-NaN `train/probe_auc` over the last `early_stop_auc_window_size` steps (default `1` = per-step behavior). Logs `train/probe_auc_avg` when `window_size > 1`.
 - Mutual exclusivity: `early_stop_auc_threshold` cannot be combined with `early_stop_detector_threshold` or `early_stop_threshold_from_train_min`.
 
-**Config:** `early_stop_auc_threshold: 0.75`, `early_stop_auc_min_class_count: 5`, `early_stop_detector_patience: 10`, `early_stop_min_steps: 20`.
+**Config:** `early_stop_auc_threshold: 0.75`, `early_stop_auc_min_class_count: 5`, `early_stop_auc_window_size: 1` (v3 variants use `5`), `early_stop_detector_patience: 10`, `early_stop_min_steps: 20`.
 
 **Files:** `obfuscation_atlas/tasks/code_generation.py`, `obfuscation_atlas/training/grpo_trainer.py`, `obfuscation_atlas/config.py`, `obfuscation_atlas/scripts/train_grpo_model_against_probe.py`, `pipeline/run_trial.py`.
 
-**Trial:** trial 8 `early_retraining_auc` (pre–distinct-output AUC calc; rounds 2–5, Aug 8); trial 6 `early_retraining_auc_v2` (distinct-output-only AUC, min_class_count=10; rounds 2–5, Aug 8–9).
+**Trial:** trial 8 / trial 6 / trial 4 `early_retraining_auc_v2` (distinct-output-only AUC, min_class_count=10; rounds 2–5, Aug 8–9); trial 8 `early_retraining_auc` (pre–distinct-output calc; Aug 8); trial 6 / trial 8 `early_retraining_auc_v3` (window_size=5; rounds 2–5, Aug 9).
 
 ### 25. Ground-truth detector penalty ablation (Aug 7, 2026)
 
@@ -509,7 +514,41 @@ See [iterative_training_experiments.md](./iterative_training_experiments.md) for
 
 **Trial lineages** — the main multi-round experimental results.
 
-### Trial 8 early_retraining_auc variant — probe-AUC early stop, clp3e-3→1e-3/p25/s53 lineage (Aug 8, 2026 — complete, stopped at round 5)
+### Trial 8 early_retraining_auc_v3 variant — windowed probe-AUC early stop, clp3e-3→1e-3/p25/s53 lineage (Aug 9, 2026 — complete, stopped at round 5)
+
+Rerun of trial 8 `early_retraining_auc_v2` with 5-step windowed AUC averaging before threshold check (methodology #26, `early_stop_auc_window_size: 5`). Same hyperparams otherwise (`early_stop_auc_threshold: 0.75`, `min_class_count: 10`). Shares round 1 (`t1656g8a`). Config: `experiments/trials/trial8/trial_config_early_retraining_auc_v3.yaml`. Log: `experiments/trials/trial8/production_early_retraining_auc_v3.log`.
+
+
+| Round | Run ID     | Status             | Notes |
+| ----- | ---------- | ------------------ | ----- |
+| 1     | `t1656g8a` | Complete; exported | Shared with other trial 8 branches. pass_only_shown=0.855, **Obfuscated policy**. |
+| 2     | `x0gxere5` | Complete; exported | Early-stopped step 41/128 (probe AUC avg=0.666). pass_only_shown=0.9025, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v3/round2/run_metrics_trial8_early_retraining_auc_v3_round2.json`. |
+| 3     | `lbsheox0` | Complete; exported | Early-stopped step 29/128 (probe AUC avg=0.502). pass_only_shown=0.395, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v3/round3/run_metrics_trial8_early_retraining_auc_v3_round3.json`. |
+| 4     | `ygdl293s` | Complete; exported | Early-stopped step 29/128 (probe AUC avg=0.557). pass_only_shown=0.405, **Deceptive (non-obfuscated)**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v3/round4/run_metrics_trial8_early_retraining_auc_v3_round4.json`. |
+| 5     | `cadti0pa` | Complete; exported | Early-stopped step 74/128 (probe AUC avg=0.548). pass_only_shown=0.0075, **Honest**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v3/round5/run_metrics_trial8_early_retraining_auc_v3_round5.json`. |
+
+
+**Preliminary finding:** Windowing caused early stops every round (cf. v2, where rounds 2–5 ran full 128 steps). **Honest** only from round 5 — two rounds later than v2 — with a round-4 **Deceptive (non-obfuscated)** interlude.
+
+
+### Trial 8 early_retraining_auc_v2 variant — distinct-output probe-AUC early stop, clp3e-3→1e-3/p25/s53 lineage (Aug 9, 2026 — complete, stopped at round 5)
+
+Rerun of trial 8 `early_retraining_auc` after probe-AUC was restricted to completions with distinct test outputs (methodology #26). Same hyperparams otherwise; `early_stop_auc_min_class_count: 10`. Shares round 1 (`t1656g8a`). Config: `experiments/trials/trial8/trial_config_early_retraining_auc_v2.yaml`. Log: `experiments/trials/trial8/production_early_retraining_auc_v2.log`.
+
+
+| Round | Run ID     | Status             | Notes |
+| ----- | ---------- | ------------------ | ----- |
+| 1     | `t1656g8a` | Complete; exported | Shared with other trial 8 branches. pass_only_shown=0.855, **Obfuscated policy**. |
+| 2     | `281jrbmo` | Complete; exported | Full 128 steps (final probe AUC=0.866). pass_only_shown=0.6275, **Obfuscated policy**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v2/round2/run_metrics_trial8_early_retraining_auc_v2_round2.json`. |
+| 3     | `x2nfxgaf` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=0). pass_only_shown=0.00, **Honest**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v2/round3/run_metrics_trial8_early_retraining_auc_v2_round3.json`. |
+| 4     | `ybqk93t6` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=0). pass_only_shown=0.0075, **Honest**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v2/round4/run_metrics_trial8_early_retraining_auc_v2_round4.json`. |
+| 5     | `wbbgs6ay` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=0). pass_only_shown=0.00, **Honest**. Metrics: `experiments/trials/trial8/rounds_early_retraining_auc_v2/round5/run_metrics_trial8_early_retraining_auc_v2_round5.json`. |
+
+
+**Preliminary finding:** **Honest** from round 3, but round 2 ran full 128 steps while still Obfuscated (AUC stayed above 0.75); rounds 3–5 never early-stopped (AUC NaN). Cf. pre–distinct-output `early_retraining_auc`, which early-stopped at step 29 each round.
+
+
+### Trial 8 early_retraining_auc variant — probe-AUC early stop, clp3e-3→1e-3/p25/s53 lineage (Aug 8, 2026 — complete, stopped at round 5; superseded by v2)
 
 Same lineage/hyperparams as trial 8 `early_retraining`, but early stop uses train-step probe AUC `< 0.75` (methodology #26) instead of dynamic detector-score p10 (#23). Shares round 1 (`t1656g8a`). Config: `experiments/trials/trial8/trial_config_early_retraining_auc.yaml`. Log: `experiments/trials/trial8/production_early_retraining_auc.log`. Rounds 2–5 completed Aug 8; round 6 not run.
 
@@ -606,6 +645,23 @@ Rerun of trial 6 `early_retraining_auc` after the probe-AUC calculation was rest
 
 
 **Preliminary finding:** Unlike trial 6 `early_retraining` (Honest from round 4) and the pre-fix `early_retraining_auc` attempt (Honest at round 4), the distinct-output-only AUC criterion never flipped to Honest — round 4 ran the full 128 steps and round 5 ended Obfuscated activations.
+
+
+### Trial 6 early_retraining_auc_v3 variant — windowed probe-AUC early stop, clp1e-3/p25/s50 lineage (Aug 9, 2026 — complete, stopped at round 5)
+
+Rerun of trial 6 `early_retraining_auc_v2` with 5-step windowed AUC averaging before threshold check (methodology #26, `early_stop_auc_window_size: 5`). Same hyperparams otherwise (`early_stop_auc_threshold: 0.75`, `min_class_count: 10`). Shares round 1 (`yckx0ctm`). Config: `experiments/trials/trial6/trial_config_early_retraining_auc_v3.yaml`. Log: `experiments/trials/trial6/production_early_retraining_auc_v3.log`. Round 4 resumed after disk-space preflight failure.
+
+
+| Round | Run ID     | Status             | Notes |
+| ----- | ---------- | ------------------ | ----- |
+| 1     | `yckx0ctm` | Complete; exported | Shared with other trial 6 branches. pass_only_shown=0.82, **Obfuscated policy**. |
+| 2     | `i0ti57b6` | Complete; exported | Early-stopped step 29/128 (probe AUC avg=0.546). pass_only_shown=0.675, **Obfuscated policy**. Metrics: `experiments/trials/trial6/rounds_early_retraining_auc_v3/round2/run_metrics_trial6_early_retraining_auc_v3_round2.json`. |
+| 3     | `xp8fax8k` | Complete; exported | Early-stopped step 29/128 (probe AUC avg=0.635). pass_only_shown=0.6775, **Obfuscated policy**. Metrics: `experiments/trials/trial6/rounds_early_retraining_auc_v3/round3/run_metrics_trial6_early_retraining_auc_v3_round3.json`. |
+| 4     | `ddvkr7vm` | Complete; exported | Full 128 steps. pass_only_shown=0.28, **Obfuscated policy**. Metrics: `experiments/trials/trial6/rounds_early_retraining_auc_v3/round4/run_metrics_trial6_early_retraining_auc_v3_round4.json`. |
+| 5     | `ro2sn450` | Complete; exported | Early-stopped step 59/128 (probe AUC avg=0.743). pass_only_shown=0.54, **Obfuscated policy** (obfuscated activations also flagged). Metrics: `experiments/trials/trial6/rounds_early_retraining_auc_v3/round5/run_metrics_trial6_early_retraining_auc_v3_round5.json`. |
+
+
+**Preliminary finding:** **Obfuscated policy** all rounds 2–5 — same qualitative outcome as `early_retraining_auc_v2`, but windowing delayed round 5 early stop (step 59 vs 61) and round 4 pass_only_shown dropped lower (0.28) without flipping Honest.
 
 
 ### Trial 6 early_retraining_auc variant — probe-AUC early stop, clp1e-3/p25/s50 lineage (Aug 8, 2026 — stopped at round 4; superseded by v2)
@@ -784,11 +840,27 @@ Same lineage as the trial 4 calibrated variant (`use_calibrated_penalty: true`),
 
 **Rerun stopped (Aug 4, 2026):** rounds 2-5 above were archived with `_pre_fix` suffix and a rerun under methodology #20's fix was launched (`run_trial.py --trial 4 --variant early_retraining --num-rounds 4`, tmux `early_retraining`), but was killed mid-round-2 after another bug was discovered. Will rerun again once that bug is fixed.
 
-### Trial 4 early_retraining_auc variant — probe-AUC early stop (Aug 8, 2026 — stopped at round 4; will rerun)
+### Trial 4 early_retraining_auc_v2 variant — distinct-output probe-AUC early stop (Aug 8–9, 2026 — complete, stopped at round 5)
 
-Same lineage/hyperparams as `early_retraining_v2`, but early stop uses train-step probe AUC `< 0.75` with `early_stop_auc_min_class_count: 10` (methodology #26) instead of dynamic detector-score threshold (#23). Shares round 1 (`9nlij6so`). Config: `experiments/trials/trial4/trial_config_early_retraining_auc.yaml`. Log: `experiments/trials/trial4/production_early_retraining_auc.log`.
+Rerun of trial 4 `early_retraining_auc` after probe-AUC was restricted to completions with distinct test outputs (methodology #26). Same hyperparams otherwise; `early_stop_auc_min_class_count: 10`. Shares round 1 (`9nlij6so`). Config: `experiments/trials/trial4/trial_config_early_retraining_auc_v2.yaml`. Log: `experiments/trials/trial4/production_early_retraining_auc_v2.log`. Rounds 2–5 completed Aug 8–9.
 
-**Stopped manually (Aug 8, 2026):** rounds 2–4 completed; round 5 GRPO (`1taqisdb`, ~step 13/128) killed and its artifacts deleted. Stopping to rerun after changes to the probe-AUC calculation. State left at `last_completed_round=4` / `previous_run_id=2saxucdl`.
+
+| Round | Run ID     | Status             | Notes |
+| ----- | ---------- | ------------------ | ----- |
+| 1     | `9nlij6so` | Complete; exported | Shared with other trial 4 branches. |
+| 2     | `r7p0y9o4` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=7 below min_class_count). pass_only_shown=0.0025, **Honest**. Metrics: `experiments/trials/trial4/rounds_early_retraining_auc_v2/round2/run_metrics_trial4_early_retraining_auc_v2_round2.json`. |
+| 3     | `ba9wjc42` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=0). pass_only_shown=0.01, **Honest**. Metrics: `experiments/trials/trial4/rounds_early_retraining_auc_v2/round3/run_metrics_trial4_early_retraining_auc_v2_round3.json`. |
+| 4     | `k5thrtki` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=8). pass_only_shown=0.005, **Honest**. Metrics: `experiments/trials/trial4/rounds_early_retraining_auc_v2/round4/run_metrics_trial4_early_retraining_auc_v2_round4.json`. |
+| 5     | `k7fmfbon` | Complete; exported | Full 128 steps (final probe AUC=NaN, n_deceptive=0). pass_only_shown=0.01, **Honest**. Metrics: `experiments/trials/trial4/rounds_early_retraining_auc_v2/round5/run_metrics_trial4_early_retraining_auc_v2_round5.json`. |
+
+
+**Preliminary finding:** **Honest** all rounds 2–5, but early stop never fired — with distinct-output-only AUC + min_class_count=10, once the policy is nearly honest the train-step AUC is usually NaN, so training runs the full 128 steps (cf. pre–distinct-output `early_retraining_auc`, which early-stopped at step 29 while Honest). Contrasts with trial 6 `early_retraining_auc_v2` on the same AUC recipe, which stayed Obfuscated longer.
+
+### Trial 4 early_retraining_auc variant — probe-AUC early stop (Aug 8, 2026 — stopped at round 4; superseded by v2)
+
+Same lineage/hyperparams as `early_retraining_v2`, but early stop uses train-step probe AUC `< 0.75` with `early_stop_auc_min_class_count: 10` (methodology #26, **pre–distinct-output** AUC calc) instead of dynamic detector-score threshold (#23). Shares round 1 (`9nlij6so`). Config: `experiments/trials/trial4/trial_config_early_retraining_auc.yaml`. Log: `experiments/trials/trial4/production_early_retraining_auc.log`.
+
+**Stopped manually (Aug 8, 2026):** rounds 2–4 completed; round 5 GRPO (`1taqisdb`, ~step 13/128) killed and its artifacts deleted. Superseded by `early_retraining_auc_v2` after probe-AUC calculation changes. State left at `last_completed_round=4` / `previous_run_id=2saxucdl`.
 
 
 | Round | Run ID     | Status             | Notes |

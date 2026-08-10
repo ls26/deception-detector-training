@@ -4,6 +4,9 @@
 import json
 import random
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path("/workspace")))
+
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -12,13 +15,15 @@ from matplotlib.ticker import PercentFormatter
 from pipeline.paths import WORKSPACE
 
 TRIAL = 8
-VARIANT = "early_retraining"  # "" for the main branch, or a named branch (e.g. "calibrated")
+VARIANT = "early_retraining_auc_v2"  # "" for the main branch, or a named branch (e.g. "calibrated")
 if not VARIANT:
     VARIANT_LABEL = "original"
 elif VARIANT == "v2":
     VARIANT_LABEL = "original"
 elif VARIANT in ("early_retraining", "early_retraining_v2"):
     VARIANT_LABEL = "early retraining"
+elif VARIANT in ("early_retraining_auc", "early_retraining_auc_v2"):
+    VARIANT_LABEL = "AUC-based early retraining"
 else:
     VARIANT_LABEL = VARIANT  # used in plot titles
 TRIAL_DIR = WORKSPACE / f"experiments/trials/trial{TRIAL}"
@@ -26,6 +31,9 @@ ROUNDS_DIR = TRIAL_DIR / (f"rounds_{VARIANT}" if VARIANT else "rounds")
 BUFFER_DIR = TRIAL_DIR / (f"buffer_{VARIANT}" if VARIANT else "buffer")
 OUTPUT_CSV = TRIAL_DIR / "results" / (
     f"round_analysis_trial{TRIAL}{f'_{VARIANT}' if VARIANT else ''}.csv"
+)
+OUTPUT_TASK_METRICS_FIG = OUTPUT_CSV.with_name(
+    OUTPUT_CSV.stem.replace("round_analysis", "task_metrics_ceiling") + ".png"
 )
 WANDB_PROJECT_PATH = "lilylixin6-the-harker-school/deception_detection"
 BASE_EVAL_JSONL = WORKSPACE / "experiments/artifacts/base/base_eval_generations.jsonl"
@@ -399,6 +407,7 @@ def plot_task_metric_bars(
     ceiling_refs: dict[str, tuple[float, float]] | None = None,
     overlay_at_x: tuple[int, dict[str, float], str] | None = None,
     round_df: pd.DataFrame | None = None,
+    save_path: Path | None = None,
 ):
     fig, ax = plt.subplots(figsize=(6, 5))
     if ceiling_refs:
@@ -442,6 +451,10 @@ def plot_task_metric_bars(
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, legend_y), ncol=ncol, frameon=False)
     fig.tight_layout()
     fig.subplots_adjust(bottom=0.26 if round_df is not None else 0.18)
+    if save_path is not None:
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"Wrote figure to {save_path}")
 
 
 def round_axis_labels(round_df: pd.DataFrame) -> list[str]:
@@ -725,69 +738,7 @@ plot_task_metric_bars(
     ncol=3,
     ceiling_refs=ceiling_refs,
     round_df=df,
-)
-
-# %%
-calibrated_row = combined_outcome_row(
-    outcome_categories_from_run_metrics(ROUND2_CALIBRATED_PENALTY_METRICS)
-)
-calibrated_metrics = load_json(ROUND2_CALIBRATED_PENALTY_METRICS)["metrics"]
-
-fig, (ax_policy, ax_dataset) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
-
-plot_score_shifts(ax_policy, df, on_policy_shifts)
-plot_calibrated_score_shift(ax_policy, df, calibrated_metrics, on_policy_shifts)
-add_shift_legend(ax_policy, shift_legend, include_grpo=True, include_calibrated=True)
-style_probe_axis(
-    ax_policy,
-    title=f"On-policy probe score shift across rounds ({VARIANT_LABEL})",
-    x_ticks=models,
-    x_labels=model_labels,
-)
-
-plot_score_shifts(ax_dataset, df, dataset_shifts)
-plot_calibrated_score_shift(ax_dataset, df, calibrated_metrics, dataset_shifts)
-add_shift_legend(ax_dataset, shift_legend, include_grpo=True, include_calibrated=True)
-style_probe_axis(
-    ax_dataset,
-    title=f"On-dataset probe score shift across rounds ({VARIANT_LABEL})",
-    xlabel="Model",
-    x_ticks=models,
-    x_labels=model_labels,
-    round_df=df,
-)
-
-fig.tight_layout()
-fig.subplots_adjust(bottom=0.10)
-
-plot_task_metric_bars(
-    COMBINED_TASK_METRICS,
-    task_rows_by_x(base_row, df, combined=True),
-    bar_width=0.22,
-    title=f"Task metrics across rounds ({VARIANT_LABEL})",
-    x_ticks=round_x,
-    x_labels=round_labels,
-    ncol=4,
-    overlay_at_x=(2, calibrated_row, "Calibrated probe"),
-    round_df=df,
-)
-
-# %%
-round1_row = df.loc[df["round"] == 1].iloc[0]
-baseline_rows_by_x = {
-    0: combined_outcome_row(base_row),
-    1: combined_outcome_row({col: round1_row[col] for col in OUTCOME_COLS}),
-    2: combined_outcome_row(outcome_categories_from_run_metrics(ROUND2_BASELINE_METRICS)),
-}
-
-plot_task_metric_bars(
-    COMBINED_TASK_METRICS,
-    baseline_rows_by_x,
-    bar_width=0.22,
-    title=f"Task metrics: no probe update baseline ({VARIANT_LABEL})",
-    x_ticks=[0, 1, 2, 3, 4],
-    x_labels=["Base", "1", "2", "3", "4"],
-    ncol=3,
+    save_path=OUTPUT_TASK_METRICS_FIG,
 )
 
 # %%

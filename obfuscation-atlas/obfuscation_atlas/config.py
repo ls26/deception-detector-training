@@ -771,6 +771,8 @@ class GRPOObfuscationConfig(SFTConfig):
     # training stops. Mutually exclusive with score-based early stopping above.
     early_stop_auc_threshold: Optional[float] = None
     early_stop_auc_min_class_count: int = 5
+    # Number of recent steps to average probe AUC over before threshold check (1 = per-step).
+    early_stop_auc_window_size: int = 1
 
 
 @dataclass

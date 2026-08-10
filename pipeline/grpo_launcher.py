@@ -29,6 +29,7 @@ WANDB_PROJECT = "deception_detection"
 VLLM_MODELS_URL = "http://127.0.0.1:8000/v1/models"
 
 RUNS_BASE = WORKSPACE / "results/run_results"
+ACTIVATIONS_DIR = WORKSPACE / "results/activations"
 # Primary: wandb "setting up run {id}". Secondary: new save-path .../{run_key}_{id}/.
 # Legacy: trigger_none_model_{id}_layers_32 (pre-migration dirs).
 GRPO_RUN_ID_RE = re.compile(
@@ -333,6 +334,37 @@ def cleanup_intermediates(
     print(f"OK: cleaned up intermediates for {run_id} (kept final/, responses/, eval artifacts)")
 
 
+def cleanup_activation_caches(
+    run_id: str,
+    *,
+    run_key: str | None = None,
+) -> None:
+    """Remove activation caches left by a GRPO run.
+
+    Called from the parent process after the GRPO subprocess exits, so mmap
+    handles have been released. In-subprocess cleanup usually fails for that reason.
+    """
+    if not ACTIVATIONS_DIR.is_dir():
+        return
+
+    dirs_removed: list[str] = []
+    for d in sorted(ACTIVATIONS_DIR.glob(f"activations_{run_id}*")):
+        if d.is_dir():
+            shutil.rmtree(d)
+            dirs_removed.append(d.name)
+
+    if run_key:
+        for d in sorted(ACTIVATIONS_DIR.glob(f"{run_key}_base_activations_*")):
+            if d.is_dir():
+                shutil.rmtree(d)
+                dirs_removed.append(d.name)
+
+    if dirs_removed:
+        print(f"OK: removed {len(dirs_removed)} activation cache dir(s) for {run_id}:")
+        for name in dirs_removed:
+            print(f"  - {name}")
+
+
 def check_degeneracy(metrics_path: Path, min_val_does_execute: float) -> tuple[bool, float | None]:
     """Inspect an exported run_metrics.json for a degenerate collapse (exit
     code 0 but the policy stopped producing executable code -- see
@@ -543,6 +575,7 @@ def launch(config: dict, *, min_free_gb: int = 50) -> str:
 
         if config.get("cleanup", True):
             cleanup_intermediates(run_id, group=group, run_key=run_key)
+            cleanup_activation_caches(run_id, run_key=run_key)
 
         return run_id
 

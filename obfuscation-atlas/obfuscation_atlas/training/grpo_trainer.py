@@ -42,7 +42,7 @@ import math
 import os
 import shutil
 import time
-from collections import defaultdict
+from collections import defaultdict, deque
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager, nullcontext
@@ -2059,6 +2059,11 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
         early_stop_counter = 0
         early_stop_auc_counter = 0
+        auc_threshold = self.obfuscation_config.early_stop_auc_threshold
+        auc_window_size = self.obfuscation_config.early_stop_auc_window_size
+        early_stop_auc_window: deque[float] | None = (
+            deque(maxlen=auc_window_size) if auc_threshold is not None else None
+        )
         while self.state.step < self.total_steps:
             lora_path = self.lora_dir / f"step_{self.state.step}"
 
@@ -2085,6 +2090,15 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     vllm_client=vllm_client,
                 )
 
+            probe_auc_avg = float("nan")
+            if early_stop_auc_window is not None:
+                auc = train_metrics.get("train/probe_auc", float("nan"))
+                early_stop_auc_window.append(float(auc))
+                valid_aucs = [v for v in early_stop_auc_window if not math.isnan(v)]
+                probe_auc_avg = sum(valid_aucs) / len(valid_aucs) if valid_aucs else float("nan")
+                if auc_window_size > 1:
+                    train_metrics["train/probe_auc_avg"] = probe_auc_avg
+
             pbar.set_description("Logging metrics")
             self.maybe_log_metrics(train_metrics, eval_metrics, self.state.step)
             metrics_list.append(train_metrics)
@@ -2110,18 +2124,16 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     pbar.update(1)
                     break
 
-            auc_threshold = self.obfuscation_config.early_stop_auc_threshold
             if auc_threshold is not None and self.state.step >= self.obfuscation_config.early_stop_min_steps:
-                auc = train_metrics.get("train/probe_auc")
-                if auc is not None and not math.isnan(auc):
-                    if auc < auc_threshold:
+                if not math.isnan(probe_auc_avg):
+                    if probe_auc_avg < auc_threshold:
                         early_stop_auc_counter += 1
                     else:
                         early_stop_auc_counter = 0
                     if early_stop_auc_counter >= self.obfuscation_config.early_stop_detector_patience:
                         logger.info(
-                            f"Early stopping at step {self.state.step}: probe AUC "
-                            f"{auc:.4f} < {auc_threshold} for "
+                            f"Early stopping at step {self.state.step}: probe AUC avg "
+                            f"{probe_auc_avg:.4f} < {auc_threshold} for "
                             f"{self.obfuscation_config.early_stop_detector_patience} consecutive steps"
                         )
                         pbar.update(1)
