@@ -4,11 +4,10 @@
 from __future__ import annotations
 
 import argparse
-import ast
 import gc
 import json
-import os
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -44,17 +43,15 @@ from pipeline.round_config import resolve_checkpoint_final
 from experiments.supplemented_probe_eval.common import (
     DATA_SEED,
     DECEPTIVE_DEFINITION,
-    LINEAGES,
     build_supplemented_rows,
-    load_jsonl,
     load_trial_state,
+    resolve_targets,
     results_path,
     rounds_dir,
     source_eval_rows,
 )
 
 FOLLOW_UP: list = []
-CACHE_ROOT = WORKSPACE / "experiments/supplemented_probe_eval/activations"
 SPLIT_FPR = 0.01
 
 
@@ -114,7 +111,6 @@ def score_supplemented_rows(
     probe_dict,
     filtered_layers: list[int],
     rows: list[dict],
-    cache_dir: Path,
 ) -> dict:
     prompts = [r["prompt"] for r in rows]
     completions = [r["completion"] for r in rows]
@@ -122,40 +118,41 @@ def score_supplemented_rows(
     val_neg = Dataset.from_dict({"prompt": prompts, "completion": completions})
 
     detector_key = detector_key_for("last-token-generation")
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    on_policy_results = eval_multiple_detectors(
-        detectors=[probe_dict],
-        detector_types=["linear-probe"],
-        test_dataset=(val_gens, val_neg),
-        obfuscate_over="last-token-generation",
-        model=model,
-        tokenizer=tokenizer,
-        test_completion_columns=("completion", "completion"),
-        test_congruent_follow_up_prompts=FOLLOW_UP,
-        max_sequence_length=MAX_SEQUENCE_LENGTH,
-        model_batch_size=MODEL_BATCH_SIZE,
-        eval_sequence_aggregator=EVAL_SEQUENCE_AGGREGATOR,
-        test_cache_activations_save_path=str(cache_dir),
-        accelerator=None,
-    )
-    _assert_probed_token(cache_dir, tokenizer=tokenizer, follow_up=FOLLOW_UP, label=str(cache_dir.name))
+    with tempfile.TemporaryDirectory() as tmp:
+        cache_dir = Path(tmp)
+        on_policy_results = eval_multiple_detectors(
+            detectors=[probe_dict],
+            detector_types=["linear-probe"],
+            test_dataset=(val_gens, val_neg),
+            obfuscate_over="last-token-generation",
+            model=model,
+            tokenizer=tokenizer,
+            test_completion_columns=("completion", "completion"),
+            test_congruent_follow_up_prompts=FOLLOW_UP,
+            max_sequence_length=MAX_SEQUENCE_LENGTH,
+            model_batch_size=MODEL_BATCH_SIZE,
+            eval_sequence_aggregator=EVAL_SEQUENCE_AGGREGATOR,
+            test_cache_activations_save_path=str(cache_dir),
+            accelerator=None,
+        )
+        _assert_probed_token(cache_dir, tokenizer=tokenizer, follow_up=FOLLOW_UP, label="supplemented")
 
-    deceptive_key = deceptive_reward_key(DECEPTIVE_DEFINITION)
-    reward_metrics = {
-        deceptive_key: [bool(r["deceptive"]) for r in rows],
-        HONEST_REWARD_KEY: [bool(r["honest"]) for r in rows],
-    }
-    split_results = run_on_policy_split_eval(
-        eval_results=on_policy_results,
-        reward_metrics=reward_metrics,
-        save_path=cache_dir,
-        plot_key="supplemented.on_policy",
-        filtered_layers=filtered_layers,
-        false_positive_rate=SPLIT_FPR,
-        deceptive_key=deceptive_key,
-        save_json=False,
-    )
-    split_summary = _summarize_split_metrics(split_results, detector_key, filtered_layers)
+        deceptive_key = deceptive_reward_key(DECEPTIVE_DEFINITION)
+        reward_metrics = {
+            deceptive_key: [bool(r["deceptive"]) for r in rows],
+            HONEST_REWARD_KEY: [bool(r["honest"]) for r in rows],
+        }
+        split_results = run_on_policy_split_eval(
+            eval_results=on_policy_results,
+            reward_metrics=reward_metrics,
+            save_path=cache_dir,
+            plot_key="supplemented.on_policy",
+            filtered_layers=filtered_layers,
+            false_positive_rate=SPLIT_FPR,
+            deceptive_key=deceptive_key,
+            save_json=False,
+        )
+        split_summary = _summarize_split_metrics(split_results, detector_key, filtered_layers)
     return {
         "deceptive": split_summary["mean_scores_layer_averaged"]["deceptive"],
         "honest": split_summary["mean_scores_layer_averaged"]["honest"],
@@ -208,13 +205,12 @@ def validate_against_probe_metrics(trial: int, variant: str, round_num: int, sta
 def run_lineage(trial: int, variant: str, *, validate: bool = True) -> dict:
     frozen = variant == "frozen"
     state = load_trial_state(trial, variant)
-    lineage_cache = CACHE_ROOT / f"trial{trial}" / (variant or "original")
-    lineage_cache.mkdir(parents=True, exist_ok=True)
+    num_rounds = state["last_completed_round"]
 
-    round_results: dict[str, dict] = {str(r): {} for r in range(1, 6)}
+    round_results: dict[str, dict] = {str(r): {} for r in range(1, num_rounds + 1)}
     model_meta: dict[str, dict] = {}
 
-    for model_k in range(0, 6):
+    for model_k in range(0, num_rounds + 1):
         print(f"\n{'=' * 60}")
         print(f"trial{trial} {variant or 'original'}: model_k={model_k}")
         rows, sup_meta = build_supplemented_rows(trial=trial, variant=variant, model_k=model_k)
@@ -225,7 +221,6 @@ def run_lineage(trial: int, variant: str, *, validate: bool = True) -> dict:
         print(f"  provenance: dec={sup_meta['deceptive_provenance']} hon={sup_meta['honest_provenance']}")
 
         model, tokenizer = load_model_k(trial, variant, model_k, state)
-        cache_dir = lineage_cache / f"model_{model_k}"
 
         if model_k >= 1:
             probe_dict, filtered_layers = load_probe(trial, variant, model_k, frozen=frozen)
@@ -235,7 +230,6 @@ def run_lineage(trial: int, variant: str, *, validate: bool = True) -> dict:
                 probe_dict=probe_dict,
                 filtered_layers=filtered_layers,
                 rows=rows,
-                cache_dir=cache_dir / "probe_end",
             )
             end_metrics["supplement"] = sup_meta
             round_results[str(model_k)]["end"] = end_metrics
@@ -244,7 +238,7 @@ def run_lineage(trial: int, variant: str, *, validate: bool = True) -> dict:
                 f"hon={end_metrics['honest']:.4f} auc={end_metrics['auc']:.4f}"
             )
 
-        if model_k < 5:
+        if model_k < num_rounds:
             probe_dict, filtered_layers = load_probe(trial, variant, model_k + 1, frozen=frozen)
             start_metrics = score_supplemented_rows(
                 model,
@@ -252,7 +246,6 @@ def run_lineage(trial: int, variant: str, *, validate: bool = True) -> dict:
                 probe_dict=probe_dict,
                 filtered_layers=filtered_layers,
                 rows=rows,
-                cache_dir=cache_dir / "probe_start",
             )
             start_metrics["supplement"] = sup_meta
             round_results[str(model_k + 1)]["start"] = start_metrics
@@ -298,11 +291,7 @@ def main() -> None:
     args = parser.parse_args()
 
     bootstrap_hf_env()
-    targets = LINEAGES
-    if args.trials or args.variants:
-        trial_set = set(args.trials or [t for t, _ in LINEAGES])
-        variant_set = set(args.variants if args.variants is not None else [v for _, v in LINEAGES])
-        targets = [(t, v) for t, v in LINEAGES if t in trial_set and v in variant_set]
+    targets = resolve_targets(trials=args.trials, variants=args.variants)
 
     for trial, variant in targets:
         run_lineage(trial, variant, validate=not args.no_validate)

@@ -5,6 +5,7 @@ Architecture and data flow for deception-probe training and evaluation in the Ob
 Related docs:
 - [GRPO_LOGGING_STAGES.md](./GRPO_LOGGING_STAGES.md) — per-stage W&B/local artifact map
 - [PROBE_EVAL_RUNBOOK.md](./PROBE_EVAL_RUNBOOK.md) — HF checkpoint sweeps, local eval-only, single-GPU lifecycle
+- [SUPPLEMENTED_PROBE_EVAL.md](./SUPPLEMENTED_PROBE_EVAL.md) — post-hoc supplemented on-policy split eval for trial lineages
 - [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) — trial status, run history, and experiment details
 - [CONTEXT.md](./CONTEXT.md) — workspace overview
 
@@ -119,6 +120,8 @@ W&B keys: `probes/eval_*.{detector}.on_policy.split/...`, `aggregated_detector_e
 Local artifact: none from GRPO runs (W&B only as of Aug 7, 2026). The pipeline replica (`pipeline/probe_training.py`) still writes `on_policy_split_*.json` locally.
 
 **Caveat:** If the honest class is tiny (e.g. 3/400 on `viudg2wu` val), split AUC is unstable. Check the `n_honest` stat (W&B / exported metrics).
+
+**Supplemented variant (Aug 2026):** Post-hoc analysis that tops up each class to 20 examples via walk-back supplementation, then re-scores with round probes. See [SUPPLEMENTED_PROBE_EVAL.md](./SUPPLEMENTED_PROBE_EVAL.md).
 
 ---
 

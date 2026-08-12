@@ -13,7 +13,12 @@ import pandas as pd
 
 sys.path.insert(0, str(Path("/workspace")))
 
-from experiments.supplemented_probe_eval.common import LINEAGES, results_path, trial_dir, variant_label
+from experiments.supplemented_probe_eval.common import (
+    resolve_targets,
+    results_path,
+    trial_dir,
+    variant_label,
+)
 
 DECEPTIVE_START = "#e6550d"
 DECEPTIVE_END = "#fdae6b"
@@ -65,12 +70,14 @@ def style_axis(ax, *, title, xlabel, x_ticks, x_labels, ylabel="Score", round_df
     if xlabel:
         ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.set_title(title)
+    ax.set_title(title, fontsize=10)
     ax.set_xticks(x_ticks, x_labels)
     ax.set_ylim(0, 1)
     ax.legend()
     ax.grid(True, alpha=0.3)
 
+
+FIGSIZE = (6, 4)  # matches one panel of round_analysis.py's (6, 8) probe-shift figures
 
 def plot_lineage(trial: int, variant: str, *, show: bool = False) -> tuple[Path, Path]:
     data = load_results(trial, variant)
@@ -94,7 +101,7 @@ def plot_lineage(trial: int, variant: str, *, show: bool = False) -> tuple[Path,
         ("black", "GRPO"),
     ]
 
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=FIGSIZE)
     plot_score_shifts(ax, df, on_policy_shifts)
     for color, lbl in shift_legend:
         if color == "black":
@@ -103,7 +110,7 @@ def plot_lineage(trial: int, variant: str, *, show: bool = False) -> tuple[Path,
             ax.scatter([], [], color=color, s=40, label=lbl)
     style_axis(
         ax,
-        title=f"Supplemented on-policy probe score shift ({label})",
+        title=f"On-policy probe score shift ({label})",
         xlabel="Model",
         x_ticks=models,
         x_labels=model_labels,
@@ -116,14 +123,14 @@ def plot_lineage(trial: int, variant: str, *, show: bool = False) -> tuple[Path,
         plt.show()
     plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=FIGSIZE)
     plot_auc_shifts(ax, df, "start_on_policy_auc", "end_on_policy_auc", AUC_START, AUC_END)
     ax.scatter([], [], color=AUC_START, s=40, label="Start")
     ax.scatter([], [], color=AUC_END, s=40, label="End")
     ax.plot([], [], color="black", linewidth=2, label="GRPO")
     style_axis(
         ax,
-        title=f"Supplemented on-policy split probe AUC shift ({label})",
+        title=f"On-policy probe AUC shift ({label})",
         xlabel="Model",
         x_ticks=models,
         x_labels=model_labels,
@@ -149,11 +156,7 @@ def main() -> None:
     parser.add_argument("--show", action="store_true")
     args = parser.parse_args()
 
-    targets = LINEAGES
-    if args.trials or args.variants:
-        trial_set = set(args.trials or [t for t, _ in LINEAGES])
-        variant_set = set(args.variants if args.variants is not None else [v for _, v in LINEAGES])
-        targets = [(t, v) for t, v in LINEAGES if t in trial_set and v in variant_set]
+    targets = resolve_targets(trials=args.trials, variants=args.variants)
 
     for trial, variant in targets:
         plot_lineage(trial, variant, show=args.show)

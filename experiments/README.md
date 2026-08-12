@@ -17,6 +17,8 @@ YAML configs, small wrapper scripts, and output data.
   these paths directly, and some contain absolute paths.
 - **`artifacts/`** — Shared on-policy JSONLs (base + det0 × train/eval) reused
   across trials/configs as fixed anchor sources.
+- **`supplemented_probe_eval/`** — Post-hoc supplemented on-policy probe eval
+  for completed trial lineages. See [docs/SUPPLEMENTED_PROBE_EVAL.md](../docs/SUPPLEMENTED_PROBE_EVAL.md).
 - **`run_round_manual.py`** — Active cell-by-cell (`# %%`) scratch driver for
   manually walking through a round when the automated loop needs a one-off
   deviation.

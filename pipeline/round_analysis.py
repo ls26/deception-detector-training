@@ -14,15 +14,17 @@ from matplotlib.ticker import PercentFormatter
 
 from pipeline.paths import WORKSPACE
 
-TRIAL = 8
-VARIANT = "early_retraining_auc_v2"  # "" for the main branch, or a named branch (e.g. "calibrated")
+TRIAL = 6
+VARIANT = "frozen"  # "" for the main branch, or a named branch (e.g. "calibrated")
 if not VARIANT:
     VARIANT_LABEL = "original"
 elif VARIANT == "v2":
     VARIANT_LABEL = "original"
+elif VARIANT == "frozen":
+    VARIANT_LABEL = "frozen probe"
 elif VARIANT in ("early_retraining", "early_retraining_v2"):
-    VARIANT_LABEL = "early retraining"
-elif VARIANT in ("early_retraining_auc", "early_retraining_auc_v2"):
+    VARIANT_LABEL = "score-based early retraining"
+elif VARIANT.startswith("early_retraining_auc"):
     VARIANT_LABEL = "AUC-based early retraining"
 else:
     VARIANT_LABEL = VARIANT  # used in plot titles
@@ -338,6 +340,19 @@ def build_row(cfg: dict) -> dict:
     return row
 
 
+def backfill_frozen_on_dataset_starts(frame: pd.DataFrame) -> None:
+    """Frozen lineages skip probe retraining after round 1, so start on-dataset metrics
+    are missing from probe_metrics.json. Use the previous round's end metrics instead."""
+    if VARIANT != "frozen":
+        return
+    start_cols = ["start_on_dataset_deceptive", "start_on_dataset_honest", "start_on_dataset_auc"]
+    end_cols = ["end_on_dataset_deceptive", "end_on_dataset_honest", "end_on_dataset_auc"]
+    for i in range(1, len(frame)):
+        if pd.isna(frame.at[i, "start_on_dataset_auc"]):
+            for start_col, end_col in zip(start_cols, end_cols):
+                frame.at[i, start_col] = frame.at[i - 1, end_col]
+
+
 def plot_score_shifts(ax, df, shifts):
     for _, row in df.iterrows():
         r = int(row["round"])
@@ -544,6 +559,8 @@ numeric_cols = [c for c in BASE_COLUMNS if c not in ("round", "run_id")]
 for col in numeric_cols:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
+backfill_frozen_on_dataset_starts(df)
+
 OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
 df.to_csv(OUTPUT_CSV, index=False)
 print(f"Wrote {len(df)} rows to {OUTPUT_CSV}")
@@ -748,5 +765,77 @@ SAMPLE_LABEL = "honest"  # "deceptive" or "honest"
 SAMPLE_N = 16
 
 show_buffer_samples(SAMPLE_ROUND, SAMPLE_SPLIT, SAMPLE_LABEL, n=SAMPLE_N)
+
+# %%
+def supplemented_results_path() -> Path:
+    suffix = f"_{VARIANT}" if VARIANT else ""
+    return TRIAL_DIR / "results" / f"supplemented_probe_eval{suffix}.json"
+
+
+def supplemented_figure_paths() -> tuple[Path, Path]:
+    suffix = f"_{VARIANT}" if VARIANT else ""
+    results_dir = TRIAL_DIR / "results"
+    score = results_dir / f"supplemented_on_policy_score_shift_trial{TRIAL}{suffix}.png"
+    auc = results_dir / f"supplemented_on_policy_auc_shift_trial{TRIAL}{suffix}.png"
+    return score, auc
+
+
+def build_supplemented_probe_summary(original_df: pd.DataFrame) -> pd.DataFrame | None:
+    path = supplemented_results_path()
+    if not path.exists():
+        print(f"No supplemented probe eval results at {path}")
+        return None
+
+    rounds = load_json(path).get("rounds", {})
+    rows = []
+    for round_num in range(1, NUM_ROUNDS + 1):
+        orig = original_df.loc[original_df["round"] == round_num].iloc[0]
+        metrics = rounds.get(str(round_num), {})
+        start = metrics.get("start") or {}
+        end = metrics.get("end") or {}
+        rows.append(
+            {
+                "round": round_num,
+                "start_on_policy_deceptive": start.get("deceptive"),
+                "start_on_policy_honest": start.get("honest"),
+                "start_on_policy_auc": start.get("auc"),
+                "end_on_policy_deceptive": end.get("deceptive"),
+                "end_on_policy_honest": end.get("honest"),
+                "end_on_policy_auc": end.get("auc"),
+                "start_on_dataset_deceptive": orig["start_on_dataset_deceptive"],
+                "start_on_dataset_honest": orig["start_on_dataset_honest"],
+                "start_on_dataset_auc": orig["start_on_dataset_auc"],
+                "end_on_dataset_deceptive": orig["end_on_dataset_deceptive"],
+                "end_on_dataset_honest": orig["end_on_dataset_honest"],
+                "end_on_dataset_auc": orig["end_on_dataset_auc"],
+            }
+        )
+
+    metrics_df = pd.DataFrame(rows)
+    summary = pd.DataFrame({"round": metrics_df["round"]})
+    for col_label, (deceptive_col, honest_col, auc_col) in PROBE_SUMMARY_COLS.items():
+        summary[col_label] = metrics_df.apply(
+            lambda row, d=deceptive_col, h=honest_col, a=auc_col: format_probe_cell(
+                row[d], row[h], row[a]
+            ),
+            axis=1,
+        )
+    return summary
+
+
+supplemented_probe_summary = build_supplemented_probe_summary(df)
+if supplemented_probe_summary is not None:
+    print(f"Supplemented probe eval (trial {TRIAL}, {VARIANT_LABEL})")
+style_table(supplemented_probe_summary, pre_wrap=True) if supplemented_probe_summary is not None else None
+
+# %%
+from IPython.display import Image, display
+
+score_fig_path, auc_fig_path = supplemented_figure_paths()
+for path in (score_fig_path, auc_fig_path):
+    if path.exists():
+        display(Image(filename=str(path)))
+    else:
+        print(f"Missing: {path}")
 
 # %%

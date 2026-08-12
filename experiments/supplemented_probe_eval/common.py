@@ -21,12 +21,15 @@ LINEAGES: list[tuple[int, str]] = [
     (4, "v2"),
     (4, "frozen"),
     (4, "early_retraining_v2"),
+    (4, "early_retraining_auc_v2"),
     (6, ""),
     (6, "frozen"),
     (6, "early_retraining"),
+    (6, "early_retraining_auc_v3"),
     (8, ""),
     (8, "frozen"),
     (8, "early_retraining"),
+    (8, "early_retraining_auc_v3"),
 ]
 
 # (trial, variant, round, run_id) — missing local eval JSONLs fetched from W&B.
@@ -47,6 +50,9 @@ MISSING_WANDB_RUNS: list[tuple[int, str, int, str]] = [
     (4, "early_retraining_v2", 5, "8g8580by"),  # eval-only rerun (training run io4ibs0w crashed)
     (6, "", 5, "94wejikq"),
     (6, "early_retraining", 5, "ge0tg5o1"),
+    (4, "early_retraining_auc_v2", 5, "k7fmfbon"),
+    (6, "early_retraining_auc_v3", 5, "ro2sn450"),
+    (8, "early_retraining_auc_v3", 5, "cadti0pa"),
 ]
 
 
@@ -82,8 +88,12 @@ def variant_label(variant: str) -> str:
         return "original"
     if variant == "v2":
         return "original"
+    if variant == "frozen":
+        return "frozen probe"
     if variant in ("early_retraining", "early_retraining_v2"):
-        return "early retraining"
+        return "score-based early retraining"
+    if variant.startswith("early_retraining_auc"):
+        return "AUC-based early retraining"
     return variant
 
 
@@ -233,3 +243,20 @@ def build_supplemented_rows(
 def results_path(trial: int, variant: str) -> Path:
     suffix = f"_{variant}" if variant else ""
     return trial_dir(trial) / "results" / f"supplemented_probe_eval{suffix}.json"
+
+
+def resolve_targets(
+    *,
+    trials: list[int] | None,
+    variants: list[str] | None,
+) -> list[tuple[int, str]]:
+    """Resolve (trial, variant) pairs from CLI args or default LINEAGES."""
+    if trials and variants:
+        return [(t, v) for t in trials for v in variants]
+    if trials:
+        trial_set = set(trials)
+        return [(t, v) for t, v in LINEAGES if t in trial_set]
+    if variants:
+        variant_set = set(variants)
+        return [(t, v) for t, v in LINEAGES if v in variant_set]
+    return LINEAGES

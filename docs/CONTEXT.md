@@ -57,6 +57,7 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 ├── experiments/                 # Lightweight configs, launcher scripts, and per-trial outputs (see experiments/README.md)
 │   ├── run_round_manual.py      # Active scratch driver for trial experimentation
 │   ├── artifacts/                # Shared on-policy JSONLs (base + det0 × train/eval)
+│   ├── supplemented_probe_eval/  # Post-hoc supplemented on-policy probe eval (see SUPPLEMENTED_PROBE_EVAL.md)
 │   ├── extracted_results/         # Historical W&B metric exports (pre-trial ablations)
 │   ├── 2507_det0_baselines/       # Past experiment group: no-detector-penalty baseline/ceiling + seed sweep
 │   ├── 2507_nofu_probe/           # Past experiment group: nofu probe extraction sweep
@@ -72,7 +73,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── FULL_TRIAL_RUNBOOK.md   # run_trial.py automation reference
 │   ├── GRPO_LOGGING_STAGES.md  # Per-stage logging map
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
-│   └── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
+│   ├── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
+│   └── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths, PYTHONPATH=/workspace (for `pipeline`)
@@ -180,6 +182,7 @@ obfuscation-atlas/
 | **Full local GRPO runbook** (checks) | [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md) |
 | What each GRPO stage logs (local + W&B) | [GRPO_LOGGING_STAGES.md](./GRPO_LOGGING_STAGES.md) |
 | Probe eval pipeline (stages, classes, split) | [PROBE_EVAL_PIPELINE.md](./PROBE_EVAL_PIPELINE.md) |
+| Supplemented on-policy probe eval (trial lineages) | [SUPPLEMENTED_PROBE_EVAL.md](./SUPPLEMENTED_PROBE_EVAL.md) |
 | Understand the GRPO training loop | `training/grpo_trainer.py` → `GRPOObfuscationTrainer` |
 | Understand probe-based reward penalties | `training/obfuscation_loss.py` → `ProbeDetector`, `DetectorObfuscator` |
 | Understand how probes are trained | `detectors/train.py`, `detectors/probe_archs.py` |

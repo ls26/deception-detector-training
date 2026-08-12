@@ -55,6 +55,14 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 
 Reverse-chronological. Each entry covers what changed, why, key config, and affected runs.
 
+### 27. Supplemented on-policy probe eval (Aug 10, 2026)
+
+**Why:** On-policy split AUC/scores are unstable when a model's native eval set has very few honest or deceptive examples (common after AUC early stopping or Honest policies). Needed a reproducible way to compare probe start/end shifts across lineages with balanced classes.
+
+**What:** Post-hoc tool in `experiments/supplemented_probe_eval/`. For each model checkpoint, builds a 20+20 deceptive/honest eval set by walk-back supplementation (current round → earlier rounds → base → det0 for deceptive), then scores with round probes using the same on-policy split logic as the pipeline. Outputs JSON + shift plots per lineage.
+
+**Config:** `MIN_CLASS_COUNT=20`, `SUPPLEMENT_SEED=53`, `pass_only_shown` labels. Runbook: [SUPPLEMENTED_PROBE_EVAL.md](./SUPPLEMENTED_PROBE_EVAL.md).
+
 ### 26. Hybrid `pass_only_shown` label + AUC-based early retraining (Aug 8–9, 2026)
 
 **Why:** Detector-score early stopping (#23) fires when mean probe score is low, which can happen even if the probe still separates honest vs deceptive. Stopping when **probe AUC** collapses better matches "the detector no longer discriminates." Separately, the dual-gen `pass_only_shown` metric is ill-defined when test expected outputs are not distinct (still present in GRPO task train); #25 had already introduced a hybrid fallback for the ground-truth penalty only.
