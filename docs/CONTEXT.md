@@ -17,6 +17,8 @@ Key methodological choices in the current pipeline:
 - **No-follow-up (nofu) probe extraction** — probe at completion EOT instead of a follow-up "Yes" token
 - **Mixed reward regime** — intermittently reward honest `passes_all_tests` solving alongside the standard `passes_first_n_tests` reward
 
+A **new RL training domain from MMLU-Pro** is under development. A per-category difficulty scan of the base model (zero-shot CoT, 100 questions x 3 samples per category) is in [`sycophancy_experiments/260811_mmlu_scan/`](../sycophancy_experiments/260811_mmlu_scan/), measuring accuracy and consistency to inform category selection.
+
 See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology details and run history. See [iterative_training_experiments.md](./iterative_training_experiments.md) for pipeline architecture.
 
 ---
@@ -75,6 +77,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
 │   ├── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
 │   └── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
+├── sycophancy_experiments/      # New RL domain experiments (MMLU-Pro sycophancy)
+│   └── 260811_mmlu_scan/        # Per-category difficulty scan of the base model
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths, PYTHONPATH=/workspace (for `pipeline`)
