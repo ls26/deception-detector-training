@@ -31,6 +31,48 @@ ROW_CONDITIONS = [
     ("frozen", "Frozen probe"),
 ]
 
+# Full 4-condition variant, matching make_fig1.py's TRIAL_PANELS exactly (adds
+# "fixed" and "auc_early" alongside "probe_early"/"frozen").
+FULL_TRIAL_PANELS = [
+    (
+        "Trial A",
+        4,
+        {
+            "probe_early": "early_retraining_v2",
+            "auc_early": "early_retraining_auc_v2",
+            "fixed": "v2",
+            "frozen": "frozen",
+        },
+    ),
+    (
+        "Trial B",
+        6,
+        {
+            "probe_early": "early_retraining",
+            "auc_early": "early_retraining_auc_v3",
+            "fixed": "",
+            "frozen": "frozen",
+        },
+    ),
+    (
+        "Trial C",
+        8,
+        {
+            "probe_early": "early_retraining",
+            "auc_early": "early_retraining_auc_v3",
+            "fixed": "",
+            "frozen": "frozen",
+        },
+    ),
+]
+
+FULL_ROW_CONDITIONS = [
+    ("probe_early", "Early retraining\n(probe score)"),
+    ("auc_early", "Early retraining\n(AUC)"),
+    ("fixed", "Fixed-schedule\nretraining"),
+    ("frozen", "Frozen probe"),
+]
+
 
 def load_condition_df(trial: int, variant: str) -> pd.DataFrame:
     """One (trial, variant) lineage's supplemented on-policy start/end metrics, one row per round."""
@@ -53,10 +95,10 @@ def load_condition_df(trial: int, variant: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_long_table() -> pd.DataFrame:
+def build_long_table(trial_panels=TRIAL_PANELS, row_conditions=ROW_CONDITIONS) -> pd.DataFrame:
     records = []
-    for panel_label, trial, suffixes in TRIAL_PANELS:
-        for cond_key, cond_label in ROW_CONDITIONS:
+    for panel_label, trial, suffixes in trial_panels:
+        for cond_key, cond_label in row_conditions:
             cond_df = load_condition_df(trial, suffixes[cond_key])
             for _, row in cond_df.iterrows():
                 records.append(
