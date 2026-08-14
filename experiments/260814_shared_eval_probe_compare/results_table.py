@@ -26,9 +26,11 @@ ROW_VARIANTS: dict[str, dict[int, str]] = {
     },
 }
 
+# Panel order matches experiments/paper_figures/paper_fig_common.py: A = 4, B = 6, C = 8.
+# (The older 250810_round6_probe_eval/results_table.py uses the pre-swap A = 6, B = 4.)
 TRIAL_COLUMNS: dict[str, int] = {
-    "Trial A": 6,
-    "Trial B": 4,
+    "Trial A": 4,
+    "Trial B": 6,
     "Trial C": 8,
 }
 
