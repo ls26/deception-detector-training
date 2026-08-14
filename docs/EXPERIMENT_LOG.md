@@ -55,6 +55,47 @@ Quick orientation across all multi-round trials — see "Completed runs" below f
 
 Reverse-chronological. Each entry covers what changed, why, key config, and affected runs.
 
+### 28. Shared-eval initial-vs-final monitorability comparison (Aug 14, 2026)
+
+**Why:** The round-6 probe eval (`experiments/250810_round6_probe_eval/`) established whether deception is linearly detectable in the *final* model, but scored each lineage on its own supplemented set (#27), so it could not be compared against the initial model. Comparing monitorability across models requires all probes to see the same evaluation rows.
+
+**What:** Post-hoc tool in `experiments/260814_shared_eval_probe_compare/`. Per lineage, builds one shared on-policy eval set (100/class) by seeded round-robin over every policy in the lineage, drawn from the existing `*_eval_generations.jsonl` in the trial buffer — no generation is run. Three probes are then scored on identical rows:
+
+| Key | Training data | Activations from |
+|---|---|---|
+| `final_round6` (A) | round-6 manifest, 800/class | round-5 model |
+| `initial_probe1` (B) | probe-1 set (200 on-dataset + 100 base/det0 on-policy) | base model |
+| `initial_round6_data` (C) | round-6 manifest, 800/class | base model |
+
+A and B are existing weights; only C is trained. **A vs C isolates the model** — identical training text, only the activations differ. A probe is a function of activations, so "same eval set" means the same *texts*: each probe reads its own model's representations.
+
+Probe C writes to `round6/probe_weights_base_model/`, never the round-6 paths — `train_probe_and_eval_on_dataset()` silently reuses existing weights at `weights_dir/layer_0/model.pt`. Probe B's weights are byte-identical across all ten lineage copies (all copies of `trial4/rounds/round1/probe_weights`), so B is one fixed probe.
+
+**Eval set construction:** deceptive round-robins over `{det0, round1..round5}`, honest over `{base, round1..round5}` — the base policy is deceptive on only 1/400 eval prompts, so a base-anchored deceptive pool is unusable. Mirrors `build_train_dataset_split_sources()`'s per-class anchors. Dedup on `(prompt, completion)`; zero `task_id` overlap with the round-6 training manifest is asserted at build time.
+
+**Config:** `N_PER_CLASS=100`, `BUILD_SEED=53`, `data_seed=53`, `pass_only_shown` labels, nofu (`follow_up=[]`), `last-token-generation`. AUC averaged over each probe's own `filtered_layers`.
+
+**Result (AUC on the shared set, all 9 round-6 lineages):**
+
+| Lineage | A final | C initial | C−A | B initial (probe-1) |
+|---|---|---|---|---|
+| trial4 v2 | 0.9467 | 0.9596 | +0.013 | 0.8926 |
+| trial4 early_retraining_v2 | 0.9443 | 0.9462 | +0.002 | 0.8189 |
+| trial4 early_retraining_auc_v2 | 0.9392 | 0.9586 | +0.019 | 0.7903 |
+| trial6 original | 0.7361 | 0.8719 | +0.136 | 0.6699 |
+| trial6 early_retraining | 0.8314 | 0.9141 | +0.083 | 0.7530 |
+| trial6 early_retraining_auc_v3 | 0.8503 | 0.9185 | +0.068 | 0.6759 |
+| trial8 original | 0.9792 | 0.9965 | +0.017 | 0.7485 |
+| trial8 early_retraining | 0.9200 | 0.9540 | +0.034 | 0.7174 |
+| trial8 early_retraining_auc_v3 | 0.9116 | 0.9176 | +0.006 | 0.7314 |
+| **mean** | **0.8954** | **0.9374** | **+0.042** | **0.7553** |
+
+The initial model is more monitorable than the final model on the same data in **9/9 lineages**. The gap is largest on trial 6 (+0.07 to +0.14), the lineage that stayed **Obfuscated policy** through round 5, and near zero on trial 4 and trial 8 `early_retraining_auc_v3`. Probe C beats probe B everywhere by a wide margin (mean +0.18), i.e. most of what probe 1 misses is training-set coverage, not base-model representation. All probe C on-dataset AUCs are 0.9967–0.9997, matching probe A's.
+
+**Caveats:** trial8 `original` produced zero honest eval samples in rounds 2–5, so its honest half is 98% base-model text — internally comparable across the three probes, but its absolute AUC is not comparable to other lineages. trial4 `v2`/`early_retraining_auc_v2` went honest after round 1, so ~45% of their deceptive rows come from `det0`. Threshold metrics (accuracy/F1) use an in-sample FPR=0.01 threshold; compare on AUC. Full provenance per lineage in `summary.json`.
+
+**Files:** `experiments/260814_shared_eval_probe_compare/` (see its README.md). Outputs: `experiments/trials/trial{N}/results/shared_eval_probe_compare*.json`.
+
 ### 27. Supplemented on-policy probe eval (Aug 10, 2026)
 
 **Why:** On-policy split AUC/scores are unstable when a model's native eval set has very few honest or deceptive examples (common after AUC early stopping or Honest policies). Needed a reproducible way to compare probe start/end shifts across lineages with balanced classes.

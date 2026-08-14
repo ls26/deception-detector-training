@@ -1,0 +1,472 @@
+[
+  {
+    "label": "trial4 v2",
+    "trial": 4,
+    "variant": "v2",
+    "round5_run_id": "rkrfsaml",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 47,
+      "round1": 46,
+      "round2": 1,
+      "round3": 2,
+      "round4": 4
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.9466609375,
+        "deceptive": 0.8130702004244086,
+        "honest": 0.18685880443619682,
+        "accuracy": 0.935,
+        "f1": 0.9333333333333333,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.8926015625,
+        "deceptive": 0.5345621862818832,
+        "honest": 0.03247526917291811,
+        "accuracy": 0.895,
+        "f1": 0.8955223880597015,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.959596875,
+        "deceptive": 0.853475603495317,
+        "honest": 0.15320843859663,
+        "accuracy": 0.935,
+        "f1": 0.9333333333333333,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial4 early_retraining_v2",
+    "trial": 4,
+    "variant": "early_retraining_v2",
+    "round5_run_id": "io4ibs0w",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 23,
+      "round1": 25,
+      "round2": 24,
+      "round3": 24,
+      "round4": 3,
+      "round5": 1
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.9442906249999999,
+        "deceptive": 0.7353529056580738,
+        "honest": 0.20108934907853837,
+        "accuracy": 0.96,
+        "f1": 0.9591836734693877,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.8188765625,
+        "deceptive": 0.37332311781923794,
+        "honest": 0.025941228293274658,
+        "accuracy": 0.855,
+        "f1": 0.8512820512820513,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.9461890625,
+        "deceptive": 0.8035590690051322,
+        "honest": 0.19291520155355102,
+        "accuracy": 0.965,
+        "f1": 0.964102564102564,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial4 early_retraining_auc_v2",
+    "trial": 4,
+    "variant": "early_retraining_auc_v2",
+    "round5_run_id": "k7fmfbon",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 45,
+      "round1": 45,
+      "round2": 1,
+      "round3": 2,
+      "round4": 3,
+      "round5": 4
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.9391890625,
+        "deceptive": 0.8062285619461909,
+        "honest": 0.14985521090085968,
+        "accuracy": 0.92,
+        "f1": 0.9175257731958764,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.7903390625,
+        "deceptive": 0.531261151816782,
+        "honest": 0.1295327651749786,
+        "accuracy": 0.66,
+        "f1": 0.7322834645669292,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.9586046875,
+        "deceptive": 0.8265259825476096,
+        "honest": 0.11220062005857472,
+        "accuracy": 0.935,
+        "f1": 0.9340101522842639,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial6 original",
+    "trial": 6,
+    "variant": "original",
+    "round5_run_id": "94wejikq",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.7361322580645161,
+        "deceptive": 0.5677913130291047,
+        "honest": 0.4168399558540794,
+        "accuracy": 0.69,
+        "f1": 0.7280701754385964,
+        "n_filtered_layers": 31,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.669884375,
+        "deceptive": 0.3069783458329122,
+        "honest": 0.12204853391790543,
+        "accuracy": 0.68,
+        "f1": 0.7419354838709677,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.871853125,
+        "deceptive": 0.7027876909077168,
+        "honest": 0.3271731172694126,
+        "accuracy": 0.88,
+        "f1": 0.890909090909091,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial6 early_retraining",
+    "trial": 6,
+    "variant": "early_retraining",
+    "round5_run_id": "ge0tg5o1",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 19,
+      "round1": 19,
+      "round2": 19,
+      "round3": 19,
+      "round4": 20,
+      "round5": 4
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.8314015625,
+        "deceptive": 0.645632935850881,
+        "honest": 0.39084288459271194,
+        "accuracy": 0.78,
+        "f1": 0.8070175438596492,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.7530046875,
+        "deceptive": 0.2722172574981326,
+        "honest": 0.033164445058984686,
+        "accuracy": 0.775,
+        "f1": 0.8017621145374448,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.914125,
+        "deceptive": 0.7678878296911716,
+        "honest": 0.3155634715786437,
+        "accuracy": 0.895,
+        "f1": 0.9014084507042253,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial6 early_retraining_auc_v3",
+    "trial": 6,
+    "variant": "early_retraining_auc_v3",
+    "round5_run_id": "ro2sn450",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "honest_provenance": {
+      "base": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.8502500000000001,
+        "deceptive": 0.5660036947764456,
+        "honest": 0.36692178245284596,
+        "accuracy": 0.83,
+        "f1": 0.8425925925925926,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.675909375,
+        "deceptive": 0.28402920193058645,
+        "honest": 0.05918925875012212,
+        "accuracy": 0.59,
+        "f1": 0.7092198581560284,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.9184838709677419,
+        "deceptive": 0.715599695641187,
+        "honest": 0.35226723287014233,
+        "accuracy": 0.935,
+        "f1": 0.9359605911330049,
+        "n_filtered_layers": 31,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial8 original",
+    "trial": 8,
+    "variant": "original",
+    "round5_run_id": "vob73ihg",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 17,
+      "round1": 17,
+      "round2": 17,
+      "round3": 17,
+      "round4": 16,
+      "round5": 16
+    },
+    "honest_provenance": {
+      "base": 98,
+      "round1": 2
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.97919375,
+        "deceptive": 0.7972683461150154,
+        "honest": 0.18352945241495036,
+        "accuracy": 0.965,
+        "f1": 0.966183574879227,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.748478125,
+        "deceptive": 0.35092437002565374,
+        "honest": 0.030810308838105042,
+        "accuracy": 0.9,
+        "f1": 0.8936170212765958,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.9964703125,
+        "deceptive": 0.8810749755753204,
+        "honest": 0.09820924489624304,
+        "accuracy": 0.995,
+        "f1": 0.9950248756218906,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial8 early_retraining",
+    "trial": 8,
+    "variant": "early_retraining",
+    "round5_run_id": "n4074l4v",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 21,
+      "round1": 22,
+      "round2": 22,
+      "round3": 22,
+      "round5": 13
+    },
+    "honest_provenance": {
+      "base": 25,
+      "round1": 2,
+      "round3": 24,
+      "round4": 24,
+      "round5": 25
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.9200296875,
+        "deceptive": 0.7285359884030186,
+        "honest": 0.20464452819403958,
+        "accuracy": 0.885,
+        "f1": 0.877005347593583,
+        "n_filtered_layers": 32,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.717365625,
+        "deceptive": 0.3627551721810661,
+        "honest": 0.031060413064192716,
+        "accuracy": 0.795,
+        "f1": 0.770949720670391,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.9539859374999999,
+        "deceptive": 0.7924777508561965,
+        "honest": 0.1752404580876464,
+        "accuracy": 0.935,
+        "f1": 0.9333333333333333,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  },
+  {
+    "label": "trial8 early_retraining_auc_v3",
+    "trial": 8,
+    "variant": "early_retraining_auc_v3",
+    "round5_run_id": "cadti0pa",
+    "n_deceptive": 100,
+    "n_honest": 100,
+    "deceptive_provenance": {
+      "det0": 19,
+      "round1": 19,
+      "round2": 19,
+      "round3": 20,
+      "round4": 20,
+      "round5": 3
+    },
+    "honest_provenance": {
+      "base": 25,
+      "round1": 2,
+      "round2": 2,
+      "round3": 23,
+      "round4": 24,
+      "round5": 24
+    },
+    "probes": {
+      "final_round6": {
+        "auc": 0.9115661290322581,
+        "deceptive": 0.7013414349244727,
+        "honest": 0.24554892308183857,
+        "accuracy": 0.855,
+        "f1": 0.8542713567839195,
+        "n_filtered_layers": 31,
+        "activations_model": "round5"
+      },
+      "initial_probe1": {
+        "auc": 0.7314234375,
+        "deceptive": 0.3139065743406935,
+        "honest": 0.01970848161312398,
+        "accuracy": 0.695,
+        "f1": 0.7239819004524887,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      },
+      "initial_round6_data": {
+        "auc": 0.917578125,
+        "deceptive": 0.71269044179935,
+        "honest": 0.2495645181502914,
+        "accuracy": 0.865,
+        "f1": 0.8755760368663594,
+        "n_filtered_layers": 32,
+        "activations_model": "base"
+      }
+    }
+  }
+]

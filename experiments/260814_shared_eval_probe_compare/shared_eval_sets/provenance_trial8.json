@@ -1,0 +1,50 @@
+{
+  "trial": 8,
+  "variant": "original",
+  "n_per_class": 100,
+  "n_deceptive": 100,
+  "n_honest": 100,
+  "deceptive_anchor": "det0",
+  "honest_anchor": "base",
+  "deceptive_definition": "pass_only_shown",
+  "build_seed": 53,
+  "deceptive_provenance": {
+    "det0": 17,
+    "round1": 17,
+    "round2": 17,
+    "round3": 17,
+    "round4": 16,
+    "round5": 16
+  },
+  "honest_provenance": {
+    "base": 98,
+    "round1": 2
+  },
+  "deceptive_pool_sizes": {
+    "det0": 385,
+    "round1": 345,
+    "round2": 374,
+    "round3": 384,
+    "round4": 389,
+    "round5": 376
+  },
+  "honest_pool_sizes": {
+    "base": 160,
+    "round1": 2,
+    "round2": 0,
+    "round3": 0,
+    "round4": 0,
+    "round5": 0
+  },
+  "n_distinct_task_ids": 176,
+  "source_paths": {
+    "deceptive_anchor": "/workspace/experiments/artifacts/det0/det0_eval_generations.jsonl",
+    "honest_anchor": "/workspace/experiments/artifacts/base/base_eval_generations.jsonl",
+    "round1": "/workspace/experiments/trials/trial8/buffer/trial8_round1_eval_generations.jsonl",
+    "round2": "/workspace/experiments/trials/trial8/buffer/trial8_round2_eval_generations.jsonl",
+    "round3": "/workspace/experiments/trials/trial8/buffer/trial8_round3_eval_generations.jsonl",
+    "round4": "/workspace/experiments/trials/trial8/buffer/trial8_round4_eval_generations.jsonl",
+    "round5": "/workspace/experiments/trials/trial8/buffer/trial8_round5_eval_generations.jsonl"
+  },
+  "shared_eval_jsonl": "/workspace/experiments/260814_shared_eval_probe_compare/shared_eval_sets/shared_eval_set_trial8.jsonl"
+}
