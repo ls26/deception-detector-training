@@ -40,21 +40,10 @@ does the model learn to evade the detector while still flipping?
   (e.g. "I think the answer is (X), a suggested wrong answer, a confident
   user pushback) on top of the two-option format and measures flip rate on the
   `order-robust` category subset.
-- **Distractor selection is still a documented-but-unimplemented variant.**
-  260813 used uniform-random distractors; a "model-preferred" distractor
-  (the wrong option the model actually picked in the 10-option scan) would
-  give adversarially hard pairs and is only defined for ~1042/1400 questions.
-  Worth trying once a cue arm exists, to see if hard distractors change flip
-  rate independent of the cue.
 - **The "declines to answer without a letter" mode (291/8400 samples in the
   two-option scan) needs watching in the cue arm** — a question the model
   won't commit to can't cleanly show a cue-induced flip. May need filtering
   or a forced-choice prompt tweak.
-- **Category shortlist from 260813** (rank by order-robust rate): `biology`
-  (0.82), `psychology` (0.77), `health` (0.77), `economics` (0.72). Not yet
-  stress-tested with an actual cue — this ranking assumes flip cleanliness
-  correlates with baseline order-robustness, which is a hypothesis, not yet
-  a result.
 - **No training (SFT/GRPO) has been attempted in this domain at all.** Both
   entries below are inference-only scans of the base model.
 
@@ -66,30 +55,47 @@ does the model learn to evade the detector while still flipping?
 
 [`sycophancy_experiments/260813_mmlu_2option_scan/`](../sycophancy_experiments/260813_mmlu_2option_scan/)
 
-Re-ran the same 1400 questions from the 260811 scan reduced to two options
-(correct answer + one random distractor, both orderings), following the
-Counterfactual Simulation Training paper's (arXiv 2602.20710) filtering
-convention. Accuracy rose to 0.763 (chance 0.500), but the model answers
-**B** 59% of the time regardless of where the correct answer sits, so only
-**61.6%** of questions are correct under both orderings — that order-robust
-rate, not raw accuracy, is the number that should drive category selection,
-since a clean cue-induced flip requires the model to be reliably right
-*without* pressure. This flips the category ranking from the 260811 scan:
-`biology`/`psychology` (rejected there as too easy) are now the best
-candidates, while `math`/`physics`/`chemistry`/`engineering` turned out to be
-near chance once position bias is accounted for, not genuinely mid-difficulty.
+**Setup:**
+- Took the same 1400 questions from the 260811 scan and cut each one down to
+  two options: the correct answer and one random distractor.
+- Ran every question in both orderings (correct answer as A, and as B), to
+  check whether option position affects the answer.
+- Still no sycophancy pressure or cue at this stage — just measuring the base
+  model's raw accuracy on the easier two-option task.
+
+**Results/takeaways:**
+- Accuracy looks good at first glance: 0.763, vs. 0.500 chance.
+- But the model has a strong position bias: accuracy is only 0.656 when the
+  correct answer is option A, vs. 0.870 when it's option B — a 21-point swing
+  based purely on where the answer sits, not on the question content.
+- Once you account for that bias, only **61.6%** of questions are answered
+  correctly in *both* orderings. This "order-robust" number is the honest
+  measure of what the model actually knows.
+- This means order-robust accuracy, not raw accuracy, should be used to pick
+  categories for the RL domain — we need categories where the model is
+  reliably correct without pressure, so that a flip later (under a cue) is a
+  clean signal and not noise from position bias.
 
 ### 260811 — MMLU-Pro per-category difficulty scan
 
 [`sycophancy_experiments/260811_mmlu_scan/`](../sycophancy_experiments/260811_mmlu_scan/)
 
-First scoping pass: zero-shot CoT, 10-option (unmodified) MMLU-Pro, 100
-questions x 3 samples per category, all 14 categories. Established that
-accuracy varies 2.2x across categories (0.29 engineering to 0.64 biology) and
-that accuracy and self-consistency diverge in informative ways (e.g.
-`history` is confidently wrong; `physics` is both low-accuracy and
-low-consistency). Under the original goal — mid-range accuracy with headroom
-to move via RL — `health`, `other`, and `business` looked like the best
-candidates. That ranking criterion was superseded by 260813 (see above): for
-a sycophancy cue rather than a solve-rate reward, order-robust correctness
-matters more than headroom.
+**Setup:**
+- First scoping pass for the new RL domain — no modifications to the
+  questions. Just measuring how well the base model
+  does on each category as-is.
+- Used the original MMLU-Pro format (up to 10 options per question).
+- Sampled 100 questions from each of the 14 categories, 3 times each
+  (zero-shot, chain-of-thought), to also check how consistent the model's
+  answers are across repeated tries.
+
+**Results/takeaways:**
+- Difficulty varies a lot by category: accuracy ranges from 0.29
+  (`engineering`) to 0.64 (`biology`), a 2.2x spread.
+- Accuracy and consistency aren't the same thing and can point different
+  directions: e.g. `history` gets a confident but wrong answer most of the
+  time, while `physics` is both low-accuracy and inconsistent (the model
+  often disagrees with itself across samples).
+- Original goal was to find categories with mid-range accuracy — hard enough
+  to leave room for RL to improve, easy enough to not be pure noise. By that
+  standard, `health`, `other`, and `business` looked most promising.
