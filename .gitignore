@@ -11,6 +11,7 @@ __pycache__/
 .ruff_cache/
 
 # ── IDE / local tooling ──
+.claude/
 .cursor/
 .cursor-extensions/
 .jupyter/
@@ -56,6 +57,8 @@ obfuscation-atlas/.cursorrules
 **/buffer_*/
 **/probe_activations/
 **/probe_weights/
+**/probe_activations_base_model/
+**/probe_weights_base_model/
 experiments/**/activations/
 **/base_activations/
 **/det0_activations/
@@ -67,3 +70,6 @@ experiments/**/*.log
 **/probe_train_dataset.json
 **/*split*.json
 **/metadata.json
+**/shared_eval_sets/*.jsonl
+sycophancy_experiments/**/completions/
+sycophancy_experiments/**/completions.jsonl
