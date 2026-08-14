@@ -76,7 +76,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── GRPO_LOGGING_STAGES.md  # Per-stage logging map
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
 │   ├── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
-│   └── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
+│   ├── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
+│   └── sycophancy_experiment_log.md  # Sycophancy domain: goal, per-experiment log, open questions
 ├── sycophancy_experiments/      # New RL domain experiments (MMLU-Pro sycophancy)
 │   └── 260811_mmlu_scan/        # Per-category difficulty scan of the base model
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
