@@ -27,6 +27,17 @@ notebook-kernel: | ensure-uv
 	mkdir -p /workspace/.jupyter
 	.venv/bin/python -m ipykernel install --prefix=/workspace/.jupyter --name obfuscation-atlas --display-name "Obfuscation Atlas"
 	ln -sfn /workspace/obfuscation-atlas/.venv /workspace/.venv
+	@mkdir -p /workspace/.vscode
+	@python -c "\
+	import json, pathlib; \
+	p = pathlib.Path('/workspace/.vscode/settings.json'); \
+	s = json.loads(p.read_text()) if p.exists() else {}; \
+	s['python.defaultInterpreterPath'] = '/workspace/obfuscation-atlas/.venv/bin/python'; \
+	s['python-env.workspaceSearchPaths'] = ['/workspace/obfuscation-atlas']; \
+	s['jupyter.interactiveWindow.creationMode'] = 'perFile'; \
+	s['jupyter.interactiveWindow.textEditor.executeSelection'] = True; \
+	p.write_text(json.dumps(s, indent=4) + '\n')"
+	@echo "Wrote .vscode/settings.json with interpreter path"
 
 test:
 	uv run pytest tests/ -v

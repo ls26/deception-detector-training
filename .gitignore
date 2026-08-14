@@ -12,12 +12,16 @@ __pycache__/
 
 # ── IDE / local tooling ──
 .cursor/
+.cursor-extensions/
 .jupyter/
 .vscode/
 
 # ── Secrets (API keys, tokens) ──
 .env
 atlas_setup.sh
+
+# ── Local-only project instructions (not committed) ──
+CLAUDE.md
 
 # ── Large run outputs ──
 results/

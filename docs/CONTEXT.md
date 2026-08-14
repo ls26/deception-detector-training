@@ -17,7 +17,7 @@ Key methodological choices in the current pipeline:
 - **No-follow-up (nofu) probe extraction** — probe at completion EOT instead of a follow-up "Yes" token
 - **Mixed reward regime** — intermittently reward honest `passes_all_tests` solving alongside the standard `passes_first_n_tests` reward
 
-A **new RL training domain from MMLU-Pro** is under development. A per-category difficulty scan of the base model (zero-shot CoT, 100 questions x 3 samples per category) is in [`sycophancy_experiments/260811_mmlu_scan/`](../sycophancy_experiments/260811_mmlu_scan/), measuring accuracy and consistency to inform category selection.
+A **new RL training domain from MMLU-Pro** is under development. A per-category difficulty scan of the base model (zero-shot CoT, 100 questions x 3 samples per category) is in [`sycophancy_experiments/260811_mmlu_scan/`](../sycophancy_experiments/260811_mmlu_scan/), measuring accuracy and consistency to inform category selection. A **two-option (binary) variant** of that scan, following the Counterfactual Simulation Training paper (arXiv 2602.20710), is in [`sycophancy_experiments/260813_mmlu_2option_scan/`](../sycophancy_experiments/260813_mmlu_2option_scan/) — same 1400 questions reduced to correct-answer-plus-one-distractor, run in both option orderings. Accuracy rises to 0.763 (chance 0.500), but the model answers **B** 59% of the time regardless of gold position, so only 61.6% of questions are correct under both orderings; category selection should rank on that order-robust rate.
 
 See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology details and run history. See [iterative_training_experiments.md](./iterative_training_experiments.md) for pipeline architecture.
 
