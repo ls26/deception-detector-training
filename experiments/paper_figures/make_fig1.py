@@ -11,7 +11,7 @@ point computed from experiments/artifacts/base/base_eval_generations.jsonl. Noth
 is regenerated or re-run here -- this script only reads existing outputs and plots.
 
 Usage (no GPU needed):
-    python /workspace/experiments/260813_paper_fig1/make_fig1.py
+    python /workspace/experiments/paper_figures/make_fig1.py
 
 Outputs (written next to this script):
     fig1_data.csv   -- the tidy long-format table actually plotted
