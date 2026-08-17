@@ -95,11 +95,46 @@ def load_condition_df(trial: int, variant: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_long_table(trial_panels=TRIAL_PANELS, row_conditions=ROW_CONDITIONS) -> pd.DataFrame:
+def csv_path(trial: int, variant: str) -> Path:
+    """Per-round round_analysis CSV for one lineage (same helper as make_fig1.py)."""
+    stem = f"round_analysis_trial{trial}" + (f"_{variant}" if variant else "")
+    return Path("/workspace") / f"experiments/trials/trial{trial}" / "results" / f"{stem}.csv"
+
+
+# On-dataset column pairs -> the schema load_condition_df already emits, so the
+# on-dataset figures reuse plot_shift_cell and the output CSV layout unchanged.
+ON_DATASET_COLUMNS = {
+    "start_on_dataset_deceptive": "start_deceptive",
+    "start_on_dataset_honest": "start_honest",
+    "start_on_dataset_auc": "start_auc",
+    "end_on_dataset_deceptive": "end_deceptive",
+    "end_on_dataset_honest": "end_honest",
+    "end_on_dataset_auc": "end_auc",
+}
+
+
+def load_condition_df_on_dataset(trial: int, variant: str) -> pd.DataFrame:
+    """One lineage's start/end probe metrics on the fixed on-dataset reference set.
+
+    Start comes from round{K}/probe_metrics.json (probe K on model_{K-1}), end from that
+    round's run_metrics `final_model.on_dataset_averaged` (probe K on model_K); both are
+    already joined per round by pipeline/round_analysis.py. See the figure scripts for the
+    cross-fit / AUC-definition / frozen-backfill caveats this inherits.
+    """
+    df = pd.read_csv(csv_path(trial, variant))
+    out = df[["round", *ON_DATASET_COLUMNS]].rename(columns=ON_DATASET_COLUMNS)
+    return out.sort_values("round").reset_index(drop=True)
+
+
+def build_long_table(
+    trial_panels=TRIAL_PANELS,
+    row_conditions=ROW_CONDITIONS,
+    loader=load_condition_df,
+) -> pd.DataFrame:
     records = []
     for panel_label, trial, suffixes in trial_panels:
         for cond_key, cond_label in row_conditions:
-            cond_df = load_condition_df(trial, suffixes[cond_key])
+            cond_df = loader(trial, suffixes[cond_key])
             for _, row in cond_df.iterrows():
                 records.append(
                     {
