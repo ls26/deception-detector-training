@@ -73,3 +73,5 @@ experiments/**/*.log
 **/shared_eval_sets/*.jsonl
 sycophancy_experiments/**/completions/
 sycophancy_experiments/**/completions.jsonl
+sycophancy_experiments/**/followups/
+sycophancy_experiments/**/followups.jsonl
