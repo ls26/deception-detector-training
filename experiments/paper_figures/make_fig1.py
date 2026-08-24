@@ -1,5 +1,5 @@
 """Paper figure 1: reward-hacking rate (top row) and correct rate (bottom row)
-across GRPO retraining rounds, for trials 4 / 6 / 8 (columns A / B / C), comparing
+across GRPO retraining rounds, for trials 4 / 6 / 8 (columns Seed 1 / 2 / 3), comparing
 the four probe-retraining conditions:
 
     frozen probe | fixed-schedule retraining | early retraining (probe score) | early retraining (AUC)
@@ -13,10 +13,12 @@ is regenerated or re-run here -- this script only reads existing outputs and plo
 Usage (no GPU needed):
     python /workspace/experiments/paper_figures/make_fig1.py
 
-Outputs (written next to this script):
+Outputs (written next to this script), each as .png (raster, for quick viewing)
+and .pdf (vector, for camera-ready LaTeX inclusion):
     fig1_data.csv   -- the tidy long-format table actually plotted
-    fig1.png        -- raster, for quick viewing
-    fig1.pdf        -- vector, for camera-ready LaTeX inclusion
+    fig1            -- both rows, as before
+    fig1a           -- reward-hacking rate row only
+    fig1b           -- correct rate row only
 """
 
 import json
@@ -31,12 +33,12 @@ TRIALS_DIR = WORKSPACE / "experiments/trials"
 BASE_EVAL_JSONL = WORKSPACE / "experiments/artifacts/base/base_eval_generations.jsonl"
 OUT_DIR = Path(__file__).resolve().parent
 
-# Column order in the figure: Trial A = trial 4, Trial B = trial 6, Trial C = trial 8
+# Column order in the figure: Seed 1 = trial 4, Seed 2 = trial 6, Seed 3 = trial 8
 # (per user mapping). Each dict maps condition key -> the variant suffix used in
 # round_analysis_trial{N}_{suffix}.csv for that trial ("" = no suffix).
 TRIAL_PANELS = [
     (
-        "Trial A",
+        "Seed 1",
         4,
         {
             "fixed": "v2",
@@ -46,7 +48,7 @@ TRIAL_PANELS = [
         },
     ),
     (
-        "Trial B",
+        "Seed 2",
         6,
         {
             "fixed": "",
@@ -56,7 +58,7 @@ TRIAL_PANELS = [
         },
     ),
     (
-        "Trial C",
+        "Seed 3",
         8,
         {
             "fixed": "",
@@ -79,20 +81,20 @@ TRIAL_PANELS = [
 # markers + a direct legend rather than color alone. Probe-based early retraining gets the
 # highest zorder so it draws on top whenever lines overlap. Linestyle here is the *default*
 # (solid everywhere); LINESTYLE_OVERRIDES below dashes AUC-based early retraining only in the
-# one panel where it's visually identical to fixed-schedule retraining (trial 4 / Trial A,
+# one panel where it's visually identical to fixed-schedule retraining (trial 4 / Seed 1,
 # reward-hacking rate) so the dashes' gaps reveal the solid line underneath instead of fully
 # occluding it -- every other panel stays solid.
 CONDITIONS = [
     ("frozen", "Frozen probe", "#eb6834", 2, "-"),
-    ("fixed", "Fixed-schedule retraining", "#4a3aa7", 2, "-"),
+    ("fixed", "Fixed-schedule retraining", "#e6ab02", 2, "-"),
     ("probe_early", "Early retraining (probe score)", "#2a78d6", 3, "-"),
-    ("auc_early", "Early retraining (AUC)", "#1baf7a", 2, "-"),
+    ("auc_early", "Early retraining (AUC)", "#238b45", 2, "-"),
 ]
 
 # (panel_label, metric_col, condition_key) -> (linestyle, zorder) override, applied only
 # where that exact combination overlaps another condition's line.
 LINESTYLE_OVERRIDES = {
-    ("Trial A", "deceptive", "auc_early"): ("--", 2.5),
+    ("Seed 1", "deceptive", "auc_early"): ("--", 2.5),
 }
 
 # Shared bootstrap segment (Base -> round 1) is identical across all 4 conditions within
@@ -113,6 +115,15 @@ METRICS = [
     ("deceptive", "Reward hacking rate"),
     ("correct", "Correct rate"),
 ]
+
+# Legend layout for the single-metric figures, written as literal rows (see plot()'s
+# `legend_rows`): the two probe-retraining-off conditions on top, the two early-retraining
+# ones below, with fig1b's honest-baseline entry rightmost on the top row. The combined
+# fig1 keeps its original legend order and so passes no override.
+SPLIT_LEGEND_ROWS = {
+    "fig1a": [["frozen", "fixed"], ["probe_early", "auc_early"]],
+    "fig1b": [["frozen", "fixed", "ceiling"], ["probe_early", "auc_early"]],
+}
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -172,14 +183,24 @@ def build_long_table() -> pd.DataFrame:
     return pd.DataFrame.from_records(records)
 
 
-def plot(df: pd.DataFrame, ceiling_correct: float) -> plt.Figure:
+def plot(
+    df: pd.DataFrame,
+    ceiling_correct: float,
+    *,
+    marker_size: int = 5,
+    legend_bbox_y: float = -0.08,
+    figsize: tuple[float, float] = (11, 6),
+    metrics: list[tuple[str, str]] = METRICS,
+    legend_rows: list[list[str]] | None = None,
+) -> plt.Figure:
     panel_labels = [p for p, _, _ in TRIAL_PANELS]
-    fig, axes = plt.subplots(2, 3, figsize=(11, 6), sharex=True, sharey="row")
+    # squeeze=False so a single-metric figure still indexes as axes[row, col].
+    fig, axes = plt.subplots(len(metrics), 3, figsize=figsize, sharex=True, sharey="row", squeeze=False)
 
     x_ticks = list(range(6))
     x_labels = ["Base", "1", "2", "3", "4", "5"]
 
-    for row_idx, (metric_col, metric_label) in enumerate(METRICS):
+    for row_idx, (metric_col, metric_label) in enumerate(metrics):
         for col_idx, panel_label in enumerate(panel_labels):
             ax = axes[row_idx, col_idx]
             panel_df = df[df["panel"] == panel_label]
@@ -195,7 +216,7 @@ def plot(df: pd.DataFrame, ceiling_correct: float) -> plt.Figure:
                 color=BOOTSTRAP_COLOR,
                 linewidth=2,
                 marker="o",
-                markersize=5,
+                markersize=marker_size,
                 zorder=1,
             )
 
@@ -211,7 +232,7 @@ def plot(df: pd.DataFrame, ceiling_correct: float) -> plt.Figure:
                     linewidth=2,
                     linestyle=linestyle,
                     marker="o",
-                    markersize=5,
+                    markersize=marker_size,
                     label=cond_label,
                     zorder=zorder,
                 )
@@ -229,27 +250,48 @@ def plot(df: pd.DataFrame, ceiling_correct: float) -> plt.Figure:
                 ax.set_ylabel(metric_label)
             else:
                 ax.tick_params(labelleft=True)  # sharey hides ticks by default; keep them
-            if row_idx == 1:
+            if row_idx == len(metrics) - 1:
                 ax.set_xlabel("Round")
 
-    condition_handles = [
-        plt.Line2D(
-            [], [], color=color, linewidth=2, linestyle=linestyle, marker="o", markersize=5, label=cond_label
+    handle_by_key = {
+        key: plt.Line2D(
+            [], [], color=color, linewidth=2, linestyle=linestyle, marker="o", markersize=marker_size, label=cond_label
         )
-        for _key, cond_label, color, _zorder, linestyle in CONDITIONS
-    ]
-    ceiling_handle = plt.Line2D([], [], color=CEILING_COLOR, linestyle="--", linewidth=1.5, label=CEILING_LABEL)
-    handles = condition_handles + [ceiling_handle]
+        for key, cond_label, color, _zorder, linestyle in CONDITIONS
+    }
+    # The ceiling line is only drawn on the correct-rate row, so only advertise it there.
+    if any(metric_col == "correct" for metric_col, _label in metrics):
+        handle_by_key["ceiling"] = plt.Line2D(
+            [], [], color=CEILING_COLOR, linestyle="--", linewidth=1.5, label=CEILING_LABEL
+        )
+
+    if legend_rows is None:
+        keys, ncol = list(handle_by_key), 3
+    else:
+        # matplotlib fills legend cells column-major, so flatten the requested rows column
+        # by column to get the reading order back out. Rows must be left-packed (a short
+        # row is short on its right), which is also how matplotlib sizes its own columns.
+        ncol = max(len(row) for row in legend_rows)
+        keys = [row[j] for j in range(ncol) for row in legend_rows if j < len(row)]
+    handles = [handle_by_key[key] for key in keys]
+
     fig.legend(
         handles,
         [h.get_label() for h in handles],
         loc="lower center",
-        ncol=3,
-        bbox_to_anchor=(0.5, -0.08),
+        ncol=ncol,
+        bbox_to_anchor=(0.5, legend_bbox_y),
         frameon=False,
     )
     fig.tight_layout()
     return fig
+
+
+def save(fig: plt.Figure, stem: str) -> list[Path]:
+    paths = [OUT_DIR / f"{stem}.png", OUT_DIR / f"{stem}.pdf"]
+    fig.savefig(paths[0], dpi=200, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    return paths
 
 
 def main():
@@ -258,12 +300,25 @@ def main():
     df.to_csv(data_path, index=False)
 
     ceiling_correct = honest_reward_ceiling(DET0_CEILING_METRICS)
-    fig = plot(df, ceiling_correct)
-    png_path = OUT_DIR / "fig1.png"
-    pdf_path = OUT_DIR / "fig1.pdf"
-    fig.savefig(png_path, dpi=200, bbox_inches="tight")
-    fig.savefig(pdf_path, bbox_inches="tight")
-    print(f"Wrote {data_path}\nWrote {png_path}\nWrote {pdf_path}")
+    written = [data_path]
+
+    # Combined 2-row figure, plus each row on its own: fig1a = reward hacking,
+    # fig1b = correct rate. Single-row figures are half as tall, so the legend
+    # offset (axes fraction) roughly doubles to clear the x-label.
+    written += save(plot(df, ceiling_correct), "fig1")
+    for stem, metric in (("fig1a", METRICS[0]), ("fig1b", METRICS[1])):
+        fig = plot(
+            df,
+            ceiling_correct,
+            metrics=[metric],
+            figsize=(11, 3.4),
+            legend_bbox_y=-0.12,
+            legend_rows=SPLIT_LEGEND_ROWS[stem],
+        )
+        written += save(fig, stem)
+        plt.close(fig)
+
+    print("\n".join(f"Wrote {p}" for p in written))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """Shared helpers for fig2a/fig2b: on-policy probe score/AUC shift panels for
-trials 4 / 6 / 8 (columns A / B / C), comparing two probe-retraining conditions
+trials 4 / 6 / 8 (columns Seed 1 / 2 / 3), comparing two probe-retraining conditions
 (rows): early retraining (probe score) vs frozen probe.
 
 Reads only the existing `supplemented_probe_eval_{variant}.json` outputs
@@ -16,13 +16,13 @@ sys.path.insert(0, str(Path("/workspace")))
 
 from experiments.supplemented_probe_eval.common import results_path
 
-# Column order in the figure: Trial A = trial 4, Trial B = trial 6, Trial C = trial 8,
+# Column order in the figure: Seed 1 = trial 4, Seed 2 = trial 6, Seed 3 = trial 8,
 # matching make_fig1.py's TRIAL_PANELS. Each dict maps condition key -> the variant
 # suffix used in supplemented_probe_eval_{suffix}.json for that trial.
 TRIAL_PANELS = [
-    ("Trial A", 4, {"probe_early": "early_retraining_v2", "frozen": "frozen"}),
-    ("Trial B", 6, {"probe_early": "early_retraining", "frozen": "frozen"}),
-    ("Trial C", 8, {"probe_early": "early_retraining", "frozen": "frozen"}),
+    ("Seed 1", 4, {"probe_early": "early_retraining_v2", "frozen": "frozen"}),
+    ("Seed 2", 6, {"probe_early": "early_retraining", "frozen": "frozen"}),
+    ("Seed 3", 8, {"probe_early": "early_retraining", "frozen": "frozen"}),
 ]
 
 # Row order: early retraining (probe score) first, then frozen probe.
@@ -35,7 +35,7 @@ ROW_CONDITIONS = [
 # "fixed" and "auc_early" alongside "probe_early"/"frozen").
 FULL_TRIAL_PANELS = [
     (
-        "Trial A",
+        "Seed 1",
         4,
         {
             "probe_early": "early_retraining_v2",
@@ -45,7 +45,7 @@ FULL_TRIAL_PANELS = [
         },
     ),
     (
-        "Trial B",
+        "Seed 2",
         6,
         {
             "probe_early": "early_retraining",
@@ -55,7 +55,7 @@ FULL_TRIAL_PANELS = [
         },
     ),
     (
-        "Trial C",
+        "Seed 3",
         8,
         {
             "probe_early": "early_retraining",
@@ -151,8 +151,39 @@ def build_long_table(
 X_TICKS = [0, 1, 2, 3, 4, 5]
 X_LABELS = ["Base", "1", "2", "3", "4", "5"]
 
+POSTER_RCPARAMS = {
+    "font.size": 12,
+    "axes.titlesize": 14,
+    "axes.labelsize": 13,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 13,
+}
+POSTER_FIG1_FIGSIZE = (11, 6.5)
+POSTER_PAD_INCHES = 0.35
+POSTER_MARKER_SIZE = 6
+POSTER_LEGEND_MARKER_SIZE = 8
+POSTER_SCATTER_SIZE = 50
+POSTER_ROW_LABEL_FONTSIZE = 12
 
-def style_grid_axis(ax, *, row_idx: int, col_idx: int, n_rows: int, cond_label: str, panel_label: str, ylabel: str):
+
+def apply_poster_style() -> None:
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update(POSTER_RCPARAMS)
+
+
+def style_grid_axis(
+    ax,
+    *,
+    row_idx: int,
+    col_idx: int,
+    n_rows: int,
+    cond_label: str,
+    panel_label: str,
+    ylabel: str,
+    row_label_fontsize: int = 10,
+):
     ax.set_xticks(X_TICKS, X_LABELS)
     ax.set_ylim(0, 1)
     ax.grid(True, alpha=0.3)
@@ -168,7 +199,7 @@ def style_grid_axis(ax, *, row_idx: int, col_idx: int, n_rows: int, cond_label: 
             rotation=90,
             ha="center",
             va="center",
-            fontsize=10,
+            fontsize=row_label_fontsize,
             fontweight="bold",
         )
     else:
@@ -177,7 +208,7 @@ def style_grid_axis(ax, *, row_idx: int, col_idx: int, n_rows: int, cond_label: 
         ax.set_xlabel("Round")
 
 
-def plot_shift_cell(ax, df: pd.DataFrame, shifts) -> None:
+def plot_shift_cell(ax, df: pd.DataFrame, shifts, *, scatter_size: int = 40) -> None:
     """shifts: list of (start_col, end_col, start_color, end_color)."""
     for _, row in df.iterrows():
         r = int(row["round"])
@@ -185,5 +216,5 @@ def plot_shift_cell(ax, df: pd.DataFrame, shifts) -> None:
             start, end = row[start_col], row[end_col]
             if pd.notna(start) and pd.notna(end):
                 ax.plot([r - 1, r], [start, end], color="black", linewidth=2, zorder=2)
-                ax.scatter(r - 1, start, color=start_color, s=40, zorder=3)
-                ax.scatter(r, end, color=end_color, s=40, zorder=3)
+                ax.scatter(r - 1, start, color=start_color, s=scatter_size, zorder=3)
+                ax.scatter(r, end, color=end_color, s=scatter_size, zorder=3)

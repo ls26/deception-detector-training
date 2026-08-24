@@ -1,5 +1,5 @@
 """Paper figure 2a (full): on-policy probe score shift across GRPO retraining
-rounds, for trials 4 / 6 / 8 (columns A / B / C), comparing all four
+rounds, for trials 4 / 6 / 8 (columns Seed 1 / 2 / 3), comparing all four
 probe-retraining conditions (rows): early retraining (probe score) | early
 retraining (AUC) | fixed-schedule retraining | frozen probe.
 
@@ -56,9 +56,9 @@ def plot(df) -> plt.Figure:
             )
 
     legend_handles = [
-        plt.Line2D([], [], color="black", linewidth=2, label="GRPO"),
-        plt.Line2D([], [], marker="o", linestyle="", color=DECEPTIVE_START, markersize=7, label="Deceptive start"),
-        plt.Line2D([], [], marker="o", linestyle="", color=DECEPTIVE_END, markersize=7, label="Deceptive end"),
+        plt.Line2D([], [], color="black", linewidth=2, label="Within-round change"),
+        plt.Line2D([], [], marker="o", linestyle="", color=DECEPTIVE_START, markersize=7, label="Reward hacking start"),
+        plt.Line2D([], [], marker="o", linestyle="", color=DECEPTIVE_END, markersize=7, label="Reward hacking end"),
         plt.Line2D([], [], marker="o", linestyle="", color=HONEST_START, markersize=7, label="Honest start"),
         plt.Line2D([], [], marker="o", linestyle="", color=HONEST_END, markersize=7, label="Honest end"),
     ]

@@ -1,0 +1,10 @@
+group,group_label,trial_label,trial,variant,final_auc,initial_auc
+probe_early,Early retraining (probe score),Seed 1,4,early_retraining_v2,0.9442906249999999,0.9461890625
+probe_early,Early retraining (probe score),Seed 2,6,early_retraining,0.8314015625,0.914125
+probe_early,Early retraining (probe score),Seed 3,8,early_retraining,0.9200296875,0.9539859374999999
+auc_early,Early retraining (AUC),Seed 1,4,early_retraining_auc_v2,0.9391890625,0.9586046875
+auc_early,Early retraining (AUC),Seed 2,6,early_retraining_auc_v3,0.8502500000000001,0.9184838709677419
+auc_early,Early retraining (AUC),Seed 3,8,early_retraining_auc_v3,0.9115661290322581,0.917578125
+fixed,Fixed-schedule retraining,Seed 1,4,v2,0.9466609375,0.959596875
+fixed,Fixed-schedule retraining,Seed 2,6,original,0.7361322580645161,0.871853125
+fixed,Fixed-schedule retraining,Seed 3,8,original,0.97919375,0.9964703125

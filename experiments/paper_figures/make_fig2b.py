@@ -1,5 +1,5 @@
 """Paper figure 2b: on-policy probe AUC shift across GRPO retraining rounds,
-for trials 4 / 6 / 8 (columns A / B / C), comparing two probe-retraining
+for trials 4 / 6 / 8 (columns Seed 1 / 2 / 3), comparing two probe-retraining
 conditions (rows): early retraining (probe score) | frozen probe.
 
 Data source: experiments/trials/trial{N}/results/supplemented_probe_eval_{variant}.json
@@ -50,7 +50,7 @@ def plot(df) -> plt.Figure:
             )
 
     legend_handles = [
-        plt.Line2D([], [], color="black", linewidth=2, label="GRPO"),
+        plt.Line2D([], [], color="black", linewidth=2, label="Within-round change"),
         plt.Line2D([], [], marker="o", linestyle="", color=AUC_START, markersize=7, label="Start"),
         plt.Line2D([], [], marker="o", linestyle="", color=AUC_END, markersize=7, label="End"),
     ]

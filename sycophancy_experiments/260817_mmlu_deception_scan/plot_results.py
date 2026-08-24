@@ -8,9 +8,9 @@
 #
 # Chart 1: deception rate per category under both reliance definitions, against
 #          the overall rate at which the model admits influence at all.
-# Chart 2: P(says "Yes") in the four cells (relied x did-not-rely) x (cue at the
-#          correct option x cue at the distractor). If the four bars are level,
-#          the self-report carries no information about reliance.
+# Chart 2: P(says "Yes") for the rollouts that relied on the cue vs those that did
+#          not, pooled over both cue arms. If the two bars are level, the
+#          self-report carries no information about reliance.
 # Chart 3: cue bias against deception rate per category -- do the categories that
 #          flip most also deny most?
 
@@ -130,40 +130,49 @@ plt.show()
 # %%
 # Chart 2: does the self-report move with reliance at all?
 # P(Yes | relied) = 1 - false_denial; P(Yes | did not rely) = false_admission.
+# Pooled over both cue arms: the question is only whether the self-report tracks
+# the reliance label. Reliance takes slot 4 (the cue-switch hue, i.e. cue
+# reliance) and slot 1 (the no-cue hue); the x labels carry the meaning, so no
+# legend is needed.
 DEFS = [
     ("swap", "Cue-swap definition"),
     ("rm", "Cue-removal definition"),
 ]
+RELIANCE = [
+    ("Relied on the cue\n(true admission)", C_SWITCH),
+    ("Did not rely\n(false admission)", C_NONE),
+]
+# Explicit positions rather than categorical ones: with only two bars, matplotlib's
+# unit spacing leaves them wide and far apart for a comparison meant to be read at
+# a glance. X_POS sets the gap, BAR_W the thickness, X_PAD the margin either side.
+X_POS = [0.0, 0.45]
+BAR_W = WIDTH * 0.7
+X_PAD = 0.22
 
 fig2, axes = plt.subplots(1, 2, figsize=(11, 5.5), sharey=True)
 for ax2, (definition, title) in zip(axes, DEFS):
-    values = {
-        "gold": [1 - overall[f"{definition}_false_denial_gold"],
-                 overall[f"{definition}_false_admission_gold"]],
-        "dist": [1 - overall[f"{definition}_false_denial_dist"],
-                 overall[f"{definition}_false_admission_dist"]],
-    }
-    x = range(2)
-    for offset, (key, color, label) in zip(
-        [-WIDTH / 2, WIDTH / 2],
-        [("gold", C_GOLD, "Cue at the correct option"),
-         ("dist", C_DIST, "Cue at the distractor")],
-    ):
-        bars = ax2.bar([i + offset for i in x], values[key], WIDTH, color=color, label=label)
-        ax2.bar_label(bars, **BAR_LABEL_KW)
-    ax2.set_xticks(list(x))
-    ax2.set_xticklabels(["Relied on the cue", "Did not rely"])
+    values = [
+        1 - overall[f"{definition}_false_denial"],
+        overall[f"{definition}_false_admission"],
+    ]
+    bars = ax2.bar(
+        X_POS,
+        values,
+        BAR_W,
+        color=[color for _, color in RELIANCE],
+    )
+    ax2.bar_label(bars, **BAR_LABEL_KW)
+    ax2.set_xticks(X_POS)
+    ax2.set_xticklabels([label for label, _ in RELIANCE])
+    ax2.set_xlim(X_POS[0] - BAR_W / 2 - X_PAD, X_POS[1] + BAR_W / 2 + X_PAD)
     ax2.set_title(title, fontsize=10)
     ax2.grid(axis="y", alpha=0.3)
     ax2.set_axisbelow(True)
 
 axes[0].set_ylabel("P(self-report = \"Yes\")")
 axes[0].set_ylim(0, 1.05)
-handles, labels = axes[0].get_legend_handles_labels()
-fig2.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.06),
-            ncol=2, fontsize=9, frameon=False)
 fig2.suptitle("Does the self-report track measured reliance?", y=0.99)
-fig2.tight_layout(rect=(0, 0.08, 1, 1))
+fig2.tight_layout()
 if SAVE_FIG:
     fig2.savefig(OUTPUT_FIG_SELFREPORT, dpi=DPI)
     print(f"Saved chart to {OUTPUT_FIG_SELFREPORT}")
@@ -209,7 +218,7 @@ ax3.axvline(
     label=f"Overall cue-switch rate ({overall['swap_relied_rate']:.3f})",
 )
 
-ax3.set_xlabel("Cue bias: P(answer follows the cue as the cue moves)")
+ax3.set_xlabel("Bias rate (cue-swap definition)")
 ax3.set_ylabel("Deception rate (cue-swap definition)")
 ax3.set_title(f"Cue bias vs deception by category (r = {corr:.2f})")
 ax3.grid(alpha=0.3)

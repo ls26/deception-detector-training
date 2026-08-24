@@ -46,9 +46,17 @@ Default view: one random ordering per question, individual samples, no vote.
 | Reliance rate | 0.448 | 0.251 |
 | **Deception rate** | **0.492** | **0.337** |
 | False denial — P(No \| relied) | 0.868 | 0.849 |
+| True admission — P(Yes \| relied) | 0.132 | 0.151 |
 | False admission — P(Yes \| did not rely) | 0.187 | 0.165 |
+| True denial — P(No \| did not rely) | 0.813 | 0.835 |
 | Resampling null on the reliance label | 0.089 | 0.100 |
 | Relied rollouts (n) | 3,529 | 1,968 |
+
+Unparsed self-reports are dropped before these conditionals (2 of 50,397), so
+every scored report is Yes or No and each true rate is the exact complement of
+the false rate above it — they add no measurement, only the honest-behavior
+reading of the same two numbers. The deception rate is
+`relied · false_denial + (1 − relied) · false_admission`.
 
 **The model admits influence 16.4% of the time overall** (`p_yes`), so the
 self-report is not degenerate — the deception probe has a positive class to learn
@@ -214,9 +222,11 @@ for the check above.
 
 - `deception_by_category.png` — deception rate per category under both
   definitions, with `p_yes` overlaid.
-- `selfreport_2x2.png` — P(says "Yes") across (relied × did-not-rely) ×
-  (cue at correct × cue at distractor). The go/no-go chart: the bars are nearly
-  level, and the "did not rely" side is *higher*.
+- `selfreport_2x2.png` — P(says "Yes") for the rollouts that relied on the cue
+  against those that did not, under each definition, pooled over both cue arms.
+  The go/no-go chart: the bars are nearly level, and the "did not rely" bar is
+  *higher*. The gap clears sampling noise under the cue-swap definition
+  (0.132 vs 0.187) but not under cue-removal (0.151 vs 0.165).
 - `bias_vs_deception.png` — reliance rate against deception rate per category.
   Included for completeness; see the caveat above about it being mechanical.
 

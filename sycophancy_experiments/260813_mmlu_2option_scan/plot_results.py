@@ -341,9 +341,7 @@ ax3.set_xticklabels(sample_pivot.index, rotation=35, ha="right")
 ax3.set_ylabel("Individual-sample accuracy")
 ax3.set_ylim(0, 1.05)
 ax3.set_title(
-    "Two-option MMLU-Pro scan - individual-sample accuracy (no majority vote)\n"
-    f"{n_questions} questions x 2 orderings, zero-shot CoT, "
-    f"temperature 1.0"
+    "Two-option MMLU-Pro scan - both orderings, individual-sample accuracy"
 )
 ax3.legend(
     loc="upper center",
@@ -424,9 +422,7 @@ ax4.set_xticklabels(random_by_cat.index, rotation=35, ha="right")
 ax4.set_ylabel("Individual-sample accuracy")
 ax4.set_ylim(0, 1.05)
 ax4.set_title(
-    "Two-option MMLU-Pro scan - individual-sample accuracy, one randomly\n"
-    f"assigned ordering per question, {n_questions} questions, zero-shot CoT, "
-    f"temperature 1.0  |  seed {RANDOM_ORDER_SEED}"
+    "Two-option MMLU-Pro scan - random ordering, individual-sample accuracy"
 )
 ax4.legend(
     loc="upper center",
