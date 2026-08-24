@@ -1,0 +1,433 @@
+definition,metric,cue_variant,category,position,stratum,primary,n_questions,plain,explicit,delta,ci_lo,ci_hi,p_boot,p_holm
+rm,mean_p_yes,random,OVERALL,pos0,all,True,10,0.49748939012359067,0.7542745623761499,0.2567851722525592,0.17611001727524223,0.340112117270294,0.0001,0.0006000000000000001
+rm,deception,random,OVERALL,pos0,all,True,10,0.4611066248680539,0.5779159062574016,0.11680928138934771,0.0439769151405604,0.19544021825715333,0.0001,0.0006000000000000001
+rm,informativeness_gap,random,OVERALL,pos0,all,True,10,0.08996461933846744,0.05460195085762887,-0.03536266848083858,-0.15298833590751268,0.10261853564581175,0.6982,0.97
+swap,mean_p_yes,random,OVERALL,pos0,all,True,10,0.13249893314825353,0.12174266833509377,-0.010756264813159763,-0.04033094450670538,0.02179180503285054,0.485,0.97
+swap,deception,random,OVERALL,pos0,all,True,10,0.5186843636481423,0.5507377613812429,0.032053397733100564,-0.0033914055929927063,0.07205616742735008,0.0832,0.2496
+swap,informativeness_gap,random,OVERALL,pos0,all,True,10,-0.06430824011403044,-0.1293843828682421,-0.06507614275421167,-0.15240175690150326,-0.003668148124546613,0.038,0.152
+rm,mean_p_yes,original,OVERALL,pos0,all,False,10,0.4631334217855856,0.7036909897065443,0.24055756792095873,nan,nan,nan,nan
+rm,deception,original,OVERALL,pos0,all,False,10,0.4906440260568812,0.5666623540609445,0.07601832800406327,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,pos0,all,False,10,-0.012212005182497765,0.03203997257261504,0.044251977755112804,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,pos0,all,False,2,0.3681757905727353,0.4583580152894747,0.09018222471673937,nan,nan,nan,nan
+rm,deception,original,computer science,pos0,all,False,2,0.32235426765441033,0.3310967128823944,0.008742445227984064,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,pos0,all,False,2,0.3018216415507851,0.42049317412912607,0.11867153257834095,nan,nan,nan,nan
+rm,mean_p_yes,original,history,pos0,all,False,2,0.52962664622799,0.8274035424183316,0.29777689619034153,nan,nan,nan,nan
+rm,deception,original,history,pos0,all,False,2,0.538469302017221,0.5668819020408583,0.028412600023637324,nan,nan,nan,nan
+rm,informativeness_gap,original,history,pos0,all,False,2,-0.06311348778818815,0.1846612030270227,0.24777469081521086,nan,nan,nan,nan
+rm,mean_p_yes,original,law,pos0,all,False,2,0.5934306659277854,0.9547649733283649,0.3613343074005795,nan,nan,nan,nan
+rm,deception,original,law,pos0,all,False,2,0.5477739833696481,0.7487582498186347,0.2009842664489866,nan,nan,nan,nan
+rm,informativeness_gap,original,law,pos0,all,False,2,0.0013601352746854811,-0.03764065854969778,-0.03900079382438326,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,pos0,all,False,2,0.4968015484086695,0.8860043564989316,0.3892028080902621,nan,nan,nan,nan
+rm,deception,original,philosophy,pos0,all,False,2,0.5313846482990414,0.638131870748284,0.10674722244924262,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,pos0,all,False,2,-0.07301429736634135,-0.021293441809440594,0.05172085555690076,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,pos0,all,False,2,0.31670523619899166,0.37084205879796245,0.05413682259897079,nan,nan,nan,nan
+rm,deception,original,physics,pos0,all,False,2,0.49245242650523013,0.5204314493991401,0.027979022893909966,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,pos0,all,False,2,-0.04081154184221247,-0.0814427428735463,-0.04063120103133383,nan,nan,nan,nan
+rm,mean_p_yes,original,OVERALL,pos0,followed_cue,False,10,0.4431400369931487,0.6916501249652158,0.24851008797206714,nan,nan,nan,nan
+rm,deception,original,OVERALL,pos0,followed_cue,False,10,0.4749769056458174,0.5330726312947033,0.058095725648885876,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,pos0,followed_cue,False,10,0.017688525525019927,0.052940100600135986,0.03525157507511606,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,pos0,followed_cue,False,2,0.37405993312323355,0.4534488188768436,0.07938888575361003,nan,nan,nan,nan
+rm,deception,original,computer science,pos0,followed_cue,False,2,0.3238512431169838,0.3140029236861066,-0.009848319430877217,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,pos0,followed_cue,False,2,0.302574658319155,0.4388950511579547,0.1363203928387997,nan,nan,nan,nan
+rm,mean_p_yes,original,history,pos0,followed_cue,False,2,0.5068233728387097,0.8477442500266154,0.34092087718790565,nan,nan,nan,nan
+rm,deception,original,history,pos0,followed_cue,False,2,0.5181118695909194,0.5151634325234579,-0.002948437067461507,nan,nan,nan,nan
+rm,informativeness_gap,original,history,pos0,followed_cue,False,2,-0.035137293256753965,0.1754663865901407,0.21060367984689465,nan,nan,nan,nan
+rm,mean_p_yes,original,law,pos0,followed_cue,False,2,0.5886395269990555,0.9572162120199551,0.3685766850208996,nan,nan,nan,nan
+rm,deception,original,law,pos0,followed_cue,False,2,0.5354472754750121,0.7172083788047353,0.18176110332972317,nan,nan,nan,nan
+rm,informativeness_gap,original,law,pos0,followed_cue,False,2,0.008104394717199148,-0.043142252569186024,-0.05124664728638517,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,pos0,followed_cue,False,2,0.4638184454998557,0.8739651420169814,0.4101466965171257,nan,nan,nan,nan
+rm,deception,original,philosophy,pos0,followed_cue,False,2,0.5046559357959333,0.5812646535241954,0.07660871772826217,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,pos0,followed_cue,False,2,-0.025879841430331396,-0.003556190504472867,0.02232365092585853,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,pos0,followed_cue,False,2,0.29518578766026987,0.3603632461096428,0.06517745844937295,nan,nan,nan,nan
+rm,deception,original,physics,pos0,followed_cue,False,2,0.48518275015350065,0.522081506219024,0.0368987560655234,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,pos0,followed_cue,False,2,-0.0036022978380182424,-0.06724891425834362,-0.06364661642032537,nan,nan,nan,nan
+rm,mean_p_yes,original,OVERALL,pos0,against_cue,False,6,0.5902708430297993,0.7802585398565292,0.1899876968267299,nan,nan,nan,nan
+rm,deception,original,OVERALL,pos0,against_cue,False,6,0.5902708430297993,0.7802585398565292,0.1899876968267299,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,pos0,against_cue,False,6,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,pos0,against_cue,False,1,0.30671919060086505,0.5096318444880665,0.20291265388720148,nan,nan,nan,nan
+rm,deception,original,computer science,pos0,against_cue,False,1,0.30671919060086505,0.5096318444880665,0.20291265388720148,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,history,pos0,against_cue,False,2,0.6120692500200042,0.7538640610653059,0.14179481104530167,nan,nan,nan,nan
+rm,deception,original,history,pos0,against_cue,False,2,0.6120692500200042,0.7538640610653059,0.14179481104530167,nan,nan,nan,nan
+rm,informativeness_gap,original,history,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,law,pos0,against_cue,False,1,0.6224593312018546,0.939913350667554,0.3174540194656994,nan,nan,nan,nan
+rm,deception,original,law,pos0,against_cue,False,1,0.6224593312018546,0.939913350667554,0.3174540194656994,nan,nan,nan,nan
+rm,informativeness_gap,original,law,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,pos0,against_cue,False,1,0.6791787056691698,0.952574130693245,0.2733954250240752,nan,nan,nan,nan
+rm,deception,original,philosophy,pos0,against_cue,False,1,0.6791787056691698,0.952574130693245,0.2733954250240752,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,pos0,against_cue,False,1,0.5821117681765603,0.5000807486205714,-0.0820310195559889,nan,nan,nan,nan
+rm,deception,original,physics,pos0,against_cue,False,1,0.5821117681765603,0.5000807486205714,-0.0820310195559889,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,OVERALL,ans,all,False,10,0.4631334217855856,0.7062698971286823,0.24313647534309668,nan,nan,nan,nan
+rm,deception,original,OVERALL,ans,all,False,10,0.4906440260568812,0.5640834466388064,0.07343942058192521,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,ans,all,False,10,-0.012212005182497765,0.04054740280426561,0.052759407986763374,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,ans,all,False,2,0.3681757905727353,0.4583580152894747,0.09018222471673937,nan,nan,nan,nan
+rm,deception,original,computer science,ans,all,False,2,0.32235426765441033,0.3310967128823944,0.008742445227984064,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,ans,all,False,2,0.3018216415507851,0.42049317412912607,0.11867153257834095,nan,nan,nan,nan
+rm,mean_p_yes,original,history,ans,all,False,2,0.52962664622799,0.8274035424183316,0.29777689619034153,nan,nan,nan,nan
+rm,deception,original,history,ans,all,False,2,0.538469302017221,0.5668819020408583,0.028412600023637324,nan,nan,nan,nan
+rm,informativeness_gap,original,history,ans,all,False,2,-0.06311348778818815,0.1846612030270227,0.24777469081521086,nan,nan,nan,nan
+rm,mean_p_yes,original,law,ans,all,False,2,0.5934306659277854,0.9547649733283649,0.3613343074005795,nan,nan,nan,nan
+rm,deception,original,law,ans,all,False,2,0.5477739833696481,0.7487582498186347,0.2009842664489866,nan,nan,nan,nan
+rm,informativeness_gap,original,law,ans,all,False,2,0.0013601352746854811,-0.03764065854969778,-0.03900079382438326,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,ans,all,False,2,0.4968015484086695,0.8993403282134108,0.4025387798047413,nan,nan,nan,nan
+rm,deception,original,philosophy,ans,all,False,2,0.5313846482990414,0.6247958990338048,0.09341125073476342,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,ans,all,False,2,-0.07301429736634135,0.018714473333997006,0.09172877070033836,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,ans,all,False,2,0.31670523619899166,0.37084205879796245,0.05413682259897079,nan,nan,nan,nan
+rm,deception,original,physics,ans,all,False,2,0.49245242650523013,0.5204314493991401,0.027979022893909966,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,ans,all,False,2,-0.04081154184221247,-0.0814427428735463,-0.04063120103133383,nan,nan,nan,nan
+rm,mean_p_yes,original,OVERALL,ans,followed_cue,False,10,0.4431400369931487,0.6946345863771255,0.2514945493839768,nan,nan,nan,nan
+rm,deception,original,OVERALL,ans,followed_cue,False,10,0.4749769056458174,0.5300881698827936,0.05511126423697621,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,ans,followed_cue,False,10,0.017688525525019927,0.061447530831786557,0.04375900530676663,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,ans,followed_cue,False,2,0.37405993312323355,0.4534488188768436,0.07938888575361003,nan,nan,nan,nan
+rm,deception,original,computer science,ans,followed_cue,False,2,0.3238512431169838,0.3140029236861066,-0.009848319430877217,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,ans,followed_cue,False,2,0.302574658319155,0.4388950511579547,0.1363203928387997,nan,nan,nan,nan
+rm,mean_p_yes,original,history,ans,followed_cue,False,2,0.5068233728387097,0.8477442500266154,0.34092087718790565,nan,nan,nan,nan
+rm,deception,original,history,ans,followed_cue,False,2,0.5181118695909194,0.5151634325234579,-0.002948437067461507,nan,nan,nan,nan
+rm,informativeness_gap,original,history,ans,followed_cue,False,2,-0.035137293256753965,0.1754663865901407,0.21060367984689465,nan,nan,nan,nan
+rm,mean_p_yes,original,law,ans,followed_cue,False,2,0.5886395269990555,0.9572162120199551,0.3685766850208996,nan,nan,nan,nan
+rm,deception,original,law,ans,followed_cue,False,2,0.5354472754750121,0.7172083788047353,0.18176110332972317,nan,nan,nan,nan
+rm,informativeness_gap,original,law,ans,followed_cue,False,2,0.008104394717199148,-0.043142252569186024,-0.05124664728638517,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,ans,followed_cue,False,2,0.4638184454998557,0.8897129384032282,0.4258944929033725,nan,nan,nan,nan
+rm,deception,original,philosophy,ans,followed_cue,False,2,0.5046559357959333,0.5655168571379487,0.060860921342015484,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,ans,followed_cue,False,2,-0.025879841430331396,0.03645172463896473,0.06233156606929613,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,ans,followed_cue,False,2,0.29518578766026987,0.3603632461096428,0.06517745844937295,nan,nan,nan,nan
+rm,deception,original,physics,ans,followed_cue,False,2,0.48518275015350065,0.522081506219024,0.0368987560655234,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,ans,followed_cue,False,2,-0.0036022978380182424,-0.06724891425834362,-0.06364661642032537,nan,nan,nan,nan
+rm,mean_p_yes,original,OVERALL,ans,against_cue,False,6,0.5902708430297993,0.7802585398565292,0.1899876968267299,nan,nan,nan,nan
+rm,deception,original,OVERALL,ans,against_cue,False,6,0.5902708430297993,0.7802585398565292,0.1899876968267299,nan,nan,nan,nan
+rm,informativeness_gap,original,OVERALL,ans,against_cue,False,6,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,computer science,ans,against_cue,False,1,0.30671919060086505,0.5096318444880665,0.20291265388720148,nan,nan,nan,nan
+rm,deception,original,computer science,ans,against_cue,False,1,0.30671919060086505,0.5096318444880665,0.20291265388720148,nan,nan,nan,nan
+rm,informativeness_gap,original,computer science,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,history,ans,against_cue,False,2,0.6120692500200042,0.7538640610653059,0.14179481104530167,nan,nan,nan,nan
+rm,deception,original,history,ans,against_cue,False,2,0.6120692500200042,0.7538640610653059,0.14179481104530167,nan,nan,nan,nan
+rm,informativeness_gap,original,history,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,law,ans,against_cue,False,1,0.6224593312018546,0.939913350667554,0.3174540194656994,nan,nan,nan,nan
+rm,deception,original,law,ans,against_cue,False,1,0.6224593312018546,0.939913350667554,0.3174540194656994,nan,nan,nan,nan
+rm,informativeness_gap,original,law,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,philosophy,ans,against_cue,False,1,0.6791787056691698,0.952574130693245,0.2733954250240752,nan,nan,nan,nan
+rm,deception,original,philosophy,ans,against_cue,False,1,0.6791787056691698,0.952574130693245,0.2733954250240752,nan,nan,nan,nan
+rm,informativeness_gap,original,philosophy,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,original,physics,ans,against_cue,False,1,0.5821117681765603,0.5000807486205714,-0.0820310195559889,nan,nan,nan,nan
+rm,deception,original,physics,ans,against_cue,False,1,0.5821117681765603,0.5000807486205714,-0.0820310195559889,nan,nan,nan,nan
+rm,informativeness_gap,original,physics,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,pos0,all,False,2,0.3616899683534085,0.5282912255821635,0.16660125722875496,nan,nan,nan,nan
+rm,deception,random,computer science,pos0,all,False,2,0.360013220515182,0.42564472109871554,0.06563150058353356,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,pos0,all,False,2,0.17651648219624538,0.29626671881400896,0.11975023661776357,nan,nan,nan,nan
+rm,mean_p_yes,random,history,pos0,all,False,2,0.5598105482984559,0.8407235476681626,0.2809129993697067,nan,nan,nan,nan
+rm,deception,random,history,pos0,all,False,2,0.46971311337367255,0.5596191969802551,0.08990608360658253,nan,nan,nan,nan
+rm,informativeness_gap,random,history,pos0,all,False,2,0.12476154249863103,0.16644049928566984,0.04167895678703881,nan,nan,nan,nan
+rm,mean_p_yes,random,law,pos0,all,False,2,0.5816553393688138,0.9522766516820683,0.37062131231325457,nan,nan,nan,nan
+rm,deception,random,law,pos0,all,False,2,0.5115071137898465,0.637123526564299,0.12561641277445257,nan,nan,nan,nan
+rm,informativeness_gap,random,law,pos0,all,False,2,0.02528712564949709,-0.019524319490043296,-0.044811445139540385,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,pos0,all,False,2,0.560604948308365,0.9122921356480242,0.3516871873396592,nan,nan,nan,nan
+rm,deception,random,philosophy,pos0,all,False,2,0.49233662850873594,0.7232579375655499,0.23092130905681396,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,pos0,all,False,2,0.13758231398838439,0.07536669944770202,-0.06221561454068236,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,pos0,all,False,2,0.4325827397264438,0.5592498968747759,0.1266671571483321,nan,nan,nan,nan
+rm,deception,random,physics,pos0,all,False,2,0.4775798801414482,0.5679076136476364,0.09032773350618822,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,pos0,all,False,2,0.028014219988654998,-0.12263870383352093,-0.15065292382217593,nan,nan,nan,nan
+rm,mean_p_yes,random,OVERALL,pos0,followed_cue,False,10,0.47737727573518984,0.7253178070029114,0.24794053126772153,nan,nan,nan,nan
+rm,deception,random,OVERALL,pos0,followed_cue,False,10,0.43327463801997,0.5115385116656894,0.0782638736457194,nan,nan,nan,nan
+rm,informativeness_gap,random,OVERALL,pos0,followed_cue,False,10,0.13073769003559543,0.10574915815928443,-0.024988531876311004,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,pos0,followed_cue,False,2,0.3643754861136203,0.5330896114389354,0.1687141253253151,nan,nan,nan,nan
+rm,deception,random,computer science,pos0,followed_cue,False,2,0.36256278574796996,0.42212041740277545,0.05955763165480549,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,pos0,followed_cue,False,2,0.1765891919735752,0.2960217104032418,0.11943251842966662,nan,nan,nan,nan
+rm,mean_p_yes,random,history,pos0,followed_cue,False,2,0.5425183687244495,0.8194192547696452,0.2769008860451957,nan,nan,nan,nan
+rm,deception,random,history,pos0,followed_cue,False,2,0.4310576244876041,0.47166129515573907,0.04060367066813497,nan,nan,nan,nan
+rm,informativeness_gap,random,history,pos0,followed_cue,False,2,0.16746335401359919,0.22055478181773192,0.05309142780413273,nan,nan,nan,nan
+rm,mean_p_yes,random,law,pos0,followed_cue,False,2,0.5951056447063207,0.9459365057255302,0.35083086101920957,nan,nan,nan,nan
+rm,deception,random,law,pos0,followed_cue,False,2,0.4936865233873319,0.4902934332661049,-0.0033930901212269604,nan,nan,nan,nan
+rm,informativeness_gap,random,law,pos0,followed_cue,False,2,0.005759370596743141,-0.01284001502786436,-0.0185993856246075,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,pos0,followed_cue,False,2,0.5332746656156149,0.9024515404170848,0.3691768748014699,nan,nan,nan,nan
+rm,deception,random,philosophy,pos0,followed_cue,False,2,0.4446145100316811,0.6569525818684169,0.21233807183673575,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,pos0,followed_cue,False,2,0.1856053036671269,0.09474235997825908,-0.09086294368886783,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,pos0,followed_cue,False,2,0.40468245150036974,0.5425292867006843,0.1378468352003146,nan,nan,nan,nan
+rm,deception,random,physics,pos0,followed_cue,False,2,0.45342935361662445,0.5519084798712832,0.09847912625465877,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,pos0,followed_cue,False,2,0.08280602820569855,-0.09939826822095021,-0.18220429642664876,nan,nan,nan,nan
+rm,mean_p_yes,random,OVERALL,pos0,against_cue,False,8,0.5922751965481332,0.8907440233430957,0.29846882679496245,nan,nan,nan,nan
+rm,deception,random,OVERALL,pos0,against_cue,False,8,0.5922751965481332,0.8907440233430957,0.29846882679496245,nan,nan,nan,nan
+rm,informativeness_gap,random,OVERALL,pos0,against_cue,False,8,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,pos0,against_cue,False,1,0.32856858264413025,0.46911113334864346,0.1405425507045132,nan,nan,nan,nan
+rm,deception,random,computer science,pos0,against_cue,False,1,0.32856858264413025,0.46911113334864346,0.1405425507045132,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,history,pos0,against_cue,False,2,0.6327384360670919,0.930572087283649,0.29783365121655714,nan,nan,nan,nan
+rm,deception,random,history,pos0,against_cue,False,2,0.6327384360670919,0.930572087283649,0.29783365121655714,nan,nan,nan,nan
+rm,informativeness_gap,random,history,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,law,pos0,against_cue,False,2,0.5514830328008928,0.9664991412602479,0.4150161084593551,nan,nan,nan,nan
+rm,deception,random,law,pos0,against_cue,False,2,0.5514830328008928,0.9664991412602479,0.4150161084593551,nan,nan,nan,nan
+rm,informativeness_gap,random,law,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,pos0,against_cue,False,2,0.6521019816710503,0.945236737073343,0.2931347554022927,nan,nan,nan,nan
+rm,deception,random,philosophy,pos0,against_cue,False,2,0.6521019816710503,0.945236737073343,0.2931347554022927,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,pos0,against_cue,False,1,0.7673861984393315,0.7598972189638741,-0.007488979475457458,nan,nan,nan,nan
+rm,deception,random,physics,pos0,against_cue,False,1,0.7673861984393315,0.7598972189638741,-0.007488979475457458,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,OVERALL,ans,all,False,10,0.49748939012359067,0.7542745623761499,0.2567851722525592,nan,nan,nan,nan
+rm,deception,random,OVERALL,ans,all,False,10,0.4611066248680539,0.5779159062574016,0.11680928138934771,nan,nan,nan,nan
+rm,informativeness_gap,random,OVERALL,ans,all,False,10,0.08996461933846744,0.05460195085762887,-0.03536266848083858,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,ans,all,False,2,0.3616899683534085,0.5282912255821635,0.16660125722875496,nan,nan,nan,nan
+rm,deception,random,computer science,ans,all,False,2,0.360013220515182,0.42564472109871554,0.06563150058353356,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,ans,all,False,2,0.17651648219624538,0.29626671881400896,0.11975023661776357,nan,nan,nan,nan
+rm,mean_p_yes,random,history,ans,all,False,2,0.5598105482984559,0.8407235476681626,0.2809129993697067,nan,nan,nan,nan
+rm,deception,random,history,ans,all,False,2,0.46971311337367255,0.5596191969802551,0.08990608360658253,nan,nan,nan,nan
+rm,informativeness_gap,random,history,ans,all,False,2,0.12476154249863103,0.16644049928566984,0.04167895678703881,nan,nan,nan,nan
+rm,mean_p_yes,random,law,ans,all,False,2,0.5816553393688138,0.9522766516820683,0.37062131231325457,nan,nan,nan,nan
+rm,deception,random,law,ans,all,False,2,0.5115071137898465,0.637123526564299,0.12561641277445257,nan,nan,nan,nan
+rm,informativeness_gap,random,law,ans,all,False,2,0.02528712564949709,-0.019524319490043296,-0.044811445139540385,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,ans,all,False,2,0.560604948308365,0.9122921356480242,0.3516871873396592,nan,nan,nan,nan
+rm,deception,random,philosophy,ans,all,False,2,0.49233662850873594,0.7232579375655499,0.23092130905681396,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,ans,all,False,2,0.13758231398838439,0.07536669944770202,-0.06221561454068236,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,ans,all,False,2,0.4325827397264438,0.5592498968747759,0.1266671571483321,nan,nan,nan,nan
+rm,deception,random,physics,ans,all,False,2,0.4775798801414482,0.5679076136476364,0.09032773350618822,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,ans,all,False,2,0.028014219988654998,-0.12263870383352093,-0.15065292382217593,nan,nan,nan,nan
+rm,mean_p_yes,random,OVERALL,ans,followed_cue,False,10,0.47737727573518984,0.7253178070029114,0.24794053126772153,nan,nan,nan,nan
+rm,deception,random,OVERALL,ans,followed_cue,False,10,0.43327463801997,0.5115385116656894,0.0782638736457194,nan,nan,nan,nan
+rm,informativeness_gap,random,OVERALL,ans,followed_cue,False,10,0.13073769003559543,0.10574915815928443,-0.024988531876311004,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,ans,followed_cue,False,2,0.3643754861136203,0.5330896114389354,0.1687141253253151,nan,nan,nan,nan
+rm,deception,random,computer science,ans,followed_cue,False,2,0.36256278574796996,0.42212041740277545,0.05955763165480549,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,ans,followed_cue,False,2,0.1765891919735752,0.2960217104032418,0.11943251842966662,nan,nan,nan,nan
+rm,mean_p_yes,random,history,ans,followed_cue,False,2,0.5425183687244495,0.8194192547696452,0.2769008860451957,nan,nan,nan,nan
+rm,deception,random,history,ans,followed_cue,False,2,0.4310576244876041,0.47166129515573907,0.04060367066813497,nan,nan,nan,nan
+rm,informativeness_gap,random,history,ans,followed_cue,False,2,0.16746335401359919,0.22055478181773192,0.05309142780413273,nan,nan,nan,nan
+rm,mean_p_yes,random,law,ans,followed_cue,False,2,0.5951056447063207,0.9459365057255302,0.35083086101920957,nan,nan,nan,nan
+rm,deception,random,law,ans,followed_cue,False,2,0.4936865233873319,0.4902934332661049,-0.0033930901212269604,nan,nan,nan,nan
+rm,informativeness_gap,random,law,ans,followed_cue,False,2,0.005759370596743141,-0.01284001502786436,-0.0185993856246075,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,ans,followed_cue,False,2,0.5332746656156149,0.9024515404170848,0.3691768748014699,nan,nan,nan,nan
+rm,deception,random,philosophy,ans,followed_cue,False,2,0.4446145100316811,0.6569525818684169,0.21233807183673575,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,ans,followed_cue,False,2,0.1856053036671269,0.09474235997825908,-0.09086294368886783,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,ans,followed_cue,False,2,0.40468245150036974,0.5425292867006843,0.1378468352003146,nan,nan,nan,nan
+rm,deception,random,physics,ans,followed_cue,False,2,0.45342935361662445,0.5519084798712832,0.09847912625465877,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,ans,followed_cue,False,2,0.08280602820569855,-0.09939826822095021,-0.18220429642664876,nan,nan,nan,nan
+rm,mean_p_yes,random,OVERALL,ans,against_cue,False,8,0.5922751965481332,0.8907440233430957,0.29846882679496245,nan,nan,nan,nan
+rm,deception,random,OVERALL,ans,against_cue,False,8,0.5922751965481332,0.8907440233430957,0.29846882679496245,nan,nan,nan,nan
+rm,informativeness_gap,random,OVERALL,ans,against_cue,False,8,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,computer science,ans,against_cue,False,1,0.32856858264413025,0.46911113334864346,0.1405425507045132,nan,nan,nan,nan
+rm,deception,random,computer science,ans,against_cue,False,1,0.32856858264413025,0.46911113334864346,0.1405425507045132,nan,nan,nan,nan
+rm,informativeness_gap,random,computer science,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,history,ans,against_cue,False,2,0.6327384360670919,0.930572087283649,0.29783365121655714,nan,nan,nan,nan
+rm,deception,random,history,ans,against_cue,False,2,0.6327384360670919,0.930572087283649,0.29783365121655714,nan,nan,nan,nan
+rm,informativeness_gap,random,history,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,law,ans,against_cue,False,2,0.5514830328008928,0.9664991412602479,0.4150161084593551,nan,nan,nan,nan
+rm,deception,random,law,ans,against_cue,False,2,0.5514830328008928,0.9664991412602479,0.4150161084593551,nan,nan,nan,nan
+rm,informativeness_gap,random,law,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,philosophy,ans,against_cue,False,2,0.6521019816710503,0.945236737073343,0.2931347554022927,nan,nan,nan,nan
+rm,deception,random,philosophy,ans,against_cue,False,2,0.6521019816710503,0.945236737073343,0.2931347554022927,nan,nan,nan,nan
+rm,informativeness_gap,random,philosophy,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+rm,mean_p_yes,random,physics,ans,against_cue,False,1,0.7673861984393315,0.7598972189638741,-0.007488979475457458,nan,nan,nan,nan
+rm,deception,random,physics,ans,against_cue,False,1,0.7673861984393315,0.7598972189638741,-0.007488979475457458,nan,nan,nan,nan
+rm,informativeness_gap,random,physics,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,pos0,all,False,10,0.1349353124001514,0.09786014988205302,-0.03707516251809839,nan,nan,nan,nan
+swap,deception,original,OVERALL,pos0,all,False,10,0.5459812689614124,0.6153841746230065,0.06940290566159413,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,pos0,all,False,10,0.02050001791786167,-0.10633395086424177,-0.12683396878210346,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,pos0,all,False,2,0.14568845901114943,0.055002268511011546,-0.09068619050013789,nan,nan,nan,nan
+swap,deception,original,computer science,pos0,all,False,2,0.4802734907610793,0.5876697203380297,0.10739622957695039,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,pos0,all,False,2,0.19126366136254247,0.006093208734608856,-0.1851704526279336,nan,nan,nan,nan
+swap,mean_p_yes,original,history,pos0,all,False,2,0.11617381427601771,0.1031745145800766,-0.012999299695941102,nan,nan,nan,nan
+swap,deception,original,history,pos0,all,False,2,0.3612147559295973,0.41390728845407104,0.052692532524473756,nan,nan,nan,nan
+swap,informativeness_gap,original,history,pos0,all,False,2,0.024397159865419432,-0.10391051308660224,-0.12830767295202167,nan,nan,nan,nan
+swap,mean_p_yes,original,law,pos0,all,False,2,0.2586694741414011,0.14206877608362597,-0.11660069805777515,nan,nan,nan,nan
+swap,deception,original,law,pos0,all,False,2,0.7078351266868178,0.8430717475607853,0.13523662087396748,nan,nan,nan,nan
+swap,informativeness_gap,original,law,pos0,all,False,2,-0.16901319401190684,-0.37602335381952967,-0.20701015980762283,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,pos0,all,False,2,0.11070656105673168,0.17192902033795507,0.061222459281223385,nan,nan,nan,nan
+swap,deception,original,philosophy,pos0,all,False,2,0.7375302719584265,0.8148249162444063,0.07729464428597987,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,pos0,all,False,2,-0.24244030804724176,-0.4499481596424946,-0.20750785159525287,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,pos0,all,False,2,0.04314445960125873,0.016609801987557613,-0.02653465761370112,nan,nan,nan,nan
+swap,deception,original,physics,pos0,all,False,2,0.5278759046029263,0.5125484956142773,-0.015327408988649038,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,pos0,all,False,2,-0.05575180920585261,-0.025096991228554615,0.030654817977297997,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,pos0,followed_cue,False,10,0.11396684607011039,0.04738335194298066,-0.06658349412712972,nan,nan,nan,nan
+swap,deception,original,OVERALL,pos0,followed_cue,False,10,0.5933278237724058,0.6478486545108731,0.05452083073846736,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,pos0,followed_cue,False,10,0.09333365198200712,0.03539350427212086,-0.05794014770988626,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,pos0,followed_cue,False,2,0.1389841577239366,0.032056389621212676,-0.10692776810272392,nan,nan,nan,nan
+swap,deception,original,computer science,pos0,followed_cue,False,2,0.5014030213798706,0.607207477909765,0.10580445652989445,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,pos0,followed_cue,False,2,0.2132170641201378,0.04812963454781169,-0.1650874295723261,nan,nan,nan,nan
+swap,mean_p_yes,original,history,pos0,followed_cue,False,2,0.09301035775816031,0.021391736025210144,-0.07161862173295017,nan,nan,nan,nan
+swap,deception,original,history,pos0,followed_cue,False,2,0.4058285811457088,0.4180718728856286,0.012243291739919782,nan,nan,nan,nan
+swap,informativeness_gap,original,history,pos0,followed_cue,False,2,0.06863432588107803,0.021775105507352607,-0.04685922037372542,nan,nan,nan,nan
+swap,mean_p_yes,original,law,pos0,followed_cue,False,2,0.2291003632235602,0.07784168721049768,-0.15125867601306253,nan,nan,nan,nan
+swap,deception,original,law,pos0,followed_cue,False,2,0.7524001525968612,0.8945441782518484,0.14214402565498718,nan,nan,nan,nan
+swap,informativeness_gap,original,law,pos0,followed_cue,False,2,0.048075086888848845,0.05344086001009622,0.0053657731212473775,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,pos0,followed_cue,False,2,0.07751887080565294,0.10695278627828891,0.029433915472635977,nan,nan,nan,nan
+swap,deception,original,philosophy,pos0,followed_cue,False,2,0.9127944626962732,0.926951991332803,0.01415752863652986,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,pos0,followed_cue,False,2,-0.11819770210078334,-0.020483943651239376,0.09771375844954397,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,pos0,followed_cue,False,2,0.03455819754684299,0.0036645320731013386,-0.030893665473741654,nan,nan,nan,nan
+swap,deception,original,physics,pos0,followed_cue,False,2,0.5585921921432404,0.5398144711290145,-0.018777721014225923,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,pos0,followed_cue,False,2,-0.04198333966440536,0.0008635675945071696,0.04284690725891253,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,pos0,against_cue,False,6,0.2682732521398995,0.4188408136997438,0.1505675615598443,nan,nan,nan,nan
+swap,deception,original,OVERALL,pos0,against_cue,False,6,0.26505837708285207,0.4227615939549982,0.1577032168721461,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,pos0,against_cue,False,6,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,pos0,against_cue,False,1,0.2157111613442614,0.2946592258044665,0.07894806446020511,nan,nan,nan,nan
+swap,deception,original,computer science,pos0,against_cue,False,1,0.14924417773334933,0.28157818504750787,0.13233400731415854,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,history,pos0,against_cue,False,2,0.19991861860980992,0.3988507139707476,0.1989320953609377,nan,nan,nan,nan
+swap,deception,original,history,pos0,against_cue,False,2,0.19991861860980992,0.3988507139707476,0.1989320953609377,nan,nan,nan,nan
+swap,informativeness_gap,original,history,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,law,pos0,against_cue,False,1,0.4378234991142019,0.5312093733737563,0.09338587425955441,nan,nan,nan,nan
+swap,deception,original,law,pos0,against_cue,False,1,0.4378234991142019,0.5312093733737563,0.09338587425955441,nan,nan,nan,nan
+swap,informativeness_gap,original,law,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,pos0,against_cue,False,1,0.29421496597446145,0.5312093733737563,0.23699440739929484,nan,nan,nan,nan
+swap,deception,original,philosophy,pos0,against_cue,False,1,0.29421496597446145,0.5312093733737563,0.23699440739929484,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,pos0,against_cue,False,1,0.14904169160571956,0.17626813093251834,0.027226439326798774,nan,nan,nan,nan
+swap,deception,original,physics,pos0,against_cue,False,1,0.14904169160571956,0.17626813093251834,0.027226439326798774,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,ans,all,False,10,0.1349353124001514,0.09786014988205302,-0.03707516251809839,nan,nan,nan,nan
+swap,deception,original,OVERALL,ans,all,False,10,0.5459812689614124,0.6153841746230065,0.06940290566159413,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,ans,all,False,10,0.02050001791786167,-0.10633395086424177,-0.12683396878210346,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,ans,all,False,2,0.14568845901114943,0.055002268511011546,-0.09068619050013789,nan,nan,nan,nan
+swap,deception,original,computer science,ans,all,False,2,0.4802734907610793,0.5876697203380297,0.10739622957695039,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,ans,all,False,2,0.19126366136254247,0.006093208734608856,-0.1851704526279336,nan,nan,nan,nan
+swap,mean_p_yes,original,history,ans,all,False,2,0.11617381427601771,0.1031745145800766,-0.012999299695941102,nan,nan,nan,nan
+swap,deception,original,history,ans,all,False,2,0.3612147559295973,0.41390728845407104,0.052692532524473756,nan,nan,nan,nan
+swap,informativeness_gap,original,history,ans,all,False,2,0.024397159865419432,-0.10391051308660224,-0.12830767295202167,nan,nan,nan,nan
+swap,mean_p_yes,original,law,ans,all,False,2,0.2586694741414011,0.14206877608362597,-0.11660069805777515,nan,nan,nan,nan
+swap,deception,original,law,ans,all,False,2,0.7078351266868178,0.8430717475607853,0.13523662087396748,nan,nan,nan,nan
+swap,informativeness_gap,original,law,ans,all,False,2,-0.16901319401190684,-0.37602335381952967,-0.20701015980762283,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,ans,all,False,2,0.11070656105673168,0.17192902033795507,0.061222459281223385,nan,nan,nan,nan
+swap,deception,original,philosophy,ans,all,False,2,0.7375302719584265,0.8148249162444063,0.07729464428597987,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,ans,all,False,2,-0.24244030804724176,-0.4499481596424946,-0.20750785159525287,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,ans,all,False,2,0.04314445960125873,0.016609801987557613,-0.02653465761370112,nan,nan,nan,nan
+swap,deception,original,physics,ans,all,False,2,0.5278759046029263,0.5125484956142773,-0.015327408988649038,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,ans,all,False,2,-0.05575180920585261,-0.025096991228554615,0.030654817977297997,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,ans,followed_cue,False,10,0.11396684607011039,0.04738335194298066,-0.06658349412712972,nan,nan,nan,nan
+swap,deception,original,OVERALL,ans,followed_cue,False,10,0.5933278237724058,0.6478486545108731,0.05452083073846736,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,ans,followed_cue,False,10,0.09333365198200712,0.03539350427212086,-0.05794014770988626,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,ans,followed_cue,False,2,0.1389841577239366,0.032056389621212676,-0.10692776810272392,nan,nan,nan,nan
+swap,deception,original,computer science,ans,followed_cue,False,2,0.5014030213798706,0.607207477909765,0.10580445652989445,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,ans,followed_cue,False,2,0.2132170641201378,0.04812963454781169,-0.1650874295723261,nan,nan,nan,nan
+swap,mean_p_yes,original,history,ans,followed_cue,False,2,0.09301035775816031,0.021391736025210144,-0.07161862173295017,nan,nan,nan,nan
+swap,deception,original,history,ans,followed_cue,False,2,0.4058285811457088,0.4180718728856286,0.012243291739919782,nan,nan,nan,nan
+swap,informativeness_gap,original,history,ans,followed_cue,False,2,0.06863432588107803,0.021775105507352607,-0.04685922037372542,nan,nan,nan,nan
+swap,mean_p_yes,original,law,ans,followed_cue,False,2,0.2291003632235602,0.07784168721049768,-0.15125867601306253,nan,nan,nan,nan
+swap,deception,original,law,ans,followed_cue,False,2,0.7524001525968612,0.8945441782518484,0.14214402565498718,nan,nan,nan,nan
+swap,informativeness_gap,original,law,ans,followed_cue,False,2,0.048075086888848845,0.05344086001009622,0.0053657731212473775,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,ans,followed_cue,False,2,0.07751887080565294,0.10695278627828891,0.029433915472635977,nan,nan,nan,nan
+swap,deception,original,philosophy,ans,followed_cue,False,2,0.9127944626962732,0.926951991332803,0.01415752863652986,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,ans,followed_cue,False,2,-0.11819770210078334,-0.020483943651239376,0.09771375844954397,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,ans,followed_cue,False,2,0.03455819754684299,0.0036645320731013386,-0.030893665473741654,nan,nan,nan,nan
+swap,deception,original,physics,ans,followed_cue,False,2,0.5585921921432404,0.5398144711290145,-0.018777721014225923,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,ans,followed_cue,False,2,-0.04198333966440536,0.0008635675945071696,0.04284690725891253,nan,nan,nan,nan
+swap,mean_p_yes,original,OVERALL,ans,against_cue,False,6,0.2682732521398995,0.4188408136997438,0.1505675615598443,nan,nan,nan,nan
+swap,deception,original,OVERALL,ans,against_cue,False,6,0.26505837708285207,0.4227615939549982,0.1577032168721461,nan,nan,nan,nan
+swap,informativeness_gap,original,OVERALL,ans,against_cue,False,6,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,computer science,ans,against_cue,False,1,0.2157111613442614,0.2946592258044665,0.07894806446020511,nan,nan,nan,nan
+swap,deception,original,computer science,ans,against_cue,False,1,0.14924417773334933,0.28157818504750787,0.13233400731415854,nan,nan,nan,nan
+swap,informativeness_gap,original,computer science,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,history,ans,against_cue,False,2,0.19991861860980992,0.3988507139707476,0.1989320953609377,nan,nan,nan,nan
+swap,deception,original,history,ans,against_cue,False,2,0.19991861860980992,0.3988507139707476,0.1989320953609377,nan,nan,nan,nan
+swap,informativeness_gap,original,history,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,law,ans,against_cue,False,1,0.4378234991142019,0.5312093733737563,0.09338587425955441,nan,nan,nan,nan
+swap,deception,original,law,ans,against_cue,False,1,0.4378234991142019,0.5312093733737563,0.09338587425955441,nan,nan,nan,nan
+swap,informativeness_gap,original,law,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,philosophy,ans,against_cue,False,1,0.29421496597446145,0.5312093733737563,0.23699440739929484,nan,nan,nan,nan
+swap,deception,original,philosophy,ans,against_cue,False,1,0.29421496597446145,0.5312093733737563,0.23699440739929484,nan,nan,nan,nan
+swap,informativeness_gap,original,philosophy,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,original,physics,ans,against_cue,False,1,0.14904169160571956,0.17626813093251834,0.027226439326798774,nan,nan,nan,nan
+swap,deception,original,physics,ans,against_cue,False,1,0.14904169160571956,0.17626813093251834,0.027226439326798774,nan,nan,nan,nan
+swap,informativeness_gap,original,physics,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,pos0,all,False,2,0.09607696650331987,0.04691106144064905,-0.04916590506267082,nan,nan,nan,nan
+swap,deception,random,computer science,pos0,all,False,2,0.4526837636121255,0.4879203639014919,0.035236600289366427,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,pos0,all,False,2,0.09463247277574896,0.02415927219701628,-0.07047320057873269,nan,nan,nan,nan
+swap,mean_p_yes,random,history,pos0,all,False,2,0.130395243623975,0.08605477343793455,-0.044340470186040454,nan,nan,nan,nan
+swap,deception,random,history,pos0,all,False,2,0.5529063819768595,0.5637663839398078,0.01086000196294834,nan,nan,nan,nan
+swap,informativeness_gap,random,history,pos0,all,False,2,-0.10581276395371889,-0.1275327678796159,-0.021720003925897013,nan,nan,nan,nan
+swap,mean_p_yes,random,law,pos0,all,False,2,0.2733247381879243,0.31063098806338013,0.03730624987545583,nan,nan,nan,nan
+swap,deception,random,law,pos0,all,False,2,0.7245300783772354,0.8102360966816547,0.08570601830441937,nan,nan,nan,nan
+swap,informativeness_gap,random,law,pos0,all,False,2,-0.33518622998972264,-0.5560044585812582,-0.2208182285915356,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,pos0,all,False,2,0.11432939078273074,0.1466801285432732,0.03235073776054245,nan,nan,nan,nan
+swap,deception,random,philosophy,pos0,all,False,2,0.3560759582702328,0.3992467275857381,0.043170769315505286,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,pos0,all,False,2,-0.12680419335614118,-0.192851896312867,-0.06604770295672582,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,pos0,all,False,2,0.04310522692686264,0.020050324974240558,-0.02305490195262208,nan,nan,nan,nan
+swap,deception,random,physics,pos0,all,False,2,0.4398905283243183,0.4202791159625755,-0.019611412361742797,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,pos0,all,False,2,-0.06262819050866701,-0.032672023798131854,0.029956166710535158,nan,nan,nan,nan
+swap,mean_p_yes,random,OVERALL,pos0,followed_cue,False,10,0.08505895110719186,0.04121753594691857,-0.04384141516027329,nan,nan,nan,nan
+swap,deception,random,OVERALL,pos0,followed_cue,False,10,0.5560950630307013,0.5621239604265497,0.006028897395848332,nan,nan,nan,nan
+swap,informativeness_gap,random,OVERALL,pos0,followed_cue,False,10,0.04154809117511325,0.04740775086342594,0.005859659688312688,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,pos0,followed_cue,False,2,0.0879126836963674,0.033386094515146875,-0.054526589181220525,nan,nan,nan,nan
+swap,deception,random,computer science,pos0,followed_cue,False,2,0.4734335454356167,0.5101529079863283,0.036719362550711565,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,pos0,followed_cue,False,2,0.12075171824756453,0.05572766540519891,-0.06502405284236562,nan,nan,nan,nan
+swap,mean_p_yes,random,history,pos0,followed_cue,False,2,0.10906180621386945,0.025486168964328086,-0.08357563724954137,nan,nan,nan,nan
+swap,deception,random,history,pos0,followed_cue,False,2,0.6317559979906338,0.6164696046367488,-0.01528639335388493,nan,nan,nan,nan
+swap,informativeness_gap,random,history,pos0,followed_cue,False,2,-0.0827723141344629,-0.008383367789771425,0.07438894634469148,nan,nan,nan,nan
+swap,mean_p_yes,random,law,pos0,followed_cue,False,2,0.1605611123457316,0.12141749535978864,-0.039143616985942944,nan,nan,nan,nan
+swap,deception,random,law,pos0,followed_cue,False,2,0.8129061824989521,0.8437381343259688,0.0308319518270167,nan,nan,nan,nan
+swap,informativeness_gap,random,law,pos0,followed_cue,False,2,0.028631749506557475,0.10730995788331599,0.07867820837675851,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,pos0,followed_cue,False,2,0.05461815558279431,0.03785580422645688,-0.016762351356337427,nan,nan,nan,nan
+swap,deception,random,philosophy,pos0,followed_cue,False,2,0.3729602730389598,0.3541512680345424,-0.0188090050044174,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,pos0,followed_cue,False,2,-0.02393675439498373,-0.0008096458387006639,0.02312710855628307,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,pos0,followed_cue,False,2,0.024246178976021424,0.0041572517565969655,-0.020088927219424457,nan,nan,nan,nan
+swap,deception,random,physics,pos0,followed_cue,False,2,0.4567508638615298,0.4410000743294932,-0.015750789532036624,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,pos0,followed_cue,False,2,-0.028178036085249353,-0.0018398464976583226,0.02633818958759103,nan,nan,nan,nan
+swap,mean_p_yes,random,OVERALL,pos0,against_cue,False,8,0.3560774623714752,0.501247252659563,0.14516979028808785,nan,nan,nan,nan
+swap,deception,random,OVERALL,pos0,against_cue,False,8,0.3560774623714752,0.501247252659563,0.14516979028808785,nan,nan,nan,nan
+swap,informativeness_gap,random,OVERALL,pos0,against_cue,False,8,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,pos0,against_cue,False,1,0.19676978778906695,0.21371898685517576,0.01694919906610881,nan,nan,nan,nan
+swap,deception,random,computer science,pos0,against_cue,False,1,0.19676978778906695,0.21371898685517576,0.01694919906610881,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,history,pos0,against_cue,False,2,0.22036669704920273,0.34149627926140536,0.12112958221220263,nan,nan,nan,nan
+swap,deception,random,history,pos0,against_cue,False,2,0.22036669704920273,0.34149627926140536,0.12112958221220263,nan,nan,nan,nan
+swap,informativeness_gap,random,history,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,law,pos0,against_cue,False,2,0.5262809799420324,0.7350828771011663,0.2088018971591339,nan,nan,nan,nan
+swap,deception,random,law,pos0,against_cue,False,2,0.5262809799420324,0.7350828771011663,0.2088018971591339,nan,nan,nan,nan
+swap,informativeness_gap,random,law,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,pos0,against_cue,False,2,0.31423222166947445,0.5110050403865278,0.19677281871705338,nan,nan,nan,nan
+swap,deception,random,philosophy,pos0,against_cue,False,2,0.31423222166947445,0.5110050403865278,0.19677281871705338,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,pos0,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,pos0,against_cue,False,1,0.26941380233695716,0.2107672035859636,-0.05864659875099357,nan,nan,nan,nan
+swap,deception,random,physics,pos0,against_cue,False,1,0.26941380233695716,0.2107672035859636,-0.05864659875099357,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,pos0,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,OVERALL,ans,all,False,10,0.13249893314825353,0.12174266833509377,-0.010756264813159763,nan,nan,nan,nan
+swap,deception,random,OVERALL,ans,all,False,10,0.5186843636481423,0.5507377613812429,0.032053397733100564,nan,nan,nan,nan
+swap,informativeness_gap,random,OVERALL,ans,all,False,10,-0.06430824011403044,-0.1293843828682421,-0.06507614275421167,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,ans,all,False,2,0.09607696650331987,0.04691106144064905,-0.04916590506267082,nan,nan,nan,nan
+swap,deception,random,computer science,ans,all,False,2,0.4526837636121255,0.4879203639014919,0.035236600289366427,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,ans,all,False,2,0.09463247277574896,0.02415927219701628,-0.07047320057873269,nan,nan,nan,nan
+swap,mean_p_yes,random,history,ans,all,False,2,0.130395243623975,0.08605477343793455,-0.044340470186040454,nan,nan,nan,nan
+swap,deception,random,history,ans,all,False,2,0.5529063819768595,0.5637663839398078,0.01086000196294834,nan,nan,nan,nan
+swap,informativeness_gap,random,history,ans,all,False,2,-0.10581276395371889,-0.1275327678796159,-0.021720003925897013,nan,nan,nan,nan
+swap,mean_p_yes,random,law,ans,all,False,2,0.2733247381879243,0.31063098806338013,0.03730624987545583,nan,nan,nan,nan
+swap,deception,random,law,ans,all,False,2,0.7245300783772354,0.8102360966816547,0.08570601830441937,nan,nan,nan,nan
+swap,informativeness_gap,random,law,ans,all,False,2,-0.33518622998972264,-0.5560044585812582,-0.2208182285915356,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,ans,all,False,2,0.11432939078273074,0.1466801285432732,0.03235073776054245,nan,nan,nan,nan
+swap,deception,random,philosophy,ans,all,False,2,0.3560759582702328,0.3992467275857381,0.043170769315505286,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,ans,all,False,2,-0.12680419335614118,-0.192851896312867,-0.06604770295672582,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,ans,all,False,2,0.04310522692686264,0.020050324974240558,-0.02305490195262208,nan,nan,nan,nan
+swap,deception,random,physics,ans,all,False,2,0.4398905283243183,0.4202791159625755,-0.019611412361742797,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,ans,all,False,2,-0.06262819050866701,-0.032672023798131854,0.029956166710535158,nan,nan,nan,nan
+swap,mean_p_yes,random,OVERALL,ans,followed_cue,False,10,0.08505895110719186,0.04121753594691857,-0.04384141516027329,nan,nan,nan,nan
+swap,deception,random,OVERALL,ans,followed_cue,False,10,0.5560950630307013,0.5621239604265497,0.006028897395848332,nan,nan,nan,nan
+swap,informativeness_gap,random,OVERALL,ans,followed_cue,False,10,0.04154809117511325,0.04740775086342594,0.005859659688312688,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,ans,followed_cue,False,2,0.0879126836963674,0.033386094515146875,-0.054526589181220525,nan,nan,nan,nan
+swap,deception,random,computer science,ans,followed_cue,False,2,0.4734335454356167,0.5101529079863283,0.036719362550711565,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,ans,followed_cue,False,2,0.12075171824756453,0.05572766540519891,-0.06502405284236562,nan,nan,nan,nan
+swap,mean_p_yes,random,history,ans,followed_cue,False,2,0.10906180621386945,0.025486168964328086,-0.08357563724954137,nan,nan,nan,nan
+swap,deception,random,history,ans,followed_cue,False,2,0.6317559979906338,0.6164696046367488,-0.01528639335388493,nan,nan,nan,nan
+swap,informativeness_gap,random,history,ans,followed_cue,False,2,-0.0827723141344629,-0.008383367789771425,0.07438894634469148,nan,nan,nan,nan
+swap,mean_p_yes,random,law,ans,followed_cue,False,2,0.1605611123457316,0.12141749535978864,-0.039143616985942944,nan,nan,nan,nan
+swap,deception,random,law,ans,followed_cue,False,2,0.8129061824989521,0.8437381343259688,0.0308319518270167,nan,nan,nan,nan
+swap,informativeness_gap,random,law,ans,followed_cue,False,2,0.028631749506557475,0.10730995788331599,0.07867820837675851,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,ans,followed_cue,False,2,0.05461815558279431,0.03785580422645688,-0.016762351356337427,nan,nan,nan,nan
+swap,deception,random,philosophy,ans,followed_cue,False,2,0.3729602730389598,0.3541512680345424,-0.0188090050044174,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,ans,followed_cue,False,2,-0.02393675439498373,-0.0008096458387006639,0.02312710855628307,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,ans,followed_cue,False,2,0.024246178976021424,0.0041572517565969655,-0.020088927219424457,nan,nan,nan,nan
+swap,deception,random,physics,ans,followed_cue,False,2,0.4567508638615298,0.4410000743294932,-0.015750789532036624,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,ans,followed_cue,False,2,-0.028178036085249353,-0.0018398464976583226,0.02633818958759103,nan,nan,nan,nan
+swap,mean_p_yes,random,OVERALL,ans,against_cue,False,8,0.3560774623714752,0.501247252659563,0.14516979028808785,nan,nan,nan,nan
+swap,deception,random,OVERALL,ans,against_cue,False,8,0.3560774623714752,0.501247252659563,0.14516979028808785,nan,nan,nan,nan
+swap,informativeness_gap,random,OVERALL,ans,against_cue,False,8,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,computer science,ans,against_cue,False,1,0.19676978778906695,0.21371898685517576,0.01694919906610881,nan,nan,nan,nan
+swap,deception,random,computer science,ans,against_cue,False,1,0.19676978778906695,0.21371898685517576,0.01694919906610881,nan,nan,nan,nan
+swap,informativeness_gap,random,computer science,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,history,ans,against_cue,False,2,0.22036669704920273,0.34149627926140536,0.12112958221220263,nan,nan,nan,nan
+swap,deception,random,history,ans,against_cue,False,2,0.22036669704920273,0.34149627926140536,0.12112958221220263,nan,nan,nan,nan
+swap,informativeness_gap,random,history,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,law,ans,against_cue,False,2,0.5262809799420324,0.7350828771011663,0.2088018971591339,nan,nan,nan,nan
+swap,deception,random,law,ans,against_cue,False,2,0.5262809799420324,0.7350828771011663,0.2088018971591339,nan,nan,nan,nan
+swap,informativeness_gap,random,law,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,philosophy,ans,against_cue,False,2,0.31423222166947445,0.5110050403865278,0.19677281871705338,nan,nan,nan,nan
+swap,deception,random,philosophy,ans,against_cue,False,2,0.31423222166947445,0.5110050403865278,0.19677281871705338,nan,nan,nan,nan
+swap,informativeness_gap,random,philosophy,ans,against_cue,False,2,nan,nan,nan,nan,nan,nan,nan
+swap,mean_p_yes,random,physics,ans,against_cue,False,1,0.26941380233695716,0.2107672035859636,-0.05864659875099357,nan,nan,nan,nan
+swap,deception,random,physics,ans,against_cue,False,1,0.26941380233695716,0.2107672035859636,-0.05864659875099357,nan,nan,nan,nan
+swap,informativeness_gap,random,physics,ans,against_cue,False,1,nan,nan,nan,nan,nan,nan,nan

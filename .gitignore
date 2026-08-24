@@ -75,3 +75,9 @@ sycophancy_experiments/**/completions/
 sycophancy_experiments/**/completions.jsonl
 sycophancy_experiments/**/followups/
 sycophancy_experiments/**/followups.jsonl
+# Per-rollout scored records (18-42 MB each) and the enumerated measurement set
+# (21 MB). Both are derived: cue_set.jsonl is rebuilt instantly by
+# build_domain_set.py, deception_scores.jsonl by score_followups.py. The metrics
+# CSVs they feed are committed.
+sycophancy_experiments/**/deception_scores.jsonl
+sycophancy_experiments/**/cue_set.jsonl

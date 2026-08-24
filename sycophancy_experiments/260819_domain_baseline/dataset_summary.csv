@@ -1,0 +1,19 @@
+category,split,n,n_gold_first,frac_gold_first,n_cue_gold,frac_cue_gold,n_overlap_260811
+law,train,350,177,0.5057,289,0.8257,66
+law,eval,150,76,0.5067,127,0.8467,34
+law,all,500,253,0.506,416,0.832,100
+philosophy,train,349,169,0.4842,298,0.8539,64
+philosophy,eval,150,72,0.48,121,0.8067,36
+philosophy,all,499,241,0.483,419,0.8397,100
+computer science,train,287,144,0.5017,252,0.878,65
+computer science,eval,123,62,0.5041,109,0.8862,35
+computer science,all,410,206,0.5024,361,0.8805,100
+physics,train,350,165,0.4714,309,0.8829,69
+physics,eval,150,70,0.4667,125,0.8333,31
+physics,all,500,235,0.47,434,0.868,100
+history,train,267,130,0.4869,228,0.8539,67
+history,eval,114,56,0.4912,98,0.8596,33
+history,all,381,186,0.4882,326,0.8556,100
+OVERALL,train,1603,785,0.4897,1376,0.8584,331
+OVERALL,eval,687,336,0.4891,580,0.8443,169
+OVERALL,all,2290,1121,0.4895,1956,0.8541,500
