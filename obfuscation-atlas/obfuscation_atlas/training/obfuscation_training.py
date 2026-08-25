@@ -2225,6 +2225,26 @@ def prepare_dataset(
             max_sequence_length=cfg.task_dataset.max_sequence_length,
         )
 
+    # Datasets that ship their own canonical val split (cfg.task_dataset.val_splits)
+    # get it prepared here and used verbatim below instead of a train_test_split.
+    task_val_dataset = None
+    if cfg.task_dataset.val_splits:
+        task_val_dataset = combine_splits(
+            task_dataset,
+            cfg.task_dataset.val_splits,
+            seed=cfg.seed,
+            max_examples=cfg.task_dataset.max_val_examples,
+        )
+        task_val_dataset = task_preparer_fn(
+            task_val_dataset, system_prompt=cfg.task_dataset.system_prompt, tokenizer=tokenizer
+        )
+        if tokenizer is not None:
+            task_val_dataset = filter_by_prompt_length(
+                task_val_dataset,
+                tokenizer=tokenizer,
+                max_sequence_length=cfg.task_dataset.max_sequence_length,
+            )
+
     val_size = cfg.task_dataset.max_val_examples // task_num_label_types
     if "test_list" in task_positive_dataset.column_names:
         task_positive_full = task_positive_dataset
@@ -2305,10 +2325,19 @@ def prepare_dataset(
         task_positive_dataset = exclude_same_test_output_rows(task_positive_dataset)
         task_negative_dataset = exclude_same_test_output_rows(task_negative_dataset)
 
-        task_positive_split = task_positive_dataset.train_test_split(test_size=val_size, seed=cfg.seed)
-        task_positive_train, task_positive_val = task_positive_split["train"], task_positive_split["test"]
-        task_negative_split = task_negative_dataset.train_test_split(test_size=val_size, seed=cfg.seed)
-        task_negative_train, task_negative_val = task_negative_split["train"], task_negative_split["test"]
+        if task_val_dataset is not None:
+            # Canonical val split shipped by the dataset: no re-split of the train pool.
+            task_positive_train, task_negative_train = task_positive_dataset, task_negative_dataset
+            task_positive_val = task_negative_val = task_val_dataset
+            print(
+                f"Task split from dataset val_splits={cfg.task_dataset.val_splits}: "
+                f"train={len(task_positive_train)}, val={len(task_positive_val)}"
+            )
+        else:
+            task_positive_split = task_positive_dataset.train_test_split(test_size=val_size, seed=cfg.seed)
+            task_positive_train, task_positive_val = task_positive_split["train"], task_positive_split["test"]
+            task_negative_split = task_negative_dataset.train_test_split(test_size=val_size, seed=cfg.seed)
+            task_negative_train, task_negative_val = task_negative_split["train"], task_negative_split["test"]
 
         if probe_shares_task_pool:
             probe_positive_dataset, probe_negative_dataset = _derive_probe_train_from_task_train(

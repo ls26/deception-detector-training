@@ -52,6 +52,7 @@ def build_run_config(sweep_config: dict, run_entry: dict) -> dict:
         "run_key": run_entry["run_key"],
         "output_dir": output_dir,
         "group": run_entry.get("group", sweep_config.get("group")),
+        "config_name": run_entry.get("config_name", sweep_config.get("config_name")),
         "probe": sweep_config["probe"],
         "checkpoint": run_entry.get("checkpoint", sweep_config.get("checkpoint")),
         "nofu": run_entry.get("nofu", sweep_config.get("nofu", True)),

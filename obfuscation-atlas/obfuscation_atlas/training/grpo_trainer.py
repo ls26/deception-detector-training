@@ -97,6 +97,13 @@ from obfuscation_atlas.tasks.emergent_misalignment import (
     PendingMisalignmentGeneration,
     create_wandb_log_dict,
 )
+from obfuscation_atlas.tasks.multiple_choice import (
+    CUE_GOLD,
+    compute_multiple_choice_rewards,
+    cue_letter_for_condition,
+    draw_cue,
+    render_cued_user_content,
+)
 from obfuscation_atlas.tasks.strongreject import autograde_response_async
 from obfuscation_atlas.training.grpo_config import GRPOConfig, GRPOModelConfig
 from obfuscation_atlas.training.grpo_obfuscation_utils import (
@@ -637,6 +644,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         self._vllm_client: Optional[VLLMClient] = None
         self._eval_lora_path: Optional[Path] = None
         self._generation_prompt_shown_flags: dict[int, list[bool]] = {}
+        self._generation_cue_infos: dict[int, dict[int, dict[str, Any]]] = {}
         self._logged_mixed_reward_config = False
         self._logged_ground_truth_penalty_config = False
 
@@ -860,8 +868,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         num_test_cases: int,
         alt_completions: list[str] | None = None,
         reward_infos: list[dict[str, Any]] | None = None,
+        cue_infos: dict[int, dict[str, Any]] | None = None,
     ):
-        """Compute rewards dependent on the generated sequence (task-specific, independent of activations)."""
+        """Compute rewards dependent on the generated sequence (task-specific, independent of activations).
+
+        ``cue_infos`` (MULTIPLE_CHOICE only) maps prompt index -> the cue served for this
+        generation batch when training resamples the cue; when None, the dataset's baked
+        assignment from ``reward_infos`` is used (eval paths).
+        """
         if self.obfuscation_config.task == TaskType.HARMFULNESS_BACKDOOR:
             if self.accelerator.is_main_process:
                 rewards_llm_as_a_judge, llm_reasonings = asyncio.run(
@@ -894,6 +908,20 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 [rewards, non_aggregated_reward_metrics], from_process=0
             )
             return rewards, non_aggregated_reward_metrics
+        elif self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE:
+            # Deterministic regex scoring: identical on every process, no broadcast needed.
+            reward_infos = reward_infos if reward_infos is not None else self.reward_infos
+            gold_letters = [reward_infos[i]["answer"] for i in prompt_indices]  # type: ignore
+            if cue_infos is not None:
+                cue_conditions = [cue_infos[i]["condition"] for i in prompt_indices]
+            else:
+                cue_conditions = [reward_infos[i]["assigned_condition"] for i in prompt_indices]  # type: ignore
+            cue_letters = [
+                cue_letter_for_condition(condition, gold)
+                for condition, gold in zip(cue_conditions, gold_letters)
+            ]
+            completions = [r.removesuffix(self.tokenizer.eot_token) for r in responses]
+            return compute_multiple_choice_rewards(completions, gold_letters, cue_letters, cue_conditions)
         else:
             return None, None
 
@@ -925,6 +953,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
     def prepare_training_inputs(self, step: int) -> GenerationInputs:
         """Prepare training inputs, optionally mixing shown/unshown MBPP prompt variants."""
         task_args = self.obfuscation_config.task_args
+        if self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE:
+            return self._prepare_mcq_training_inputs(step)
         if self.obfuscation_config.task != TaskType.CODE_GENERATION or task_args.shown_prompt_ratio == 1.0:
             return super().prepare_training_inputs(step)
 
@@ -945,6 +975,40 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         ]
         generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)
         self._generation_prompt_shown_flags[id(generation_inputs)] = shown_flags
+        return generation_inputs
+
+    def _prepare_mcq_training_inputs(self, step: int) -> GenerationInputs:
+        """MULTIPLE_CHOICE training inputs: resample the cue per (prompt, step).
+
+        Redraws the cue condition (Bernoulli(cue_gold_prob)) and paraphrase (uniform
+        over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed
+        serves identical prompts and all G completions of a group share the draw.
+        Eval always uses the dataset's baked assignment (see compute_sequence_reward).
+        """
+        task_args = self.obfuscation_config.task_args
+        prompt_indices, _ = self._get_inputs_for_step(step)
+        # RNG offset disjoint from the prompt-mix (seed + step) and mixed-reward
+        # (seed + step + 1_000_000) RNGs.
+        rng = np.random.default_rng(self.obfuscation_config.training.seed + step + 2_000_000)
+        assert self.reward_infos is not None
+        cue_infos: dict[int, dict[str, Any]] = {}
+        prompts: list[str] = []
+        for i in prompt_indices:
+            info = self.reward_infos[i]
+            condition, template_idx = draw_cue(rng, task_args.cue_gold_prob)
+            cue_letter = cue_letter_for_condition(condition, info["answer"])
+            user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
+            # Same rendering as chat_template_preparer (single user turn, no system prompt).
+            prompts.append(
+                self.tokenizer.apply_chat_template(
+                    [{"role": "user", "content": user_content}],
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            )
+            cue_infos[i] = {"condition": condition, "cue_letter": cue_letter, "template_idx": template_idx}
+        generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)
+        self._generation_cue_infos[id(generation_inputs)] = cue_infos
         return generation_inputs
 
     @cached_property
@@ -1032,6 +1096,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         if shown_flags is not None and self.accelerator.is_main_process and self.config.logging.log_with_wandb:
             wandb.log({"train/prompt_shown_fraction": sum(shown_flags) / len(shown_flags)}, commit=False)
 
+        # MULTIPLE_CHOICE: cue draws served for this generation batch (train resampling)
+        cue_infos = self._generation_cue_infos.pop(id(generation_inputs), None)
+        if cue_infos is not None and self.accelerator.is_main_process and self.config.logging.log_with_wandb:
+            cue_gold_flags = [info["condition"] == CUE_GOLD for info in cue_infos.values()]
+            wandb.log({"train/cue_gold_fraction": sum(cue_gold_flags) / len(cue_gold_flags)}, commit=False)
+
         # Upsample for num_generations
         num_gens = self.num_generations[partition]
         prompt_ids_upsampled = [p for p in prompt_ids for _ in range(num_gens)]
@@ -1061,6 +1131,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 prompt_indices_upsampled,
                 self.obfuscation_config.task_args.num_test_cases,
                 alt_completions=alt_completions,
+                cue_infos=cue_infos,
             )
 
         # Apply the mixed reward regime: for a random subset of training prompts (shared across
@@ -1726,16 +1797,15 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     detector_metrics[k] = np.mean(non_tensor_values)
             metrics.update(detector_metrics)
 
-        # Add decomposition metrics
-        if reference_detector_prob:
+        # Add decomposition metrics (skipped when the task has no deceptive label, e.g. MULTIPLE_CHOICE)
+        train_deceptive_key = deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
+        if reference_detector_prob and train_deceptive_key in response_wise_metrics:
             reference_detector_prob = torch.cat(reference_detector_prob, dim=0)
             obfuscation_metrics = compute_obfuscation_decomposition_metrics(
                 reference_detector_prob=reference_detector_prob,
                 policy_detector_prob=response_wise_metrics["rewards_metrics/detector_score"],
                 task_rewards=response_wise_metrics["rewards/task"],
-                deceptive_metric=response_wise_metrics[
-                    deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
-                ],
+                deceptive_metric=response_wise_metrics[train_deceptive_key],
                 detector_loss_coef=self.obfuscation_config.loss.detector,
                 detector_mean_decision_threshold=self.detector_mean_decision_threshold,
                 detector_mean_positive_threshold=self.detector_mean_positive_threshold,

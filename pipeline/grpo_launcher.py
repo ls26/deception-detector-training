@@ -160,6 +160,10 @@ def build_grpo_args(config: dict) -> list[str]:
         "-m",
         "obfuscation_atlas.scripts.train_grpo_model_against_probe",
     ]
+    # Optional non-default Hydra root config (e.g. grpo_mcq for the MMLU sycophancy task).
+    config_name = config.get("config_name")
+    if config_name:
+        args.append(f"--config-name={config_name}")
     for key, value in merged.items():
         args.append(f"{key}={value}")
     return args

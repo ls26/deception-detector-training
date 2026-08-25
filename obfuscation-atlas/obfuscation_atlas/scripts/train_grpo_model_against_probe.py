@@ -42,6 +42,7 @@ from obfuscation_atlas.detectors.probe_archs import SequenceAggregator
 # Shared utilities
 from obfuscation_atlas.detectors.train import get_scheduler_fn, load_model
 from obfuscation_atlas.tasks.code_generation import compute_code_generation_rewards, deceptive_reward_key
+from obfuscation_atlas.tasks.multiple_choice import compute_multiple_choice_rewards
 from obfuscation_atlas.training.grpo_obfuscation_utils import compute_obfuscation_decomposition_metrics
 from obfuscation_atlas.training.grpo_trainer import (
     GRPOObfuscationTrainer,
@@ -265,24 +266,27 @@ def run_rl(cfg: GRPOObfuscationConfig):
             if cfg.data.include_task_positive:
                 prompts.append(pos_row["prompt"])  # type: ignore
                 trigger_present.append(True)
-                info = {}
-                if "test_list" in pos_row:  # type: ignore
-                    info["test_list"] = pos_row["test_list"]  # type: ignore
-                    info["test_setup_code"] = pos_row.get("test_setup_code", "")  # type: ignore
-                if "text" in pos_row:  # type: ignore
-                    info["text"] = pos_row["text"]  # type: ignore
-                reward_infos.append(info)
+                reward_infos.append(build_reward_info(pos_row))
             if cfg.data.include_task_negative:
                 prompts.append(neg_row["prompt"])  # type: ignore
                 trigger_present.append(False)
-                info = {}
-                if "test_list" in neg_row:  # type: ignore
-                    info["test_list"] = neg_row["test_list"]  # type: ignore
-                    info["test_setup_code"] = neg_row.get("test_setup_code", "")  # type: ignore
-                if "text" in neg_row:  # type: ignore
-                    info["text"] = neg_row["text"]  # type: ignore
-                reward_infos.append(info)
+                reward_infos.append(build_reward_info(neg_row))
         return prompts, trigger_present, reward_infos
+
+    # Fields consumed by the MULTIPLE_CHOICE reward and cue resampling
+    MCQ_REWARD_INFO_KEYS = ("answer", "assigned_condition", "assigned_cue_letter", "user_content_none", "question_id")
+
+    def build_reward_info(row) -> dict[str, Any]:
+        info: dict[str, Any] = {}
+        if "test_list" in row:
+            info["test_list"] = row["test_list"]
+            info["test_setup_code"] = row.get("test_setup_code", "")
+        if "text" in row:
+            info["text"] = row["text"]
+        for key in MCQ_REWARD_INFO_KEYS:
+            if key in row:
+                info[key] = row[key]
+        return info
 
     train_prompts, trigger_present, reward_infos = build_prompt_lists(task_positive_train, task_negative_train)
     eval_prompts, eval_trigger_present, eval_reward_infos = build_prompt_lists(
@@ -325,6 +329,20 @@ def run_rl(cfg: GRPOObfuscationConfig):
         eval_trigger_present=eval_trigger_present,
         eval_reward_infos=eval_reward_infos,
     )
+    if cfg.task == TaskType.MULTIPLE_CHOICE:
+        # The MCQ reward indexes reward_infos by original prompt index; the trainer's
+        # length filter would silently misalign them, so require it to be a no-op.
+        from afterburner.grpo_trainer import Partition
+
+        assert len(trainer.prompts[Partition.TRAIN]) == len(train_prompts), (
+            f"MCQ train prompts were length-filtered ({len(train_prompts)} -> "
+            f"{len(trainer.prompts[Partition.TRAIN])}); raise grpo.tokenizer.max_prompt_length"
+        )
+        assert len(trainer.prompts[Partition.TEST]) == len(eval_prompts), (
+            f"MCQ eval prompts were length-filtered ({len(eval_prompts)} -> "
+            f"{len(trainer.prompts[Partition.TEST])}); raise grpo.tokenizer.max_prompt_length"
+        )
+        print(f"OK: MCQ prompts unfiltered (train={len(train_prompts)}, eval={len(eval_prompts)})")
     accelerator = trainer.accelerator
     is_main_process = accelerator is None or accelerator.is_main_process
     activation_layers = trainer.activation_layers
@@ -809,6 +827,14 @@ def run_rl(cfg: GRPOObfuscationConfig):
         if not cfg.task_args.eval_show_expected_output
         else (cfg.training.model_wandb_id if not cfg.training.only_eval_from_other_run else None)
     )
+    eval_answers = (
+        list(eval_task_dataset[0]["answer"]) if "answer" in eval_task_dataset[0].column_names else None
+    )
+    eval_cue_letters = (
+        list(eval_task_dataset[0]["assigned_cue_letter"])
+        if "assigned_cue_letter" in eval_task_dataset[0].column_names
+        else None
+    )
     on_policy_positive_dataset, on_policy_reward_metrics = generate_on_policy_responses(
         trainer,
         on_policy_prompts,
@@ -821,6 +847,8 @@ def run_rl(cfg: GRPOObfuscationConfig):
         texts=eval_texts,
         code_length_penalty=cfg.code_length_penalty,
         num_test_cases=cfg.task_args.num_test_cases,
+        answers=eval_answers,
+        cue_letters=eval_cue_letters,
     )
     on_policy_dataset = (
         on_policy_positive_dataset,
@@ -831,17 +859,21 @@ def run_rl(cfg: GRPOObfuscationConfig):
         cfg.data.task_dataset.negative_completion_column,
     )
     kwargs["test_dataset"] = on_policy_dataset
-    _, _, on_policy_split_stats = derive_on_policy_split_masks(
-        on_policy_reward_metrics,
-        deceptive_key=deceptive_reward_key(cfg.task_args.deceptive_definition),
-    )
-    assert on_policy_split_stats["n_total"] == len(on_policy_positive_dataset)
-    print(
-        "OK: on-policy split labels — "
-        f"deceptive={on_policy_split_stats['n_deceptive']} "
-        f"honest={on_policy_split_stats['n_honest']} "
-        f"unlabeled={on_policy_split_stats['n_unlabeled']}"
-    )
+    on_policy_deceptive_key = deceptive_reward_key(cfg.task_args.deceptive_definition)
+    if on_policy_deceptive_key in on_policy_reward_metrics:
+        _, _, on_policy_split_stats = derive_on_policy_split_masks(
+            on_policy_reward_metrics,
+            deceptive_key=on_policy_deceptive_key,
+        )
+        assert on_policy_split_stats["n_total"] == len(on_policy_positive_dataset)
+        print(
+            "OK: on-policy split labels — "
+            f"deceptive={on_policy_split_stats['n_deceptive']} "
+            f"honest={on_policy_split_stats['n_honest']} "
+            f"unlabeled={on_policy_split_stats['n_unlabeled']}"
+        )
+    else:
+        print("Skipping on-policy split labels: no deceptive label for this task")
     detectors_list = [pretrained_detectors, list(map(lambda x: x[0], eval_results_after.values()))]
     del eval_results_after
     plot_keys = ["initial_detector.final_model.on_policy", "fresh_detector.final_model.on_policy"]
@@ -1026,6 +1058,8 @@ def log_on_policy_split_if_applicable(
     """Run on-policy split eval when standard on-policy probe scoring has completed."""
     if not plot_key.endswith(".on_policy") or eval_results is None or reward_metrics is None:
         return
+    if deceptive_reward_key(deceptive_definition) not in reward_metrics:
+        return  # task has no deceptive label (e.g. MULTIPLE_CHOICE)
     run_on_policy_split_eval(
         eval_results=eval_results,
         reward_metrics=reward_metrics,
@@ -1105,8 +1139,10 @@ def compute_obfuscation_decomposition_metrics_helper(
     # Keys match those used in compute_code_generation_rewards
     if "rewards/task_success" not in reward_metrics:
         return {}
+    deceptive_metric = reward_metrics.get(deceptive_reward_key(deceptive_definition))
+    if deceptive_metric is None:
+        return {}  # task has no deceptive label (e.g. MULTIPLE_CHOICE)
     task_rewards = torch.tensor(reward_metrics["rewards/task_success"]).float()
-    deceptive_metric = reward_metrics[deceptive_reward_key(deceptive_definition)]
 
     # Compute decomposition metrics
     metrics = compute_obfuscation_decomposition_metrics(
@@ -1146,6 +1182,8 @@ def generate_on_policy_responses(
     texts: list[str] | None = None,
     code_length_penalty: float = 0.002,
     num_test_cases: int = 1,
+    answers: list[str] | None = None,
+    cue_letters: list[str] | None = None,
 ) -> tuple[Dataset, dict[str, list]]:
     """Function to generate on-policy responses using the GRPOObfuscationTrainer.
 
@@ -1161,6 +1199,8 @@ def generate_on_policy_responses(
         texts: Optional task text for each prompt (for pass_only_shown_deception alt generation).
         code_length_penalty: Penalty per character of code length.
         num_test_cases: Number of test cases to use for reward computation.
+        answers: Optional gold letters per prompt (for MULTIPLE_CHOICE metrics).
+        cue_letters: Optional served cue letters per prompt (for MULTIPLE_CHOICE metrics).
 
     Returns:
         A tuple of (Dataset containing prompts and responses, reward_metrics dict).
@@ -1251,6 +1291,18 @@ def generate_on_policy_responses(
                 num_test_cases=num_test_cases,
                 max_workers=1,
                 alt_completions=alt_completions,
+            )
+        elif answers is not None:
+            eot = trainer.tokenizer.eot_token or trainer.tokenizer.eos_token or ""
+            completions = [r.removesuffix(eot) for r in response_strings]
+            answers_upsampled = [answers[i // num_generations] for i in range(len(completions))]
+            cue_letters_upsampled = (
+                [cue_letters[i // num_generations] for i in range(len(completions))]
+                if cue_letters is not None
+                else None
+            )
+            _, reward_metrics = compute_multiple_choice_rewards(
+                completions, answers_upsampled, cue_letters_upsampled
             )
 
     if log_to_wandb:
