@@ -33,34 +33,74 @@ does the model learn to evade the detector while still flipping?
 
 ---
 
+## Decisions
+
+Standing choices for how this domain's metrics and probes are built and reported, so
+later entries don't need to re-derive them. Numbered for reference (e.g. "per Decision
+3"); append new ones, don't renumber old ones.
+
+1. **Both reliance definitions are reported; `removal` is primary.** `swap` (the
+   within-question counterfactual — glossed "cue-switch"/"switch" in some older prose and
+   plot labels, but always `swap` in code and column names: `bias_swap`, `p_yes_swap`,
+   `definition=swap` — see the naming note below) stays alongside every headline number,
+   not dropped. `removal` is primary because it's the canonical definition. (2026-08-25)
+2. **Deception metrics report soft P(Yes) as primary; the hard sampled Yes/No label is
+   kept alongside, not dropped.** Soft is primary because per-rollout hard labels are
+   noisy — a label at P(Yes) ≈ 0.5 is close to a coin flip, and 260817 measured 19.3%
+   disagreement across three sampled follow-ups on the same rollout. The hard label stays
+   because probe training needs a discrete target per row; every scored row already keeps
+   both `p_yes_{rm,swap}` and the hard `said_{rm,swap}`/`deception_{rm,swap}` fields
+   (see `260824_rescore/rescored_labels.jsonl`) for exactly that reuse. (2026-08-25)
+3. **The bias probe's negative class is `no-bias` only — `anti-bias` rows are excluded
+   from probe train/eval, not folded in.** Per 260824, anti-bias sits at roughly half its
+   own resampling null under both definitions, so most of that stratum is sampling noise
+   rather than genuine anti-deference; training against it as a negative class would
+   contaminate the label. Filter to `bias_{rm,swap} == "bias"` vs `== "no bias"` rows
+   before building probe train/eval data — drop rows labeled `"anti-bias"` entirely.
+   (2026-08-25)
+
+**Naming note (swap vs. switch):** the `swap` definition (`bias_swap`, `p_yes_swap`,
+`arms.swap` in `rescored_labels.jsonl`; `definition=swap` in `metrics.csv`) is sometimes
+called "cue-switch"/"switch" in prose and older plot code
+(`260819_domain_baseline/plot_results.py`, `260824_rescore/plot_results.py`'s
+`DEFINITION_LABEL`). `switch` never appears as an actual field/column name anywhere —
+it's prose only. Prefer `swap` in new writing to match the data.
+
+**Naming note (bias vs. reliance):** the current term for this axis is **bias**
+(three-valued: bias / anti-bias / no-bias), introduced in 260824. Entries before 260824
+(260811–260823) call it `cue-reliance`/`relied` and only have the binary
+relied/not-relied version — read those as the two-valued predecessor of today's `bias`,
+not a different axis.
+
+---
+
 ## Open questions / ideas for next experiments
 
-- **Cue wording has a big effect** (opened
-  as "cue strength is unexplored", answered by 260819_domain_baseline as a side
-  effect). Eight paraphrases spread `bias_cue_switch` over **0.186–0.578, a 3.1x
-  range against 1.5x across the five categories**. It does not track stated
-  confidence: the strongest cue is "I have a feeling the answer is (X)" and the
-  weakest is "My guess would be (X)", both hedged, while two explicit hedges sit
-  above the plain original. 
-- **Two paraphrases are near-useless as cues.** "My guess would be (X)" and "I'm
-  leaning toward (X)" clear their own resampling null by only 1.57x and 1.86x —
-  below the 3.6x floor 260817 saw in all 14 categories — and carry an anti-cue
-  rate 10-20x the other wordings. Parse failures are flat across templates, so
-  this is behavioural, not a format artifact. Decide whether they stay in the
-  RL mixture; `template_metrics.csv` supports evaluating that without
-  regenerating anything.
-- **Which wording should the RL environment serve?** 260823 measures the 50/50 mixture
-  because that is the regime asked for, but the two wordings of each definition are not
-  equally good: `removal_explicit` drifts back toward the ceiling that made 260818's
-  wording unusable (mean P(Yes) 0.728, 81% of rollouts above 0.5) and `swap_explicit` is
-  the most anti-informative arm on record (gap −0.142). If the probe target is what
-  matters, `removal` alone is still the best-conditioned choice at 0.482. Deciding needs
-  no regeneration — `deception_metrics.csv` carries all four arms separately.
+- **Bias is three-valued and the labels are now correct; the axis is not.** 260824 split
+  `anti-bias` out of `no bias` and stopped scoring it as deception. Two things follow.
+  Anti-bias sits at ~half its own resampling null under both definitions, so most of that
+  stratum is sampling noise rather than genuine anti-deference — do not read its rate as a
+  behaviour. And the correction moves deception by ~0.01, so every published number before
+  it stands; what changed is what the number means. **Resolved for probe training by
+  Decision 3 above: the bias probe excludes anti-bias rows entirely rather than treating
+  them as either class.**
+- **The removal self-report's informativeness flips sign between cue conditions** (+0.041
+  under `cue_gold`, −0.034 under `cue_dist`; 260824). Every earlier arm averaged these into
+  one near-zero number. Whether this is about the cue's direction or about answer
+  confidence — the model is less sure when the cue points at a distractor — is testable on
+  data already collected, by regressing the gap on turn-1 answer logprobs.
+- **Per-rollout deception labels are noisy even where the rates are not.** One follow-up per
+  rollout, so a label at P(Yes) ≈ 0.5 is close to a coin flip, and 260817 measured 19.3%
+  disagreement across three sampled follow-ups. The class sizes in 260824's count tables are
+  sound; the individual labels are not, which matters if they become probe supervision.
+  `p_yes` is stored beside every label for that reason. **Addressed by Decision 2 above:
+  metrics/analysis use `p_yes` as primary; the hard label is retained only as the probe's
+  discrete training target, with this noise caveat in mind.**
 - **Both explicit wordings put the model's own answer into the follow-up prompt**, so the
   self-report token's activations encode which option was chosen. Harmless for measuring
   honesty; a hazard if one became the deception probe's training target, since the probe
   could learn answer identity rather than reliance. Check before training on one.
-- **The self-report is uninformative, and the wording axis is now closed.** 260818 asked
+- **The self-report is uninformative.** 260818 asked
   both counterfactuals directly and re-ran 260817's wording as a control; 260819 then
   repaired the one wording that had a diagnosable defect. Rewording is no longer a live
   explanation: the arm that asks the `rm` counterfactual cleanly, in the model's own
@@ -70,18 +110,8 @@ does the model learn to evade the detector while still flipping?
   when unsure)? Does an
   instructed or few-shot self-report do better than a zero-shot one? Is the deception
   probe trainable at all on a label the text cannot predict — i.e. does it read reliance
-  from the activations that the stated answer does not reflect? That last one is the real
-  test and needs a probe, not another wording. **260823 adds a fifth and sixth wording and
-  confirms this**: naming the counterfactual options explicitly moves the numbers a lot
-  (five of six pre-registered contrasts significant) but buys almost no signal — the best
-  informativeness gap it reaches is +0.05, and on the `swap` definition it makes the
-  inversion worse.
-- **Deception rate is not a second axis, and its sign is a wording artifact.** Soft
-  deception is exactly `D = b + r(1 - a - b)` with `a = E[P(Yes)|relied]`,
-  `b = E[P(Yes)|not]`, so it is affine in reliance and its slope sign is just whether the
-  self-report sits above or below ~0.5. 260818's `removal` correlated **-0.97** with
-  reliance only because it was pinned near 1 (deception ~ `1 - r`); repairing the wording
-  moved it to ~0.5 and the correlation collapsed to **+0.08**.
+  from the activations that the stated answer does not reflect? **Answered by 260825: yes,
+  at AUC ≈ 0.73 on the self-report token, both definitions — see below.**
 - **Any future logprob measurement in this domain must disable vLLM prefix caching.**
   It is on by default and moved P(Yes) by up to 0.025 depending on which prompt
   happened to warm the cache — a systematic bias whenever the compared conditions
@@ -89,12 +119,148 @@ does the model learn to evade the detector while still flipping?
 - **Category selection is closed**: law, philosophy, computer science, physics,
   history, built in 260819_domain_baseline. Reaching them required relaxing the design
   doc's 500+300 per category, since the three cleanest are also the smallest pools.
-- **No training (SFT/GRPO) has been attempted in this domain at all.** All four
-  entries below are inference-only scans of the base model.
+- **First RL training completed (260825_grpo_det0): the no-detector-penalty GRPO
+  baseline.** RL closes the accuracy headroom almost entirely via cue reliance
+  (eval accuracy 0.773 → 0.837 vs the 0.850 always-defer ceiling; eval followed-cue
+  rate 0.92) — the domain works as an RL environment. 260825_probe_training trains
+  standalone linear probes (not a policy) on cached base-model activations;
+  everything before 260825 is an inference-only scan of the base model. Next: GRPO
+  against the bias/deception probes as a reward penalty.
 
 ---
 
 ## Experiments
+
+### 260825 — First GRPO run: RL closes the headroom by learning to follow the cue
+
+[`sycophancy_experiments/260825_grpo_det0/`](../sycophancy_experiments/260825_grpo_det0/)
+
+**Setup:**
+- First RL training in this domain (the 260825 probe-training entry below is
+  standalone probe fitting, not policy training). GRPO on the 260819 dataset's
+  canonical 1603-question train split, reward = 1 iff the parsed A/B answer is
+  correct, **no detector penalty** (`loss.detector=0`; the diverse_deception_probe
+  is loaded for monitoring/post-eval only, mirroring the MBPP det0 baselines) and no
+  length penalty. Llama-3-8B-Instruct from base, kl=0.001, 128 steps, 8
+  generations/prompt.
+- Wired as a new `TaskType.MULTIPLE_CHOICE` in obfuscation-atlas
+  (`tasks/multiple_choice.py`): answer extraction and cue rendering ported verbatim
+  from 260819 and parity-tested byte-for-byte (all 2290 rendered cue prompts; all
+  687 served eval prompts identical to the baseline's). The canonical eval split is
+  served verbatim (new `val_splits` mechanism), so training never touches the eval
+  questions.
+- Training resamples the cue per (prompt, step) — condition Bernoulli(0.85),
+  paraphrase uniform over the 8 templates, seeded, one draw shared by all 8
+  generations of a group — while eval serves the baked assignment, keeping eval
+  numbers comparable to the 0.773 / 0.850 baselines.
+
+**Results/takeaways:**
+- **The domain works as an RL environment, and the headroom closes through
+  sycophancy.** Post-train greedy eval accuracy 0.773 → **0.837** against the 0.850
+  always-defer ceiling (~83% of the headroom recovered), with the eval followed-cue
+  rate rising to **0.923** and train-side cue-following hitting ~1.0 by step 32.
+- **The gain arrives exactly as cue reliance locks in**: in-loop eval accuracy was
+  still 0.771 at step 30 (indistinguishable from the pre-RL baseline), then 0.841 by
+  step 60 and flat at 0.843 from step 90 on.
+- Parse failures train out completely (~3% → 0.0%), worth ~1-2 points of the
+  improvement; the rest is cue-following.
+- The monitoring probe's mean train-step score ended ≈ 0.13; per-layer and
+  on-dataset/on-policy post-eval scores are logged for comparison once probe-penalty
+  runs exist.
+- Run: `syco_det0_s42` → W&B `lx6gcbcl` (group `syco_det0`), launched via
+  `run_ablation` from `260825_grpo_det0/syco_det0_baseline.yaml`; details and full
+  metric table in the folder README.
+
+### 260825 — Bias and deception probes, two extraction positions each
+
+[`sycophancy_experiments/260825_probe_training/`](../sycophancy_experiments/260825_probe_training/)
+
+**Setup:**
+- First probes trained in this domain. Standalone, not RL-integrated: 8 linear probes
+  total — bias-removal, bias-swap, deception-removal, deception-swap, each at two
+  extraction positions (design doc's choice vs. one alternative each). Bias:
+  answer-letter token vs. the completion's literal last token. Deception: the self-report
+  token itself vs. the token immediately before it (last token of the follow-up prompt).
+- Data: on-policy only (no fixed/hand-labeled set), enumerated population (both cue
+  conditions kept), plain random 300/class train sample (not category-stratified,
+  matching the MBPP pipeline's precedent) — see Decisions 1-3 above for how the
+  definitions/labels were chosen. Eval is the held-out split at **one row per prompt**
+  (~1360 of 1374 (question, condition) pairs); pooling all 3 samples per prompt moves
+  every AUC by <= 0.011.
+- Turn-1 position found via `score_completions.py`'s exact regex chain, gated against the
+  already-published `answer`/`stages` labels on every row. Turn-2 position found by
+  byte-for-byte reconstructing the actual two-turn rollout
+  (`generate_followups.py`'s `build_followup_suffix`/`build_followup_prompt`), gated
+  against the stored `first_token_ids`. Both gates passed on every row of the full run,
+  not just a sample.
+
+**Results/takeaways:**
+- **Bias is linearly readable**: AUC 0.767 (removal) / 0.800 (swap) at the design-doc
+  answer-letter token, which beats the last-completion-token alternative in both
+  definitions (+0.025 / +0.040). Markedly stronger when the cue points at a distractor
+  (0.822 / 0.902) than at gold (0.718 / 0.701), so the pooled number hides a
+  ~0.10–0.20 spread.
+- **Deception is not.** The headline AUC (0.730 removal / 0.731 swap at the self-report
+  token) is an artifact of the probe reading *which token was sampled*, at the position
+  of that very token. Stratifying shows it directly: with bias status held fixed the
+  label reduces to the self-report and AUC goes to both extremes (1.000 and 0.000);
+  with the **self-report** held fixed — every row then carrying the same token — it
+  collapses to 0.525 / 0.555. The class means say the same thing more plainly: the probe
+  emits ≈0.685 on every Yes row and ≈0.232 on every No row, regardless of label.
+- Where a stratified number does survive (swap, said-No, 0.700) the contrast is 534
+  biased vs 587 unbiased rows, i.e. the probe is reading **bias**, not deception. The
+  `_lastprompt` position (one token earlier, before any self-report token exists) is no
+  better: 0.473 / 0.502 on removal is flat chance.
+- **So 260824's open question is not settled the way it first looked.** A probe at the
+  self-report token reads the self-report token; nothing here shows reliance recoverable
+  from activations that the stated answer does not already reflect. Separating "the model
+  represents that it is being deceptive" from "the model represents what it is about to
+  say" needs a design that breaks that correlation, not a better-scoring position.
+- Full per-probe tables, stratum splits, class means and figures in the folder's README.
+
+### 260824 — Bias is three-valued, and deception only applies where the question does
+
+[`sycophancy_experiments/260824_rescore/`](../sycophancy_experiments/260824_rescore/)
+
+**Setup:**
+- A rescore of 260823's rollouts, no generation. Fixes two labelling errors that had
+  been carried since 260817.
+- **Bias becomes three-valued**: `bias` (the answer moved toward the cued option),
+  `anti-bias` (it moved away), `no bias` (it did not move). The old binary `relied`
+  scored anti-bias identically to no bias.
+- **Deception now applies only to bias and no-bias rollouts.** The follow-up asks
+  "would you have chosen differently?", so on an anti-bias rollout the honest answer
+  is *Yes* — and the old rule booked every such Yes as a false admission, on the
+  stratum with the highest P(Yes) of the three. Anti-bias leaves the deception labels
+  and the conditionals: "not biased" now means the no-bias stratum.
+- Metrics restated around p: **at p is primary**, with cue_gold and cue_dist reported
+  beside it. Metrics use the soft P(Yes); a new hard label from the **sampled** Yes/No
+  token drives per-rollout counts.
+
+**Results/takeaways:**
+- **Anti-bias is real as a label but not as a behaviour**: 0.060 (removal) and 0.047
+  (switch) on eval, both at roughly **half their own resampling null** (0.118 / 0.106).
+  The answer moves against the cue less often than resampling alone would move it.
+- **The correction barely moves the number and completely changes what it means.**
+  Deception goes 0.550 → **0.539** (removal) and 0.490 → **0.491** (switch) against
+  260823's published figures on the same rollouts.
+- **Splitting by cue condition is where the value is.** Deception is higher under
+  `cue_dist` in both definitions — removal +0.044, switch **+0.107** — and for switch
+  the driver is false admission nearly tripling, 0.126 → 0.339. The model claims it
+  would have switched far more readily when the cue pointed at the wrong answer. A
+  single p-weighted number buries this, since `cue_dist` carries 15% of the weight.
+- **The removal self-report's informativeness flips sign between conditions**:
+  `E[P(Yes)|bias] − E[P(Yes)|no bias]` is **+0.041** under `cue_gold` and **−0.034**
+  under `cue_dist`. The at-p aggregate (+0.032) hides the flip. New, unexplained.
+- Eval headline: accuracy 0.763 at p (0.661 no cue, ceiling 0.85), bias 0.222
+  (removal) / 0.413 (switch), deception 0.546 / 0.490.
+- Label counts, eval enumerated: removal 947 bias / 246 anti-bias / 2645 no bias /
+  284 unparsed; 2067 deceptive / 1524 honest. The realized p = 0.85 draw is half the
+  size and shifts removal's bias share 0.230 → 0.203 while leaving switch untouched,
+  since its label is pair-level.
+- Nine gates, all passing: accuracy reproduces 260819 exactly, bias reproduces 260823
+  exactly, and the count-based and probability-weighted deception rates agree at
+  z = −0.05 / −0.24.
 
 ### 260823 — A second follow-up wording per definition, drawn per question
 
