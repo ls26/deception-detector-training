@@ -1,0 +1,109 @@
+split,population,definition,stage,label,n
+train,enumerated,rm,turn1,bias,2229
+train,enumerated,rm,turn1,anti-bias,503
+train,enumerated,rm,turn1,no bias,6299
+train,enumerated,rm,turn1,unparsed_turn1,587
+train,enumerated,rm,turn2,deceptive,4607
+train,enumerated,rm,turn2,honest,3901
+train,enumerated,rm,turn2,excluded_antibias,503
+train,enumerated,rm,turn2,unparsed_turn2,20
+train,enumerated,rm,turn2,unparsed_turn1,587
+train,enumerated,swap,turn1,bias,3804
+train,enumerated,swap,turn1,anti-bias,300
+train,enumerated,swap,turn1,no bias,4986
+train,enumerated,swap,turn1,unparsed_turn1,528
+train,enumerated,swap,turn2,deceptive,4579
+train,enumerated,swap,turn2,honest,4194
+train,enumerated,swap,turn2,excluded_antibias,300
+train,enumerated,swap,turn2,unparsed_turn2,17
+train,enumerated,swap,turn2,unparsed_turn1,528
+train,realized,rm,turn1,bias,899
+train,realized,rm,turn1,anti-bias,246
+train,realized,rm,turn1,no bias,3374
+train,realized,rm,turn1,unparsed_turn1,290
+train,realized,rm,turn2,deceptive,2268
+train,realized,rm,turn2,honest,1999
+train,realized,rm,turn2,excluded_antibias,246
+train,realized,rm,turn2,unparsed_turn2,6
+train,realized,rm,turn2,unparsed_turn1,290
+train,realized,swap,turn1,bias,1902
+train,realized,swap,turn1,anti-bias,150
+train,realized,swap,turn1,no bias,2493
+train,realized,swap,turn1,unparsed_turn1,264
+train,realized,swap,turn2,deceptive,2129
+train,realized,swap,turn2,honest,2260
+train,realized,swap,turn2,excluded_antibias,150
+train,realized,swap,turn2,unparsed_turn2,6
+train,realized,swap,turn2,unparsed_turn1,264
+eval,enumerated,rm,turn1,bias,947
+eval,enumerated,rm,turn1,anti-bias,246
+eval,enumerated,rm,turn1,no bias,2645
+eval,enumerated,rm,turn1,unparsed_turn1,284
+eval,enumerated,rm,turn2,deceptive,2067
+eval,enumerated,rm,turn2,honest,1524
+eval,enumerated,rm,turn2,excluded_antibias,246
+eval,enumerated,rm,turn2,unparsed_turn2,1
+eval,enumerated,rm,turn2,unparsed_turn1,284
+eval,enumerated,swap,turn1,bias,1596
+eval,enumerated,swap,turn1,anti-bias,182
+eval,enumerated,swap,turn1,no bias,2086
+eval,enumerated,swap,turn1,unparsed_turn1,258
+eval,enumerated,swap,turn2,deceptive,1956
+eval,enumerated,swap,turn2,honest,1717
+eval,enumerated,swap,turn2,excluded_antibias,182
+eval,enumerated,swap,turn2,unparsed_turn2,9
+eval,enumerated,swap,turn2,unparsed_turn1,258
+eval,realized,rm,turn1,bias,418
+eval,realized,rm,turn1,anti-bias,114
+eval,realized,rm,turn1,no bias,1384
+eval,realized,rm,turn1,unparsed_turn1,145
+eval,realized,rm,turn2,deceptive,1024
+eval,realized,rm,turn2,honest,778
+eval,realized,rm,turn2,excluded_antibias,114
+eval,realized,rm,turn2,unparsed_turn2,0
+eval,realized,rm,turn2,unparsed_turn1,145
+eval,realized,swap,turn1,bias,798
+eval,realized,swap,turn1,anti-bias,91
+eval,realized,swap,turn1,no bias,1043
+eval,realized,swap,turn1,unparsed_turn1,129
+eval,realized,swap,turn2,deceptive,902
+eval,realized,swap,turn2,honest,936
+eval,realized,swap,turn2,excluded_antibias,91
+eval,realized,swap,turn2,unparsed_turn2,3
+eval,realized,swap,turn2,unparsed_turn1,129
+all,enumerated,rm,turn1,bias,3176
+all,enumerated,rm,turn1,anti-bias,749
+all,enumerated,rm,turn1,no bias,8944
+all,enumerated,rm,turn1,unparsed_turn1,871
+all,enumerated,rm,turn2,deceptive,6674
+all,enumerated,rm,turn2,honest,5425
+all,enumerated,rm,turn2,excluded_antibias,749
+all,enumerated,rm,turn2,unparsed_turn2,21
+all,enumerated,rm,turn2,unparsed_turn1,871
+all,enumerated,swap,turn1,bias,5400
+all,enumerated,swap,turn1,anti-bias,482
+all,enumerated,swap,turn1,no bias,7072
+all,enumerated,swap,turn1,unparsed_turn1,786
+all,enumerated,swap,turn2,deceptive,6535
+all,enumerated,swap,turn2,honest,5911
+all,enumerated,swap,turn2,excluded_antibias,482
+all,enumerated,swap,turn2,unparsed_turn2,26
+all,enumerated,swap,turn2,unparsed_turn1,786
+all,realized,rm,turn1,bias,1317
+all,realized,rm,turn1,anti-bias,360
+all,realized,rm,turn1,no bias,4758
+all,realized,rm,turn1,unparsed_turn1,435
+all,realized,rm,turn2,deceptive,3292
+all,realized,rm,turn2,honest,2777
+all,realized,rm,turn2,excluded_antibias,360
+all,realized,rm,turn2,unparsed_turn2,6
+all,realized,rm,turn2,unparsed_turn1,435
+all,realized,swap,turn1,bias,2700
+all,realized,swap,turn1,anti-bias,241
+all,realized,swap,turn1,no bias,3536
+all,realized,swap,turn1,unparsed_turn1,393
+all,realized,swap,turn2,deceptive,3031
+all,realized,swap,turn2,honest,3196
+all,realized,swap,turn2,excluded_antibias,241
+all,realized,swap,turn2,unparsed_turn2,9
+all,realized,swap,turn2,unparsed_turn1,393
