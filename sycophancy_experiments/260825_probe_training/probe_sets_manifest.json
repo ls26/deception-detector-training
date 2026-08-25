@@ -1,0 +1,162 @@
+[
+  {
+    "definition": "rm",
+    "probe_type": "bias",
+    "train": {
+      "n_total": 600,
+      "n_bias": 300,
+      "n_no_bias": 300,
+      "per_category": {
+        "philosophy|bias": 65,
+        "history|bias": 35,
+        "physics|bias": 82,
+        "computer science|bias": 49,
+        "law|bias": 69,
+        "physics|no bias": 62,
+        "computer science|no bias": 49,
+        "law|no bias": 71,
+        "philosophy|no bias": 64,
+        "history|no bias": 54
+      },
+      "path": "probe_sets/bias_rm_train.jsonl"
+    },
+    "eval": {
+      "n_total": 3592,
+      "n_bias": 947,
+      "n_no_bias": 2645,
+      "per_category": {
+        "law|bias": 222,
+        "history|bias": 110,
+        "physics|bias": 240,
+        "philosophy|bias": 200,
+        "computer science|bias": 175,
+        "history|no bias": 489,
+        "physics|no bias": 533,
+        "computer science|no bias": 476,
+        "law|no bias": 545,
+        "philosophy|no bias": 602
+      },
+      "path": "probe_sets/bias_rm_eval.jsonl"
+    }
+  },
+  {
+    "definition": "swap",
+    "probe_type": "bias",
+    "train": {
+      "n_total": 600,
+      "n_bias": 300,
+      "n_no_bias": 300,
+      "per_category": {
+        "computer science|bias": 55,
+        "physics|bias": 68,
+        "law|bias": 64,
+        "philosophy|bias": 71,
+        "history|bias": 42,
+        "history|no bias": 63,
+        "philosophy|no bias": 71,
+        "computer science|no bias": 49,
+        "physics|no bias": 54,
+        "law|no bias": 63
+      },
+      "path": "probe_sets/bias_swap_train.jsonl"
+    },
+    "eval": {
+      "n_total": 3682,
+      "n_bias": 1596,
+      "n_no_bias": 2086,
+      "per_category": {
+        "history|bias": 184,
+        "law|bias": 360,
+        "physics|bias": 404,
+        "computer science|bias": 300,
+        "philosophy|bias": 348,
+        "philosophy|no bias": 468,
+        "physics|no bias": 394,
+        "history|no bias": 430,
+        "computer science|no bias": 362,
+        "law|no bias": 432
+      },
+      "path": "probe_sets/bias_swap_eval.jsonl"
+    }
+  },
+  {
+    "definition": "rm",
+    "probe_type": "deception",
+    "train": {
+      "n_total": 600,
+      "n_deceptive": 300,
+      "n_honest": 300,
+      "per_category": {
+        "physics|deceptive": 65,
+        "history|deceptive": 46,
+        "computer science|deceptive": 60,
+        "law|deceptive": 66,
+        "philosophy|deceptive": 63,
+        "philosophy|honest": 69,
+        "history|honest": 55,
+        "physics|honest": 64,
+        "computer science|honest": 64,
+        "law|honest": 48
+      },
+      "path": "probe_sets/deception_rm_train.jsonl"
+    },
+    "eval": {
+      "n_total": 3591,
+      "n_deceptive": 2067,
+      "n_honest": 1524,
+      "per_category": {
+        "philosophy|deceptive": 473,
+        "history|deceptive": 342,
+        "law|deceptive": 464,
+        "physics|deceptive": 440,
+        "computer science|deceptive": 348,
+        "law|honest": 303,
+        "philosophy|honest": 329,
+        "physics|honest": 332,
+        "computer science|honest": 303,
+        "history|honest": 257
+      },
+      "path": "probe_sets/deception_rm_eval.jsonl"
+    }
+  },
+  {
+    "definition": "swap",
+    "probe_type": "deception",
+    "train": {
+      "n_total": 600,
+      "n_deceptive": 300,
+      "n_honest": 300,
+      "per_category": {
+        "history|deceptive": 50,
+        "philosophy|deceptive": 55,
+        "physics|deceptive": 76,
+        "computer science|deceptive": 50,
+        "law|deceptive": 69,
+        "philosophy|honest": 72,
+        "law|honest": 54,
+        "history|honest": 61,
+        "physics|honest": 59,
+        "computer science|honest": 54
+      },
+      "path": "probe_sets/deception_swap_train.jsonl"
+    },
+    "eval": {
+      "n_total": 3673,
+      "n_deceptive": 1956,
+      "n_honest": 1717,
+      "per_category": {
+        "philosophy|deceptive": 425,
+        "law|deceptive": 445,
+        "computer science|deceptive": 352,
+        "history|deceptive": 269,
+        "physics|deceptive": 465,
+        "computer science|honest": 306,
+        "physics|honest": 330,
+        "philosophy|honest": 391,
+        "law|honest": 346,
+        "history|honest": 344
+      },
+      "path": "probe_sets/deception_swap_eval.jsonl"
+    }
+  }
+]

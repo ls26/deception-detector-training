@@ -81,3 +81,11 @@ sycophancy_experiments/**/followups.jsonl
 # CSVs they feed are committed.
 sycophancy_experiments/**/deception_scores.jsonl
 sycophancy_experiments/**/cue_set.jsonl
+
+# Probe train/eval sets (36 MB): they embed the rollout prompt/completion/follow-up
+# text that completions.jsonl and followups.jsonl are already excluded for, and are
+# rebuilt deterministically (SEED=53) by 260825_probe_training/01_build_probe_sets.py.
+sycophancy_experiments/**/probe_sets/*.jsonl
+# Console dumps and superseded dry-run metrics from the probe-training scripts.
+sycophancy_experiments/**/analysis_output.txt
+sycophancy_experiments/**/probe_metrics_dry_run.json
