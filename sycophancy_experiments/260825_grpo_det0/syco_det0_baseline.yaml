@@ -1,0 +1,31 @@
+# First GRPO run on the MMLU sycophancy domain (260819_domain_baseline dataset).
+# Task reward = 1 iff the parsed A/B answer is correct (tasks/multiple_choice.py);
+# no code length penalty exists for this task. loss.detector=0: the
+# diverse_deception_probe is loaded and scored for monitoring/post-eval only and
+# never contributes to reward or gradients (same pattern as the MBPP det0
+# baselines). Training resamples the cue per (prompt, step) at
+# task_args.cue_gold_prob=0.85 (config default); eval serves the dataset's baked
+# assignment, so eval accuracy is comparable to the pre-RL baseline 0.773 and
+# the always-defer ceiling 0.850.
+#
+# Launch from /workspace (atlas_setup.sh sourced, vLLM on GPU 1):
+#   python -m pipeline.run_ablation sycophancy_experiments/260825_grpo_det0/syco_det0_baseline.yaml
+
+run_key: syco_det0_s42
+output_dir: /workspace/sycophancy_experiments/260825_grpo_det0
+group: syco_det0            # W&B group + run_results/ subdir (folder name would otherwise be used)
+config_name: grpo_mcq       # Hydra root config for the MULTIPLE_CHOICE task
+
+probe:
+  directory_save_prefix: syco_det0
+  retrain: false            # first run for this prefix computes the Phase-0 cache anyway
+
+checkpoint: null            # base model, no reference adapter
+
+min_responses: 128
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 42
+  training.max_steps: 128   # ~5 epochs over the 1603 train prompts; matches MBPP's step budget
