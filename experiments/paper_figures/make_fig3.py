@@ -29,6 +29,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from paper_fig_common import apply_figure_title
+
 WORKSPACE = Path("/workspace")
 OUT_DIR = Path(__file__).resolve().parent
 SUMMARY_JSON = WORKSPACE / "experiments/260814_shared_eval_probe_compare/summary.json"
@@ -40,10 +42,12 @@ PROBE_INITIAL = "initial_round6_data"
 # no round-6 probe for that variant). Trial -> variant mapping matches
 # paper_fig_common.py / make_fig1.py / 260814_shared_eval_probe_compare/results_table.py.
 GROUPS = [
-    ("probe_early", "Early retraining (probe score)", {4: "early_retraining_v2", 6: "early_retraining", 8: "early_retraining"}),
-    ("auc_early", "Early retraining (AUC)", {4: "early_retraining_auc_v2", 6: "early_retraining_auc_v3", 8: "early_retraining_auc_v3"}),
+    ("probe_early", "Adaptive retraining (probe score)", {4: "early_retraining_v2", 6: "early_retraining", 8: "early_retraining"}),
+    ("auc_early", "Adaptive retraining (AUC)", {4: "early_retraining_auc_v2", 6: "early_retraining_auc_v3", 8: "early_retraining_auc_v3"}),
     ("fixed", "Fixed-schedule retraining", {4: "v2", 6: "", 8: ""}),
 ]
+
+FIG_TITLE = "Initial vs. Final Probe AUC"
 TRIALS = [("Seed 1", 4), ("Seed 2", 6), ("Seed 3", 8)]
 
 FINAL_COLOR = "#74c476"
@@ -148,6 +152,7 @@ def plot(df: pd.DataFrame) -> plt.Figure:
     ]
     fig.legend(handles=legend_handles, loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.06), frameon=False)
     fig.tight_layout()
+    apply_figure_title(fig, FIG_TITLE, y=1.02)
     return fig
 
 

@@ -28,6 +28,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import PercentFormatter
 
+from paper_fig_common import apply_figure_title
+
 WORKSPACE = Path("/workspace")
 TRIALS_DIR = WORKSPACE / "experiments/trials"
 BASE_EVAL_JSONL = WORKSPACE / "experiments/artifacts/base/base_eval_generations.jsonl"
@@ -87,9 +89,11 @@ TRIAL_PANELS = [
 CONDITIONS = [
     ("frozen", "Frozen probe", "#eb6834", 2, "-"),
     ("fixed", "Fixed-schedule retraining", "#e6ab02", 2, "-"),
-    ("probe_early", "Early retraining (probe score)", "#2a78d6", 3, "-"),
-    ("auc_early", "Early retraining (AUC)", "#238b45", 2, "-"),
+    ("probe_early", "Adaptive retraining (probe score)", "#2a78d6", 3, "-"),
+    ("auc_early", "Adaptive retraining (AUC)", "#238b45", 2, "-"),
 ]
+
+FIG1_TITLE = "Reward Hacking and Correct Rate Across Training Rounds"
 
 # (panel_label, metric_col, condition_key) -> (linestyle, zorder) override, applied only
 # where that exact combination overlaps another condition's line.
@@ -192,6 +196,7 @@ def plot(
     figsize: tuple[float, float] = (11, 6),
     metrics: list[tuple[str, str]] = METRICS,
     legend_rows: list[list[str]] | None = None,
+    figure_title: str | None = None,
 ) -> plt.Figure:
     panel_labels = [p for p, _, _ in TRIAL_PANELS]
     # squeeze=False so a single-metric figure still indexes as axes[row, col].
@@ -284,6 +289,8 @@ def plot(
         frameon=False,
     )
     fig.tight_layout()
+    if figure_title:
+        apply_figure_title(fig, figure_title, y=1.04)
     return fig
 
 
@@ -305,7 +312,7 @@ def main():
     # Combined 2-row figure, plus each row on its own: fig1a = reward hacking,
     # fig1b = correct rate. Single-row figures are half as tall, so the legend
     # offset (axes fraction) roughly doubles to clear the x-label.
-    written += save(plot(df, ceiling_correct), "fig1")
+    written += save(plot(df, ceiling_correct, figure_title=FIG1_TITLE), "fig1")
     for stem, metric in (("fig1a", METRICS[0]), ("fig1b", METRICS[1])):
         fig = plot(
             df,

@@ -25,9 +25,9 @@ TRIAL_PANELS = [
     ("Seed 3", 8, {"probe_early": "early_retraining", "frozen": "frozen"}),
 ]
 
-# Row order: early retraining (probe score) first, then frozen probe.
+# Row order: adaptive retraining (probe score) first, then frozen probe.
 ROW_CONDITIONS = [
-    ("probe_early", "Early retraining\n(probe score)"),
+    ("probe_early", "Adaptive retraining\n(probe score)"),
     ("frozen", "Frozen probe"),
 ]
 
@@ -67,8 +67,8 @@ FULL_TRIAL_PANELS = [
 ]
 
 FULL_ROW_CONDITIONS = [
-    ("probe_early", "Early retraining\n(probe score)"),
-    ("auc_early", "Early retraining\n(AUC)"),
+    ("probe_early", "Adaptive retraining\n(probe score)"),
+    ("auc_early", "Adaptive retraining\n(AUC)"),
     ("fixed", "Fixed-schedule\nretraining"),
     ("frozen", "Frozen probe"),
 ]
@@ -171,6 +171,21 @@ def apply_poster_style() -> None:
     import matplotlib.pyplot as plt
 
     plt.rcParams.update(POSTER_RCPARAMS)
+
+
+def apply_figure_title(
+    fig,
+    title: str,
+    *,
+    fontsize: float | None = None,
+    y: float = 1.01,
+    reference_width: float = 6.0,
+    base_fontsize: float = 13,
+) -> None:
+    """Place a figure title sized to match fig1_new on a single ~6in-wide panel."""
+    if fontsize is None:
+        fontsize = min(18, max(base_fontsize, round(base_fontsize * fig.get_figwidth() / reference_width)))
+    fig.suptitle(title, fontsize=fontsize, y=y)
 
 
 def style_grid_axis(

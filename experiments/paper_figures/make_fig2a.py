@@ -19,9 +19,17 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from paper_fig_common import ROW_CONDITIONS, TRIAL_PANELS, build_long_table, plot_shift_cell, style_grid_axis
+from paper_fig_common import (
+    ROW_CONDITIONS,
+    TRIAL_PANELS,
+    apply_figure_title,
+    build_long_table,
+    plot_shift_cell,
+    style_grid_axis,
+)
 
 OUT_DIR = Path(__file__).resolve().parent
+FIG_TITLE = "Probe Evasion and Recovery: Adaptive Retraining vs Frozen Probe"
 
 DECEPTIVE_START = "#e6550d"
 DECEPTIVE_END = "#fdae6b"
@@ -44,7 +52,7 @@ def plot(
 ) -> plt.Figure:
     panel_labels = [p for p, _, _ in TRIAL_PANELS]
     n_rows, n_cols = len(ROW_CONDITIONS), len(panel_labels)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 6.5), sharex=True, sharey="row")
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 5.5), sharex=True, sharey="row")
 
     for row_idx, (cond_key, cond_label) in enumerate(ROW_CONDITIONS):
         for col_idx, panel_label in enumerate(panel_labels):
@@ -80,6 +88,7 @@ def plot(
         frameon=False,
     )
     fig.tight_layout()
+    apply_figure_title(fig, FIG_TITLE, y=1.04)
     return fig
 
 

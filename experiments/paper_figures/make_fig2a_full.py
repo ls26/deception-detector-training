@@ -20,9 +20,17 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from paper_fig_common import FULL_ROW_CONDITIONS, FULL_TRIAL_PANELS, build_long_table, plot_shift_cell, style_grid_axis
+from paper_fig_common import (
+    FULL_ROW_CONDITIONS,
+    FULL_TRIAL_PANELS,
+    apply_figure_title,
+    build_long_table,
+    plot_shift_cell,
+    style_grid_axis,
+)
 
 OUT_DIR = Path(__file__).resolve().parent
+FIG_TITLE = "On-Policy Probe Scores (All Conditions)"
 
 DECEPTIVE_START = "#e6550d"
 DECEPTIVE_END = "#fdae6b"
@@ -38,7 +46,7 @@ SHIFTS = [
 def plot(df) -> plt.Figure:
     panel_labels = [p for p, _, _ in FULL_TRIAL_PANELS]
     n_rows, n_cols = len(FULL_ROW_CONDITIONS), len(panel_labels)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 12.5), sharex=True, sharey="row")
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 10), sharex=True, sharey="row")
 
     for row_idx, (cond_key, cond_label) in enumerate(FULL_ROW_CONDITIONS):
         for col_idx, panel_label in enumerate(panel_labels):
@@ -71,6 +79,7 @@ def plot(df) -> plt.Figure:
         frameon=False,
     )
     fig.tight_layout()
+    apply_figure_title(fig, FIG_TITLE)
     return fig
 
 

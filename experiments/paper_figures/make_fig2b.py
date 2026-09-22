@@ -32,7 +32,7 @@ SHIFTS = [("start_auc", "end_auc", AUC_START, AUC_END)]
 def plot(df) -> plt.Figure:
     panel_labels = [p for p, _, _ in TRIAL_PANELS]
     n_rows, n_cols = len(ROW_CONDITIONS), len(panel_labels)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 6.5), sharex=True, sharey="row")
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(11, 5.5), sharex=True, sharey="row")
 
     for row_idx, (cond_key, cond_label) in enumerate(ROW_CONDITIONS):
         for col_idx, panel_label in enumerate(panel_labels):
