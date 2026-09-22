@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Refuse to commit any staged file larger than MAX_MB.
+#
+# Activations, weights, and rollout dumps are meant to be caught by .gitignore. This hook
+# is the backstop for the ones that slip past a pattern. It checks the staged blob, not
+# the working-tree file, so it sees exactly what would enter the commit.
+#
+# Installed by: git config core.hooksPath scripts/git-hooks
+# Bypass on purpose only: git commit --no-verify
+
+set -euo pipefail
+
+MAX_MB=20
+MAX_BYTES=$((MAX_MB * 1024 * 1024))
+too_large=()
+
+while IFS= read -r -d '' path; do
+    size=$(git cat-file -s ":$path")
+    if (( size > MAX_BYTES )); then
+        too_large+=("$path ($((size / 1024 / 1024)) MB)")
+    fi
+done < <(git diff --cached --name-only --diff-filter=AMR -z)
+
+if (( ${#too_large[@]} > 0 )); then
+    echo "pre-commit: refusing to commit files over ${MAX_MB} MB:" >&2
+    for entry in "${too_large[@]}"; do
+        echo "  $entry" >&2
+    done
+    echo "Unstage them (git restore --staged <path>) or add a .gitignore rule." >&2
+    exit 1
+fi

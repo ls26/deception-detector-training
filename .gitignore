@@ -20,9 +20,18 @@ __pycache__/
 # ── Secrets (API keys, tokens) ──
 .env
 atlas_setup.sh
+.secrets.env
+dotfiles/
+.claude-global/
 
 # ── Local-only project instructions (not committed) ──
 CLAUDE.md
+
+# ── Public release copies (committed in a separate repo; never commit here) ──
+probes-as-training-signals/
+release_checks/
+docs/RELEASE_PLAN.md
+docs/RELEASE_HANDOFF.md
 
 # ── Large run outputs ──
 results/
@@ -55,14 +64,12 @@ obfuscation-atlas/.cursorrules
 *.pt
 **/buffer/
 **/buffer_*/
-**/probe_activations/
-**/probe_weights/
-**/probe_activations_base_model/
-**/probe_weights_base_model/
-experiments/**/activations/
-**/base_activations/
-**/det0_activations/
-**/on_dataset_activations/
+# Derived outputs are ignored by pattern family, so a variant folder
+# (probe_weights_maj3/, activations_wd01/, ...) is covered without editing this list.
+**/probe_weights*/
+**/probe_activations*/
+**/activations*/
+**/*_activations/
 experiments/**/*.log
 *.bak
 
@@ -84,8 +91,9 @@ sycophancy_experiments/**/cue_set.jsonl
 
 # Probe train/eval sets (36 MB): they embed the rollout prompt/completion/follow-up
 # text that completions.jsonl and followups.jsonl are already excluded for, and are
-# rebuilt deterministically (SEED=53) by 260825_probe_training/01_build_probe_sets.py.
-sycophancy_experiments/**/probe_sets/*.jsonl
+# rebuilt deterministically (seeded) by each probe experiment's step 1. Variant folders
+# (probe_sets_maj3/, ...) are covered by the wildcard; their manifests stay tracked.
+sycophancy_experiments/**/probe_sets*/*.jsonl
 # Console dumps and superseded dry-run metrics from the probe-training scripts.
 sycophancy_experiments/**/analysis_output.txt
 sycophancy_experiments/**/probe_metrics_dry_run.json
