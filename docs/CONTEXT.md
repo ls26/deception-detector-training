@@ -92,7 +92,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   └── 260825_probe_training/      # *** FIRST PROBES: bias + deception, two extraction positions each ***
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
-├── atlas_setup.sh              # HF_HOME, WANDB, uv persistent paths, PYTHONPATH=/workspace (for `pipeline`)
+├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below
+├── atlas_setup.sh              # Backward-compat shim -> dotfiles/env.sh, for scripts that still source it
 └── Obfuscation Atlas paper.pdf
 ```
 
@@ -214,14 +215,20 @@ obfuscation-atlas/
 
 ## Environment
 
-RunPod: **`/workspace` persists**; **`/root` is ephemeral** (venv breaks on rebuild).
+RunPod: **`/workspace` persists**; **`/root` is ephemeral** (wiped on pod rebuild). Setup now lives in the
+versioned `/workspace/dotfiles` repo (see its README):
 
-1. `source /workspace/atlas_setup.sh` — sets `HF_HOME`, `WANDB_API_KEY`, persistent `UV_*` paths
-2. `cd obfuscation-atlas && rm -rf .venv && make install` — required after every pod rebuild
-3. Use `grpo.model.attn_implementation=sdpa` if `flash_attn` is not installed
-4. Probe eval and GRPO training need a **vLLM server on a separate GPU**; MBPP task eval uses in-process vLLM
+1. `bash /workspace/dotfiles/apply.sh` — run once per pod (or set as the RunPod start command; it's idempotent
+   and safe to re-run). Sets git identity, installs tmux/jq, fixes up `/workspace`-backed symlinks, installs a
+   `~/.bashrc` hook that sources `dotfiles/env.sh` (which sets `HF_HOME`, secrets from `/workspace/.secrets.env`,
+   persistent `UV_*` paths, `PYTHONPATH=/workspace`) in every new shell — interactive or not — and health-checks
+   the obfuscation-atlas venv, only running `make install && make notebook-kernel` if it's missing or broken.
+   `source /workspace/atlas_setup.sh` still works too (thin shim to `dotfiles/env.sh`, for older scripts).
+2. Use `grpo.model.attn_implementation=sdpa` if `flash_attn` is not installed
+3. Probe eval and GRPO training need a **vLLM server on a separate GPU**; MBPP task eval uses in-process vLLM
 
-Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3.11 → re-run step 2.
+Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3.11 → re-run
+`bash /workspace/dotfiles/apply.sh` (it detects and repairs this) or manually `cd obfuscation-atlas && rm -rf .venv && make install`.
 
 ---
 
@@ -254,9 +261,9 @@ All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfus
 ### Bootstrap
 
 ```bash
-source /workspace/atlas_setup.sh
-cd /workspace/obfuscation-atlas && rm -rf .venv && make install
-make test    # or: make lint, make format
+bash /workspace/dotfiles/apply.sh   # once per pod; rebuilds the venv only if it's actually broken
+source /workspace/atlas_setup.sh    # or a fresh shell — the bashrc hook sources env.sh automatically
+cd /workspace/obfuscation-atlas && make test    # or: make lint, make format
 ```
 
 ### vLLM server (separate GPU — required for GRPO training and HF probe eval)

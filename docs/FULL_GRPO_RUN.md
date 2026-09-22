@@ -122,7 +122,9 @@ Record `short_name → run_id` when the W&B URL prints. You cannot rename the on
 
 ## Prerequisites (preflight)
 
-Run once before training (repeat `source atlas_setup.sh` in every new shell).
+Run once before training. As of the `/workspace/dotfiles` migration, a new interactive shell already has this env
+via the `~/.bashrc` hook installed by `bash /workspace/dotfiles/apply.sh` — sourcing `atlas_setup.sh` (or
+`dotfiles/env.sh` directly) is only needed for non-interactive contexts (e.g. inside a script).
 
 ### 1. Environment
 
@@ -673,7 +675,7 @@ Use `--task-metrics-run-id` only for split train/eval W&B runs. Summarize with h
 | Symptom | Likely cause | Action |
 |---------|--------------|--------|
 | vLLM fails on import | Broken `pyarrow` | Reinstall pyarrow (preflight §1) |
-| `WANDB_API_KEY` unset | Forgot `atlas_setup.sh` | `source /workspace/atlas_setup.sh` |
+| `WANDB_API_KEY` unset | New non-interactive shell without the env sourced | `source /workspace/atlas_setup.sh` (or check `/workspace/.secrets.env` has `WANDB_API_KEY` filled in) |
 | Hang at "Waiting for VLLM" | Server down | Start vLLM; `curl` check |
 | GPU memory not freed | Zombie `VLLM::EngineCore` | GPU cleanup (preflight §4); `kill -9` PID from `nvidia-smi` |
 | Phase 0 OOM (1× GPU) | vLLM + HF model on same GPU | Stop vLLM, rerun; restart vLLM before RL |

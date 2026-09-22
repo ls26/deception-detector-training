@@ -41,20 +41,20 @@ def bootstrap_hf_env(
     workspace: Path = WORKSPACE,
     hf_cache_dir: Path = HF_CACHE_DIR,
 ) -> None:
-    """Jupyter kernels don't inherit atlas_setup.sh; set HF/W&B env before Hub or subprocess calls."""
+    """Jupyter kernels don't inherit dotfiles/env.sh; set HF/W&B env before Hub or subprocess calls."""
     if not os.environ.get("HF_HOME"):
         os.environ["HF_HOME"] = str(hf_cache_dir)
     if not (os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")):
-        setup_sh = workspace / "atlas_setup.sh"
-        if setup_sh.exists():
-            for line in setup_sh.read_text().splitlines():
+        secrets_env = workspace / ".secrets.env"
+        if secrets_env.exists():
+            for line in secrets_env.read_text().splitlines():
                 if line.startswith("export HF_TOKEN="):
                     os.environ["HF_TOKEN"] = line.split("=", 1)[1].strip()
                     break
     if not os.environ.get("WANDB_API_KEY"):
-        setup_sh = workspace / "atlas_setup.sh"
-        if setup_sh.exists():
-            for line in setup_sh.read_text().splitlines():
+        secrets_env = workspace / ".secrets.env"
+        if secrets_env.exists():
+            for line in secrets_env.read_text().splitlines():
                 if line.startswith("export WANDB_API_KEY="):
                     os.environ["WANDB_API_KEY"] = line.split("=", 1)[1].strip()
                     break

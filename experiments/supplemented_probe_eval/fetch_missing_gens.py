@@ -28,9 +28,10 @@ from experiments.supplemented_probe_eval.common import (
 
 
 def bootstrap_env() -> None:
-    setup = Path("/workspace/atlas_setup.sh")
-    if setup.exists():
-        for line in setup.read_text().splitlines():
+    os.environ.setdefault("HF_HOME", "/workspace/hf_cache")
+    secrets_env = Path("/workspace/.secrets.env")
+    if secrets_env.exists():
+        for line in secrets_env.read_text().splitlines():
             if line.startswith("export ") and "=" in line:
                 key, _, val = line.removeprefix("export ").partition("=")
                 if key in ("WANDB_API_KEY", "HF_TOKEN", "HF_HOME") and key not in os.environ:

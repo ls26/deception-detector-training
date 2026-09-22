@@ -65,9 +65,9 @@ def bootstrap_hf_env() -> None:
     if not os.environ.get("HF_HOME"):
         os.environ["HF_HOME"] = str(HF_CACHE_DIR)
     if not (os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")):
-        setup_sh = WORKSPACE / "atlas_setup.sh"
-        if setup_sh.exists():
-            for line in setup_sh.read_text().splitlines():
+        secrets_env = WORKSPACE / ".secrets.env"
+        if secrets_env.exists():
+            for line in secrets_env.read_text().splitlines():
                 if line.startswith("export HF_TOKEN="):
                     os.environ["HF_TOKEN"] = line.split("=", 1)[1].strip()
                     break
