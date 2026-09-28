@@ -1,0 +1,180 @@
+{
+  "domain_dir": "/workspace/sycophancy_experiments/260819_domain_baseline",
+  "followup_dir": "/workspace/sycophancy_experiments/260823_domain_baseline_followup_wordings",
+  "rescore_dir": "/workspace/sycophancy_experiments/260824_rescore",
+  "cue_variant": "random",
+  "probe_sets_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets/pool_nu",
+  "act_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/activations/pool_nu",
+  "manifest_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets/pool_nu/manifest.json",
+  "weights_dir": "/workspace/sycophancy_experiments/260924_probe_cv_selection/runs/04_cv_chosen_pool_nu_evalnu/probe_weights",
+  "metrics_path": "/workspace/sycophancy_experiments/260924_probe_cv_selection/runs/04_cv_chosen_pool_nu_evalnu/probe_metrics.json",
+  "runs_dir": "/workspace/sycophancy_experiments/260924_probe_cv_selection/runs",
+  "cv_dir": "/workspace/sycophancy_experiments/260924_probe_cv_selection/cv",
+  "figures_dir": "/workspace/sycophancy_experiments/260924_probe_cv_selection/figures",
+  "datasets": [
+    "bias",
+    "deception",
+    "bias_followed"
+  ],
+  "definitions": [
+    "rm"
+  ],
+  "splits": [
+    "train",
+    "eval"
+  ],
+  "probe_kinds": [
+    "bias",
+    "deception",
+    "deception_yes",
+    "deception_no",
+    "bias_followed"
+  ],
+  "positions": {
+    "bias": [
+      "answer"
+    ],
+    "bias_followed": [
+      "answer"
+    ],
+    "deception": [
+      "preyesno"
+    ]
+  },
+  "train_samples_per_prompt": null,
+  "eval_samples_per_prompt": 1,
+  "pool_seed": 53,
+  "n_train_per_class": {
+    "bias": 400,
+    "deception_yes": 200,
+    "deception_no": 200,
+    "bias_followed": 400
+  },
+  "balance_conditions": true,
+  "sample_seed": 53,
+  "train_filter": "none",
+  "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "n_layers": 32,
+  "dtype": "torch.bfloat16",
+  "attn_implementation": "sdpa",
+  "device": "cuda",
+  "batch_size": 16,
+  "act_save_dtype": "torch.bfloat16",
+  "limit_per_class": null,
+  "detector_arch": "linear-probe",
+  "normalize_input": "unit_norm",
+  "train_cfg": {
+    "batch_size": 32,
+    "grad_accum_steps": 1,
+    "max_steps": 1000,
+    "eval_steps": 30,
+    "num_epochs": 1,
+    "steps_per_logging": 10,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0,
+    "clip_grad_norm": 1.0,
+    "warmup_steps": 0,
+    "scheduler": "constant",
+    "checkpoint_interval": 10,
+    "resume_from_checkpoint": true,
+    "device": "cuda",
+    "seed": 42
+  },
+  "probe_fit": "sgd",
+  "lda_shrinkage": 0.1,
+  "logreg_C": 100.0,
+  "layer_selection": "loss_threshold",
+  "layer_k": 8,
+  "layer_loss_threshold": 0.6,
+  "layer_band": null,
+  "combined_score": "mean_sigmoid",
+  "eval_filter": "none_unanimous",
+  "per_probe_overrides": {
+    "bias_followed_rm_answer": {
+      "train_cfg": {
+        "learning_rate": 0.03,
+        "max_steps": 396
+      },
+      "layer_selection": "band",
+      "layer_band": [
+        13,
+        4
+      ]
+    },
+    "deception_yes_rm_preyesno": {
+      "train_cfg": {
+        "learning_rate": 0.03,
+        "max_steps": 421
+      },
+      "layer_selection": "band",
+      "layer_band": [
+        14,
+        4
+      ]
+    },
+    "deception_no_rm_preyesno": {
+      "train_cfg": {
+        "learning_rate": 0.03,
+        "max_steps": 347
+      },
+      "layer_selection": "band",
+      "layer_band": [
+        14,
+        4
+      ]
+    },
+    "bias_rm_answer": {
+      "train_cfg": {
+        "learning_rate": 0.03,
+        "max_steps": 396
+      },
+      "layer_selection": "band",
+      "layer_band": [
+        13,
+        4
+      ]
+    },
+    "deception_rm_preyesno": {
+      "train_cfg": {
+        "learning_rate": 0.03,
+        "max_steps": 396
+      },
+      "layer_selection": "band",
+      "layer_band": [
+        14,
+        4
+      ]
+    }
+  },
+  "center_by_question": false,
+  "holdout_category": null,
+  "eval_aggregator_method": "mean",
+  "use_sklearn": false,
+  "probe_seed": 0,
+  "probe_seeds": [
+    0,
+    1,
+    2
+  ],
+  "train_draw_per_class": null,
+  "cv_folds": 5,
+  "cv_seed": 0,
+  "cv_learning_rates": [
+    0.003,
+    0.01,
+    0.03
+  ],
+  "cv_max_steps": [
+    1000,
+    2000,
+    4000
+  ],
+  "cv_band_widths": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32
+  ]
+}

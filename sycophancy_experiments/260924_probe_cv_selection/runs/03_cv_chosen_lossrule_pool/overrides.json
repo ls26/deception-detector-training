@@ -1,0 +1,38 @@
+{
+  "variant": "pool",
+  "set": {
+    "per_probe_overrides": {
+      "bias_followed_rm_answer": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 1000
+        }
+      },
+      "deception_yes_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 1000
+        }
+      },
+      "deception_no_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 1000
+        }
+      },
+      "bias_rm_answer": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 1000
+        }
+      },
+      "deception_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 1000
+        }
+      }
+    }
+  },
+  "probes": null
+}

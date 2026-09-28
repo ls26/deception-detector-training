@@ -1,0 +1,47 @@
+{
+  "bias_followed_rm_answer": {
+    "source_variant": "pool",
+    "n_train_source": 2908,
+    "steps_source": 1000,
+    "epochs": 11.004126547455297,
+    "target_variant": "pool_nu",
+    "n_train_target": 1152,
+    "steps_target": 396
+  },
+  "deception_yes_rm_preyesno": {
+    "source_variant": "pool",
+    "n_train_source": 1928,
+    "steps_source": 1000,
+    "epochs": 16.597510373443985,
+    "target_variant": "pool_nu",
+    "n_train_target": 812,
+    "steps_target": 421
+  },
+  "deception_no_rm_preyesno": {
+    "source_variant": "pool",
+    "n_train_source": 980,
+    "steps_source": 1000,
+    "epochs": 32.6530612244898,
+    "target_variant": "pool_nu",
+    "n_train_target": 340,
+    "steps_target": 347
+  },
+  "bias_rm_answer": {
+    "source_variant": "pool",
+    "n_train_source": 2908,
+    "steps_source": 1000,
+    "epochs": 11.004126547455297,
+    "target_variant": "pool_nu",
+    "n_train_target": 1152,
+    "steps_target": 396
+  },
+  "deception_rm_preyesno": {
+    "source_variant": "pool",
+    "n_train_source": 2908,
+    "steps_source": 1000,
+    "epochs": 11.004126547455297,
+    "target_variant": "pool_nu",
+    "n_train_target": 1152,
+    "steps_target": 396
+  }
+}

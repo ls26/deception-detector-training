@@ -1,0 +1,64 @@
+{
+  "variant": "pool_nu",
+  "set": {
+    "per_probe_overrides": {
+      "bias_followed_rm_answer": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 396
+        },
+        "layer_selection": "band",
+        "layer_band": [
+          13,
+          4
+        ]
+      },
+      "deception_yes_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 421
+        },
+        "layer_selection": "band",
+        "layer_band": [
+          14,
+          4
+        ]
+      },
+      "deception_no_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 347
+        },
+        "layer_selection": "band",
+        "layer_band": [
+          14,
+          4
+        ]
+      },
+      "bias_rm_answer": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 396
+        },
+        "layer_selection": "band",
+        "layer_band": [
+          13,
+          4
+        ]
+      },
+      "deception_rm_preyesno": {
+        "train_cfg": {
+          "learning_rate": 0.03,
+          "max_steps": 396
+        },
+        "layer_selection": "band",
+        "layer_band": [
+          14,
+          4
+        ]
+      }
+    },
+    "eval_filter": "none_unanimous"
+  },
+  "probes": null
+}
