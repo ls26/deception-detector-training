@@ -1,0 +1,18 @@
+{
+  "variant": "pos2",
+  "set": {
+    "probe_fit": "logreg",
+    "logreg_C": 30,
+    "positions": {
+      "bias": [
+        "lastprompt"
+      ],
+      "bias_followed": [
+        "lastprompt"
+      ],
+      "deception": [
+        "lastprompt"
+      ]
+    }
+  }
+}

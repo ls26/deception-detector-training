@@ -1,0 +1,13 @@
+{
+  "variant": "pool",
+  "set": {
+    "probe_fit": "logreg",
+    "logreg_C": 30,
+    "train_draw_per_class": {
+      "bias": 200,
+      "deception_yes": 100,
+      "deception_no": 100,
+      "bias_followed": 200
+    }
+  }
+}

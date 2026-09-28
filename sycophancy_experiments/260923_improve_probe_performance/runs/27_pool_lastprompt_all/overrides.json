@@ -1,0 +1,24 @@
+{
+  "variant": "pool_lastprompt",
+  "set": {
+    "probe_fit": "logreg",
+    "logreg_C": 30,
+    "positions": {
+      "bias": [
+        "lastprompt"
+      ],
+      "bias_followed": [
+        "lastprompt"
+      ],
+      "deception": [
+        "lastprompt"
+      ]
+    },
+    "train_draw_per_class": {
+      "bias": 1454,
+      "deception_yes": 964,
+      "deception_no": 490,
+      "bias_followed": 1454
+    }
+  }
+}

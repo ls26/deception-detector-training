@@ -1,0 +1,18 @@
+{
+  "variant": "base",
+  "set": {
+    "probe_fit": "logreg",
+    "logreg_C": 30,
+    "positions": {
+      "bias": [
+        "lastcompl"
+      ],
+      "bias_followed": [
+        "lastcompl"
+      ],
+      "deception": [
+        "yesno"
+      ]
+    }
+  }
+}

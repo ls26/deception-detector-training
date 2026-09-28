@@ -1,0 +1,13 @@
+{
+  "variant": "pool",
+  "set": {
+    "probe_fit": "lda",
+    "lda_shrinkage": 0.5,
+    "train_draw_per_class": {
+      "bias": 1454,
+      "deception_yes": 964,
+      "deception_no": 490,
+      "bias_followed": 1454
+    }
+  }
+}

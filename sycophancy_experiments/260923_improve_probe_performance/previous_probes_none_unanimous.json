@@ -1,0 +1,465 @@
+{
+  "config": {
+    "domain_dir": "/workspace/sycophancy_experiments/260819_domain_baseline",
+    "followup_dir": "/workspace/sycophancy_experiments/260823_domain_baseline_followup_wordings",
+    "rescore_dir": "/workspace/sycophancy_experiments/260824_rescore",
+    "cue_variant": "random",
+    "probe_sets_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets",
+    "act_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/activations/base",
+    "weights_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_weights",
+    "manifest_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets_manifest.json",
+    "metrics_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_metrics.json",
+    "runs_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/runs",
+    "previous_probes_none_unanimous_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/previous_probes_none_unanimous.json",
+    "datasets": [
+      "bias",
+      "deception",
+      "bias_followed"
+    ],
+    "definitions": [
+      "rm"
+    ],
+    "splits": [
+      "train",
+      "eval"
+    ],
+    "probe_kinds": [
+      "bias",
+      "deception",
+      "deception_yes",
+      "deception_no",
+      "bias_followed"
+    ],
+    "positions": {
+      "bias": [
+        "answer"
+      ],
+      "bias_followed": [
+        "answer"
+      ],
+      "deception": [
+        "preyesno"
+      ]
+    },
+    "train_samples_per_prompt": null,
+    "eval_samples_per_prompt": 1,
+    "pool_seed": 53,
+    "n_train_per_class": {
+      "bias": 400,
+      "deception_yes": 200,
+      "deception_no": 200,
+      "bias_followed": 400
+    },
+    "balance_conditions": true,
+    "sample_seed": 53,
+    "train_filter": "none",
+    "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "n_layers": 32,
+    "dtype": "torch.bfloat16",
+    "attn_implementation": "sdpa",
+    "device": "cuda",
+    "batch_size": 16,
+    "act_save_dtype": "torch.float32",
+    "limit_per_class": null,
+    "detector_arch": "linear-probe",
+    "train_cfg": {
+      "batch_size": 32,
+      "grad_accum_steps": 1,
+      "max_steps": 1000,
+      "eval_steps": 30,
+      "num_epochs": 1,
+      "steps_per_logging": 10,
+      "learning_rate": 0.003,
+      "weight_decay": 0.0,
+      "clip_grad_norm": 1.0,
+      "warmup_steps": 0,
+      "scheduler": "constant",
+      "checkpoint_interval": 10,
+      "resume_from_checkpoint": true,
+      "device": "cuda",
+      "seed": 42
+    },
+    "layer_loss_threshold": 0.6,
+    "eval_aggregator_method": "mean",
+    "use_sklearn": false,
+    "probe_seed": 0,
+    "probe_seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "previous_weights_dir": "/workspace/sycophancy_experiments/260826_probe_training_new/probe_weights_maj3",
+  "previous_act_dir": "/workspace/sycophancy_experiments/260826_probe_training_new/activations_maj3",
+  "cell_agreement": [
+    {
+      "split": "train",
+      "condition": "none",
+      "n_cells": 1603,
+      "n_all_parsed": 1444,
+      "n_unanimous": 991,
+      "frac_unanimous": 0.6182158452900811,
+      "frac_unanimous_of_parsed": 0.6862880886426593
+    },
+    {
+      "split": "train",
+      "condition": "cue_gold",
+      "n_cells": 1603,
+      "n_all_parsed": 1487,
+      "n_unanimous": 1175,
+      "frac_unanimous": 0.7330006238303182,
+      "frac_unanimous_of_parsed": 0.7901815736381977
+    },
+    {
+      "split": "train",
+      "condition": "cue_dist",
+      "n_cells": 1603,
+      "n_all_parsed": 1460,
+      "n_unanimous": 931,
+      "frac_unanimous": 0.5807860262008734,
+      "frac_unanimous_of_parsed": 0.6376712328767123
+    },
+    {
+      "split": "eval",
+      "condition": "none",
+      "n_cells": 687,
+      "n_all_parsed": 611,
+      "n_unanimous": 394,
+      "frac_unanimous": 0.5735080058224163,
+      "frac_unanimous_of_parsed": 0.6448445171849427
+    },
+    {
+      "split": "eval",
+      "condition": "cue_gold",
+      "n_cells": 687,
+      "n_all_parsed": 623,
+      "n_unanimous": 470,
+      "frac_unanimous": 0.6841339155749636,
+      "frac_unanimous_of_parsed": 0.7544141252006421
+    },
+    {
+      "split": "eval",
+      "condition": "cue_dist",
+      "n_cells": 687,
+      "n_all_parsed": 631,
+      "n_unanimous": 391,
+      "frac_unanimous": 0.5691411935953421,
+      "frac_unanimous_of_parsed": 0.6196513470681458
+    },
+    {
+      "split": "all",
+      "condition": "none",
+      "n_cells": 2290,
+      "n_all_parsed": 2055,
+      "n_unanimous": 1385,
+      "frac_unanimous": 0.6048034934497817,
+      "frac_unanimous_of_parsed": 0.6739659367396593
+    },
+    {
+      "split": "all",
+      "condition": "cue_gold",
+      "n_cells": 2290,
+      "n_all_parsed": 2110,
+      "n_unanimous": 1645,
+      "frac_unanimous": 0.7183406113537117,
+      "frac_unanimous_of_parsed": 0.7796208530805687
+    },
+    {
+      "split": "all",
+      "condition": "cue_dist",
+      "n_cells": 2290,
+      "n_all_parsed": 2091,
+      "n_unanimous": 1322,
+      "frac_unanimous": 0.5772925764192139,
+      "frac_unanimous_of_parsed": 0.632233381157341
+    }
+  ],
+  "probes": [
+    {
+      "probe": "bias_rm_answer",
+      "auc_overall": 0.7733313701482203,
+      "n_eval": 1326,
+      "n_pos": 321,
+      "n_neg": 1005,
+      "filtered_layers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "by_none_unanimous": [
+        {
+          "by": "none-unanimous",
+          "value": true,
+          "auc": 0.8283881686846646,
+          "n": 783,
+          "n_pos": 147,
+          "n_neg": 636
+        },
+        {
+          "by": "none-unanimous",
+          "value": false,
+          "auc": 0.6920682386900497,
+          "n": 543,
+          "n_pos": 174,
+          "n_neg": 369
+        }
+      ]
+    },
+    {
+      "probe": "deception_rm_preyesno",
+      "auc_overall": 0.47200706807284226,
+      "n_eval": 1326,
+      "n_pos": 754,
+      "n_neg": 572,
+      "filtered_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "by_none_unanimous": [
+        {
+          "by": "none-unanimous",
+          "value": true,
+          "auc": 0.46784855769230765,
+          "n": 783,
+          "n_pos": 455,
+          "n_neg": 328
+        },
+        {
+          "by": "none-unanimous",
+          "value": false,
+          "auc": 0.4807122615000823,
+          "n": 543,
+          "n_pos": 299,
+          "n_neg": 244
+        }
+      ]
+    },
+    {
+      "probe": "deception_yes_rm_preyesno",
+      "auc_overall": 0.6889449111019146,
+      "n_eval": 836,
+      "n_pos": 634,
+      "n_neg": 202,
+      "filtered_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "by_none_unanimous": [
+        {
+          "by": "none-unanimous",
+          "value": true,
+          "auc": 0.7410503422016579,
+          "n": 490,
+          "n_pos": 399,
+          "n_neg": 91
+        },
+        {
+          "by": "none-unanimous",
+          "value": false,
+          "auc": 0.621994201648457,
+          "n": 346,
+          "n_pos": 235,
+          "n_neg": 111
+        }
+      ]
+    },
+    {
+      "probe": "deception_no_rm_preyesno",
+      "auc_overall": 0.6422487872487873,
+      "n_eval": 490,
+      "n_pos": 120,
+      "n_neg": 370,
+      "filtered_layers": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        27,
+        29,
+        30,
+        31
+      ],
+      "by_none_unanimous": [
+        {
+          "by": "none-unanimous",
+          "value": true,
+          "auc": 0.6719612138915938,
+          "n": 293,
+          "n_pos": 56,
+          "n_neg": 237
+        },
+        {
+          "by": "none-unanimous",
+          "value": false,
+          "auc": 0.580804475130133,
+          "n": 197,
+          "n_pos": 64,
+          "n_neg": 133
+        }
+      ]
+    },
+    {
+      "probe": "bias_followed_rm_answer",
+      "auc_overall": 0.6916837720479535,
+      "n_eval": 1106,
+      "n_pos": 449,
+      "n_neg": 657,
+      "filtered_layers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "by_none_unanimous": [
+        {
+          "by": "none-unanimous",
+          "value": true,
+          "auc": 0.7594376230171761,
+          "n": 612,
+          "n_pos": 223,
+          "n_neg": 389
+        },
+        {
+          "by": "none-unanimous",
+          "value": false,
+          "auc": 0.604772135610841,
+          "n": 494,
+          "n_pos": 226,
+          "n_neg": 268
+        }
+      ]
+    }
+  ]
+}

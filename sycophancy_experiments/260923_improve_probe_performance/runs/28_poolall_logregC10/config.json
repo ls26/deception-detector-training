@@ -1,0 +1,104 @@
+{
+  "domain_dir": "/workspace/sycophancy_experiments/260819_domain_baseline",
+  "followup_dir": "/workspace/sycophancy_experiments/260823_domain_baseline_followup_wordings",
+  "rescore_dir": "/workspace/sycophancy_experiments/260824_rescore",
+  "cue_variant": "random",
+  "probe_sets_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets/pool",
+  "act_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/activations/pool",
+  "weights_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/runs/28_poolall_logregC10/probe_weights",
+  "manifest_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/probe_sets/pool/manifest.json",
+  "metrics_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/runs/28_poolall_logregC10/probe_metrics.json",
+  "runs_dir": "/workspace/sycophancy_experiments/260923_improve_probe_performance/runs",
+  "previous_probes_none_unanimous_path": "/workspace/sycophancy_experiments/260923_improve_probe_performance/previous_probes_none_unanimous.json",
+  "datasets": [
+    "bias",
+    "deception",
+    "bias_followed"
+  ],
+  "definitions": [
+    "rm"
+  ],
+  "splits": [
+    "train",
+    "eval"
+  ],
+  "probe_kinds": [
+    "bias",
+    "deception",
+    "deception_yes",
+    "deception_no",
+    "bias_followed"
+  ],
+  "positions": {
+    "bias": [
+      "answer"
+    ],
+    "bias_followed": [
+      "answer"
+    ],
+    "deception": [
+      "preyesno"
+    ]
+  },
+  "train_samples_per_prompt": null,
+  "eval_samples_per_prompt": 1,
+  "pool_seed": 53,
+  "n_train_per_class": {
+    "bias": 400,
+    "deception_yes": 200,
+    "deception_no": 200,
+    "bias_followed": 400
+  },
+  "balance_conditions": true,
+  "sample_seed": 53,
+  "train_filter": "none",
+  "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "n_layers": 32,
+  "dtype": "torch.bfloat16",
+  "attn_implementation": "sdpa",
+  "device": "cuda",
+  "batch_size": 16,
+  "act_save_dtype": "torch.bfloat16",
+  "limit_per_class": null,
+  "detector_arch": "linear-probe",
+  "normalize_input": "unit_norm",
+  "train_cfg": {
+    "batch_size": 32,
+    "grad_accum_steps": 1,
+    "max_steps": 1000,
+    "eval_steps": 30,
+    "num_epochs": 1,
+    "steps_per_logging": 10,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0,
+    "clip_grad_norm": 1.0,
+    "warmup_steps": 0,
+    "scheduler": "constant",
+    "checkpoint_interval": 10,
+    "resume_from_checkpoint": true,
+    "device": "cuda",
+    "seed": 42
+  },
+  "probe_fit": "logreg",
+  "lda_shrinkage": 0.1,
+  "logreg_C": 10,
+  "layer_selection": "loss_threshold",
+  "layer_k": 8,
+  "layer_loss_threshold": 0.6,
+  "center_by_question": false,
+  "holdout_category": null,
+  "eval_aggregator_method": "mean",
+  "use_sklearn": false,
+  "probe_seed": 0,
+  "probe_seeds": [
+    0,
+    1,
+    2
+  ],
+  "train_draw_per_class": {
+    "bias": 1454,
+    "deception_yes": 964,
+    "deception_no": 490,
+    "bias_followed": 1454
+  }
+}
