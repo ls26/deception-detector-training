@@ -30,6 +30,8 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 260924 | [`260924_probe_cv_selection`](../sycophancy_experiments/260924_probe_cv_selection/) | Recipe chosen by CV over train questions (lr, steps, 4-layer band); headline = AUC of the mean per-layer sigmoid. `rm` bias 0.840, `bias_followed` 0.788, said-Yes 0.793, said-No 0.749. |
+| 260923 | [`260923_improve_probe_performance`](../sycophancy_experiments/260923_improve_probe_performance/) | 33 probe-side rounds on 260826's probes, chosen on eval. Fitting the trainer (lr 0.01 or logreg) and the largest balanced draw raise every probe with signal; filter, other tokens, pooling, centering, MLP do not. |
 | 260826 | [`260826_probe_training_new`](../sycophancy_experiments/260826_probe_training_new/) | Probe pipeline rebuilt; 20 probes incl. stratified deception and `bias_followed`; majority-of-3 labels. Bias 0.773 / 0.827; stratified deception 0.64–0.93 with the label coinciding with bias. |
 | 260825 | [`260825_grpo_det0`](../sycophancy_experiments/260825_grpo_det0/) | First GRPO run, no detector penalty. Eval accuracy 0.773 → 0.837 via cue-following. |
 | 260825 | [`260825_probe_training`](../sycophancy_experiments/260825_probe_training/) | First probes. Bias readable (0.767 / 0.800); deception 0.73 is the probe reading the sampled self-report token. |
@@ -89,15 +91,80 @@ The entry named in each decision holds the evidence.
 
 **Does a linear bias signal and a linear deception signal exist in the activations?**
 Bias: probes at the answer token score 0.77 (`rm`) / 0.83 (`swap`) on all rows, and
-0.69 / 0.68 when both classes followed the cue (260826). Deception: at the self-report
-token the probe reads which token was sampled (260825); with the self-report held fixed by
-construction, the four strata score 0.64–0.93 at the token before it, but inside a stratum
-the label coincides with bias (260826). A deception signal separate from bias has not been
-demonstrated.
+0.69 / 0.68 when both classes followed the cue (260826); with the CV-chosen recipe and the
+combined-score metric, `rm` bias is 0.840 and `bias_followed` 0.788 (260924). Deception:
+at the self-report token the probe reads which token was sampled (260825); with the
+self-report held fixed by construction, the four strata score 0.64–0.93 at the token
+before it, but inside a stratum the label coincides with bias (260826); the `rm` strata
+reach 0.793 (said-Yes) and 0.749 (said-No) under the 260924 recipe. A deception signal
+separate from bias has not been demonstrated.
 
 ---
 
 ## Experiments
+
+### 260924 — Probe recipe chosen by cross-validation; combined-score headline; high-confidence variant
+
+[`sycophancy_experiments/260924_probe_cv_selection/`](../sycophancy_experiments/260924_probe_cv_selection/)
+
+**Setup:**
+- 260923's five `rm` probes, tokens and `pool` activations (largest cue-balanced draw);
+  no new extraction. The unchanged pipeline trainer (AdamW). The headline AUC is now the
+  AUC of the mean per-layer sigmoid over the selected layers, the score the RL pipeline
+  logs and penalizes; earlier rounds are re-scored from saved weights under the same metric.
+- Learning rate {0.003, 0.01, 0.03} × steps {1000, 2000, 4000} and a contiguous layer
+  band chosen per probe by 5-fold GroupKFold over train question ids, on the out-of-fold
+  AUC; eval used once per recorded round, never for selection.
+- A high-confidence variant: train on `pool_nu` and evaluate only on questions whose
+  three no-cue rollouts agree (eval rows 783 / 612 / 783 / 490 / 293), steps rescaled to
+  equal epochs.
+
+**Results:**
+- Chosen recipe: 4000 steps, lr 0.01 (bias family) / 0.03 (deception), 4-layer bands
+  13–16 (bias, `bias_followed`), 14–17 (deception, said-Yes), 15–18 (said-No). Eval:
+  bias 0.840, `bias_followed` 0.788, deception 0.590, said-Yes 0.793, said-No 0.749,
+  vs 260923's round 31 re-scored 0.818 / 0.745 / 0.576 / 0.760 / 0.706.
+- At equal lr and steps, the CV band scores +0.013 / +0.026 / 0.000 / +0.012 / +0.023
+  above the pipeline's train-loss layer rule; lr 0.03 vs 0.01 under that rule is
+  +0.004 to +0.011.
+- Out-of-fold AUC rises with steps at every lr for the two stratified deception probes,
+  largest at (0.03, 4000); the bias family is within 0.006 across the top of the grid.
+- OOF prediction and eval result agree within 0.012 for `bias_followed` and the two
+  stratified probes at every stage; OOF is 0.04 above eval for bias.
+- High-confidence variant on the unanimous eval rows: `pool_nu`-trained 0.889 / 0.850 /
+  0.617 / 0.831 / 0.767 vs the `pool`-trained probes on the same rows 0.903 / 0.871 /
+  0.601 / 0.832 / 0.796. The four probes other than deception score 0.05–0.09 higher on
+  those rows than on all eval rows.
+- A single shared band 14–17 is within 0.003 OOF of each probe's own band.
+
+### 260923 — 33 probe-side rounds on 260826's probes, chosen on eval
+
+[`sycophancy_experiments/260923_improve_probe_performance/`](../sycophancy_experiments/260923_improve_probe_performance/)
+
+**Setup:**
+- Autonomous run over 260826's five `rm` probes (bias, `bias_followed`, deception,
+  said-Yes, said-No), one change per round, three seeds, eval AUC (mean of per-layer
+  AUCs over the layers passing the train-loss filter) as the criterion. No validation
+  split; every choice was made on eval. Record in the folder's `runs.md`, `SUMMARY.md`.
+- Variants tried: trainer learning rate and steps, sklearn logistic regression, LDA and
+  mean-difference probes, train draws of 100 / 200 / 400 / all per class (`pool`, up to
+  1454 per class), the no-cue-unanimity train filter (`pool_nu`), other tokens, mean
+  pooling, per-question centering, an MLP probe, eval-selected layer sets, a category
+  holdout.
+
+**Results:**
+- Round 01 reproduced 260826 exactly: 0.774 / 0.705 / 0.475 / 0.689 / 0.644.
+- With the 260826 trainer setting (lr 3e-3, 1000 steps) train AUC was 0.62–0.87 and no
+  deception-probe layer reached train loss 0.6; lr 0.01 or a converged logistic fit gave
+  said-Yes +0.045 and said-No +0.02–0.04 on the same data.
+- Train size 100 → 200 → 400 → all per class: bias 0.750 → 0.798, `bias_followed`
+  0.666 → 0.725, said-Yes 0.690 → 0.751, said-No 0.635 → 0.700.
+- Best rounds without eval-selected layers: round 10 (logreg, `pool`) 0.798 / 0.725 /
+  0.566 / 0.751 / 0.700; round 31 (AdamW lr 0.01, `pool`) 0.795 / 0.725 / 0.554 /
+  0.747 / 0.704; round 15 (LDA) equal on the headline.
+- The unanimity train filter, other tokens, mean pooling, centering, the MLP probe, and
+  C / shrinkage changes were within noise or worse. Eval-selected layer sets (rounds
+  16–18, 32) added 0.03–0.06 in-sample, on layers 13–20.
 
 ### 260826 — Probe training rebuilt as a pipeline; stratified deception probes; majority-of-3 labels
 
