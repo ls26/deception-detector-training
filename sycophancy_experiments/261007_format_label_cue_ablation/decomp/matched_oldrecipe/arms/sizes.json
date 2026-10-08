@@ -1,0 +1,237 @@
+{
+ "spec_hash": "10b44b32b4c2",
+ "per_probe": {
+  "bias": {
+   "matched_n_per_class": 454,
+   "rule": "matched",
+   "per_arm": {
+    "ref_cot": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 244,
+       "cue_dist": 497
+      },
+      "no bias": {
+       "cue_gold": 1297,
+       "cue_dist": 1044
+      }
+     },
+     "full_n_per_class": 488
+    },
+    "nocot_sampled": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 371,
+       "cue_dist": 660
+      },
+      "no bias": {
+       "cue_gold": 1218,
+       "cue_dist": 930
+      }
+     },
+     "full_n_per_class": 742
+    },
+    "nocot_logprob": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 366,
+       "cue_dist": 659
+      },
+      "no bias": {
+       "cue_gold": 1208,
+       "cue_dist": 912
+      }
+     },
+     "full_n_per_class": 732
+    },
+    "bio_cot": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 227,
+       "cue_dist": 375
+      },
+      "no bias": {
+       "cue_gold": 1316,
+       "cue_dist": 1164
+      }
+     },
+     "full_n_per_class": 454
+    }
+   }
+  },
+  "bias_followed": {
+   "matched_n_per_class": 626,
+   "rule": "matched",
+   "per_arm": {
+    "ref_cot": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 328,
+       "cue_dist": 700
+      },
+      "no bias": {
+       "cue_gold": 1144,
+       "cue_dist": 383
+      }
+     },
+     "full_n_per_class": 656
+    },
+    "nocot_sampled": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 396,
+       "cue_dist": 733
+      },
+      "no bias": {
+       "cue_gold": 1128,
+       "cue_dist": 454
+      }
+     },
+     "full_n_per_class": 792
+    },
+    "nocot_logprob": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 366,
+       "cue_dist": 659
+      },
+      "no bias": {
+       "cue_gold": 1121,
+       "cue_dist": 447
+      }
+     },
+     "full_n_per_class": 732
+    },
+    "bio_cot": {
+     "distinct_per_cell": {
+      "bias": {
+       "cue_gold": 313,
+       "cue_dist": 632
+      },
+      "no bias": {
+       "cue_gold": 1146,
+       "cue_dist": 380
+      }
+     },
+     "full_n_per_class": 626
+    }
+   }
+  },
+  "deception_yes": {
+   "matched_n_per_class": 340,
+   "rule": "matched",
+   "per_arm": {
+    "ref_cot": {
+     "distinct_per_cell": {
+      "false admission": {
+       "cue_gold": 751,
+       "cue_dist": 809
+      },
+      "true admission": {
+       "cue_gold": 170,
+       "cue_dist": 356
+      }
+     },
+     "full_n_per_class": 340
+    },
+    "nocot_sampled": {
+     "distinct_per_cell": {
+      "false admission": {
+       "cue_gold": 925,
+       "cue_dist": 774
+      },
+      "true admission": {
+       "cue_gold": 303,
+       "cue_dist": 518
+      }
+     },
+     "full_n_per_class": 606
+    },
+    "nocot_logprob": {
+     "distinct_per_cell": {
+      "false admission": {
+       "cue_gold": 914,
+       "cue_dist": 761
+      },
+      "true admission": {
+       "cue_gold": 301,
+       "cue_dist": 513
+      }
+     },
+     "full_n_per_class": 602
+    },
+    "bio_cot": {
+     "distinct_per_cell": {
+      "false admission": {
+       "cue_gold": 1075,
+       "cue_dist": 962
+      },
+      "true admission": {
+       "cue_gold": 194,
+       "cue_dist": 314
+      }
+     },
+     "full_n_per_class": 388
+    }
+   }
+  },
+  "deception_no": {
+   "matched_n_per_class": 66,
+   "rule": "unmatched",
+   "per_arm": {
+    "ref_cot": {
+     "distinct_per_cell": {
+      "false denial": {
+       "cue_gold": 74,
+       "cue_dist": 141
+      },
+      "true denial": {
+       "cue_gold": 546,
+       "cue_dist": 235
+      }
+     },
+     "full_n_per_class": 148
+    },
+    "nocot_sampled": {
+     "distinct_per_cell": {
+      "false denial": {
+       "cue_gold": 68,
+       "cue_dist": 142
+      },
+      "true denial": {
+       "cue_gold": 293,
+       "cue_dist": 156
+      }
+     },
+     "full_n_per_class": 136
+    },
+    "nocot_logprob": {
+     "distinct_per_cell": {
+      "false denial": {
+       "cue_gold": 65,
+       "cue_dist": 146
+      },
+      "true denial": {
+       "cue_gold": 294,
+       "cue_dist": 151
+      }
+     },
+     "full_n_per_class": 130
+    },
+    "bio_cot": {
+     "distinct_per_cell": {
+      "false denial": {
+       "cue_gold": 33,
+       "cue_dist": 61
+      },
+      "true denial": {
+       "cue_gold": 241,
+       "cue_dist": 202
+      }
+     },
+     "full_n_per_class": 66
+    }
+   }
+  }
+ }
+}

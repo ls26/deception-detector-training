@@ -1,0 +1,99 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "config": {
+    "spec_hash": "10b44b32b4c2",
+    "arm": "nocot_logprob",
+    "arms_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms",
+    "datasets": [
+      "bias",
+      "deception",
+      "bias_followed"
+    ],
+    "definitions": [
+      "rm"
+    ],
+    "splits": [
+      "train",
+      "eval"
+    ],
+    "probe_kinds": [
+      "bias",
+      "bias_followed",
+      "deception",
+      "deception_yes",
+      "deception_no"
+    ],
+    "train_samples_per_prompt": 1,
+    "eval_samples_per_prompt": 1,
+    "pool_seed": 53,
+    "n_train_per_class": {
+      "bias": 454,
+      "deception_yes": 340,
+      "deception_no": 130,
+      "bias_followed": 626
+    },
+    "sample_seed": 53,
+    "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "n_layers": 32,
+    "dtype": "torch.bfloat16",
+    "attn_implementation": "sdpa",
+    "device": "cuda",
+    "batch_size": 16,
+    "act_save_dtype": "torch.bfloat16",
+    "limit_per_class": null,
+    "detector_arch": "linear-probe",
+    "normalize_input": "unit_norm",
+    "train_cfg": {
+      "batch_size": 32,
+      "grad_accum_steps": 1,
+      "max_steps": 2000,
+      "eval_steps": 30,
+      "num_epochs": 1,
+      "steps_per_logging": 10,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "clip_grad_norm": 1.0,
+      "warmup_steps": 0,
+      "scheduler": "constant",
+      "checkpoint_interval": 10,
+      "resume_from_checkpoint": true,
+      "device": "cuda",
+      "seed": 42
+    },
+    "layer_selection": "loss_threshold",
+    "layer_loss_threshold": 0.6,
+    "layer_band": null,
+    "combined_score": "mean_sigmoid",
+    "per_probe_overrides": {},
+    "eval_aggregator_method": "mean",
+    "probe_seed": 0,
+    "cv_folds": 5,
+    "cv_seed": 0,
+    "cv_learning_rates": [
+      0.01,
+      0.03
+    ],
+    "cv_max_steps": [
+      2000,
+      4000
+    ],
+    "cv_band_widths": [
+      4
+    ],
+    "probe_sets_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms/nocot_logprob/probe_sets",
+    "act_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms/nocot_logprob/activations",
+    "cv_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/cv/nocot_logprob",
+    "run_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/runs/nocot_logprob"
+  },
+  "probes": [
+    "deception_rm_preyesno"
+  ],
+  "lrs": [
+    0.01,
+    0.03
+  ],
+  "steps": [
+    2000,
+    4000
+  ]
+}

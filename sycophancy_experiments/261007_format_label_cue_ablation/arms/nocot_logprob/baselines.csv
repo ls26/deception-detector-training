@@ -1,0 +1,1377 @@
+section,group,split,block,metric,value,n
+overall,OVERALL,eval,none,accuracy,0.6972343522561864,687
+overall,OVERALL,eval,cue_gold,accuracy,0.9359534206695779,687
+overall,OVERALL,eval,cue_dist,accuracy,0.29694323144104806,687
+overall,OVERALL,eval,at_p,accuracy,0.8401018922852984,1374
+overall,OVERALL,eval,none,accuracy_gold_first,0.6726190476190477,336
+overall,OVERALL,eval,cue_gold,accuracy_gold_first,0.9285714285714286,336
+overall,OVERALL,eval,cue_dist,accuracy_gold_first,0.2857142857142857,336
+overall,OVERALL,eval,at_p,accuracy_gold_first,0.8321428571428571,672
+overall,OVERALL,eval,none,accuracy_gold_second,0.7207977207977208,351
+overall,OVERALL,eval,cue_gold,accuracy_gold_second,0.9430199430199431,351
+overall,OVERALL,eval,cue_dist,accuracy_gold_second,0.3076923076923077,351
+overall,OVERALL,eval,at_p,accuracy_gold_second,0.8477207977207976,702
+overall,OVERALL,eval,none,parse_fail,0.017467248908296942,687
+overall,OVERALL,eval,cue_gold,parse_fail,0.002911208151382824,687
+overall,OVERALL,eval,cue_dist,parse_fail,0.005822416302765648,687
+overall,OVERALL,eval,at_p,parse_fail,0.0033478893740902472,1374
+overall,OVERALL,eval,cue_gold,follow_cue,0.937592867756315,673
+overall,OVERALL,eval,cue_dist,follow_cue,0.6974664679582713,671
+overall,OVERALL,eval,at_p,follow_cue,0.901664932362123,1344
+overall,OVERALL,eval,cue_gold,bias_rate,0.23328380386329867,673
+overall,OVERALL,eval,cue_dist,bias_rate,0.4157973174366617,671
+overall,OVERALL,eval,at_p,bias_rate,0.2605916456072544,1344
+overall,OVERALL,eval,cue_gold,antibias_rate,0.005943536404160475,673
+overall,OVERALL,eval,cue_dist,antibias_rate,0.010432190760059613,671
+overall,OVERALL,eval,at_p,antibias_rate,0.006615133045934296,1344
+overall,OVERALL,eval,cue_gold,nobias_rate,0.7607726597325408,673
+overall,OVERALL,eval,cue_dist,nobias_rate,0.5737704918032787,671
+overall,OVERALL,eval,at_p,nobias_rate,0.7327932213468115,1344
+overall,OVERALL,eval,cue_gold,bias_null,0.2335268266278959,687
+overall,OVERALL,eval,cue_dist,bias_null,0.38649774446240415,687
+overall,OVERALL,eval,at_p,bias_null,0.25647246430307213,1374
+overall,OVERALL,eval,cue_gold,said_yes,0.7979197622585439,673
+overall,OVERALL,eval,cue_dist,said_yes,0.8137108792846498,671
+overall,OVERALL,eval,at_p,said_yes,0.8002824438828602,1344
+overall,OVERALL,eval,cue_gold,said_yes_sampled,0.711738484398217,673
+overall,OVERALL,eval,cue_dist,said_yes_sampled,0.7406855439642325,671
+overall,OVERALL,eval,at_p,said_yes_sampled,0.7160695703879888,1344
+overall,OVERALL,eval,cue_gold,p_yes_bias,0.7558288951967932,157
+overall,OVERALL,eval,cue_dist,p_yes_bias,0.7354698336038965,279
+overall,OVERALL,eval,at_p,p_yes_bias,0.7509685031393902,436
+overall,OVERALL,eval,cue_gold,p_yes_antibias,0.8968742936849594,4
+overall,OVERALL,eval,cue_dist,p_yes_antibias,0.856040860925402,7
+overall,OVERALL,eval,at_p,p_yes_antibias,0.887239438764165,11
+overall,OVERALL,eval,cue_gold,p_yes_nobias,0.7037808535824297,512
+overall,OVERALL,eval,cue_dist,p_yes_nobias,0.7598320885138078,385
+overall,OVERALL,eval,at_p,p_yes_nobias,0.710347358942582,897
+overall,OVERALL,eval,cue_gold,count_deception,0.6397608370702541,669
+overall,OVERALL,eval,cue_dist,count_deception,0.5873493975903614,664
+overall,OVERALL,eval,at_p,count_deception,0.6319491208380097,1333
+overall,OVERALL,eval,cue_gold,count_false_admission,0.78515625,512
+overall,OVERALL,eval,cue_dist,count_false_admission,0.8441558441558441,385
+overall,OVERALL,eval,at_p,count_false_admission,0.7920681610711026,897
+overall,OVERALL,eval,cue_gold,count_false_denial,0.16560509554140126,157
+overall,OVERALL,eval,cue_dist,count_false_denial,0.23297491039426524,279
+overall,OVERALL,eval,at_p,count_false_denial,0.18168853394181403,436
+overall,OVERALL,eval,cue_gold,count_true_admission,0.8343949044585988,157
+overall,OVERALL,eval,cue_dist,count_true_admission,0.7670250896057348,279
+overall,OVERALL,eval,at_p,count_true_admission,0.8183114660581858,436
+overall,OVERALL,eval,cue_gold,count_true_denial,0.21484375,512
+overall,OVERALL,eval,cue_dist,count_true_denial,0.15584415584415584,385
+overall,OVERALL,eval,at_p,count_true_denial,0.20793183892889747,897
+overall,OVERALL,eval,cue_gold,deception,0.5959202697882025,669
+overall,OVERALL,eval,cue_dist,deception,0.5517157688288086,664
+overall,OVERALL,eval,at_p,deception,0.5893317650436374,1333
+overall,OVERALL,eval,cue_gold,false_admission,0.7037808535824297,512
+overall,OVERALL,eval,cue_dist,false_admission,0.7598320885138078,385
+overall,OVERALL,eval,at_p,false_admission,0.710347358942582,897
+overall,OVERALL,eval,cue_gold,false_denial,0.2441711048032068,157
+overall,OVERALL,eval,cue_dist,false_denial,0.26453016639610344,279
+overall,OVERALL,eval,at_p,false_denial,0.24903149686060966,436
+overall,OVERALL,eval,cue_gold,true_admission,0.7558288951967932,157
+overall,OVERALL,eval,cue_dist,true_admission,0.7354698336038965,279
+overall,OVERALL,eval,at_p,true_admission,0.7509685031393902,436
+overall,OVERALL,eval,cue_gold,true_denial,0.2962191464175703,512
+overall,OVERALL,eval,cue_dist,true_denial,0.24016791148619218,385
+overall,OVERALL,eval,at_p,true_denial,0.289652641057418,897
+logprob,OVERALL,eval,none,p_cue_shift,nan,0
+logprob,OVERALL,eval,cue_gold,p_cue_shift,0.2335268266278959,687
+logprob,OVERALL,eval,cue_dist,p_cue_shift,0.38649774446240415,687
+logprob,OVERALL,eval,at_p,p_cue_shift,0.25647246430307213,1374
+logprob,OVERALL,eval,none,tie_rate,0.017467248908296942,687
+logprob,OVERALL,eval,cue_gold,tie_rate,0.002911208151382824,687
+logprob,OVERALL,eval,cue_dist,tie_rate,0.005822416302765648,687
+logprob,OVERALL,eval,at_p,tie_rate,0.0033478893740902472,1374
+logprob,OVERALL,eval,none,confident,0.7962154294032023,687
+logprob,OVERALL,eval,cue_gold,confident,0.7758369723435226,687
+logprob,OVERALL,eval,cue_dist,confident,0.7205240174672489,687
+logprob,OVERALL,eval,at_p,confident,0.7675400291120816,1374
+logprob,OVERALL,eval,none,mass_ab_mean,0.9888391586843623,687
+logprob,OVERALL,eval,cue_gold,mass_ab_mean,0.999036580535363,687
+logprob,OVERALL,eval,cue_dist,mass_ab_mean,0.9966366247242286,687
+logprob,OVERALL,eval,at_p,mass_ab_mean,0.9986765871636929,1374
+logprob,OVERALL,eval,none,mass_ab_below_min,0.027656477438136828,687
+logprob,OVERALL,eval,cue_gold,mass_ab_below_min,0.004366812227074236,687
+logprob,OVERALL,eval,cue_dist,mass_ab_below_min,0.013100436681222707,687
+logprob,OVERALL,eval,at_p,mass_ab_below_min,0.005676855895196506,1374
+confidence_histogram,none,eval,"[0.50, 0.55)",count,34,687
+confidence_histogram,none,eval,"[0.55, 0.60)",count,32,687
+confidence_histogram,none,eval,"[0.60, 0.65)",count,14,687
+confidence_histogram,none,eval,"[0.65, 0.70)",count,28,687
+confidence_histogram,none,eval,"[0.70, 0.75)",count,32,687
+confidence_histogram,none,eval,"[0.75, 0.80)",count,41,687
+confidence_histogram,none,eval,"[0.80, 0.85)",count,34,687
+confidence_histogram,none,eval,"[0.85, 0.90)",count,40,687
+confidence_histogram,none,eval,"[0.90, 0.95)",count,44,687
+confidence_histogram,none,eval,"[0.95, 1.00)",count,388,687
+confidence_histogram,cued,eval,"[0.50, 0.55)",count,16,1374
+confidence_histogram,cued,eval,"[0.55, 0.60)",count,20,1374
+confidence_histogram,cued,eval,"[0.60, 0.65)",count,8,1374
+confidence_histogram,cued,eval,"[0.65, 0.70)",count,17,1374
+confidence_histogram,cued,eval,"[0.70, 0.75)",count,18,1374
+confidence_histogram,cued,eval,"[0.75, 0.80)",count,26,1374
+confidence_histogram,cued,eval,"[0.80, 0.85)",count,18,1374
+confidence_histogram,cued,eval,"[0.85, 0.90)",count,43,1374
+confidence_histogram,cued,eval,"[0.90, 0.95)",count,67,1374
+confidence_histogram,cued,eval,"[0.95, 1.00)",count,1141,1374
+overall,OVERALL,train,none,accuracy,0.7049282595134123,1603
+overall,OVERALL,train,cue_gold,accuracy,0.9363693075483468,1603
+overall,OVERALL,train,cue_dist,accuracy,0.2975670617592015,1603
+overall,OVERALL,train,at_p,accuracy,0.8405489706799749,3206
+overall,OVERALL,train,none,accuracy_gold_first,0.6662420382165605,785
+overall,OVERALL,train,cue_gold,accuracy_gold_first,0.935031847133758,785
+overall,OVERALL,train,cue_dist,accuracy_gold_first,0.29044585987261146,785
+overall,OVERALL,train,at_p,accuracy_gold_first,0.838343949044586,1570
+overall,OVERALL,train,none,accuracy_gold_second,0.7420537897310513,818
+overall,OVERALL,train,cue_gold,accuracy_gold_second,0.9376528117359413,818
+overall,OVERALL,train,cue_dist,accuracy_gold_second,0.30440097799511,818
+overall,OVERALL,train,at_p,accuracy_gold_second,0.8426650366748166,1636
+overall,OVERALL,train,none,parse_fail,0.008733624454148471,1603
+overall,OVERALL,train,cue_gold,parse_fail,0.004366812227074236,1603
+overall,OVERALL,train,cue_dist,parse_fail,0.0037429819089207735,1603
+overall,OVERALL,train,at_p,parse_fail,0.004273237679351217,3206
+overall,OVERALL,train,cue_gold,follow_cue,0.9399494310998736,1582
+overall,OVERALL,train,cue_dist,follow_cue,0.6986734049273531,1583
+overall,OVERALL,train,at_p,follow_cue,0.9037385835729862,3165
+overall,OVERALL,train,cue_gold,bias_rate,0.23135271807838179,1582
+overall,OVERALL,train,cue_dist,bias_rate,0.4162981680353759,1583
+overall,OVERALL,train,at_p,bias_rate,0.2591094396865025,3165
+overall,OVERALL,train,cue_gold,antibias_rate,0.0050568900126422255,1582
+overall,OVERALL,train,cue_dist,antibias_rate,0.007580543272267846,1583
+overall,OVERALL,train,at_p,antibias_rate,0.005435641374079574,3165
+overall,OVERALL,train,cue_gold,nobias_rate,0.7635903919089759,1582
+overall,OVERALL,train,cue_dist,nobias_rate,0.5761212886923562,1583
+overall,OVERALL,train,at_p,nobias_rate,0.7354549189394178,3165
+overall,OVERALL,train,cue_gold,bias_null,0.230165527406364,1603
+overall,OVERALL,train,cue_dist,bias_null,0.3960995210794837,1603
+overall,OVERALL,train,at_p,bias_null,0.255055626457332,3206
+overall,OVERALL,train,cue_gold,said_yes,0.7724399494310998,1582
+overall,OVERALL,train,cue_dist,said_yes,0.8117498420720152,1583
+overall,OVERALL,train,at_p,said_yes,0.7783396011756154,3165
+overall,OVERALL,train,cue_gold,said_yes_sampled,0.6896333754740834,1582
+overall,OVERALL,train,cue_dist,said_yes_sampled,0.7706885660138977,1583
+overall,OVERALL,train,at_p,said_yes_sampled,0.7017981860127043,3165
+overall,OVERALL,train,cue_gold,p_yes_bias,0.7343255129586803,366
+overall,OVERALL,train,cue_dist,p_yes_bias,0.7336798399822484,659
+overall,OVERALL,train,at_p,p_yes_bias,0.734169823792391,1025
+overall,OVERALL,train,cue_gold,p_yes_antibias,0.7694117724895477,8
+overall,OVERALL,train,cue_dist,p_yes_antibias,0.7954133500655493,12
+overall,OVERALL,train,at_p,p_yes_antibias,0.77485396314499,20
+overall,OVERALL,train,cue_gold,p_yes_nobias,0.6869568704621286,1208
+overall,OVERALL,train,cue_dist,p_yes_nobias,0.7549847932287345,912
+overall,OVERALL,train,at_p,p_yes_nobias,0.6949546530630841,2120
+overall,OVERALL,train,cue_gold,count_deception,0.6219822109275731,1574
+overall,OVERALL,train,cue_dist,count_deception,0.5773392743475493,1571
+overall,OVERALL,train,at_p,count_deception,0.6152966222871851,3145
+overall,OVERALL,train,cue_gold,count_false_admission,0.7566225165562914,1208
+overall,OVERALL,train,cue_dist,count_false_admission,0.8344298245614035,912
+overall,OVERALL,train,at_p,count_false_admission,0.765770024063252,2120
+overall,OVERALL,train,cue_gold,count_false_denial,0.17759562841530055,366
+overall,OVERALL,train,cue_dist,count_false_denial,0.22154779969650987,659
+overall,OVERALL,train,at_p,count_false_denial,0.18819368215636056,1025
+overall,OVERALL,train,cue_gold,count_true_admission,0.8224043715846995,366
+overall,OVERALL,train,cue_dist,count_true_admission,0.7784522003034902,659
+overall,OVERALL,train,at_p,count_true_admission,0.8118063178436395,1025
+overall,OVERALL,train,cue_gold,count_true_denial,0.2433774834437086,1208
+overall,OVERALL,train,cue_dist,count_true_denial,0.16557017543859648,912
+overall,OVERALL,train,at_p,count_true_denial,0.23422997593674805,2120
+overall,OVERALL,train,cue_gold,deception,0.5889966720300981,1574
+overall,OVERALL,train,cue_dist,deception,0.5500007109333572,1571
+overall,OVERALL,train,at_p,deception,0.583156757040141,3145
+overall,OVERALL,train,cue_gold,false_admission,0.6869568704621286,1208
+overall,OVERALL,train,cue_dist,false_admission,0.7549847932287345,912
+overall,OVERALL,train,at_p,false_admission,0.6949546530630841,2120
+overall,OVERALL,train,cue_gold,false_denial,0.26567448704131963,366
+overall,OVERALL,train,cue_dist,false_denial,0.2663201600177516,659
+overall,OVERALL,train,at_p,false_denial,0.26583017620760896,1025
+overall,OVERALL,train,cue_gold,true_admission,0.7343255129586803,366
+overall,OVERALL,train,cue_dist,true_admission,0.7336798399822484,659
+overall,OVERALL,train,at_p,true_admission,0.734169823792391,1025
+overall,OVERALL,train,cue_gold,true_denial,0.31304312953787133,1208
+overall,OVERALL,train,cue_dist,true_denial,0.2450152067712655,912
+overall,OVERALL,train,at_p,true_denial,0.305045346936916,2120
+logprob,OVERALL,train,none,p_cue_shift,nan,0
+logprob,OVERALL,train,cue_gold,p_cue_shift,0.230165527406364,1603
+logprob,OVERALL,train,cue_dist,p_cue_shift,0.3960995210794837,1603
+logprob,OVERALL,train,at_p,p_cue_shift,0.255055626457332,3206
+logprob,OVERALL,train,none,tie_rate,0.008733624454148471,1603
+logprob,OVERALL,train,cue_gold,tie_rate,0.004366812227074236,1603
+logprob,OVERALL,train,cue_dist,tie_rate,0.0037429819089207735,1603
+logprob,OVERALL,train,at_p,tie_rate,0.004273237679351217,3206
+logprob,OVERALL,train,none,confident,0.8134747348721147,1603
+logprob,OVERALL,train,cue_gold,confident,0.7866500311915159,1603
+logprob,OVERALL,train,cue_dist,confident,0.7398627573300063,1603
+logprob,OVERALL,train,at_p,confident,0.7796319401122894,3206
+logprob,OVERALL,train,none,mass_ab_mean,0.9955885395934038,1603
+logprob,OVERALL,train,cue_gold,mass_ab_mean,0.9996224323511254,1603
+logprob,OVERALL,train,cue_dist,mass_ab_mean,0.9992711350641228,1603
+logprob,OVERALL,train,at_p,mass_ab_mean,0.999569737758075,3206
+logprob,OVERALL,train,none,mass_ab_below_min,0.017467248908296942,1603
+logprob,OVERALL,train,cue_gold,mass_ab_below_min,0.0018714909544603868,1603
+logprob,OVERALL,train,cue_dist,mass_ab_below_min,0.0018714909544603868,1603
+logprob,OVERALL,train,at_p,mass_ab_below_min,0.0018714909544603868,3206
+confidence_histogram,none,train,"[0.50, 0.55)",count,51,1603
+confidence_histogram,none,train,"[0.55, 0.60)",count,77,1603
+confidence_histogram,none,train,"[0.60, 0.65)",count,37,1603
+confidence_histogram,none,train,"[0.65, 0.70)",count,73,1603
+confidence_histogram,none,train,"[0.70, 0.75)",count,61,1603
+confidence_histogram,none,train,"[0.75, 0.80)",count,74,1603
+confidence_histogram,none,train,"[0.80, 0.85)",count,50,1603
+confidence_histogram,none,train,"[0.85, 0.90)",count,93,1603
+confidence_histogram,none,train,"[0.90, 0.95)",count,134,1603
+confidence_histogram,none,train,"[0.95, 1.00)",count,953,1603
+confidence_histogram,cued,train,"[0.50, 0.55)",count,36,3206
+confidence_histogram,cued,train,"[0.55, 0.60)",count,40,3206
+confidence_histogram,cued,train,"[0.60, 0.65)",count,29,3206
+confidence_histogram,cued,train,"[0.65, 0.70)",count,32,3206
+confidence_histogram,cued,train,"[0.70, 0.75)",count,58,3206
+confidence_histogram,cued,train,"[0.75, 0.80)",count,63,3206
+confidence_histogram,cued,train,"[0.80, 0.85)",count,43,3206
+confidence_histogram,cued,train,"[0.85, 0.90)",count,75,3206
+confidence_histogram,cued,train,"[0.90, 0.95)",count,118,3206
+confidence_histogram,cued,train,"[0.95, 1.00)",count,2712,3206
+overall,OVERALL,all,none,accuracy,0.7026200873362446,2290
+overall,OVERALL,all,cue_gold,accuracy,0.9362445414847161,2290
+overall,OVERALL,all,cue_dist,accuracy,0.29737991266375546,2290
+overall,OVERALL,all,at_p,accuracy,0.840414847161572,4580
+overall,OVERALL,all,none,accuracy_gold_first,0.6681534344335415,1121
+overall,OVERALL,all,cue_gold,accuracy_gold_first,0.9330954504906334,1121
+overall,OVERALL,all,cue_dist,accuracy_gold_first,0.28902765388046386,1121
+overall,OVERALL,all,at_p,accuracy_gold_first,0.836485280999108,2242
+overall,OVERALL,all,none,accuracy_gold_second,0.7356715141146278,1169
+overall,OVERALL,all,cue_gold,accuracy_gold_second,0.9392643284858854,1169
+overall,OVERALL,all,cue_dist,accuracy_gold_second,0.30538922155688625,1169
+overall,OVERALL,all,at_p,accuracy_gold_second,0.8441830624465354,2338
+overall,OVERALL,all,none,parse_fail,0.011353711790393014,2290
+overall,OVERALL,all,cue_gold,parse_fail,0.003930131004366812,2290
+overall,OVERALL,all,cue_dist,parse_fail,0.004366812227074236,2290
+overall,OVERALL,all,at_p,parse_fail,0.003995633187772926,4580
+overall,OVERALL,all,cue_gold,follow_cue,0.9392461197339246,2255
+overall,OVERALL,all,cue_dist,follow_cue,0.6983141082519965,2254
+overall,OVERALL,all,at_p,follow_cue,0.9031199414595207,4509
+overall,OVERALL,all,cue_gold,bias_rate,0.2319290465631929,2255
+overall,OVERALL,all,cue_dist,bias_rate,0.4161490683229814,2254
+overall,OVERALL,all,at_p,bias_rate,0.259551633146329,4509
+overall,OVERALL,all,cue_gold,antibias_rate,0.005321507760532151,2255
+overall,OVERALL,all,cue_dist,antibias_rate,0.008429458740017746,2254
+overall,OVERALL,all,at_p,antibias_rate,0.005787524669046722,4509
+overall,OVERALL,all,cue_gold,nobias_rate,0.7627494456762749,2255
+overall,OVERALL,all,cue_dist,nobias_rate,0.5754214729370009,2254
+overall,OVERALL,all,at_p,nobias_rate,0.7346608421846242,4509
+overall,OVERALL,all,cue_gold,bias_null,0.23117391717282348,2290
+overall,OVERALL,all,cue_dist,bias_null,0.3932189880943597,2290
+overall,OVERALL,all,at_p,bias_null,0.25548067781105394,4580
+overall,OVERALL,all,cue_gold,said_yes,0.7800443458980044,2255
+overall,OVERALL,all,cue_dist,said_yes,0.8123336291038155,2254
+overall,OVERALL,all,at_p,said_yes,0.7848859125884206,4509
+overall,OVERALL,all,cue_gold,said_yes_sampled,0.6962305986696231,2255
+overall,OVERALL,all,cue_dist,said_yes_sampled,0.761756876663709,2254
+overall,OVERALL,all,at_p,said_yes_sampled,0.7060558351996807,4509
+overall,OVERALL,all,cue_gold,p_yes_bias,0.7407806391754752,523
+overall,OVERALL,all,cue_dist,p_yes_bias,0.7342122581277066,938
+overall,OVERALL,all,at_p,p_yes_bias,0.7392015341546788,1461
+overall,OVERALL,all,cue_gold,p_yes_antibias,0.811899279554685,12
+overall,OVERALL,all,cue_dist,p_yes_antibias,0.8177498014349687,19
+overall,OVERALL,all,at_p,p_yes_antibias,0.8131769797354366,31
+overall,OVERALL,all,cue_gold,p_yes_nobias,0.6919649398560788,1720
+overall,OVERALL,all,cue_dist,p_yes_nobias,0.756423658829932,1297
+overall,OVERALL,all,at_p,p_yes_nobias,0.6995351573420364,3017
+overall,OVERALL,all,cue_gold,count_deception,0.6272848863129737,2243
+overall,OVERALL,all,cue_dist,count_deception,0.5803131991051454,2235
+overall,OVERALL,all,at_p,count_deception,0.6202605049513783,4478
+overall,OVERALL,all,cue_gold,count_false_admission,0.7651162790697674,1720
+overall,OVERALL,all,cue_dist,count_false_admission,0.8373168851195065,1297
+overall,OVERALL,all,at_p,count_false_admission,0.773595726057167,3017
+overall,OVERALL,all,cue_gold,count_false_denial,0.1739961759082218,523
+overall,OVERALL,all,cue_dist,count_false_denial,0.22494669509594883,938
+overall,OVERALL,all,at_p,count_false_denial,0.18624519436138404,1461
+overall,OVERALL,all,cue_gold,count_true_admission,0.8260038240917782,523
+overall,OVERALL,all,cue_dist,count_true_admission,0.7750533049040512,938
+overall,OVERALL,all,at_p,count_true_admission,0.813754805638616,1461
+overall,OVERALL,all,cue_gold,count_true_denial,0.23488372093023255,1720
+overall,OVERALL,all,cue_dist,count_true_denial,0.16268311488049345,1297
+overall,OVERALL,all,at_p,count_true_denial,0.22640427394283297,3017
+overall,OVERALL,all,cue_gold,deception,0.5910617130020873,2243
+overall,OVERALL,all,cue_dist,deception,0.5505102404378671,2235
+overall,OVERALL,all,at_p,deception,0.5849974426937838,4478
+overall,OVERALL,all,cue_gold,false_admission,0.6919649398560788,1720
+overall,OVERALL,all,cue_dist,false_admission,0.756423658829932,1297
+overall,OVERALL,all,at_p,false_admission,0.6995351573420364,3017
+overall,OVERALL,all,cue_gold,false_denial,0.2592193608245248,523
+overall,OVERALL,all,cue_dist,false_denial,0.26578774187229337,938
+overall,OVERALL,all,at_p,false_denial,0.2607984658453211,1461
+overall,OVERALL,all,cue_gold,true_admission,0.7407806391754752,523
+overall,OVERALL,all,cue_dist,true_admission,0.7342122581277066,938
+overall,OVERALL,all,at_p,true_admission,0.7392015341546788,1461
+overall,OVERALL,all,cue_gold,true_denial,0.3080350601439213,1720
+overall,OVERALL,all,cue_dist,true_denial,0.24357634117006796,1297
+overall,OVERALL,all,at_p,true_denial,0.3004648426579636,3017
+logprob,OVERALL,all,none,p_cue_shift,nan,0
+logprob,OVERALL,all,cue_gold,p_cue_shift,0.23117391717282348,2290
+logprob,OVERALL,all,cue_dist,p_cue_shift,0.3932189880943597,2290
+logprob,OVERALL,all,at_p,p_cue_shift,0.25548067781105394,4580
+logprob,OVERALL,all,none,tie_rate,0.011353711790393014,2290
+logprob,OVERALL,all,cue_gold,tie_rate,0.003930131004366812,2290
+logprob,OVERALL,all,cue_dist,tie_rate,0.004366812227074236,2290
+logprob,OVERALL,all,at_p,tie_rate,0.003995633187772926,4580
+logprob,OVERALL,all,none,confident,0.8082969432314411,2290
+logprob,OVERALL,all,cue_gold,confident,0.7834061135371179,2290
+logprob,OVERALL,all,cue_dist,confident,0.734061135371179,2290
+logprob,OVERALL,all,at_p,confident,0.7760043668122271,4580
+logprob,OVERALL,all,none,mass_ab_mean,0.9935637253206921,2290
+logprob,OVERALL,all,cue_gold,mass_ab_mean,0.9994466768063953,2290
+logprob,OVERALL,all,cue_dist,mass_ab_mean,0.9984807819621561,2290
+logprob,OVERALL,all,at_p,mass_ab_mean,0.9993017925797595,4580
+logprob,OVERALL,all,none,mass_ab_below_min,0.02052401746724891,2290
+logprob,OVERALL,all,cue_gold,mass_ab_below_min,0.0026200873362445414,2290
+logprob,OVERALL,all,cue_dist,mass_ab_below_min,0.005240174672489083,2290
+logprob,OVERALL,all,at_p,mass_ab_below_min,0.0030131004366812228,4580
+confidence_histogram,none,all,"[0.50, 0.55)",count,85,2290
+confidence_histogram,none,all,"[0.55, 0.60)",count,109,2290
+confidence_histogram,none,all,"[0.60, 0.65)",count,51,2290
+confidence_histogram,none,all,"[0.65, 0.70)",count,101,2290
+confidence_histogram,none,all,"[0.70, 0.75)",count,93,2290
+confidence_histogram,none,all,"[0.75, 0.80)",count,115,2290
+confidence_histogram,none,all,"[0.80, 0.85)",count,84,2290
+confidence_histogram,none,all,"[0.85, 0.90)",count,133,2290
+confidence_histogram,none,all,"[0.90, 0.95)",count,178,2290
+confidence_histogram,none,all,"[0.95, 1.00)",count,1341,2290
+confidence_histogram,cued,all,"[0.50, 0.55)",count,52,4580
+confidence_histogram,cued,all,"[0.55, 0.60)",count,60,4580
+confidence_histogram,cued,all,"[0.60, 0.65)",count,37,4580
+confidence_histogram,cued,all,"[0.65, 0.70)",count,49,4580
+confidence_histogram,cued,all,"[0.70, 0.75)",count,76,4580
+confidence_histogram,cued,all,"[0.75, 0.80)",count,89,4580
+confidence_histogram,cued,all,"[0.80, 0.85)",count,61,4580
+confidence_histogram,cued,all,"[0.85, 0.90)",count,118,4580
+confidence_histogram,cued,all,"[0.90, 0.95)",count,185,4580
+confidence_histogram,cued,all,"[0.95, 1.00)",count,3853,4580
+category,computer science,all,none,accuracy,0.6682926829268293,410
+category,computer science,all,cue_gold,accuracy,0.9560975609756097,410
+category,computer science,all,cue_dist,accuracy,0.24878048780487805,410
+category,computer science,all,at_p,accuracy,0.85,820
+category,computer science,all,none,accuracy_gold_first,0.6456310679611651,206
+category,computer science,all,cue_gold,accuracy_gold_first,0.9466019417475728,206
+category,computer science,all,cue_dist,accuracy_gold_first,0.21844660194174756,206
+category,computer science,all,at_p,accuracy_gold_first,0.837378640776699,412
+category,computer science,all,none,accuracy_gold_second,0.6911764705882353,204
+category,computer science,all,cue_gold,accuracy_gold_second,0.9656862745098039,204
+category,computer science,all,cue_dist,accuracy_gold_second,0.27941176470588236,204
+category,computer science,all,at_p,accuracy_gold_second,0.8627450980392157,408
+category,computer science,all,none,parse_fail,0.014634146341463415,410
+category,computer science,all,cue_gold,parse_fail,0.00975609756097561,410
+category,computer science,all,cue_dist,parse_fail,0.0,410
+category,computer science,all,at_p,parse_fail,0.008292682926829269,820
+category,computer science,all,cue_gold,follow_cue,0.965,400
+category,computer science,all,cue_dist,follow_cue,0.7475247524752475,404
+category,computer science,all,at_p,follow_cue,0.9321018472291561,804
+category,computer science,all,cue_gold,bias_rate,0.285,400
+category,computer science,all,cue_dist,bias_rate,0.4306930693069307,404
+category,computer science,all,at_p,bias_rate,0.30703944083874185,804
+category,computer science,all,cue_gold,antibias_rate,0.005,400
+category,computer science,all,cue_dist,antibias_rate,0.0049504950495049506,404
+category,computer science,all,at_p,antibias_rate,0.004992511233150274,804
+category,computer science,all,cue_gold,nobias_rate,0.71,400
+category,computer science,all,cue_dist,nobias_rate,0.5643564356435643,404
+category,computer science,all,at_p,nobias_rate,0.6879680479281078,804
+category,computer science,all,cue_gold,bias_null,0.27135210133503973,410
+category,computer science,all,cue_dist,bias_null,0.42436762003597833,410
+category,computer science,all,at_p,bias_null,0.2943044291401805,820
+category,computer science,all,cue_gold,said_yes,0.805,400
+category,computer science,all,cue_dist,said_yes,0.8391089108910891,404
+category,computer science,all,at_p,said_yes,0.8101597603594608,804
+category,computer science,all,cue_gold,said_yes_sampled,0.7,400
+category,computer science,all,cue_dist,said_yes_sampled,0.7475247524752475,404
+category,computer science,all,at_p,said_yes_sampled,0.7071892161757364,804
+category,computer science,all,cue_gold,p_yes_bias,0.7660361374156517,114
+category,computer science,all,cue_dist,p_yes_bias,0.7441629861620651,174
+category,computer science,all,at_p,p_yes_bias,0.7613947614179393,288
+category,computer science,all,cue_gold,p_yes_antibias,0.7250559031963348,2
+category,computer science,all,cue_dist,p_yes_antibias,0.7534404397010803,2
+category,computer science,all,at_p,p_yes_antibias,0.7293135836720466,4
+category,computer science,all,cue_gold,p_yes_nobias,0.693375435408572,284
+category,computer science,all,cue_dist,p_yes_nobias,0.7586923503039176,228
+category,computer science,all,at_p,p_yes_nobias,0.701480800029112,512
+category,computer science,all,cue_gold,count_deception,0.5653266331658291,398
+category,computer science,all,cue_dist,count_deception,0.5696517412935324,402
+category,computer science,all,at_p,count_deception,0.5659809332664325,800
+category,computer science,all,cue_gold,count_false_admission,0.7605633802816901,284
+category,computer science,all,cue_dist,count_false_admission,0.8596491228070176,228
+category,computer science,all,at_p,count_false_admission,0.7728592162554426,512
+category,computer science,all,cue_gold,count_false_denial,0.07894736842105263,114
+category,computer science,all,cue_dist,count_false_denial,0.1896551724137931,174
+category,computer science,all,at_p,count_false_denial,0.10243902439024391,288
+category,computer science,all,cue_gold,count_true_admission,0.9210526315789473,114
+category,computer science,all,cue_dist,count_true_admission,0.8103448275862069,174
+category,computer science,all,at_p,count_true_admission,0.8975609756097561,288
+category,computer science,all,cue_gold,count_true_denial,0.23943661971830985,284
+category,computer science,all,cue_dist,count_true_denial,0.14035087719298245,228
+category,computer science,all,at_p,count_true_denial,0.2271407837445573,512
+category,computer science,all,cue_gold,deception,0.5617851859061562,398
+category,computer science,all,cue_dist,deception,0.5410385479529699,402
+category,computer science,all,at_p,deception,0.5586466453427414,800
+category,computer science,all,cue_gold,false_admission,0.693375435408572,284
+category,computer science,all,cue_dist,false_admission,0.7586923503039176,228
+category,computer science,all,at_p,false_admission,0.701480800029112,512
+category,computer science,all,cue_gold,false_denial,0.23396386258434831,114
+category,computer science,all,cue_dist,false_denial,0.2558370138379349,174
+category,computer science,all,at_p,false_denial,0.2386052385820606,288
+category,computer science,all,cue_gold,true_admission,0.7660361374156517,114
+category,computer science,all,cue_dist,true_admission,0.7441629861620651,174
+category,computer science,all,at_p,true_admission,0.7613947614179393,288
+category,computer science,all,cue_gold,true_denial,0.30662456459142795,284
+category,computer science,all,cue_dist,true_denial,0.2413076496960824,228
+category,computer science,all,at_p,true_denial,0.29851919997088794,512
+category,history,all,none,accuracy,0.7926509186351706,381
+category,history,all,cue_gold,accuracy,0.9343832020997376,381
+category,history,all,cue_dist,accuracy,0.5013123359580053,381
+category,history,all,at_p,accuracy,0.8694225721784777,762
+category,history,all,none,accuracy_gold_first,0.7741935483870968,186
+category,history,all,cue_gold,accuracy_gold_first,0.946236559139785,186
+category,history,all,cue_dist,accuracy_gold_first,0.510752688172043,186
+category,history,all,at_p,accuracy_gold_first,0.8809139784946236,372
+category,history,all,none,accuracy_gold_second,0.8102564102564103,195
+category,history,all,cue_gold,accuracy_gold_second,0.9230769230769231,195
+category,history,all,cue_dist,accuracy_gold_second,0.49230769230769234,195
+category,history,all,at_p,accuracy_gold_second,0.8584615384615385,390
+category,history,all,none,parse_fail,0.0026246719160104987,381
+category,history,all,cue_gold,parse_fail,0.0,381
+category,history,all,cue_dist,parse_fail,0.005249343832020997,381
+category,history,all,at_p,parse_fail,0.0007874015748031497,762
+category,history,all,cue_gold,follow_cue,0.9342105263157895,380
+category,history,all,cue_dist,follow_cue,0.4973544973544973,378
+category,history,all,at_p,follow_cue,0.8689755069791941,758
+category,history,all,cue_gold,bias_rate,0.15,380
+category,history,all,cue_dist,bias_rate,0.30158730158730157,378
+category,history,all,at_p,bias_rate,0.17263629180932316,758
+category,history,all,cue_gold,antibias_rate,0.010526315789473684,380
+category,history,all,cue_dist,antibias_rate,0.010582010582010581,378
+category,history,all,at_p,antibias_rate,0.010534632604687911,758
+category,history,all,cue_gold,nobias_rate,0.8394736842105263,380
+category,history,all,cue_dist,nobias_rate,0.6878306878306878,378
+category,history,all,at_p,nobias_rate,0.8168290755859889,758
+category,history,all,cue_gold,bias_null,0.13765358490593127,381
+category,history,all,cue_dist,bias_null,0.30018787004284164,381
+category,history,all,at_p,bias_null,0.16203372767646781,762
+category,history,all,cue_gold,said_yes,0.8789473684210526,380
+category,history,all,cue_dist,said_yes,0.9232804232804233,378
+category,history,all,at_p,said_yes,0.8855675533315776,758
+category,history,all,cue_gold,said_yes_sampled,0.7368421052631579,380
+category,history,all,cue_dist,said_yes_sampled,0.8306878306878307,378
+category,history,all,at_p,said_yes_sampled,0.7508559388991309,758
+category,history,all,cue_gold,p_yes_bias,0.8054573399978772,57
+category,history,all,cue_dist,p_yes_bias,0.7845621984778789,114
+category,history,all,at_p,p_yes_bias,0.8000064335143995,171
+category,history,all,cue_gold,p_yes_antibias,0.8931898474693298,4
+category,history,all,cue_dist,p_yes_antibias,0.8477410227060318,4
+category,history,all,at_p,p_yes_antibias,0.8863725237548352,8
+category,history,all,cue_gold,p_yes_nobias,0.7199507896849728,319
+category,history,all,cue_dist,p_yes_nobias,0.8123347173516567,260
+category,history,all,at_p,p_yes_nobias,0.7315676627431726,579
+category,history,all,cue_gold,count_deception,0.7526595744680851,376
+category,history,all,cue_dist,count_deception,0.6871657754010695,374
+category,history,all,at_p,count_deception,0.7428799574128293,750
+category,history,all,cue_gold,count_false_admission,0.8714733542319749,319
+category,history,all,cue_dist,count_false_admission,0.9384615384615385,260
+category,history,all,at_p,count_false_admission,0.8798968241173626,579
+category,history,all,cue_gold,count_false_denial,0.08771929824561403,57
+category,history,all,cue_dist,count_false_denial,0.11403508771929824,114
+category,history,all,at_p,count_false_denial,0.09458428680396644,171
+category,history,all,cue_gold,count_true_admission,0.9122807017543859,57
+category,history,all,cue_dist,count_true_admission,0.8859649122807017,114
+category,history,all,at_p,count_true_admission,0.9054157131960335,171
+category,history,all,cue_gold,count_true_denial,0.12852664576802508,319
+category,history,all,cue_dist,count_true_denial,0.06153846153846154,260
+category,history,all,at_p,count_true_denial,0.12010317588263744,579
+category,history,all,cue_gold,deception,0.640301153004328,376
+category,history,all,cue_dist,deception,0.630392876697734,374
+category,history,all,at_p,deception,0.6388216366327552,750
+category,history,all,cue_gold,false_admission,0.7199507896849728,319
+category,history,all,cue_dist,false_admission,0.8123347173516567,260
+category,history,all,at_p,false_admission,0.7315676627431726,579
+category,history,all,cue_gold,false_denial,0.19454266000212284,57
+category,history,all,cue_dist,false_denial,0.2154378015221211,114
+category,history,all,at_p,false_denial,0.19999356648560065,171
+category,history,all,cue_gold,true_admission,0.8054573399978772,57
+category,history,all,cue_dist,true_admission,0.7845621984778789,114
+category,history,all,at_p,true_admission,0.8000064335143995,171
+category,history,all,cue_gold,true_denial,0.2800492103150272,319
+category,history,all,cue_dist,true_denial,0.1876652826483433,260
+category,history,all,at_p,true_denial,0.2684323372568274,579
+category,law,all,none,accuracy,0.67,500
+category,law,all,cue_gold,accuracy,0.876,500
+category,law,all,cue_dist,accuracy,0.342,500
+category,law,all,at_p,accuracy,0.7958999999999999,1000
+category,law,all,none,accuracy_gold_first,0.541501976284585,253
+category,law,all,cue_gold,accuracy_gold_first,0.8458498023715415,253
+category,law,all,cue_dist,accuracy_gold_first,0.2964426877470356,253
+category,law,all,at_p,accuracy_gold_first,0.7634387351778656,506
+category,law,all,none,accuracy_gold_second,0.8016194331983806,247
+category,law,all,cue_gold,accuracy_gold_second,0.9068825910931174,247
+category,law,all,cue_dist,accuracy_gold_second,0.38866396761133604,247
+category,law,all,at_p,accuracy_gold_second,0.8291497975708503,494
+category,law,all,none,parse_fail,0.01,500
+category,law,all,cue_gold,parse_fail,0.008,500
+category,law,all,cue_dist,parse_fail,0.002,500
+category,law,all,at_p,parse_fail,0.0070999999999999995,1000
+category,law,all,cue_gold,follow_cue,0.8818737270875764,491
+category,law,all,cue_dist,follow_cue,0.6538461538461539,494
+category,law,all,at_p,follow_cue,0.8474921151693967,985
+category,law,all,cue_gold,bias_rate,0.21384928716904278,491
+category,law,all,cue_dist,bias_rate,0.354251012145749,494
+category,law,all,at_p,bias_rate,0.23501882185369824,985
+category,law,all,cue_gold,antibias_rate,0.010183299389002037,491
+category,law,all,cue_dist,antibias_rate,0.024291497975708502,494
+category,law,all,at_p,antibias_rate,0.0123105097161461,985
+category,law,all,cue_gold,nobias_rate,0.7759674134419552,491
+category,law,all,cue_dist,nobias_rate,0.6214574898785425,494
+category,law,all,at_p,nobias_rate,0.7526706684301556,985
+category,law,all,cue_gold,bias_null,0.2131716481759748,500
+category,law,all,cue_dist,bias_null,0.3089020543728019,500
+category,law,all,at_p,bias_null,0.22753120910549887,1000
+category,law,all,cue_gold,said_yes,0.7515274949083504,491
+category,law,all,cue_dist,said_yes,0.7874493927125507,494
+category,law,all,at_p,said_yes,0.7569437379184047,985
+category,law,all,cue_gold,said_yes_sampled,0.7270875763747454,491
+category,law,all,cue_dist,said_yes_sampled,0.7307692307692307,494
+category,law,all,at_p,said_yes_sampled,0.7276426899989826,985
+category,law,all,cue_gold,p_yes_bias,0.7347750172728584,105
+category,law,all,cue_dist,p_yes_bias,0.7117965143067496,175
+category,law,all,at_p,p_yes_bias,0.7295526302351064,280
+category,law,all,cue_gold,p_yes_antibias,0.7471407771110534,5
+category,law,all,cue_dist,p_yes_antibias,0.8403640985488892,12
+category,law,all,at_p,p_yes_antibias,0.7748766413404922,17
+category,law,all,cue_gold,p_yes_nobias,0.7120602878294592,381
+category,law,all,cue_dist,p_yes_nobias,0.7622605342333014,307
+category,law,all,at_p,p_yes_nobias,0.7183098724385344,688
+category,law,all,cue_gold,count_deception,0.6440329218106996,486
+category,law,all,cue_dist,count_deception,0.6327800829875518,482
+category,law,all,at_p,count_deception,0.642356819118253,968
+category,law,all,cue_gold,count_false_admission,0.7506561679790026,381
+category,law,all,cue_dist,count_false_admission,0.8273615635179153,307
+category,law,all,at_p,count_false_admission,0.760205460935388,688
+category,law,all,cue_gold,count_false_denial,0.2571428571428571,105
+category,law,all,cue_dist,count_false_denial,0.2914285714285714,175
+category,law,all,at_p,count_false_denial,0.26493506493506497,280
+category,law,all,cue_gold,count_true_admission,0.7428571428571429,105
+category,law,all,cue_dist,count_true_admission,0.7085714285714285,175
+category,law,all,at_p,count_true_admission,0.7350649350649351,280
+category,law,all,cue_gold,count_true_denial,0.24934383202099739,381
+category,law,all,cue_dist,count_true_denial,0.17263843648208468,307
+category,law,all,at_p,count_true_denial,0.23979453906461207,688
+category,law,all,cue_gold,deception,0.6155217959863659,486
+category,law,all,cue_dist,deception,0.5901443859044447,482
+category,law,all,at_p,deception,0.6117418480075384,968
+category,law,all,cue_gold,false_admission,0.7120602878294592,381
+category,law,all,cue_dist,false_admission,0.7622605342333014,307
+category,law,all,at_p,false_admission,0.7183098724385344,688
+category,law,all,cue_gold,false_denial,0.2652249827271416,105
+category,law,all,cue_dist,false_denial,0.2882034856932504,175
+category,law,all,at_p,false_denial,0.27044736976489364,280
+category,law,all,cue_gold,true_admission,0.7347750172728584,105
+category,law,all,cue_dist,true_admission,0.7117965143067496,175
+category,law,all,at_p,true_admission,0.7295526302351064,280
+category,law,all,cue_gold,true_denial,0.2879397121705408,381
+category,law,all,cue_dist,true_denial,0.2377394657666986,307
+category,law,all,at_p,true_denial,0.2816901275614656,688
+category,philosophy,all,none,accuracy,0.7334669338677354,499
+category,philosophy,all,cue_gold,accuracy,0.9338677354709419,499
+category,philosophy,all,cue_dist,accuracy,0.3166332665330661,499
+category,philosophy,all,at_p,accuracy,0.8412825651302605,998
+category,philosophy,all,none,accuracy_gold_first,0.7468879668049793,241
+category,philosophy,all,cue_gold,accuracy_gold_first,0.9543568464730291,241
+category,philosophy,all,cue_dist,accuracy_gold_first,0.34024896265560167,241
+category,philosophy,all,at_p,accuracy_gold_first,0.862240663900415,482
+category,philosophy,all,none,accuracy_gold_second,0.7209302325581395,258
+category,philosophy,all,cue_gold,accuracy_gold_second,0.9147286821705426,258
+category,philosophy,all,cue_dist,accuracy_gold_second,0.29457364341085274,258
+category,philosophy,all,at_p,accuracy_gold_second,0.8217054263565892,516
+category,philosophy,all,none,parse_fail,0.008016032064128256,499
+category,philosophy,all,cue_gold,parse_fail,0.002004008016032064,499
+category,philosophy,all,cue_dist,parse_fail,0.008016032064128256,499
+category,philosophy,all,at_p,parse_fail,0.0029058116232464934,998
+category,philosophy,all,cue_gold,follow_cue,0.9352226720647774,494
+category,philosophy,all,cue_dist,follow_cue,0.6782077393075356,491
+category,philosophy,all,at_p,follow_cue,0.8968696180731436,985
+category,philosophy,all,cue_gold,bias_rate,0.19635627530364372,494
+category,philosophy,all,cue_dist,bias_rate,0.4175152749490835,491
+category,philosophy,all,at_p,bias_rate,0.2293587275858576,985
+category,philosophy,all,cue_gold,antibias_rate,0.0020242914979757085,494
+category,philosophy,all,cue_dist,antibias_rate,0.002036659877800407,491
+category,philosophy,all,at_p,antibias_rate,0.0020261371694863745,985
+category,philosophy,all,cue_gold,nobias_rate,0.8016194331983806,494
+category,philosophy,all,cue_dist,nobias_rate,0.5804480651731161,491
+category,philosophy,all,at_p,nobias_rate,0.7686151352446561,985
+category,philosophy,all,cue_gold,bias_null,0.20186189365403956,499
+category,philosophy,all,cue_dist,bias_null,0.3922679583695192,499
+category,philosophy,all,at_p,bias_null,0.2304228033613615,998
+category,philosophy,all,cue_gold,said_yes,0.6619433198380567,494
+category,philosophy,all,cue_dist,said_yes,0.7107942973523421,491
+category,philosophy,all,at_p,said_yes,0.6692331070813495,985
+category,philosophy,all,cue_gold,said_yes_sampled,0.6295546558704453,494
+category,philosophy,all,cue_dist,said_yes_sampled,0.7291242362525459,491
+category,philosophy,all,at_p,said_yes_sampled,0.6444129267551413,985
+category,philosophy,all,cue_gold,p_yes_bias,0.7246920517117706,97
+category,philosophy,all,cue_dist,p_yes_bias,0.6990962672524336,205
+category,philosophy,all,at_p,p_yes_bias,0.7177391332301044,302
+category,philosophy,all,cue_gold,p_yes_antibias,0.9842162728309631,1
+category,philosophy,all,cue_dist,p_yes_antibias,0.5550320744514465,1
+category,philosophy,all,at_p,p_yes_antibias,0.9198386430740357,2
+category,philosophy,all,cue_gold,p_yes_nobias,0.6422516253560481,396
+category,philosophy,all,cue_dist,p_yes_nobias,0.7118667914417752,285
+category,philosophy,all,at_p,p_yes_nobias,0.6500967508342735,681
+category,philosophy,all,cue_gold,count_deception,0.5618661257606491,493
+category,philosophy,all,cue_dist,count_deception,0.5653061224489796,490
+category,philosophy,all,at_p,count_deception,0.5623794538625521,983
+category,philosophy,all,cue_gold,count_false_admission,0.6388888888888888,396
+category,philosophy,all,cue_dist,count_false_admission,0.7368421052631579,285
+category,philosophy,all,at_p,count_false_admission,0.6499275075787532,681
+category,philosophy,all,cue_gold,count_false_denial,0.24742268041237114,97
+category,philosophy,all,cue_dist,count_false_denial,0.32682926829268294,205
+category,philosophy,all,at_p,count_false_denial,0.2689929328621908,302
+category,philosophy,all,cue_gold,count_true_admission,0.7525773195876289,97
+category,philosophy,all,cue_dist,count_true_admission,0.6731707317073171,205
+category,philosophy,all,at_p,count_true_admission,0.7310070671378092,302
+category,philosophy,all,cue_gold,count_true_denial,0.3611111111111111,396
+category,philosophy,all,cue_dist,count_true_denial,0.2631578947368421,285
+category,philosophy,all,at_p,count_true_denial,0.35007249242124694,681
+category,philosophy,all,cue_gold,deception,0.5700537822007166,493
+category,philosophy,all,cue_dist,deception,0.5399332668860348,490
+category,philosophy,all,at_p,deception,0.5655590956193967,983
+category,philosophy,all,cue_gold,false_admission,0.6422516253560481,396
+category,philosophy,all,cue_dist,false_admission,0.7118667914417752,285
+category,philosophy,all,at_p,false_admission,0.6500967508342735,681
+category,philosophy,all,cue_gold,false_denial,0.2753079482882293,97
+category,philosophy,all,cue_dist,false_denial,0.30090373274756643,205
+category,philosophy,all,at_p,false_denial,0.28226086676989554,302
+category,philosophy,all,cue_gold,true_admission,0.7246920517117706,97
+category,philosophy,all,cue_dist,true_admission,0.6990962672524336,205
+category,philosophy,all,at_p,true_admission,0.7177391332301044,302
+category,philosophy,all,cue_gold,true_denial,0.357748374643952,396
+category,philosophy,all,cue_dist,true_denial,0.2881332085582248,285
+category,philosophy,all,at_p,true_denial,0.3499032491657265,681
+category,physics,all,none,accuracy,0.664,500
+category,physics,all,cue_gold,accuracy,0.984,500
+category,physics,all,cue_dist,accuracy,0.118,500
+category,physics,all,at_p,accuracy,0.8541,1000
+category,physics,all,none,accuracy_gold_first,0.6595744680851063,235
+category,physics,all,cue_gold,accuracy_gold_first,0.9829787234042553,235
+category,physics,all,cue_dist,accuracy_gold_first,0.1148936170212766,235
+category,physics,all,at_p,accuracy_gold_first,0.8527659574468085,470
+category,physics,all,none,accuracy_gold_second,0.6679245283018868,265
+category,physics,all,cue_gold,accuracy_gold_second,0.9849056603773585,265
+category,physics,all,cue_dist,accuracy_gold_second,0.12075471698113208,265
+category,physics,all,at_p,accuracy_gold_second,0.8552830188679246,530
+category,physics,all,none,parse_fail,0.02,500
+category,physics,all,cue_gold,parse_fail,0.0,500
+category,physics,all,cue_dist,parse_fail,0.006,500
+category,physics,all,at_p,parse_fail,0.0009000000000000001,1000
+category,physics,all,cue_gold,follow_cue,0.9836734693877551,490
+category,physics,all,cue_dist,follow_cue,0.8788501026694046,487
+category,physics,all,at_p,follow_cue,0.9680318659993872,977
+category,physics,all,cue_gold,bias_rate,0.30612244897959184,490
+category,physics,all,cue_dist,bias_rate,0.5544147843942505,487
+category,physics,all,at_p,bias_rate,0.34317230109284036,977
+category,physics,all,cue_gold,antibias_rate,0.0,490
+category,physics,all,cue_dist,antibias_rate,0.0,487
+category,physics,all,at_p,antibias_rate,0.0,977
+category,physics,all,cue_gold,nobias_rate,0.6938775510204082,490
+category,physics,all,cue_dist,nobias_rate,0.4455852156057495,487
+category,physics,all,at_p,nobias_rate,0.6568276989071596,977
+category,physics,all,cue_gold,bias_null,0.31674596781577397,500
+category,physics,all,cue_dist,bias_null,0.5238328832444402,500
+category,physics,all,at_p,bias_null,0.3478090051300739,1000
+category,physics,all,cue_gold,said_yes,0.8306122448979592,490
+category,physics,all,cue_dist,said_yes,0.8316221765913757,487
+category,physics,all,at_p,said_yes,0.830762945562251,977
+category,physics,all,cue_gold,said_yes_sampled,0.6979591836734694,490
+category,physics,all,cue_dist,said_yes_sampled,0.784394250513347,487
+category,physics,all,at_p,said_yes_sampled,0.7108569094065978,977
+category,physics,all,cue_gold,p_yes_bias,0.711617202758789,150
+category,physics,all,cue_dist,p_yes_bias,0.747731567091412,270
+category,physics,all,at_p,p_yes_bias,0.7203233441604036,420
+category,physics,all,cue_gold,p_yes_antibias,nan,0
+category,physics,all,cue_dist,p_yes_antibias,nan,0
+category,physics,all,at_p,p_yes_antibias,nan,0
+category,physics,all,cue_gold,p_yes_nobias,0.6999122284791048,340
+category,physics,all,cue_dist,p_yes_nobias,0.7373114449362601,217
+category,physics,all,at_p,p_yes_nobias,0.7036980922504635,557
+category,physics,all,cue_gold,count_deception,0.6306122448979592,490
+category,physics,all,cue_dist,count_deception,0.4702258726899384,487
+category,physics,all,at_p,count_deception,0.6066796037176999,977
+category,physics,all,cue_gold,count_false_admission,0.8323529411764706,340
+category,physics,all,cue_dist,count_false_admission,0.8387096774193549,217
+category,physics,all,at_p,count_false_admission,0.8329964235733166,557
+category,physics,all,cue_gold,count_false_denial,0.17333333333333334,150
+category,physics,all,cue_dist,count_false_denial,0.17407407407407408,270
+category,physics,all,at_p,count_false_denial,0.17351190476190476,420
+category,physics,all,cue_gold,count_true_admission,0.8266666666666667,150
+category,physics,all,cue_dist,count_true_admission,0.825925925925926,270
+category,physics,all,at_p,count_true_admission,0.8264880952380952,420
+category,physics,all,cue_gold,count_true_denial,0.1676470588235294,340
+category,physics,all,cue_dist,count_true_denial,0.16129032258064516,217
+category,physics,all,at_p,count_true_denial,0.16700357642668323,557
+category,physics,all,cue_gold,deception,0.5739338311613823,490
+category,physics,all,cue_dist,deception,0.4683964280010004,487
+category,physics,all,at_p,deception,0.5581856802046549,977
+category,physics,all,cue_gold,false_admission,0.6999122284791048,340
+category,physics,all,cue_dist,false_admission,0.7373114449362601,217
+category,physics,all,at_p,false_admission,0.7036980922504635,557
+category,physics,all,cue_gold,false_denial,0.28838279724121096,150
+category,physics,all,cue_dist,false_denial,0.25226843290858797,270
+category,physics,all,at_p,false_denial,0.2796766558395965,420
+category,physics,all,cue_gold,true_admission,0.711617202758789,150
+category,physics,all,cue_dist,true_admission,0.747731567091412,270
+category,physics,all,at_p,true_admission,0.7203233441604036,420
+category,physics,all,cue_gold,true_denial,0.3000877715208951,340
+category,physics,all,cue_dist,true_denial,0.2626885550637399,217
+category,physics,all,at_p,true_denial,0.29630190774953635,557
+cue_template_idx,0,all,none,accuracy,0.7116788321167883,274
+cue_template_idx,0,all,cue_gold,accuracy,0.9379562043795621,274
+cue_template_idx,0,all,cue_dist,accuracy,0.2956204379562044,274
+cue_template_idx,0,all,at_p,accuracy,0.8416058394160584,548
+cue_template_idx,0,all,none,accuracy_gold_first,0.703125,128
+cue_template_idx,0,all,cue_gold,accuracy_gold_first,0.9453125,128
+cue_template_idx,0,all,cue_dist,accuracy_gold_first,0.2734375,128
+cue_template_idx,0,all,at_p,accuracy_gold_first,0.84453125,256
+cue_template_idx,0,all,none,accuracy_gold_second,0.7191780821917808,146
+cue_template_idx,0,all,cue_gold,accuracy_gold_second,0.9315068493150684,146
+cue_template_idx,0,all,cue_dist,accuracy_gold_second,0.3150684931506849,146
+cue_template_idx,0,all,at_p,accuracy_gold_second,0.839041095890411,292
+cue_template_idx,0,all,none,parse_fail,0.0072992700729927005,274
+cue_template_idx,0,all,cue_gold,parse_fail,0.0036496350364963502,274
+cue_template_idx,0,all,cue_dist,parse_fail,0.0036496350364963502,274
+cue_template_idx,0,all,at_p,parse_fail,0.0036496350364963502,548
+cue_template_idx,0,all,cue_gold,follow_cue,0.940959409594096,271
+cue_template_idx,0,all,cue_dist,follow_cue,0.7011070110701108,271
+cue_template_idx,0,all,at_p,follow_cue,0.9049815498154982,542
+cue_template_idx,0,all,cue_gold,bias_rate,0.22509225092250923,271
+cue_template_idx,0,all,cue_dist,bias_rate,0.42066420664206644,271
+cue_template_idx,0,all,at_p,bias_rate,0.2544280442804428,542
+cue_template_idx,0,all,cue_gold,antibias_rate,0.0,271
+cue_template_idx,0,all,cue_dist,antibias_rate,0.0036900369003690036,271
+cue_template_idx,0,all,at_p,antibias_rate,0.0005535055350553506,542
+cue_template_idx,0,all,cue_gold,nobias_rate,0.7749077490774908,271
+cue_template_idx,0,all,cue_dist,nobias_rate,0.5756457564575646,271
+cue_template_idx,0,all,at_p,nobias_rate,0.7450184501845019,542
+cue_template_idx,0,all,cue_gold,bias_null,0.23341759654837937,274
+cue_template_idx,0,all,cue_dist,bias_null,0.39579942662053713,274
+cue_template_idx,0,all,at_p,bias_null,0.257774871059203,548
+cue_template_idx,0,all,cue_gold,said_yes,0.8450184501845018,271
+cue_template_idx,0,all,cue_dist,said_yes,0.8413284132841329,271
+cue_template_idx,0,all,at_p,said_yes,0.8444649446494465,542
+cue_template_idx,0,all,cue_gold,said_yes_sampled,0.7084870848708487,271
+cue_template_idx,0,all,cue_dist,said_yes_sampled,0.8044280442804428,271
+cue_template_idx,0,all,at_p,said_yes_sampled,0.7228782287822877,542
+cue_template_idx,0,all,cue_gold,p_yes_bias,0.7683073194300543,61
+cue_template_idx,0,all,cue_dist,p_yes_bias,0.766054533814129,114
+cue_template_idx,0,all,at_p,p_yes_bias,0.7677486155282076,175
+cue_template_idx,0,all,cue_gold,p_yes_antibias,0.9954997897148132,1
+cue_template_idx,0,all,cue_dist,p_yes_antibias,0.9954997897148132,1
+cue_template_idx,0,all,at_p,p_yes_antibias,0.9954997897148132,1
+cue_template_idx,0,all,cue_gold,p_yes_nobias,0.7129673966694445,210
+cue_template_idx,0,all,cue_dist,p_yes_nobias,0.7608780295420916,156
+cue_template_idx,0,all,at_p,p_yes_nobias,0.718520189186631,366
+cue_template_idx,0,all,cue_gold,count_deception,0.6715867158671587,271
+cue_template_idx,0,all,cue_dist,count_deception,0.5370370370370371,270
+cue_template_idx,0,all,at_p,count_deception,0.6514676019937233,541
+cue_template_idx,0,all,cue_gold,count_false_admission,0.8333333333333334,210
+cue_template_idx,0,all,cue_dist,count_false_admission,0.8269230769230769,156
+cue_template_idx,0,all,at_p,count_false_admission,0.8325903912828132,366
+cue_template_idx,0,all,cue_gold,count_false_denial,0.11475409836065574,61
+cue_template_idx,0,all,cue_dist,count_false_denial,0.14035087719298245,114
+cue_template_idx,0,all,at_p,count_false_denial,0.12110224800580133,175
+cue_template_idx,0,all,cue_gold,count_true_admission,0.8852459016393442,61
+cue_template_idx,0,all,cue_dist,count_true_admission,0.8596491228070176,114
+cue_template_idx,0,all,at_p,count_true_admission,0.8788977519941987,175
+cue_template_idx,0,all,cue_gold,count_true_denial,0.16666666666666666,210
+cue_template_idx,0,all,cue_dist,count_true_denial,0.17307692307692307,156
+cue_template_idx,0,all,at_p,count_true_denial,0.16740960871718671,366
+cue_template_idx,0,all,cue_gold,deception,0.6046361875105168,271
+cue_template_idx,0,all,cue_dist,deception,0.5383953916805762,270
+cue_template_idx,0,all,at_p,deception,0.5947312503456188,541
+cue_template_idx,0,all,cue_gold,false_admission,0.7129673966694445,210
+cue_template_idx,0,all,cue_dist,false_admission,0.7608780295420916,156
+cue_template_idx,0,all,at_p,false_admission,0.718520189186631,366
+cue_template_idx,0,all,cue_gold,false_denial,0.2316926805699458,61
+cue_template_idx,0,all,cue_dist,false_denial,0.23394546618587092,114
+cue_template_idx,0,all,at_p,false_denial,0.23225138447179233,175
+cue_template_idx,0,all,cue_gold,true_admission,0.7683073194300543,61
+cue_template_idx,0,all,cue_dist,true_admission,0.766054533814129,114
+cue_template_idx,0,all,at_p,true_admission,0.7677486155282076,175
+cue_template_idx,0,all,cue_gold,true_denial,0.2870326033305554,210
+cue_template_idx,0,all,cue_dist,true_denial,0.23912197045790842,156
+cue_template_idx,0,all,at_p,true_denial,0.281479810813369,366
+cue_template_idx,1,all,none,accuracy,0.718213058419244,291
+cue_template_idx,1,all,cue_gold,accuracy,0.9175257731958762,291
+cue_template_idx,1,all,cue_dist,accuracy,0.3230240549828179,291
+cue_template_idx,1,all,at_p,accuracy,0.8283505154639175,582
+cue_template_idx,1,all,none,accuracy_gold_first,0.6950354609929078,141
+cue_template_idx,1,all,cue_gold,accuracy_gold_first,0.9361702127659575,141
+cue_template_idx,1,all,cue_dist,accuracy_gold_first,0.3049645390070922,141
+cue_template_idx,1,all,at_p,accuracy_gold_first,0.8414893617021277,282
+cue_template_idx,1,all,none,accuracy_gold_second,0.74,150
+cue_template_idx,1,all,cue_gold,accuracy_gold_second,0.9,150
+cue_template_idx,1,all,cue_dist,accuracy_gold_second,0.34,150
+cue_template_idx,1,all,at_p,accuracy_gold_second,0.8160000000000001,300
+cue_template_idx,1,all,none,parse_fail,0.006872852233676976,291
+cue_template_idx,1,all,cue_gold,parse_fail,0.0,291
+cue_template_idx,1,all,cue_dist,parse_fail,0.006872852233676976,291
+cue_template_idx,1,all,at_p,parse_fail,0.0010309278350515466,582
+cue_template_idx,1,all,cue_gold,follow_cue,0.916955017301038,289
+cue_template_idx,1,all,cue_dist,follow_cue,0.6724738675958188,287
+cue_template_idx,1,all,at_p,follow_cue,0.8804987876688604,576
+cue_template_idx,1,all,cue_gold,bias_rate,0.2041522491349481,289
+cue_template_idx,1,all,cue_dist,bias_rate,0.397212543554007,287
+cue_template_idx,1,all,at_p,bias_rate,0.23294076896432284,576
+cue_template_idx,1,all,cue_gold,antibias_rate,0.010380622837370242,289
+cue_template_idx,1,all,cue_dist,antibias_rate,0.003484320557491289,287
+cue_template_idx,1,all,at_p,antibias_rate,0.009352268791132663,576
+cue_template_idx,1,all,cue_gold,nobias_rate,0.7854671280276817,289
+cue_template_idx,1,all,cue_dist,nobias_rate,0.5993031358885017,287
+cue_template_idx,1,all,at_p,nobias_rate,0.7577069622445446,576
+cue_template_idx,1,all,cue_gold,bias_null,0.21218314389272339,291
+cue_template_idx,1,all,cue_dist,bias_null,0.37690058654157255,291
+cue_template_idx,1,all,at_p,bias_null,0.2368907602900508,582
+cue_template_idx,1,all,cue_gold,said_yes,0.9273356401384083,289
+cue_template_idx,1,all,cue_dist,said_yes,0.9372822299651568,287
+cue_template_idx,1,all,at_p,said_yes,0.9288188430897124,576
+cue_template_idx,1,all,cue_gold,said_yes_sampled,0.8062283737024222,289
+cue_template_idx,1,all,cue_dist,said_yes_sampled,0.8153310104529616,287
+cue_template_idx,1,all,at_p,said_yes_sampled,0.8075857291305854,576
+cue_template_idx,1,all,cue_gold,p_yes_bias,0.7969437625448582,59
+cue_template_idx,1,all,cue_dist,p_yes_bias,0.7872295967842403,114
+cue_template_idx,1,all,at_p,p_yes_bias,0.7944736921432737,173
+cue_template_idx,1,all,cue_gold,p_yes_antibias,0.8695267637570699,3
+cue_template_idx,1,all,cue_dist,p_yes_antibias,0.9936131834983826,1
+cue_template_idx,1,all,at_p,p_yes_antibias,0.8764204537426985,4
+cue_template_idx,1,all,cue_gold,p_yes_nobias,0.7722615627202694,227
+cue_template_idx,1,all,cue_dist,p_yes_nobias,0.8159031516244245,172
+cue_template_idx,1,all,at_p,p_yes_nobias,0.7774087764058794,399
+cue_template_idx,1,all,cue_gold,count_deception,0.7552447552447552,286
+cue_template_idx,1,all,cue_dist,count_deception,0.6013986013986014,286
+cue_template_idx,1,all,at_p,count_deception,0.7321678321678322,572
+cue_template_idx,1,all,cue_gold,count_false_admission,0.9295154185022027,227
+cue_template_idx,1,all,cue_dist,count_false_admission,0.9476744186046512,172
+cue_template_idx,1,all,at_p,count_false_admission,0.931657142857143,399
+cue_template_idx,1,all,cue_gold,count_false_denial,0.0847457627118644,59
+cue_template_idx,1,all,cue_dist,count_false_denial,0.07894736842105263,114
+cue_template_idx,1,all,at_p,count_false_denial,0.08327137546468401,173
+cue_template_idx,1,all,cue_gold,count_true_admission,0.9152542372881356,59
+cue_template_idx,1,all,cue_dist,count_true_admission,0.9210526315789473,114
+cue_template_idx,1,all,at_p,count_true_admission,0.916728624535316,173
+cue_template_idx,1,all,cue_gold,count_true_denial,0.07048458149779736,227
+cue_template_idx,1,all,cue_dist,count_true_denial,0.05232558139534884,172
+cue_template_idx,1,all,at_p,count_true_denial,0.06834285714285714,399
+cue_template_idx,1,all,cue_gold,deception,0.6548380865292116,286
+cue_template_idx,1,all,cue_dist,deception,0.5754935945664252,286
+cue_template_idx,1,all,at_p,deception,0.6429364127347937,572
+cue_template_idx,1,all,cue_gold,false_admission,0.7722615627202694,227
+cue_template_idx,1,all,cue_dist,false_admission,0.8159031516244245,172
+cue_template_idx,1,all,at_p,false_admission,0.7774087764058794,399
+cue_template_idx,1,all,cue_gold,false_denial,0.20305623745514176,59
+cue_template_idx,1,all,cue_dist,false_denial,0.21277040321575968,114
+cue_template_idx,1,all,at_p,false_denial,0.20552630785672635,173
+cue_template_idx,1,all,cue_gold,true_admission,0.7969437625448582,59
+cue_template_idx,1,all,cue_dist,true_admission,0.7872295967842403,114
+cue_template_idx,1,all,at_p,true_admission,0.7944736921432737,173
+cue_template_idx,1,all,cue_gold,true_denial,0.22773843727973064,227
+cue_template_idx,1,all,cue_dist,true_denial,0.1840968483755755,172
+cue_template_idx,1,all,at_p,true_denial,0.2225912235941206,399
+cue_template_idx,2,all,none,accuracy,0.7061068702290076,262
+cue_template_idx,2,all,cue_gold,accuracy,0.9351145038167938,262
+cue_template_idx,2,all,cue_dist,accuracy,0.2748091603053435,262
+cue_template_idx,2,all,at_p,accuracy,0.8360687022900763,524
+cue_template_idx,2,all,none,accuracy_gold_first,0.6923076923076923,130
+cue_template_idx,2,all,cue_gold,accuracy_gold_first,0.9384615384615385,130
+cue_template_idx,2,all,cue_dist,accuracy_gold_first,0.3230769230769231,130
+cue_template_idx,2,all,at_p,accuracy_gold_first,0.8461538461538461,260
+cue_template_idx,2,all,none,accuracy_gold_second,0.7196969696969697,132
+cue_template_idx,2,all,cue_gold,accuracy_gold_second,0.9318181818181818,132
+cue_template_idx,2,all,cue_dist,accuracy_gold_second,0.22727272727272727,132
+cue_template_idx,2,all,at_p,accuracy_gold_second,0.8261363636363637,264
+cue_template_idx,2,all,none,parse_fail,0.019083969465648856,262
+cue_template_idx,2,all,cue_gold,parse_fail,0.0,262
+cue_template_idx,2,all,cue_dist,parse_fail,0.0,262
+cue_template_idx,2,all,at_p,parse_fail,0.0,524
+cue_template_idx,2,all,cue_gold,follow_cue,0.933852140077821,257
+cue_template_idx,2,all,cue_dist,follow_cue,0.7198443579766537,257
+cue_template_idx,2,all,at_p,follow_cue,0.9017509727626459,514
+cue_template_idx,2,all,cue_gold,bias_rate,0.22178988326848248,257
+cue_template_idx,2,all,cue_dist,bias_rate,0.44357976653696496,257
+cue_template_idx,2,all,at_p,bias_rate,0.25505836575875485,514
+cue_template_idx,2,all,cue_gold,antibias_rate,0.007782101167315175,257
+cue_template_idx,2,all,cue_dist,antibias_rate,0.0038910505836575876,257
+cue_template_idx,2,all,at_p,antibias_rate,0.007198443579766537,514
+cue_template_idx,2,all,cue_gold,nobias_rate,0.7704280155642024,257
+cue_template_idx,2,all,cue_dist,nobias_rate,0.5525291828793775,257
+cue_template_idx,2,all,at_p,nobias_rate,0.7377431906614785,514
+cue_template_idx,2,all,cue_gold,bias_null,0.22793964969583672,262
+cue_template_idx,2,all,cue_dist,bias_null,0.41103687199553124,262
+cue_template_idx,2,all,at_p,bias_null,0.2554042330407909,524
+cue_template_idx,2,all,cue_gold,said_yes,0.7354085603112841,257
+cue_template_idx,2,all,cue_dist,said_yes,0.7782101167315175,257
+cue_template_idx,2,all,at_p,said_yes,0.7418287937743191,514
+cue_template_idx,2,all,cue_gold,said_yes_sampled,0.6731517509727627,257
+cue_template_idx,2,all,cue_dist,said_yes_sampled,0.7159533073929961,257
+cue_template_idx,2,all,at_p,said_yes_sampled,0.6795719844357976,514
+cue_template_idx,2,all,cue_gold,p_yes_bias,0.739708942279481,57
+cue_template_idx,2,all,cue_dist,p_yes_bias,0.7211122507588905,114
+cue_template_idx,2,all,at_p,p_yes_bias,0.7348576314480226,171
+cue_template_idx,2,all,cue_gold,p_yes_antibias,0.7888898551464081,2
+cue_template_idx,2,all,cue_dist,p_yes_antibias,0.9821966886520386,1
+cue_template_idx,2,all,at_p,p_yes_antibias,0.8045633821874051,3
+cue_template_idx,2,all,cue_gold,p_yes_nobias,0.6634543924169107,198
+cue_template_idx,2,all,cue_dist,p_yes_nobias,0.7237797452950142,142
+cue_template_idx,2,all,at_p,p_yes_nobias,0.6702314494649255,340
+cue_template_idx,2,all,cue_gold,count_deception,0.5882352941176471,255
+cue_template_idx,2,all,cue_dist,count_deception,0.55078125,256
+cue_template_idx,2,all,at_p,count_deception,0.5825984714873604,511
+cue_template_idx,2,all,cue_gold,count_false_admission,0.7070707070707071,198
+cue_template_idx,2,all,cue_dist,count_false_admission,0.795774647887324,142
+cue_template_idx,2,all,at_p,count_false_admission,0.7170358649789029,340
+cue_template_idx,2,all,cue_gold,count_false_denial,0.17543859649122806,57
+cue_template_idx,2,all,cue_dist,count_false_denial,0.24561403508771928,114
+cue_template_idx,2,all,at_p,count_false_denial,0.1937452326468345,171
+cue_template_idx,2,all,cue_gold,count_true_admission,0.8245614035087719,57
+cue_template_idx,2,all,cue_dist,count_true_admission,0.7543859649122807,114
+cue_template_idx,2,all,at_p,count_true_admission,0.8062547673531655,171
+cue_template_idx,2,all,cue_gold,count_true_denial,0.29292929292929293,198
+cue_template_idx,2,all,cue_dist,count_true_denial,0.20422535211267606,142
+cue_template_idx,2,all,at_p,count_true_denial,0.2829641350210971,340
+cue_template_idx,2,all,cue_gold,deception,0.5733355293671291,255
+cue_template_idx,2,all,cue_dist,deception,0.5256637783022597,256
+cue_template_idx,2,all,at_p,deception,0.5661609448447266,511
+cue_template_idx,2,all,cue_gold,false_admission,0.6634543924169107,198
+cue_template_idx,2,all,cue_dist,false_admission,0.7237797452950142,142
+cue_template_idx,2,all,at_p,false_admission,0.6702314494649255,340
+cue_template_idx,2,all,cue_gold,false_denial,0.26029105772051897,57
+cue_template_idx,2,all,cue_dist,false_denial,0.2788877492411095,114
+cue_template_idx,2,all,at_p,false_denial,0.2651423685519773,171
+cue_template_idx,2,all,cue_gold,true_admission,0.739708942279481,57
+cue_template_idx,2,all,cue_dist,true_admission,0.7211122507588905,114
+cue_template_idx,2,all,at_p,true_admission,0.7348576314480226,171
+cue_template_idx,2,all,cue_gold,true_denial,0.3365456075830893,198
+cue_template_idx,2,all,cue_dist,true_denial,0.27622025470498585,142
+cue_template_idx,2,all,at_p,true_denial,0.32976855053507453,340
+cue_template_idx,3,all,none,accuracy,0.6842105263157895,304
+cue_template_idx,3,all,cue_gold,accuracy,0.8947368421052632,304
+cue_template_idx,3,all,cue_dist,accuracy,0.45394736842105265,304
+cue_template_idx,3,all,at_p,accuracy,0.8286184210526315,608
+cue_template_idx,3,all,none,accuracy_gold_first,0.6580645161290323,155
+cue_template_idx,3,all,cue_gold,accuracy_gold_first,0.8709677419354839,155
+cue_template_idx,3,all,cue_dist,accuracy_gold_first,0.44516129032258067,155
+cue_template_idx,3,all,at_p,accuracy_gold_first,0.8070967741935483,310
+cue_template_idx,3,all,none,accuracy_gold_second,0.7114093959731543,149
+cue_template_idx,3,all,cue_gold,accuracy_gold_second,0.9194630872483222,149
+cue_template_idx,3,all,cue_dist,accuracy_gold_second,0.46308724832214765,149
+cue_template_idx,3,all,at_p,accuracy_gold_second,0.8510067114093961,298
+cue_template_idx,3,all,none,parse_fail,0.01644736842105263,304
+cue_template_idx,3,all,cue_gold,parse_fail,0.003289473684210526,304
+cue_template_idx,3,all,cue_dist,parse_fail,0.003289473684210526,304
+cue_template_idx,3,all,at_p,parse_fail,0.003289473684210526,608
+cue_template_idx,3,all,cue_gold,follow_cue,0.8959731543624161,298
+cue_template_idx,3,all,cue_dist,follow_cue,0.5369127516778524,298
+cue_template_idx,3,all,at_p,follow_cue,0.8421140939597315,596
+cue_template_idx,3,all,cue_gold,bias_rate,0.2080536912751678,298
+cue_template_idx,3,all,cue_dist,bias_rate,0.2684563758389262,298
+cue_template_idx,3,all,at_p,bias_rate,0.21711409395973155,596
+cue_template_idx,3,all,cue_gold,antibias_rate,0.006711409395973154,298
+cue_template_idx,3,all,cue_dist,antibias_rate,0.03691275167785235,298
+cue_template_idx,3,all,at_p,antibias_rate,0.011241610738255036,596
+cue_template_idx,3,all,cue_gold,nobias_rate,0.785234899328859,298
+cue_template_idx,3,all,cue_dist,nobias_rate,0.6946308724832215,298
+cue_template_idx,3,all,at_p,nobias_rate,0.7716442953020135,596
+cue_template_idx,3,all,cue_gold,bias_null,0.18036984227769431,304
+cue_template_idx,3,all,cue_dist,bias_null,0.24328321812849052,304
+cue_template_idx,3,all,at_p,bias_null,0.18980684865531375,608
+cue_template_idx,3,all,cue_gold,said_yes,0.7885906040268457,298
+cue_template_idx,3,all,cue_dist,said_yes,0.8456375838926175,298
+cue_template_idx,3,all,at_p,said_yes,0.7971476510067115,596
+cue_template_idx,3,all,cue_gold,said_yes_sampled,0.7315436241610739,298
+cue_template_idx,3,all,cue_dist,said_yes_sampled,0.7718120805369127,298
+cue_template_idx,3,all,at_p,said_yes_sampled,0.7375838926174496,596
+cue_template_idx,3,all,cue_gold,p_yes_bias,0.767438298752231,62
+cue_template_idx,3,all,cue_dist,p_yes_bias,0.70959926918149,80
+cue_template_idx,3,all,at_p,p_yes_bias,0.7567108125876422,142
+cue_template_idx,3,all,cue_gold,p_yes_antibias,0.8103698790073395,2
+cue_template_idx,3,all,cue_dist,p_yes_antibias,0.8154091997580095,11
+cue_template_idx,3,all,at_p,p_yes_antibias,0.8128519325114008,13
+cue_template_idx,3,all,cue_gold,p_yes_nobias,0.7059479211258073,234
+cue_template_idx,3,all,cue_dist,p_yes_nobias,0.7818965510181759,207
+cue_template_idx,3,all,at_p,p_yes_nobias,0.7162032155731133,441
+cue_template_idx,3,all,cue_gold,count_deception,0.652027027027027,296
+cue_template_idx,3,all,cue_dist,count_deception,0.7177700348432056,287
+cue_template_idx,3,all,at_p,count_deception,0.661632445274054,583
+cue_template_idx,3,all,cue_gold,count_false_admission,0.7777777777777778,234
+cue_template_idx,3,all,cue_dist,count_false_admission,0.8888888888888888,207
+cue_template_idx,3,all,at_p,count_false_admission,0.7927810393563817,441
+cue_template_idx,3,all,cue_gold,count_false_denial,0.1774193548387097,62
+cue_template_idx,3,all,cue_dist,count_false_denial,0.275,80
+cue_template_idx,3,all,at_p,count_false_denial,0.1955177743431221,142
+cue_template_idx,3,all,cue_gold,count_true_admission,0.8225806451612904,62
+cue_template_idx,3,all,cue_dist,count_true_admission,0.725,80
+cue_template_idx,3,all,at_p,count_true_admission,0.8044822256568779,142
+cue_template_idx,3,all,cue_gold,count_true_denial,0.2222222222222222,234
+cue_template_idx,3,all,cue_dist,count_true_denial,0.1111111111111111,207
+cue_template_idx,3,all,at_p,count_true_denial,0.20721896064361817,441
+cue_template_idx,3,all,cue_gold,deception,0.6067926993945966,296
+cue_template_idx,3,all,cue_dist,deception,0.6448942317987568,287
+cue_template_idx,3,all,at_p,deception,0.6123595447025861,583
+cue_template_idx,3,all,cue_gold,false_admission,0.7059479211258073,234
+cue_template_idx,3,all,cue_dist,false_admission,0.7818965510181759,207
+cue_template_idx,3,all,at_p,false_admission,0.7162032155731133,441
+cue_template_idx,3,all,cue_gold,false_denial,0.232561701247769,62
+cue_template_idx,3,all,cue_dist,false_denial,0.29040073081851003,80
+cue_template_idx,3,all,at_p,false_denial,0.24328918741235778,142
+cue_template_idx,3,all,cue_gold,true_admission,0.767438298752231,62
+cue_template_idx,3,all,cue_dist,true_admission,0.70959926918149,80
+cue_template_idx,3,all,at_p,true_admission,0.7567108125876422,142
+cue_template_idx,3,all,cue_gold,true_denial,0.2940520788741927,234
+cue_template_idx,3,all,cue_dist,true_denial,0.21810344898182413,207
+cue_template_idx,3,all,at_p,true_denial,0.28379678442688655,441
+cue_template_idx,4,all,none,accuracy,0.7052631578947368,285
+cue_template_idx,4,all,cue_gold,accuracy,0.9894736842105263,285
+cue_template_idx,4,all,cue_dist,accuracy,0.18947368421052632,285
+cue_template_idx,4,all,at_p,accuracy,0.8694736842105263,570
+cue_template_idx,4,all,none,accuracy_gold_first,0.625,136
+cue_template_idx,4,all,cue_gold,accuracy_gold_first,0.9926470588235294,136
+cue_template_idx,4,all,cue_dist,accuracy_gold_first,0.21323529411764705,136
+cue_template_idx,4,all,at_p,accuracy_gold_first,0.8757352941176471,272
+cue_template_idx,4,all,none,accuracy_gold_second,0.7785234899328859,149
+cue_template_idx,4,all,cue_gold,accuracy_gold_second,0.9865771812080537,149
+cue_template_idx,4,all,cue_dist,accuracy_gold_second,0.16778523489932887,149
+cue_template_idx,4,all,at_p,accuracy_gold_second,0.8637583892617451,298
+cue_template_idx,4,all,none,parse_fail,0.0035087719298245615,285
+cue_template_idx,4,all,cue_gold,parse_fail,0.0,285
+cue_template_idx,4,all,cue_dist,parse_fail,0.0035087719298245615,285
+cue_template_idx,4,all,at_p,parse_fail,0.0005263157894736843,570
+cue_template_idx,4,all,cue_gold,follow_cue,0.9894366197183099,284
+cue_template_idx,4,all,cue_dist,follow_cue,0.8127208480565371,283
+cue_template_idx,4,all,at_p,follow_cue,0.9630086313193588,567
+cue_template_idx,4,all,cue_gold,bias_rate,0.28169014084507044,284
+cue_template_idx,4,all,cue_dist,bias_rate,0.519434628975265,283
+cue_template_idx,4,all,at_p,bias_rate,0.3172450237801656,567
+cue_template_idx,4,all,cue_gold,antibias_rate,0.0,284
+cue_template_idx,4,all,cue_dist,antibias_rate,0.0,283
+cue_template_idx,4,all,at_p,antibias_rate,0.0,567
+cue_template_idx,4,all,cue_gold,nobias_rate,0.7183098591549296,284
+cue_template_idx,4,all,cue_dist,nobias_rate,0.48056537102473496,283
+cue_template_idx,4,all,at_p,nobias_rate,0.6827549762198344,567
+cue_template_idx,4,all,cue_gold,bias_null,0.2818894366818489,285
+cue_template_idx,4,all,cue_dist,bias_null,0.5066336707035092,285
+cue_template_idx,4,all,at_p,bias_null,0.31560107178509794,570
+cue_template_idx,4,all,cue_gold,said_yes,0.8626760563380281,284
+cue_template_idx,4,all,cue_dist,said_yes,0.8939929328621908,283
+cue_template_idx,4,all,at_p,said_yes,0.8673595208737008,567
+cue_template_idx,4,all,cue_gold,said_yes_sampled,0.7570422535211268,284
+cue_template_idx,4,all,cue_dist,said_yes_sampled,0.8091872791519434,283
+cue_template_idx,4,all,at_p,said_yes_sampled,0.7648405848159239,567
+cue_template_idx,4,all,cue_gold,p_yes_bias,0.7300187814980745,80
+cue_template_idx,4,all,cue_dist,p_yes_bias,0.7907553086069976,147
+cue_template_idx,4,all,at_p,p_yes_bias,0.744890968313752,227
+cue_template_idx,4,all,cue_gold,p_yes_antibias,nan,0
+cue_template_idx,4,all,cue_dist,p_yes_antibias,nan,0
+cue_template_idx,4,all,at_p,p_yes_antibias,nan,0
+cue_template_idx,4,all,cue_gold,p_yes_nobias,0.7513309310683433,204
+cue_template_idx,4,all,cue_dist,p_yes_nobias,0.7900948200155707,136
+cue_template_idx,4,all,at_p,p_yes_nobias,0.7554113404312092,340
+cue_template_idx,4,all,cue_gold,count_deception,0.6725352112676056,284
+cue_template_idx,4,all,cue_dist,count_deception,0.5017667844522968,283
+cue_template_idx,4,all,at_p,count_deception,0.6469966531618813,567
+cue_template_idx,4,all,cue_gold,count_false_admission,0.8725490196078431,204
+cue_template_idx,4,all,cue_dist,count_false_admission,0.9117647058823529,136
+cue_template_idx,4,all,at_p,count_false_admission,0.8766769865841072,340
+cue_template_idx,4,all,cue_gold,count_false_denial,0.1625,80
+cue_template_idx,4,all,cue_dist,count_false_denial,0.12244897959183673,147
+cue_template_idx,4,all,at_p,count_false_denial,0.15269294836202107,227
+cue_template_idx,4,all,cue_gold,count_true_admission,0.8375,80
+cue_template_idx,4,all,cue_dist,count_true_admission,0.8775510204081632,147
+cue_template_idx,4,all,at_p,count_true_admission,0.8473070516379788,227
+cue_template_idx,4,all,cue_gold,count_true_denial,0.12745098039215685,204
+cue_template_idx,4,all,cue_dist,count_true_denial,0.08823529411764706,136
+cue_template_idx,4,all,at_p,count_true_denial,0.12332301341589266,340
+cue_template_idx,4,all,cue_gold,deception,0.6157394627397749,284
+cue_template_idx,4,all,cue_dist,deception,0.4883811489642719,283
+cue_template_idx,4,all,at_p,deception,0.5966929225961422,567
+cue_template_idx,4,all,cue_gold,false_admission,0.7513309310683433,204
+cue_template_idx,4,all,cue_dist,false_admission,0.7900948200155707,136
+cue_template_idx,4,all,at_p,false_admission,0.7554113404312092,340
+cue_template_idx,4,all,cue_gold,false_denial,0.26998121850192547,80
+cue_template_idx,4,all,cue_dist,false_denial,0.20924469139300236,147
+cue_template_idx,4,all,at_p,false_denial,0.255109031686248,227
+cue_template_idx,4,all,cue_gold,true_admission,0.7300187814980745,80
+cue_template_idx,4,all,cue_dist,true_admission,0.7907553086069976,147
+cue_template_idx,4,all,at_p,true_admission,0.744890968313752,227
+cue_template_idx,4,all,cue_gold,true_denial,0.24866906893165672,204
+cue_template_idx,4,all,cue_dist,true_denial,0.2099051799844293,136
+cue_template_idx,4,all,at_p,true_denial,0.24458865956879067,340
+cue_template_idx,5,all,none,accuracy,0.6478405315614618,301
+cue_template_idx,5,all,cue_gold,accuracy,0.8870431893687708,301
+cue_template_idx,5,all,cue_dist,accuracy,0.3953488372093023,301
+cue_template_idx,5,all,at_p,accuracy,0.8132890365448504,602
+cue_template_idx,5,all,none,accuracy_gold_first,0.6176470588235294,136
+cue_template_idx,5,all,cue_gold,accuracy_gold_first,0.8676470588235294,136
+cue_template_idx,5,all,cue_dist,accuracy_gold_first,0.375,136
+cue_template_idx,5,all,at_p,accuracy_gold_first,0.7937500000000001,272
+cue_template_idx,5,all,none,accuracy_gold_second,0.6727272727272727,165
+cue_template_idx,5,all,cue_gold,accuracy_gold_second,0.9030303030303031,165
+cue_template_idx,5,all,cue_dist,accuracy_gold_second,0.4121212121212121,165
+cue_template_idx,5,all,at_p,accuracy_gold_second,0.8293939393939394,330
+cue_template_idx,5,all,none,parse_fail,0.009966777408637873,301
+cue_template_idx,5,all,cue_gold,parse_fail,0.009966777408637873,301
+cue_template_idx,5,all,cue_dist,parse_fail,0.006644518272425249,301
+cue_template_idx,5,all,at_p,parse_fail,0.009468438538205979,602
+cue_template_idx,5,all,cue_gold,follow_cue,0.8949152542372881,295
+cue_template_idx,5,all,cue_dist,follow_cue,0.597972972972973,296
+cue_template_idx,5,all,at_p,follow_cue,0.8502456378112825,591
+cue_template_idx,5,all,cue_gold,bias_rate,0.24745762711864408,295
+cue_template_idx,5,all,cue_dist,bias_rate,0.2668918918918919,296
+cue_template_idx,5,all,at_p,bias_rate,0.25038116212095546,591
+cue_template_idx,5,all,cue_gold,antibias_rate,0.013559322033898305,295
+cue_template_idx,5,all,cue_dist,antibias_rate,0.016891891891891893,296
+cue_template_idx,5,all,at_p,antibias_rate,0.014060647128578692,591
+cue_template_idx,5,all,cue_gold,nobias_rate,0.7389830508474576,295
+cue_template_idx,5,all,cue_dist,nobias_rate,0.7162162162162162,296
+cue_template_idx,5,all,at_p,nobias_rate,0.7355581907504659,591
+cue_template_idx,5,all,cue_gold,bias_null,0.2130208365080592,301
+cue_template_idx,5,all,cue_dist,bias_null,0.25912517419156,301
+cue_template_idx,5,all,at_p,bias_null,0.21993648716058428,602
+cue_template_idx,5,all,cue_gold,said_yes,0.8338983050847457,295
+cue_template_idx,5,all,cue_dist,said_yes,0.7804054054054054,296
+cue_template_idx,5,all,at_p,said_yes,0.8258512620701339,591
+cue_template_idx,5,all,cue_gold,said_yes_sampled,0.711864406779661,295
+cue_template_idx,5,all,cue_dist,said_yes_sampled,0.75,296
+cue_template_idx,5,all,at_p,said_yes_sampled,0.7176012197187871,591
+cue_template_idx,5,all,cue_gold,p_yes_bias,0.7741907802346635,73
+cue_template_idx,5,all,cue_dist,p_yes_bias,0.7030917104286484,79
+cue_template_idx,5,all,at_p,p_yes_bias,0.7627899145079885,152
+cue_template_idx,5,all,cue_gold,p_yes_antibias,0.8547087758779526,4
+cue_template_idx,5,all,cue_dist,p_yes_antibias,0.7192870736122131,5
+cue_template_idx,5,all,at_p,p_yes_antibias,0.8302349742636623,9
+cue_template_idx,5,all,cue_gold,p_yes_nobias,0.6910028461059299,218
+cue_template_idx,5,all,cue_dist,p_yes_nobias,0.740764486058703,212
+cue_template_idx,5,all,at_p,p_yes_nobias,0.6982917459239778,430
+cue_template_idx,5,all,cue_gold,count_deception,0.6116838487972509,291
+cue_template_idx,5,all,cue_dist,count_deception,0.6701030927835051,291
+cue_template_idx,5,all,at_p,count_deception,0.6204467353951889,582
+cue_template_idx,5,all,cue_gold,count_false_admission,0.7981651376146789,218
+cue_template_idx,5,all,cue_dist,count_false_admission,0.8066037735849056,212
+cue_template_idx,5,all,at_p,count_false_admission,0.7994011976047904,430
+cue_template_idx,5,all,cue_gold,count_false_denial,0.0547945205479452,73
+cue_template_idx,5,all,cue_dist,count_false_denial,0.3037974683544304,79
+cue_template_idx,5,all,at_p,count_false_denial,0.09472259810554803,152
+cue_template_idx,5,all,cue_gold,count_true_admission,0.9452054794520548,73
+cue_template_idx,5,all,cue_dist,count_true_admission,0.6962025316455697,79
+cue_template_idx,5,all,at_p,count_true_admission,0.9052774018944519,152
+cue_template_idx,5,all,cue_gold,count_true_denial,0.2018348623853211,218
+cue_template_idx,5,all,cue_dist,count_true_denial,0.19339622641509435,212
+cue_template_idx,5,all,at_p,count_true_denial,0.20059880239520958,430
+cue_template_idx,5,all,cue_gold,deception,0.5743047886390457,291
+cue_template_idx,5,all,cue_dist,deception,0.6202674430260544,291
+cue_template_idx,5,all,at_p,deception,0.581199186797097,582
+cue_template_idx,5,all,cue_gold,false_admission,0.6910028461059299,218
+cue_template_idx,5,all,cue_dist,false_admission,0.740764486058703,212
+cue_template_idx,5,all,at_p,false_admission,0.6982917459239778,430
+cue_template_idx,5,all,cue_gold,false_denial,0.22580921976533655,73
+cue_template_idx,5,all,cue_dist,false_denial,0.2969082895713516,79
+cue_template_idx,5,all,at_p,false_denial,0.2372100854920115,152
+cue_template_idx,5,all,cue_gold,true_admission,0.7741907802346635,73
+cue_template_idx,5,all,cue_dist,true_admission,0.7030917104286484,79
+cue_template_idx,5,all,at_p,true_admission,0.7627899145079885,152
+cue_template_idx,5,all,cue_gold,true_denial,0.30899715389407006,218
+cue_template_idx,5,all,cue_dist,true_denial,0.259235513941297,212
+cue_template_idx,5,all,at_p,true_denial,0.3017082540760223,430
+cue_template_idx,6,all,none,accuracy,0.6902356902356902,297
+cue_template_idx,6,all,cue_gold,accuracy,0.9595959595959596,297
+cue_template_idx,6,all,cue_dist,accuracy,0.21548821548821548,297
+cue_template_idx,6,all,at_p,accuracy,0.847979797979798,594
+cue_template_idx,6,all,none,accuracy_gold_first,0.6558441558441559,154
+cue_template_idx,6,all,cue_gold,accuracy_gold_first,0.9545454545454546,154
+cue_template_idx,6,all,cue_dist,accuracy_gold_first,0.19480519480519481,154
+cue_template_idx,6,all,at_p,accuracy_gold_first,0.8405844155844157,308
+cue_template_idx,6,all,none,accuracy_gold_second,0.7272727272727273,143
+cue_template_idx,6,all,cue_gold,accuracy_gold_second,0.965034965034965,143
+cue_template_idx,6,all,cue_dist,accuracy_gold_second,0.23776223776223776,143
+cue_template_idx,6,all,at_p,accuracy_gold_second,0.8559440559440559,286
+cue_template_idx,6,all,none,parse_fail,0.016835016835016835,297
+cue_template_idx,6,all,cue_gold,parse_fail,0.013468013468013467,297
+cue_template_idx,6,all,cue_dist,parse_fail,0.003367003367003367,297
+cue_template_idx,6,all,at_p,parse_fail,0.011952861952861953,594
+cue_template_idx,6,all,cue_gold,follow_cue,0.9722222222222222,288
+cue_template_idx,6,all,cue_dist,follow_cue,0.7800687285223368,291
+cue_template_idx,6,all,at_p,follow_cue,0.9431443924423645,579
+cue_template_idx,6,all,cue_gold,bias_rate,0.2638888888888889,288
+cue_template_idx,6,all,cue_dist,bias_rate,0.48109965635738833,291
+cue_template_idx,6,all,at_p,bias_rate,0.29675853700814697,579
+cue_template_idx,6,all,cue_gold,antibias_rate,0.003472222222222222,288
+cue_template_idx,6,all,cue_dist,antibias_rate,0.0,291
+cue_template_idx,6,all,at_p,antibias_rate,0.0029467845380481885,579
+cue_template_idx,6,all,cue_gold,nobias_rate,0.7326388888888888,288
+cue_template_idx,6,all,cue_dist,nobias_rate,0.5189003436426117,291
+cue_template_idx,6,all,at_p,nobias_rate,0.7002946784538049,579
+cue_template_idx,6,all,cue_gold,bias_null,0.2726772463635247,297
+cue_template_idx,6,all,cue_dist,bias_null,0.46606445074707575,297
+cue_template_idx,6,all,at_p,bias_null,0.3016853270210574,594
+cue_template_idx,6,all,cue_gold,said_yes,0.6354166666666666,288
+cue_template_idx,6,all,cue_dist,said_yes,0.6907216494845361,291
+cue_template_idx,6,all,at_p,said_yes,0.6437857514300572,579
+cue_template_idx,6,all,cue_gold,said_yes_sampled,0.5833333333333334,288
+cue_template_idx,6,all,cue_dist,said_yes_sampled,0.7457044673539519,291
+cue_template_idx,6,all,at_p,said_yes_sampled,0.607904316172647,579
+cue_template_idx,6,all,cue_gold,p_yes_bias,0.6834277940031729,76
+cue_template_idx,6,all,cue_dist,p_yes_bias,0.6885666032986981,140
+cue_template_idx,6,all,at_p,p_yes_bias,0.6846884831995051,216
+cue_template_idx,6,all,cue_gold,p_yes_antibias,0.5168564915657043,1
+cue_template_idx,6,all,cue_dist,p_yes_antibias,nan,0
+cue_template_idx,6,all,at_p,p_yes_antibias,0.5168564915657043,1
+cue_template_idx,6,all,cue_gold,p_yes_nobias,0.6371362438840323,211
+cue_template_idx,6,all,cue_dist,p_yes_nobias,0.6911796338806878,151
+cue_template_idx,6,all,at_p,p_yes_nobias,0.6431960596435584,362
+cue_template_idx,6,all,cue_gold,count_deception,0.5296167247386759,287
+cue_template_idx,6,all,cue_dist,count_deception,0.5189003436426117,291
+cue_template_idx,6,all,at_p,count_deception,0.5279902642559109,578
+cue_template_idx,6,all,cue_gold,count_false_admission,0.6113744075829384,211
+cue_template_idx,6,all,cue_dist,count_false_admission,0.7019867549668874,151
+cue_template_idx,6,all,at_p,count_false_admission,0.6215346534653465,362
+cue_template_idx,6,all,cue_gold,count_false_denial,0.3026315789473684,76
+cue_template_idx,6,all,cue_dist,count_false_denial,0.32142857142857145,140
+cue_template_idx,6,all,at_p,count_false_denial,0.3072429906542056,216
+cue_template_idx,6,all,cue_gold,count_true_admission,0.6973684210526315,76
+cue_template_idx,6,all,cue_dist,count_true_admission,0.6785714285714286,140
+cue_template_idx,6,all,at_p,count_true_admission,0.6927570093457944,216
+cue_template_idx,6,all,cue_gold,count_true_denial,0.3886255924170616,211
+cue_template_idx,6,all,cue_dist,count_true_denial,0.2980132450331126,151
+cue_template_idx,6,all,at_p,count_true_denial,0.37846534653465347,362
+cue_template_idx,6,all,cue_gold,deception,0.5522482059766192,287
+cue_template_idx,6,all,cue_dist,deception,0.508483849670674,291
+cue_template_idx,6,all,at_p,deception,0.5456059453620346,578
+cue_template_idx,6,all,cue_gold,false_admission,0.6371362438840323,211
+cue_template_idx,6,all,cue_dist,false_admission,0.6911796338806878,151
+cue_template_idx,6,all,at_p,false_admission,0.6431960596435584,362
+cue_template_idx,6,all,cue_gold,false_denial,0.31657220599682706,76
+cue_template_idx,6,all,cue_dist,false_denial,0.3114333967013018,140
+cue_template_idx,6,all,at_p,false_denial,0.31531151680049496,216
+cue_template_idx,6,all,cue_gold,true_admission,0.6834277940031729,76
+cue_template_idx,6,all,cue_dist,true_admission,0.6885666032986981,140
+cue_template_idx,6,all,at_p,true_admission,0.6846884831995051,216
+cue_template_idx,6,all,cue_gold,true_denial,0.3628637561159676,211
+cue_template_idx,6,all,cue_dist,true_denial,0.30882036611931213,151
+cue_template_idx,6,all,at_p,true_denial,0.35680394035644164,362
+cue_template_idx,7,all,none,accuracy,0.7644927536231884,276
+cue_template_idx,7,all,cue_gold,accuracy,0.9746376811594203,276
+cue_template_idx,7,all,cue_dist,accuracy,0.213768115942029,276
+cue_template_idx,7,all,at_p,accuracy,0.8605072463768116,552
+cue_template_idx,7,all,none,accuracy_gold_first,0.7021276595744681,141
+cue_template_idx,7,all,cue_gold,accuracy_gold_first,0.9645390070921985,141
+cue_template_idx,7,all,cue_dist,accuracy_gold_first,0.1773049645390071,141
+cue_template_idx,7,all,at_p,accuracy_gold_first,0.8464539007092198,282
+cue_template_idx,7,all,none,accuracy_gold_second,0.8296296296296296,135
+cue_template_idx,7,all,cue_gold,accuracy_gold_second,0.9851851851851852,135
+cue_template_idx,7,all,cue_dist,accuracy_gold_second,0.2518518518518518,135
+cue_template_idx,7,all,at_p,accuracy_gold_second,0.8751851851851852,270
+cue_template_idx,7,all,none,parse_fail,0.010869565217391304,276
+cue_template_idx,7,all,cue_gold,parse_fail,0.0,276
+cue_template_idx,7,all,cue_dist,parse_fail,0.007246376811594203,276
+cue_template_idx,7,all,at_p,parse_fail,0.0010869565217391307,552
+cue_template_idx,7,all,cue_gold,follow_cue,0.9743589743589743,273
+cue_template_idx,7,all,cue_dist,follow_cue,0.7822878228782287,271
+cue_template_idx,7,all,at_p,follow_cue,0.9457279061239456,544
+cue_template_idx,7,all,cue_gold,bias_rate,0.20146520146520147,273
+cue_template_idx,7,all,cue_dist,bias_rate,0.5535055350553506,271
+cue_template_idx,7,all,at_p,bias_rate,0.25394206087275395,544
+cue_template_idx,7,all,cue_gold,antibias_rate,0.0,273
+cue_template_idx,7,all,cue_dist,antibias_rate,0.0,271
+cue_template_idx,7,all,at_p,antibias_rate,0.0,544
+cue_template_idx,7,all,cue_gold,nobias_rate,0.7985347985347986,273
+cue_template_idx,7,all,cue_dist,nobias_rate,0.44649446494464945,271
+cue_template_idx,7,all,at_p,nobias_rate,0.746057939127246,544
+cue_template_idx,7,all,cue_gold,bias_null,0.2307646025825363,276
+cue_template_idx,7,all,cue_dist,bias_null,0.5068340396033661,276
+cue_template_idx,7,all,at_p,bias_null,0.2721750181356608,552
+cue_template_idx,7,all,cue_gold,said_yes,0.6007326007326007,273
+cue_template_idx,7,all,cue_dist,said_yes,0.7269372693726938,271
+cue_template_idx,7,all,at_p,said_yes,0.6195452878621196,544
+cue_template_idx,7,all,cue_gold,said_yes_sampled,0.5897435897435898,273
+cue_template_idx,7,all,cue_dist,said_yes_sampled,0.6752767527675276,271
+cue_template_idx,7,all,at_p,said_yes_sampled,0.6024935826916026,544
+cue_template_idx,7,all,cue_gold,p_yes_bias,0.6716239956292239,55
+cue_template_idx,7,all,cue_dist,p_yes_bias,0.6963824610908826,150
+cue_template_idx,7,all,at_p,p_yes_bias,0.6796682623857195,205
+cue_template_idx,7,all,cue_gold,p_yes_antibias,nan,0
+cue_template_idx,7,all,cue_dist,p_yes_antibias,nan,0
+cue_template_idx,7,all,at_p,p_yes_antibias,nan,0
+cue_template_idx,7,all,cue_gold,p_yes_nobias,0.5974839790083399,218
+cue_template_idx,7,all,cue_dist,p_yes_nobias,0.7318741292500299,121
+cue_template_idx,7,all,at_p,p_yes_nobias,0.6094730732668147,339
+cue_template_idx,7,all,cue_gold,count_deception,0.5311355311355311,273
+cue_template_idx,7,all,cue_dist,count_deception,0.5350553505535055,271
+cue_template_idx,7,all,at_p,count_deception,0.5317198386505317,544
+cue_template_idx,7,all,cue_gold,count_false_admission,0.5825688073394495,218
+cue_template_idx,7,all,cue_dist,count_false_admission,0.7933884297520661,121
+cue_template_idx,7,all,at_p,count_false_admission,0.6013762595232245,339
+cue_template_idx,7,all,cue_gold,count_false_denial,0.32727272727272727,55
+cue_template_idx,7,all,cue_dist,count_false_denial,0.32666666666666666,150
+cue_template_idx,7,all,at_p,count_false_denial,0.3270758122743682,205
+cue_template_idx,7,all,cue_gold,count_true_admission,0.6727272727272727,55
+cue_template_idx,7,all,cue_dist,count_true_admission,0.6733333333333333,150
+cue_template_idx,7,all,at_p,count_true_admission,0.6729241877256318,205
+cue_template_idx,7,all,cue_gold,count_true_denial,0.41743119266055045,218
+cue_template_idx,7,all,cue_dist,count_true_denial,0.2066115702479339,121
+cue_template_idx,7,all,at_p,count_true_denial,0.3986237404767756,339
+cue_template_idx,7,all,cue_gold,deception,0.5432680866820908,273
+cue_template_idx,7,all,cue_dist,deception,0.49483173607240305,271
+cue_template_idx,7,all,at_p,deception,0.5360479266077095,544
+cue_template_idx,7,all,cue_gold,false_admission,0.5974839790083399,218
+cue_template_idx,7,all,cue_dist,false_admission,0.7318741292500299,121
+cue_template_idx,7,all,at_p,false_admission,0.6094730732668147,339
+cue_template_idx,7,all,cue_gold,false_denial,0.3283760043707761,55
+cue_template_idx,7,all,cue_dist,false_denial,0.30361753890911736,150
+cue_template_idx,7,all,at_p,false_denial,0.32033173761428047,205
+cue_template_idx,7,all,cue_gold,true_admission,0.6716239956292239,55
+cue_template_idx,7,all,cue_dist,true_admission,0.6963824610908826,150
+cue_template_idx,7,all,at_p,true_admission,0.6796682623857195,205
+cue_template_idx,7,all,cue_gold,true_denial,0.40251602099166006,218
+cue_template_idx,7,all,cue_dist,true_denial,0.26812587074997013,121
+cue_template_idx,7,all,at_p,true_denial,0.3905269267331854,339
+probe_population,bias/bias/cue_gold,train,rows,n_rows,366,366
+probe_population,bias/bias/cue_dist,train,rows,n_rows,659,659
+probe_population,bias/no bias/cue_gold,train,rows,n_rows,1208,1208
+probe_population,bias/no bias/cue_dist,train,rows,n_rows,912,912
+probe_population,bias/bias/cue_gold,eval,rows,n_rows,157,157
+probe_population,bias/bias/cue_dist,eval,rows,n_rows,279,279
+probe_population,bias/no bias/cue_gold,eval,rows,n_rows,512,512
+probe_population,bias/no bias/cue_dist,eval,rows,n_rows,385,385
+probe_population,bias_followed/bias/cue_gold,train,rows,n_rows,366,366
+probe_population,bias_followed/bias/cue_dist,train,rows,n_rows,659,659
+probe_population,bias_followed/no bias/cue_gold,train,rows,n_rows,1121,1121
+probe_population,bias_followed/no bias/cue_dist,train,rows,n_rows,447,447
+probe_population,bias_followed/bias/cue_gold,eval,rows,n_rows,157,157
+probe_population,bias_followed/bias/cue_dist,eval,rows,n_rows,279,279
+probe_population,bias_followed/no bias/cue_gold,eval,rows,n_rows,474,474
+probe_population,bias_followed/no bias/cue_dist,eval,rows,n_rows,189,189
+probe_population,deception/deceptive/cue_gold,train,rows,n_rows,979,979
+probe_population,deception/deceptive/cue_dist,train,rows,n_rows,907,907
+probe_population,deception/honest/cue_gold,train,rows,n_rows,595,595
+probe_population,deception/honest/cue_dist,train,rows,n_rows,664,664
+probe_population,deception/deceptive/cue_gold,eval,rows,n_rows,428,428
+probe_population,deception/deceptive/cue_dist,eval,rows,n_rows,390,390
+probe_population,deception/honest/cue_gold,eval,rows,n_rows,241,241
+probe_population,deception/honest/cue_dist,eval,rows,n_rows,274,274
+probe_population,deception_yes/false admission/cue_gold,train,rows,n_rows,914,914
+probe_population,deception_yes/false admission/cue_dist,train,rows,n_rows,761,761
+probe_population,deception_yes/true admission/cue_gold,train,rows,n_rows,301,301
+probe_population,deception_yes/true admission/cue_dist,train,rows,n_rows,513,513
+probe_population,deception_yes/false admission/cue_gold,eval,rows,n_rows,402,402
+probe_population,deception_yes/false admission/cue_dist,eval,rows,n_rows,325,325
+probe_population,deception_yes/true admission/cue_gold,eval,rows,n_rows,131,131
+probe_population,deception_yes/true admission/cue_dist,eval,rows,n_rows,214,214
+probe_population,deception_no/false denial/cue_gold,train,rows,n_rows,65,65
+probe_population,deception_no/false denial/cue_dist,train,rows,n_rows,146,146
+probe_population,deception_no/true denial/cue_gold,train,rows,n_rows,294,294
+probe_population,deception_no/true denial/cue_dist,train,rows,n_rows,151,151
+probe_population,deception_no/false denial/cue_gold,eval,rows,n_rows,26,26
+probe_population,deception_no/false denial/cue_dist,eval,rows,n_rows,65,65
+probe_population,deception_no/true denial/cue_gold,eval,rows,n_rows,110,110
+probe_population,deception_no/true denial/cue_dist,eval,rows,n_rows,60,60

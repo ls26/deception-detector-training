@@ -1,0 +1,50 @@
+{
+  "gen": "nocot",
+  "dry_run": false,
+  "spec_hash": "10b44b32b4c2",
+  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "vllm_version": "0.13.0",
+  "transformers_version": "4.56.1",
+  "max_model_len": 2048,
+  "max_tokens": 1,
+  "prompt_tokens": {
+    "min": 59,
+    "max": 662
+  },
+  "n_records": 20610,
+  "n_prompts": 6870,
+  "n_questions": 2290,
+  "finish_reasons": {
+    "length": 20610
+  },
+  "answer_letters": {
+    "A": 9934,
+    "B": 10623,
+    "None": 53
+  },
+  "gates": {
+    "all_finish_length": true,
+    "letter_mass_min": 0.95,
+    "letter_mass_min_share": 0.95,
+    "share_prompts_mass_ab_ok": 0.9905385735080058,
+    "share_prompts_mass_ab_ok_passes": true,
+    "share_samples_letter_token": 0.9974284327996118,
+    "n_prompts_top_letter_null": 45,
+    "min_mass_ab": 0.003709159210021498
+  },
+  "sibling_logprob_agreement_this_run": {
+    "n_prompts": 2670,
+    "n_prompts_exact_agreement": 2660,
+    "max_abs_diff_lp_a": 0.24999713897705078,
+    "max_abs_diff_lp_b": 0.125,
+    "max_abs_diff_p_a": 0.022384863279110018,
+    "n_prompts_p_a_diff_over_1e-3": 1,
+    "n_prompts_top_letter_disagree": 0,
+    "p_a_max_diff_asserted_below": 0.05
+  },
+  "timings": {
+    "n_generated_this_run": 2670,
+    "generation_seconds": 40.78428626060486,
+    "script_seconds": 100.95032596588135
+  }
+}

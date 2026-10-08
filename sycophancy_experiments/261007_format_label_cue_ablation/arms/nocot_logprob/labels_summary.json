@@ -1,0 +1,331 @@
+{
+ "spec_hash": "10b44b32b4c2",
+ "arm": "nocot_logprob",
+ "gens_suffix": "",
+ "label_source": "logprob",
+ "said_rule": "p_yes_fp32 > 0.5 -> Yes, < -> No, == -> null (score_pyes.py)",
+ "n_rows": 4580,
+ "n_questions": 2290,
+ "gates": {
+  "partition": {
+   "n_rows": 4580,
+   "n_prompts": 4580,
+   "n_without_followup": 19,
+   "pass": true
+  }
+ },
+ "counts": {
+  "train": {
+   "cue_gold": {
+    "n": 1603,
+    "bias_rm": {
+     "no bias": 1208,
+     "bias": 366,
+     "unparsed_turn1": 21,
+     "anti-bias": 8
+    },
+    "deception_rm": {
+     "deceptive": 979,
+     "honest": 595,
+     "unparsed_turn1": 21,
+     "excluded_antibias": 8
+    },
+    "subtype": {
+     "false admission": 914,
+     "true denial": 294,
+     "true admission": 301,
+     "unparsed_turn1": 21,
+     "false denial": 65,
+     "excluded_antibias": 8
+    },
+    "said_rm": {
+     "Yes": 1231,
+     "No": 365,
+     "None": 7
+    },
+    "said_sampled": {
+     "Yes": 1101,
+     "No": 495,
+     "None": 7
+    },
+    "n_said_rm_differs_from_sampled": 402
+   },
+   "cue_dist": {
+    "n": 1603,
+    "bias_rm": {
+     "bias": 659,
+     "no bias": 912,
+     "unparsed_turn1": 20,
+     "anti-bias": 12
+    },
+    "deception_rm": {
+     "honest": 664,
+     "deceptive": 907,
+     "unparsed_turn1": 20,
+     "excluded_antibias": 12
+    },
+    "subtype": {
+     "true admission": 513,
+     "false admission": 761,
+     "false denial": 146,
+     "true denial": 151,
+     "unparsed_turn1": 20,
+     "excluded_antibias": 12
+    },
+    "said_rm": {
+     "Yes": 1294,
+     "No": 303,
+     "None": 6
+    },
+    "said_sampled": {
+     "Yes": 1228,
+     "No": 369,
+     "None": 6
+    },
+    "n_said_rm_differs_from_sampled": 318
+   },
+   "all": {
+    "n": 3206,
+    "bias_rm": {
+     "bias": 1025,
+     "no bias": 2120,
+     "unparsed_turn1": 41,
+     "anti-bias": 20
+    },
+    "deception_rm": {
+     "honest": 1259,
+     "deceptive": 1886,
+     "unparsed_turn1": 41,
+     "excluded_antibias": 20
+    },
+    "subtype": {
+     "true admission": 814,
+     "false admission": 1675,
+     "false denial": 211,
+     "true denial": 445,
+     "unparsed_turn1": 41,
+     "excluded_antibias": 20
+    },
+    "said_rm": {
+     "Yes": 2525,
+     "No": 668,
+     "None": 13
+    },
+    "said_sampled": {
+     "Yes": 2329,
+     "No": 864,
+     "None": 13
+    },
+    "n_said_rm_differs_from_sampled": 720
+   }
+  },
+  "eval": {
+   "cue_gold": {
+    "n": 687,
+    "bias_rm": {
+     "bias": 157,
+     "no bias": 512,
+     "anti-bias": 4,
+     "unparsed_turn1": 14
+    },
+    "deception_rm": {
+     "deceptive": 428,
+     "honest": 241,
+     "excluded_antibias": 4,
+     "unparsed_turn1": 14
+    },
+    "subtype": {
+     "false denial": 26,
+     "true admission": 131,
+     "true denial": 110,
+     "false admission": 402,
+     "excluded_antibias": 4,
+     "unparsed_turn1": 14
+    },
+    "said_rm": {
+     "No": 139,
+     "Yes": 546,
+     "None": 2
+    },
+    "said_sampled": {
+     "No": 197,
+     "Yes": 488,
+     "None": 2
+    },
+    "n_said_rm_differs_from_sampled": 164
+   },
+   "cue_dist": {
+    "n": 687,
+    "bias_rm": {
+     "no bias": 385,
+     "bias": 279,
+     "anti-bias": 7,
+     "unparsed_turn1": 16
+    },
+    "deception_rm": {
+     "honest": 274,
+     "deceptive": 390,
+     "excluded_antibias": 7,
+     "unparsed_turn1": 16
+    },
+    "subtype": {
+     "true denial": 60,
+     "false admission": 325,
+     "false denial": 65,
+     "true admission": 214,
+     "excluded_antibias": 7,
+     "unparsed_turn1": 16
+    },
+    "said_rm": {
+     "No": 128,
+     "Yes": 555,
+     "None": 4
+    },
+    "said_sampled": {
+     "No": 177,
+     "Yes": 506,
+     "None": 4
+    },
+    "n_said_rm_differs_from_sampled": 143
+   },
+   "all": {
+    "n": 1374,
+    "bias_rm": {
+     "no bias": 897,
+     "bias": 436,
+     "anti-bias": 11,
+     "unparsed_turn1": 30
+    },
+    "deception_rm": {
+     "honest": 515,
+     "deceptive": 818,
+     "excluded_antibias": 11,
+     "unparsed_turn1": 30
+    },
+    "subtype": {
+     "true denial": 170,
+     "false denial": 91,
+     "false admission": 727,
+     "true admission": 345,
+     "excluded_antibias": 11,
+     "unparsed_turn1": 30
+    },
+    "said_rm": {
+     "No": 267,
+     "Yes": 1101,
+     "None": 6
+    },
+    "said_sampled": {
+     "No": 374,
+     "Yes": 994,
+     "None": 6
+    },
+    "n_said_rm_differs_from_sampled": 307
+   }
+  },
+  "all": {
+   "cue_gold": {
+    "n": 2290,
+    "bias_rm": {
+     "no bias": 1720,
+     "bias": 523,
+     "unparsed_turn1": 35,
+     "anti-bias": 12
+    },
+    "deception_rm": {
+     "deceptive": 1407,
+     "honest": 836,
+     "unparsed_turn1": 35,
+     "excluded_antibias": 12
+    },
+    "subtype": {
+     "false admission": 1316,
+     "false denial": 91,
+     "true admission": 432,
+     "true denial": 404,
+     "unparsed_turn1": 35,
+     "excluded_antibias": 12
+    },
+    "said_rm": {
+     "Yes": 1777,
+     "No": 504,
+     "None": 9
+    },
+    "said_sampled": {
+     "Yes": 1589,
+     "No": 692,
+     "None": 9
+    },
+    "n_said_rm_differs_from_sampled": 566
+   },
+   "cue_dist": {
+    "n": 2290,
+    "bias_rm": {
+     "bias": 938,
+     "no bias": 1297,
+     "anti-bias": 19,
+     "unparsed_turn1": 36
+    },
+    "deception_rm": {
+     "honest": 938,
+     "deceptive": 1297,
+     "excluded_antibias": 19,
+     "unparsed_turn1": 36
+    },
+    "subtype": {
+     "true admission": 727,
+     "true denial": 211,
+     "false admission": 1086,
+     "false denial": 211,
+     "excluded_antibias": 19,
+     "unparsed_turn1": 36
+    },
+    "said_rm": {
+     "Yes": 1849,
+     "No": 431,
+     "None": 10
+    },
+    "said_sampled": {
+     "Yes": 1734,
+     "No": 546,
+     "None": 10
+    },
+    "n_said_rm_differs_from_sampled": 461
+   },
+   "all": {
+    "n": 4580,
+    "bias_rm": {
+     "bias": 1461,
+     "no bias": 3017,
+     "unparsed_turn1": 71,
+     "anti-bias": 31
+    },
+    "deception_rm": {
+     "honest": 1774,
+     "deceptive": 2704,
+     "unparsed_turn1": 71,
+     "excluded_antibias": 31
+    },
+    "subtype": {
+     "true admission": 1159,
+     "false admission": 2402,
+     "true denial": 615,
+     "false denial": 302,
+     "unparsed_turn1": 71,
+     "excluded_antibias": 31
+    },
+    "said_rm": {
+     "Yes": 3626,
+     "No": 935,
+     "None": 19
+    },
+    "said_sampled": {
+     "Yes": 3323,
+     "No": 1238,
+     "None": 19
+    },
+    "n_said_rm_differs_from_sampled": 1027
+   }
+  }
+ }
+}

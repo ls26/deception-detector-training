@@ -1,0 +1,55 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "arm": "nocot_logprob",
+  "cells_run": {
+    "bias_rm_answer": [],
+    "deception_rm_preyesno": [
+      [
+        0.1,
+        4000
+      ],
+      [
+        0.03,
+        8000
+      ],
+      [
+        0.1,
+        8000
+      ]
+    ],
+    "deception_yes_rm_preyesno": [
+      [
+        0.1,
+        4000
+      ],
+      [
+        0.03,
+        8000
+      ],
+      [
+        0.1,
+        8000
+      ]
+    ],
+    "deception_no_rm_preyesno": [
+      [
+        0.1,
+        4000
+      ],
+      [
+        0.03,
+        8000
+      ],
+      [
+        0.1,
+        8000
+      ]
+    ],
+    "bias_followed_rm_answer": [
+      [
+        0.1,
+        2000
+      ]
+    ]
+  }
+}

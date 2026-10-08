@@ -1,0 +1,21 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "probe": "bias_rm_answer",
+  "n_train": 2908,
+  "n_eval": 1326,
+  "recipe": {
+    "learning_rate": 0.01,
+    "max_steps": 4000,
+    "layer_band": [
+      13,
+      4
+    ]
+  },
+  "seed": 0,
+  "auc_mean_sigmoid": 0.8403341547713146,
+  "target": 0.84,
+  "tolerance": 0.005,
+  "pass": true,
+  "fit_seconds": 186.87769865989685,
+  "seconds_per_1000_steps": 46.71942466497421
+}

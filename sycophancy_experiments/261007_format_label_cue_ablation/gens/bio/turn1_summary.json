@@ -1,0 +1,37 @@
+{
+  "gen": "bio",
+  "dry_run": false,
+  "spec_hash": "10b44b32b4c2",
+  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "vllm_version": "0.13.0",
+  "transformers_version": "4.56.1",
+  "max_model_len": 8192,
+  "max_tokens": 2048,
+  "prompt_tokens": {
+    "min": 143,
+    "max": 742
+  },
+  "n_records": 13740,
+  "n_prompts": 4580,
+  "n_questions": 2290,
+  "finish_reasons": {
+    "stop": 13740
+  },
+  "answer_letters": {
+    "B": 7895,
+    "A": 5374,
+    "None": 471
+  },
+  "gates": {
+    "finish_stop_rate": 1.0,
+    "n_truncated": 0,
+    "truncated_keys": [],
+    "bio_prompt_equals_260819_none_plus_bio": true
+  },
+  "sibling_logprob_agreement_this_run": null,
+  "timings": {
+    "n_generated_this_run": 4580,
+    "generation_seconds": 414.25100922584534,
+    "script_seconds": 454.0421230792999
+  }
+}

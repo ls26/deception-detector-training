@@ -1,0 +1,276 @@
+{
+  "gen": "nocot",
+  "dry_run": false,
+  "spec_hash": "10b44b32b4c2",
+  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "vllm_version": "0.13.0",
+  "transformers_version": "4.56.1",
+  "n_turn1_rows": 20610,
+  "n_cued_turn1_rows": 13740,
+  "n_records": 18294,
+  "per_arm": {
+    "removal": 8862,
+    "removal_explicit": 9432
+  },
+  "skipped": {
+    "explicit_unparsed": [
+      [
+        4896,
+        "cue_dist",
+        "0"
+      ],
+      [
+        4945,
+        "cue_gold",
+        "2"
+      ],
+      [
+        5004,
+        "cue_dist",
+        "0"
+      ],
+      [
+        10800,
+        "cue_gold",
+        "2"
+      ],
+      [
+        11005,
+        "cue_dist",
+        "0"
+      ],
+      [
+        11098,
+        "cue_dist",
+        "2"
+      ],
+      [
+        11116,
+        "cue_dist",
+        "1"
+      ]
+    ],
+    "truncated": [],
+    "top_letter_null": [
+      [
+        939,
+        "cue_gold",
+        "top"
+      ],
+      [
+        1729,
+        "cue_gold",
+        "top"
+      ],
+      [
+        1821,
+        "cue_gold",
+        "top"
+      ],
+      [
+        1865,
+        "cue_dist",
+        "top"
+      ],
+      [
+        1888,
+        "cue_gold",
+        "top"
+      ],
+      [
+        4710,
+        "cue_dist",
+        "top"
+      ],
+      [
+        4888,
+        "cue_dist",
+        "top"
+      ],
+      [
+        9869,
+        "cue_dist",
+        "top"
+      ],
+      [
+        9934,
+        "cue_dist",
+        "top"
+      ],
+      [
+        9943,
+        "cue_dist",
+        "top"
+      ],
+      [
+        10424,
+        "cue_gold",
+        "top"
+      ],
+      [
+        10490,
+        "cue_gold",
+        "top"
+      ],
+      [
+        10565,
+        "cue_gold",
+        "top"
+      ],
+      [
+        10635,
+        "cue_gold",
+        "top"
+      ],
+      [
+        10829,
+        "cue_dist",
+        "top"
+      ],
+      [
+        11020,
+        "cue_dist",
+        "top"
+      ],
+      [
+        11139,
+        "cue_dist",
+        "top"
+      ],
+      [
+        11142,
+        "cue_dist",
+        "top"
+      ],
+      [
+        11247,
+        "cue_gold",
+        "top"
+      ]
+    ]
+  },
+  "said": {
+    "No": 4986,
+    "Yes": 13308
+  },
+  "finish_stop_rate": 0.9422761561167596,
+  "p_yes_pos0_null": 0,
+  "prompt_tokens": {
+    "min": 102,
+    "max": 702
+  },
+  "token_layout": {
+    "n_letter_rows": 18286,
+    "non_letter_rows": [
+      {
+        "key": [
+          4672,
+          "cue_gold",
+          "0"
+        ],
+        "sampled_token_ids": [
+          818
+        ],
+        "sampled_text": "ne",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          4946,
+          "cue_gold",
+          "0"
+        ],
+        "sampled_token_ids": [
+          1962
+        ],
+        "sampled_text": "not",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          4946,
+          "cue_gold",
+          "1"
+        ],
+        "sampled_token_ids": [
+          6836
+        ],
+        "sampled_text": "none",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          11204,
+          "cue_gold",
+          "0"
+        ],
+        "sampled_token_ids": [
+          1962
+        ],
+        "sampled_text": "not",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          11264,
+          "cue_dist",
+          "2"
+        ],
+        "sampled_token_ids": [
+          64
+        ],
+        "sampled_text": "a",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          11268,
+          "cue_dist",
+          "0"
+        ],
+        "sampled_token_ids": [
+          818
+        ],
+        "sampled_text": "ne",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          11268,
+          "cue_dist",
+          "1"
+        ],
+        "sampled_token_ids": [
+          818
+        ],
+        "sampled_text": "ne",
+        "layout_holds": true
+      },
+      {
+        "key": [
+          11268,
+          "cue_dist",
+          "2"
+        ],
+        "sampled_token_ids": [
+          6836
+        ],
+        "sampled_text": "none",
+        "layout_holds": true
+      }
+    ]
+  },
+  "top_vs_samples_report": {
+    "n_pairs": 13184,
+    "max_abs_diff": 0.062176500885798125,
+    "n_over_1e-3": 26,
+    "n_over_1e-2": 16,
+    "n_over_bar": 2,
+    "n_pairs_p_yes_null": 0
+  },
+  "timings": {
+    "n_generated_this_run": 0,
+    "generation_seconds": 0.0,
+    "script_seconds": 64.91673254966736
+  }
+}

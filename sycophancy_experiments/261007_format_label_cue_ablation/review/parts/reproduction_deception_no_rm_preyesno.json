@@ -1,0 +1,21 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "probe": "deception_no_rm_preyesno",
+  "n_train": 980,
+  "n_eval": 490,
+  "recipe": {
+    "learning_rate": 0.03,
+    "max_steps": 4000,
+    "layer_band": [
+      15,
+      4
+    ]
+  },
+  "seed": 0,
+  "auc_mean_sigmoid": 0.7490315315315315,
+  "target": 0.749,
+  "tolerance": 0.005,
+  "pass": true,
+  "fit_seconds": 185.3895890712738,
+  "seconds_per_1000_steps": 46.34739726781845
+}

@@ -1,0 +1,340 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "config": {
+    "spec_hash": "10b44b32b4c2",
+    "arm": "bio_cot",
+    "arms_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms",
+    "datasets": [
+      "bias",
+      "deception",
+      "bias_followed"
+    ],
+    "definitions": [
+      "rm"
+    ],
+    "splits": [
+      "train",
+      "eval"
+    ],
+    "probe_kinds": [
+      "bias",
+      "bias_followed",
+      "deception",
+      "deception_yes",
+      "deception_no"
+    ],
+    "train_samples_per_prompt": 1,
+    "eval_samples_per_prompt": 1,
+    "pool_seed": 53,
+    "n_train_per_class": {
+      "bias": 454,
+      "deception_yes": 340,
+      "deception_no": 66,
+      "bias_followed": 626
+    },
+    "sample_seed": 53,
+    "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "n_layers": 32,
+    "dtype": "torch.bfloat16",
+    "attn_implementation": "sdpa",
+    "device": "cuda",
+    "batch_size": 16,
+    "act_save_dtype": "torch.bfloat16",
+    "limit_per_class": null,
+    "detector_arch": "linear-probe",
+    "normalize_input": "unit_norm",
+    "train_cfg": {
+      "batch_size": 32,
+      "grad_accum_steps": 1,
+      "max_steps": 2000,
+      "eval_steps": 30,
+      "num_epochs": 1,
+      "steps_per_logging": 10,
+      "learning_rate": 0.01,
+      "weight_decay": 0.0,
+      "clip_grad_norm": 1.0,
+      "warmup_steps": 0,
+      "scheduler": "constant",
+      "checkpoint_interval": 10,
+      "resume_from_checkpoint": true,
+      "device": "cuda",
+      "seed": 42
+    },
+    "layer_selection": "loss_threshold",
+    "layer_loss_threshold": 0.6,
+    "layer_band": null,
+    "combined_score": "mean_sigmoid",
+    "per_probe_overrides": {},
+    "eval_aggregator_method": "mean",
+    "probe_seed": 0,
+    "cv_folds": 5,
+    "cv_seed": 0,
+    "cv_learning_rates": [
+      0.01,
+      0.03
+    ],
+    "cv_max_steps": [
+      2000,
+      4000
+    ],
+    "cv_band_widths": [
+      4
+    ],
+    "probe_sets_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms/bio_cot/probe_sets",
+    "act_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/arms/bio_cot/activations",
+    "cv_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/cv/bio_cot",
+    "run_dir": "/workspace/sycophancy_experiments/261007_format_label_cue_ablation/runs/bio_cot"
+  },
+  "probes": [
+    {
+      "name": "bias_rm_answer",
+      "kind": "bias",
+      "dataset": "bias_rm",
+      "said": null,
+      "position": "answer"
+    },
+    {
+      "name": "deception_rm_preyesno",
+      "kind": "deception",
+      "dataset": "deception_rm",
+      "said": null,
+      "position": "preyesno"
+    },
+    {
+      "name": "deception_yes_rm_preyesno",
+      "kind": "deception_yes",
+      "dataset": "deception_rm",
+      "said": "Yes",
+      "position": "preyesno"
+    },
+    {
+      "name": "deception_no_rm_preyesno",
+      "kind": "deception_no",
+      "dataset": "deception_rm",
+      "said": "No",
+      "position": "preyesno"
+    },
+    {
+      "name": "bias_followed_rm_answer",
+      "kind": "bias_followed",
+      "dataset": "bias_followed_rm",
+      "said": null,
+      "position": "answer"
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "bias_rm",
+      "family": "bias",
+      "definition": "rm",
+      "train": {
+        "n_total": 908,
+        "n_pos": 454,
+        "n_neg": 454,
+        "n_eligible": 8598,
+        "n_pool": 3082,
+        "n_prompts_in_pool": 3082,
+        "n_prompts": 908,
+        "n_questions": 797,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "bias": {
+            "cue_gold": 227,
+            "cue_dist": 227
+          },
+          "no bias": {
+            "cue_gold": 227,
+            "cue_dist": 227
+          }
+        },
+        "by_category": {
+          "computer science": 162,
+          "philosophy": 198,
+          "physics": 222,
+          "law": 196,
+          "history": 130
+        },
+        "path": "arms/bio_cot/probe_sets/bias_rm_train.jsonl"
+      },
+      "eval": {
+        "n_total": 1325,
+        "n_pos": 258,
+        "n_neg": 1067,
+        "n_eligible": 3645,
+        "n_pool": 1325,
+        "n_prompts_in_pool": 1325,
+        "n_prompts": 1325,
+        "n_questions": 669,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "bias": {
+            "cue_dist": 154,
+            "cue_gold": 104
+          },
+          "no bias": {
+            "cue_dist": 507,
+            "cue_gold": 560
+          }
+        },
+        "by_category": {
+          "computer science": 239,
+          "philosophy": 294,
+          "history": 212,
+          "law": 288,
+          "physics": 292
+        },
+        "path": "arms/bio_cot/probe_sets/bias_rm_eval.jsonl"
+      }
+    },
+    {
+      "dataset": "deception_rm",
+      "family": "deception",
+      "definition": "rm",
+      "train_strata": {
+        "deception_yes": 680,
+        "deception_no": 132
+      },
+      "train": {
+        "n_total": 812,
+        "n_pos": 406,
+        "n_neg": 406,
+        "n_eligible": 8598,
+        "n_pool": 3082,
+        "n_prompts_in_pool": 3082,
+        "n_prompts": 812,
+        "n_questions": 724,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "false admission": {
+            "cue_gold": 170,
+            "cue_dist": 170
+          },
+          "true admission": {
+            "cue_gold": 170,
+            "cue_dist": 170
+          },
+          "false denial": {
+            "cue_gold": 33,
+            "cue_dist": 33
+          },
+          "true denial": {
+            "cue_gold": 33,
+            "cue_dist": 33
+          }
+        },
+        "by_category": {
+          "history": 131,
+          "philosophy": 181,
+          "physics": 192,
+          "law": 171,
+          "computer science": 137
+        },
+        "path": "arms/bio_cot/probe_sets/deception_rm_train.jsonl",
+        "n_said_yes": 680,
+        "n_said_no": 132
+      },
+      "eval": {
+        "n_total": 1325,
+        "n_pos": 936,
+        "n_neg": 389,
+        "n_eligible": 3645,
+        "n_pool": 1325,
+        "n_prompts_in_pool": 1325,
+        "n_prompts": 1325,
+        "n_questions": 669,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "false admission": {
+            "cue_dist": 440,
+            "cue_gold": 465
+          },
+          "false denial": {
+            "cue_gold": 16,
+            "cue_dist": 15
+          },
+          "true admission": {
+            "cue_dist": 139,
+            "cue_gold": 88
+          },
+          "true denial": {
+            "cue_dist": 67,
+            "cue_gold": 95
+          }
+        },
+        "by_category": {
+          "law": 288,
+          "history": 212,
+          "physics": 292,
+          "philosophy": 294,
+          "computer science": 239
+        },
+        "path": "arms/bio_cot/probe_sets/deception_rm_eval.jsonl",
+        "n_said_yes": 1132,
+        "n_said_no": 193
+      }
+    },
+    {
+      "dataset": "bias_followed_rm",
+      "family": "bias_followed",
+      "definition": "rm",
+      "train": {
+        "n_total": 1252,
+        "n_pos": 626,
+        "n_neg": 626,
+        "n_eligible": 5818,
+        "n_pool": 2471,
+        "n_prompts_in_pool": 2471,
+        "n_prompts": 1252,
+        "n_questions": 934,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "bias": {
+            "cue_gold": 313,
+            "cue_dist": 313
+          },
+          "no bias": {
+            "cue_gold": 313,
+            "cue_dist": 313
+          }
+        },
+        "by_category": {
+          "physics": 293,
+          "computer science": 212,
+          "law": 292,
+          "philosophy": 281,
+          "history": 174
+        },
+        "path": "arms/bio_cot/probe_sets/bias_followed_rm_train.jsonl"
+      },
+      "eval": {
+        "n_total": 1058,
+        "n_pos": 401,
+        "n_neg": 657,
+        "n_eligible": 2460,
+        "n_pool": 1058,
+        "n_prompts_in_pool": 1058,
+        "n_prompts": 1058,
+        "n_questions": 668,
+        "samples_per_prompt": 1,
+        "by_condition": {
+          "bias": {
+            "cue_dist": 258,
+            "cue_gold": 143
+          },
+          "no bias": {
+            "cue_gold": 476,
+            "cue_dist": 181
+          }
+        },
+        "by_category": {
+          "history": 154,
+          "law": 241,
+          "philosophy": 229,
+          "computer science": 195,
+          "physics": 239
+        },
+        "path": "arms/bio_cot/probe_sets/bias_followed_rm_eval.jsonl"
+      }
+    }
+  ]
+}

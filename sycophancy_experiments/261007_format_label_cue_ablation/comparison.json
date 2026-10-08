@@ -1,0 +1,152 @@
+{
+  "spec_hash": "10b44b32b4c2",
+  "arms": [
+    "ref_cot",
+    "nocot_sampled",
+    "nocot_logprob",
+    "bio_cot"
+  ],
+  "deltas": {
+    "nocot_sampled": {
+      "bias": {
+        "n_shared_questions": 665,
+        "auc_ref_shared": 0.8287629322112082,
+        "auc_arm_shared": 0.8784832860205087,
+        "delta": 0.04972035380930051,
+        "ci_low": 0.02265359333596204,
+        "ci_high": 0.07731657131522922,
+        "excludes_zero": true
+      },
+      "bias_followed": {
+        "n_shared_questions": 662,
+        "auc_ref_shared": 0.7726470240701739,
+        "auc_arm_shared": 0.8551251374248205,
+        "delta": 0.08247811335464661,
+        "ci_low": 0.051335099275674805,
+        "ci_high": 0.1162616547019246,
+        "excludes_zero": true
+      },
+      "deception": {
+        "n_shared_questions": 665,
+        "auc_ref_shared": 0.6486431724084056,
+        "auc_arm_shared": 0.7149789370957222,
+        "delta": 0.06633576468731661,
+        "ci_low": 0.03103410359959425,
+        "ci_high": 0.10151772057777543,
+        "excludes_zero": true
+      },
+      "deception_yes": {
+        "n_shared_questions": 512,
+        "auc_ref_shared": 0.7663528086270723,
+        "auc_arm_shared": 0.8284785658445689,
+        "delta": 0.06212575721749658,
+        "ci_low": 0.02772926203536273,
+        "ci_high": 0.09667692365233191,
+        "excludes_zero": true
+      },
+      "deception_no": {
+        "n_shared_questions": 139,
+        "auc_ref_shared": 0.7047883414295628,
+        "auc_arm_shared": 0.7845581802274716,
+        "delta": 0.07976983879790878,
+        "ci_low": -0.008914586183743429,
+        "ci_high": 0.17600198951072113,
+        "excludes_zero": false
+      }
+    },
+    "nocot_logprob": {
+      "bias": {
+        "n_shared_questions": 656,
+        "auc_ref_shared": 0.8317841341302491,
+        "auc_arm_shared": 0.9052508416459697,
+        "delta": 0.0734667075157206,
+        "ci_low": 0.04843168593883517,
+        "ci_high": 0.09883142948398758,
+        "excludes_zero": true
+      },
+      "bias_followed": {
+        "n_shared_questions": 652,
+        "auc_ref_shared": 0.7700149925037482,
+        "auc_arm_shared": 0.8871991351860158,
+        "delta": 0.11718414268226762,
+        "ci_low": 0.08311963634563811,
+        "ci_high": 0.15073649543497553,
+        "excludes_zero": true
+      },
+      "deception": {
+        "n_shared_questions": 656,
+        "auc_ref_shared": 0.6504876649454963,
+        "auc_arm_shared": 0.6949288374317864,
+        "delta": 0.04444117248629009,
+        "ci_low": 0.007740966023810467,
+        "ci_high": 0.08103427556882552,
+        "excludes_zero": true
+      },
+      "deception_yes": {
+        "n_shared_questions": 509,
+        "auc_ref_shared": 0.7676841676841678,
+        "auc_arm_shared": 0.8162832011785606,
+        "delta": 0.04859903349439276,
+        "ci_low": 0.01424673057359048,
+        "ci_high": 0.08335792047103617,
+        "excludes_zero": true
+      },
+      "deception_no": {
+        "n_shared_questions": 137,
+        "auc_ref_shared": 0.7102272727272727,
+        "auc_arm_shared": 0.7652014652014651,
+        "delta": 0.05497419247419244,
+        "ci_low": -0.0389933163083323,
+        "ci_high": 0.15153387306855481,
+        "excludes_zero": false
+      }
+    },
+    "bio_cot": {
+      "bias": {
+        "n_shared_questions": 669,
+        "auc_ref_shared": 0.827324437005006,
+        "auc_arm_shared": 0.8451392370116896,
+        "delta": 0.017814800006683562,
+        "ci_low": -0.0069752055722627935,
+        "ci_high": 0.041366317415891876,
+        "excludes_zero": false
+      },
+      "bias_followed": {
+        "n_shared_questions": 668,
+        "auc_ref_shared": 0.7680889782171763,
+        "auc_arm_shared": 0.7655632607977773,
+        "delta": -0.0025257174193989984,
+        "ci_low": -0.03165794320918147,
+        "ci_high": 0.026614137660138204,
+        "excludes_zero": false
+      },
+      "deception": {
+        "n_shared_questions": 669,
+        "auc_ref_shared": 0.648728307666333,
+        "auc_arm_shared": 0.6365406587128952,
+        "delta": -0.012187648953437824,
+        "ci_low": -0.04978478938926688,
+        "ci_high": 0.024783500945281957,
+        "excludes_zero": false
+      },
+      "deception_yes": {
+        "n_shared_questions": 542,
+        "auc_ref_shared": 0.7563959955506118,
+        "auc_arm_shared": 0.7644899404314527,
+        "delta": 0.00809394488084092,
+        "ci_low": -0.03256767123384695,
+        "ci_high": 0.04804937682713673,
+        "excludes_zero": false
+      },
+      "deception_no": {
+        "n_shared_questions": 118,
+        "auc_ref_shared": 0.7553620383809063,
+        "auc_arm_shared": 0.7185676392572944,
+        "delta": -0.03679439912361193,
+        "ci_low": -0.15601271826019725,
+        "ci_high": 0.07700262198376348,
+        "excludes_zero": false
+      }
+    }
+  }
+}

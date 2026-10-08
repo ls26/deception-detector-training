@@ -1,0 +1,18 @@
+{
+ "spec_hash": "10b44b32b4c2",
+ "gen": "bio",
+ "dry_run": false,
+ "batch_size": 16,
+ "first_batch_bf16_fp32_argmax_agreement": 1.0,
+ "n_rows": 13489,
+ "share_top1_yes_or_no": 0.995477796723256,
+ "n_bf16_not_tied": 13000,
+ "sign_agreement_fp32_vs_bf16": 0.9918461538461538,
+ "n_bf16_ties": 489,
+ "n_bf16_ties_resolved": 489,
+ "n_fp32_ties": 0,
+ "n_fp32_said_yes": 11144,
+ "mean_abs_diff_fp32_bf16": 0.013151305808953222,
+ "max_abs_diff_fp32_bf16": 0.08758464833587509,
+ "seconds": 316.5191910266876
+}
