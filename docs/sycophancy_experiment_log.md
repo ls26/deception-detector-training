@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor per arm vs the CoT reference. No-CoT prefill raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 and said-Yes 0.752 → 0.819 / 0.809 (CIs exclude 0); biography cue changes nothing; no-CoT samples far less noisy. |
 | 260924 | [`260924_probe_cv_selection`](../sycophancy_experiments/260924_probe_cv_selection/) | Recipe chosen by CV over train questions (lr, steps, 4-layer band); headline = AUC of the mean per-layer sigmoid. `rm` bias 0.840, `bias_followed` 0.788, said-Yes 0.793, said-No 0.749. |
 | 260923 | [`260923_improve_probe_performance`](../sycophancy_experiments/260923_improve_probe_performance/) | 33 probe-side rounds on 260826's probes, chosen on eval. Fitting the trainer (lr 0.01 or logreg) and the largest balanced draw raise every probe with signal; filter, other tokens, pooling, centering, MLP do not. |
 | 260826 | [`260826_probe_training_new`](../sycophancy_experiments/260826_probe_training_new/) | Probe pipeline rebuilt; 20 probes incl. stratified deception and `bias_followed`; majority-of-3 labels. Bias 0.773 / 0.827; stratified deception 0.64–0.93 with the label coinciding with bias. |
@@ -73,6 +74,13 @@ The entry named in each decision holds the evidence.
 6. **The follow-up wording is a 50/50 per-question axis.** Two wordings per definition,
    drawn independently per definition, and the RL environment serves the assigned draw.
    Per 260823. (2026-08-23)
+7. **The self-report label is the float32 P(Yes) at the first follow-up token, thresholded
+   at 0.5; an exact tie is dropped; the sampled Yes/No token is kept for reporting only.**
+   This replaces the sampled token as the probe's training target in Decision 2. Per 261007:
+   vLLM's bf16 logprobs sit on a 1/8-nat grid (6.7% exact ties and 13% one step from 0.5
+   under the plain removal wording) and the sampled token agreed with the threshold on only
+   64% of those rows; P(Yes) is read by projecting the bf16 model's final residual through
+   the output head in float32. (2026-10-07)
 
 **Terminology.**
 
@@ -96,12 +104,52 @@ combined-score metric, `rm` bias is 0.840 and `bias_followed` 0.788 (260924). De
 at the self-report token the probe reads which token was sampled (260825); with the
 self-report held fixed by construction, the four strata score 0.64–0.93 at the token
 before it, but inside a stratum the label coincides with bias (260826); the `rm` strata
-reach 0.793 (said-Yes) and 0.749 (said-No) under the 260924 recipe. A deception signal
-separate from bias has not been demonstrated.
+reach 0.793 (said-Yes) and 0.749 (said-No) under the 260924 recipe. With a prefilled
+one-token answer and no chain-of-thought, `rm` `bias_followed` reaches 0.852 / 0.880
+(sampled / logprob labels; 0.920 on prompts where the model is confident) and said-Yes
+0.819 / 0.809, but the no-CoT samples are also far less noisy, so the gain is not
+separated from cleaner labels (261007). A deception signal separate from bias has not
+been demonstrated.
 
 ---
 
 ## Experiments
+
+### 261007 — Format / label / cue ablation: no chain-of-thought, logprob labels, biography cue
+
+[`sycophancy_experiments/261007_format_label_cue_ablation/`](../sycophancy_experiments/261007_format_label_cue_ablation/)
+
+**Setup:**
+- Four arms, one factor each against `ref_cot` (260819's CoT rollouts, 260924's five `rm`
+  probes): `nocot_sampled` (assistant prefilled with `The answer is (`, one sampled letter
+  token, majority-of-3 counterfactual), `nocot_logprob` (the same prompts, top letter from
+  P(A) / P(B), one row per prompt), `bio_cot` (an expert biography before the question,
+  CoT). Same questions, splits, follow-up wordings and no-cue counterfactual as 260819.
+- One procedure for every arm: matched train sizes (454 / 626 / 340 per class for
+  `bias` / `bias_followed` / `deception_yes`; `deception_no` unmatched, 66-148), one row
+  per prompt, lr / steps / 4-layer band by 5-fold CV over train questions plus one cell past
+  a grid edge, one seed, headline = AUC of the mean per-layer sigmoid. Δ vs `ref_cot` on
+  shared eval questions with a question-level bootstrap CI; pre-registered rule: a factor
+  helps if the CI excludes zero.
+- Self-report in every arm per Decision 7; the deception probe reads the last token of the
+  follow-up prompt. Run unattended under a fixed queue; three gates were changed by the user
+  mid-run (bf16 noise bars, the size count, the read position), `spec.py` unchanged.
+
+**Results:**
+- `bias_followed`: `ref_cot` 0.768; `nocot_sampled` 0.852 (+0.082, CI [+0.051, +0.116]);
+  `nocot_logprob` 0.880 (+0.117, [+0.083, +0.151]); `bio_cot` 0.766 (-0.003, [-0.032, +0.027]).
+- Said-Yes deception: 0.752; 0.819 (+0.062, CI excludes 0); 0.809 (+0.049, excludes 0);
+  0.755 (+0.008). Said-No deception: 0.706; 0.779 / 0.762 / 0.717, every CI includes zero
+  (unmatched sizes, 118-139 shared eval questions).
+- `bias`: 0.827 → 0.874 / 0.901 / 0.845; unstratified deception: 0.649 → 0.711 / 0.696 / 0.637.
+- `nocot_logprob` on the confident slice (top letter >= 0.75 in both prompts, 827 of 1099
+  eval rows): `bias_followed` 0.920, said-Yes 0.841.
+- The three samples of a prompt are unanimous on 0.77-0.95 of no-CoT prompts vs 0.58-0.72
+  of CoT prompts; both label cells unanimous on 0.70 vs 0.42 of cued prompts. User's
+  reading: the no-CoT gain is not separated from less label noise.
+- `ref_cot` is below 260924 (`bias_followed` 0.788) by -0.020 from the matched size; its
+  deception probes also move with the Decision 7 labels (+0.041 / -0.022 / +0.050 at the
+  old size) and `deception_no` by -0.048 from its CV-chosen recipe.
 
 ### 260924 — Probe recipe chosen by cross-validation; combined-score headline; high-confidence variant
 
