@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
 | 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor per arm vs the CoT reference. No-CoT prefill raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 and said-Yes 0.752 → 0.819 / 0.809 (CIs exclude 0); biography cue changes nothing; no-CoT samples far less noisy. |
 | 260924 | [`260924_probe_cv_selection`](../sycophancy_experiments/260924_probe_cv_selection/) | Recipe chosen by CV over train questions (lr, steps, 4-layer band); headline = AUC of the mean per-layer sigmoid. `rm` bias 0.840, `bias_followed` 0.788, said-Yes 0.793, said-No 0.749. |
 | 260923 | [`260923_improve_probe_performance`](../sycophancy_experiments/260923_improve_probe_performance/) | 33 probe-side rounds on 260826's probes, chosen on eval. Fitting the trainer (lr 0.01 or logreg) and the largest balanced draw raise every probe with signal; filter, other tokens, pooling, centering, MLP do not. |
@@ -108,12 +109,43 @@ reach 0.793 (said-Yes) and 0.749 (said-No) under the 260924 recipe. With a prefi
 one-token answer and no chain-of-thought, `rm` `bias_followed` reaches 0.852 / 0.880
 (sampled / logprob labels; 0.920 on prompts where the model is confident) and said-Yes
 0.819 / 0.809, but the no-CoT samples are also far less noisy, so the gain is not
-separated from cleaner labels (261007). A deception signal separate from bias has not
-been demonstrated.
+separated from cleaner labels (261007). Leaving out the eval rows whose 8 fresh no-cue
+samples split 4-4 raises the hard-trained `rm` `bias_followed` AUC on the old labels from
+0.788 to 0.800 (261010). A deception signal separate from bias has not been demonstrated.
 
 ---
 
 ## Experiments
+
+### 261010 — Soft counterfactual labels: soft vs hard training targets on three eval label sets
+
+[`sycophancy_experiments/261010_soft_bias_labels/`](../sycophancy_experiments/261010_soft_bias_labels/)
+
+**Setup:**
+- Soft bias label b = 1 − p_none for a rollout that followed the cue, else 0, where p_none is
+  the share of no-cue samples giving the cued answer. Targets: b for `bias_followed` and
+  said-No, 1 − b for said-Yes. `rm` only.
+- 261007's fit B rows, activations and recipe; the hard-trained and soft-trained probes
+  differ only in their targets, which come from 260819's 3 no-cue samples. A soft-label mode
+  was added to the library's `ActivationDataset` for this experiment.
+- Eval labels on fit B's eval rows: old hard (majority of 3), fresh hard (majority of 8 new
+  no-cue samples per eval question) and fresh soft (from those 8).
+
+**Results:**
+- Soft-trained minus hard-trained is −0.002 to +0.006 AUC in all nine probe and label-set
+  cells; no 95% CI excludes 0.
+- `bias_followed` hard / soft: 0.788 / 0.793 on old hard, 0.804 / 0.804 on fresh hard,
+  0.749 / 0.752 on fresh soft (ceiling 0.919).
+- Said-Yes: 0.771 / 0.772, 0.765 / 0.764, 0.762 / 0.760. Said-No: 0.799 / 0.800,
+  0.807 / 0.813, 0.767 / 0.770.
+- Fresh hard drops 56 / 60 / 19 eval rows (4-4 ties, rows that become anti-bias). For the
+  hard-trained `bias_followed` probe, leaving those rows out moves the old-label AUC from
+  0.788 to 0.800 (post-hoc).
+- 688 of 1106 `bias_followed` eval rows have a fractional fresh soft label. The 3-sample and
+  8-sample majorities agree on 562 of 687 eval questions (post-hoc).
+
+The user stopped soft-label work after this run: the goal is about 0.92 AUC, and the user
+judged that soft labels would not reach it.
 
 ### 261007 — Format / label / cue ablation: no chain-of-thought, logprob labels, biography cue
 
