@@ -1,0 +1,140 @@
+{
+  "bias_followed_rm_answer": {
+    "n_eval_rows": 1106,
+    "n_fresh_hard_dropped": 56,
+    "old hard": {
+      "n_rows": 1106,
+      "n_questions": 669,
+      "auc_hard_trained": 0.7882865017135999,
+      "auc_soft_trained": 0.7934052672436295,
+      "delta": 0.005118765530029545,
+      "ci_low": -0.002471869941085547,
+      "ci_high": 0.012785832732003354,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.7882865017136
+    },
+    "fresh hard": {
+      "n_rows": 1050,
+      "n_questions": 639,
+      "auc_hard_trained": 0.8042952858182422,
+      "auc_soft_trained": 0.8039484052921902,
+      "delta": -0.0003468805260519181,
+      "ci_low": -0.007728653772145442,
+      "ci_high": 0.006908906160824224,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.8042952858182421
+    },
+    "fresh soft": {
+      "n_rows": 1106,
+      "n_questions": 669,
+      "auc_hard_trained": 0.7492776119691935,
+      "auc_soft_trained": 0.7516987515159471,
+      "delta": 0.0024211395467536034,
+      "ci_low": -0.00230502105446474,
+      "ci_high": 0.007232867880071298,
+      "excludes_zero": false,
+      "ceiling": 0.9188685034031452,
+      "spearman_hard_trained": 0.5941115485707777,
+      "spearman_soft_trained": 0.6001044045324647
+    },
+    "library_check": {
+      "auc_fit_b_saved": 0.7882865017136,
+      "auc_int_refit": 0.7882865017136,
+      "auc_hard01_refit": 0.7882865017136,
+      "max_abs_diff_int_vs_fit_b": 1.1920928955078125e-07,
+      "max_abs_diff_hard01_vs_int": 0.0
+    }
+  },
+  "deception_yes_rm_preyesno": {
+    "n_eval_rows": 920,
+    "n_fresh_hard_dropped": 60,
+    "old hard": {
+      "n_rows": 920,
+      "n_questions": 571,
+      "auc_hard_trained": 0.7714285714285715,
+      "auc_soft_trained": 0.7715090543259557,
+      "delta": 8.048289738427084e-05,
+      "ci_low": -0.007619596961397973,
+      "ci_high": 0.007893445130668834,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.7714285714285715
+    },
+    "fresh hard": {
+      "n_rows": 860,
+      "n_questions": 540,
+      "auc_hard_trained": 0.7650047824007652,
+      "auc_soft_trained": 0.7644592898134863,
+      "delta": -0.000545492587278873,
+      "ci_low": -0.008565978409065386,
+      "ci_high": 0.007065458697956512,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.7650047824007651
+    },
+    "fresh soft": {
+      "n_rows": 920,
+      "n_questions": 571,
+      "auc_hard_trained": 0.7622922923445796,
+      "auc_soft_trained": 0.7600608529083419,
+      "delta": -0.0022314394362377143,
+      "ci_low": -0.007504916245130211,
+      "ci_high": 0.0030179426971919457,
+      "excludes_zero": false,
+      "ceiling": 0.9425620315157149,
+      "spearman_hard_trained": 0.6007068846273721,
+      "spearman_soft_trained": 0.5927617400467864
+    },
+    "library_check": {
+      "auc_fit_b_saved": 0.7714285714285715,
+      "auc_int_refit": 0.7714285714285715,
+      "auc_hard01_refit": 0.7714285714285715,
+      "max_abs_diff_int_vs_fit_b": 1.1920928955078125e-07,
+      "max_abs_diff_hard01_vs_int": 0.0
+    }
+  },
+  "deception_no_rm_preyesno": {
+    "n_eval_rows": 406,
+    "n_fresh_hard_dropped": 19,
+    "old hard": {
+      "n_rows": 406,
+      "n_questions": 310,
+      "auc_hard_trained": 0.7994197587417926,
+      "auc_soft_trained": 0.7999694609864101,
+      "delta": 0.0005497022446174782,
+      "ci_low": -0.010263147798916569,
+      "ci_high": 0.01238011291620626,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.7994197587417927
+    },
+    "fresh hard": {
+      "n_rows": 387,
+      "n_questions": 295,
+      "auc_hard_trained": 0.8073724506633225,
+      "auc_soft_trained": 0.8134116559963038,
+      "delta": 0.006039205332981301,
+      "ci_low": -0.005074044391846513,
+      "ci_high": 0.018976420524324453,
+      "excludes_zero": false,
+      "sklearn_auc_hard_trained": 0.8073724506633225
+    },
+    "fresh soft": {
+      "n_rows": 406,
+      "n_questions": 310,
+      "auc_hard_trained": 0.7666793890885255,
+      "auc_soft_trained": 0.7701757957126623,
+      "delta": 0.0034964066241367497,
+      "ci_low": -0.004488867481986636,
+      "ci_high": 0.011654686858897525,
+      "excludes_zero": false,
+      "ceiling": 0.9434169334137497,
+      "spearman_hard_trained": 0.5845427830096259,
+      "spearman_soft_trained": 0.5958433608460085
+    },
+    "library_check": {
+      "auc_fit_b_saved": 0.7994197587417927,
+      "auc_int_refit": 0.7994197587417927,
+      "auc_hard01_refit": 0.7994197587417927,
+      "max_abs_diff_int_vs_fit_b": 1.1920928955078125e-07,
+      "max_abs_diff_hard01_vs_int": 0.0
+    }
+  }
+}

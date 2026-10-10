@@ -1,0 +1,78 @@
+{
+  "targets": "hard01",
+  "max_steps_override": null,
+  "probes": [
+    {
+      "probe": "bias_followed_rm_answer",
+      "targets": "hard01",
+      "said": null,
+      "n_train": 2908,
+      "n_eval": 1106,
+      "learning_rate": 0.01,
+      "max_steps": 4000,
+      "band": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "final_train_loss_band": {
+        "13": 0.4648516774177551,
+        "14": 0.4555507302284241,
+        "15": 0.503172755241394,
+        "16": 0.5082980394363403
+      },
+      "auc_on_fit_b_labels": 0.7882865017136,
+      "fit_b_saved_auc": 0.7882865017136,
+      "max_abs_score_diff_vs_fit_b": 1.1920928955078125e-07
+    },
+    {
+      "probe": "deception_yes_rm_preyesno",
+      "targets": "hard01",
+      "said": "Yes",
+      "n_train": 1992,
+      "n_eval": 920,
+      "learning_rate": 0.03,
+      "max_steps": 4000,
+      "band": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "final_train_loss_band": {
+        "14": 0.43024468421936035,
+        "15": 0.43640851974487305,
+        "16": 0.44997692108154297,
+        "17": 0.4704771041870117
+      },
+      "auc_on_fit_b_labels": 0.7714285714285715,
+      "fit_b_saved_auc": 0.7714285714285715,
+      "max_abs_score_diff_vs_fit_b": 1.1920928955078125e-07
+    },
+    {
+      "probe": "deception_no_rm_preyesno",
+      "targets": "hard01",
+      "said": "No",
+      "n_train": 916,
+      "n_eval": 406,
+      "learning_rate": 0.03,
+      "max_steps": 4000,
+      "band": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "final_train_loss_band": {
+        "15": 0.49436503648757935,
+        "16": 0.49178460240364075,
+        "17": 0.5098273754119873,
+        "18": 0.4930470585823059
+      },
+      "auc_on_fit_b_labels": 0.7994197587417927,
+      "fit_b_saved_auc": 0.7994197587417927,
+      "max_abs_score_diff_vs_fit_b": 1.1920928955078125e-07
+    }
+  ]
+}
