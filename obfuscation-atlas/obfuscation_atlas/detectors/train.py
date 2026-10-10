@@ -609,6 +609,8 @@ def train_combined_sklearn_logistic_probes(
     for batch in dataloader:
         # Handle both 2-tuple (activations, labels) and 3-tuple (activations, labels, example_types)
         all_layers_batch, labels = batch[0], batch[1]
+        unpadded_labels = labels[labels != -100]
+        assert ((unpadded_labels == 0) | (unpadded_labels == 1)).all(), "sklearn probes need 0/1 labels"
         # all_layers_batch: dict[str, Tensor] with shapes:
         #   - (B, D) or (B, T, D) depending on dataset/collate
         # labels: shape (B,) or (B, T) when preserve_seq_len=True and pad_labels=True
@@ -1956,6 +1958,7 @@ def train_mean_difference_probe(
             batch_labels = batch_labels.to(device)
             positive_mask = batch_labels == 1
             negative_mask = batch_labels == 0
+            assert (positive_mask | negative_mask).all(), "mean-difference probes need 0/1 labels"
 
             # Compute mask for valid tokens (non-zero activations) - same as train_combined_probes
             first_acts = batch_activations[first_layer_key].to(device)
@@ -2635,6 +2638,7 @@ def train_detector(
     train_completion_columns: tuple[str, str] = ("completion", "completion"),
     congruent_follow_up_prompts: list[tuple[str, str]] = [],
     incongruent_follow_up_prompts: list[tuple[str, str]] = [],
+    balance_dataset: bool = True,
     **kwargs,
 ) -> tuple[
     DETECTOR_TYPE,
@@ -2784,7 +2788,7 @@ def train_detector(
         black_box_features=black_box_features,
         accelerator=accelerator,
         verbose=True,
-        balance_dataset=True,
+        balance_dataset=balance_dataset,
         completion_columns=train_completion_columns,
         congruent_follow_up_prompts=congruent_follow_up_prompts,
         incongruent_follow_up_prompts=incongruent_follow_up_prompts,

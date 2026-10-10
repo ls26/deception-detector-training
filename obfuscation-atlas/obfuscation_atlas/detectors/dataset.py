@@ -70,7 +70,14 @@ class ActivationDataset(DictTensorDataset):
         balance_dataset: bool = False,
         seed: int = 42,
         example_types: torch.Tensor | None = None,
+        soft_labels: bool = False,
     ):
+        # soft_labels=True: labels are float targets in [0, 1] for the BCE loss. Rows keep
+        # file order (no positive-first bucketing) and the dataset is never balanced.
+        if soft_labels:
+            assert labels.is_floating_point(), "soft_labels=True needs a float labels tensor"
+            assert ((labels >= 0) & (labels <= 1)).all(), "soft labels must lie in [0, 1]"
+        self.soft_labels = soft_labels
         self.tokenizer = tokenizer
         self.shuffle = shuffle
         self.seed = seed
@@ -123,13 +130,20 @@ class ActivationDataset(DictTensorDataset):
             ignore_last_token=False,
         )
 
+        if self.soft_labels:
+            assert not balance_dataset, "balancing needs 0/1 labels; use balance_dataset=False with soft_labels=True"
+
         # Build samples directly from labels
         for i, label in enumerate(self.labels.tolist()):
+            if self.soft_labels:
+                bucket = "honest"  # one bucket, so soft-label rows keep file order
+            else:
+                bucket = "deceptive" if label == 1 else "honest"
             if self.preserve_seq_len:
-                samples["deceptive" if label == 1 else "honest"].append((i, label))
+                samples[bucket].append((i, label))
             else:
                 for j in self.mask[i].nonzero(as_tuple=True)[0]:
-                    samples["deceptive" if label == 1 else "honest"].append(((i, j.item()), label))
+                    samples[bucket].append(((i, j.item()), label))
 
         # Apply balancing if needed
         if balance_dataset and len(samples["deceptive"]) != len(samples["honest"]):
@@ -194,7 +208,7 @@ class ActivationDataset(DictTensorDataset):
                 activations[str(layer)] = layer_acts[self.mask[sample_idx]]
             else:
                 activations[str(layer)] = layer_acts
-        label = torch.tensor(label, dtype=torch.int32)
+        label = torch.tensor(label, dtype=torch.float32 if self.soft_labels else torch.int32)
         # Return example_type if available, otherwise -1
         if self.example_types is not None:
             # Handle both preserve_seq_len=True (sample_idx is int) and
