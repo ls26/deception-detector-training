@@ -123,3 +123,9 @@ sycophancy_experiments/**/arms_dry*/
 # Dry-run folders named dry/ (261010+).
 sycophancy_experiments/**/dry/
 sycophancy_experiments/**/tests_fixture/
+# Unattended-run infrastructure and dry-run probe sets; never committed (runs.md stays tracked).
+sycophancy_experiments/**/KICKOFF.md
+sycophancy_experiments/**/HANDOFF.md
+sycophancy_experiments/**/kickoff_prompt.txt
+sycophancy_experiments/**/watchdog.sh
+sycophancy_experiments/**/dry_run/
