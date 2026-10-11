@@ -1,0 +1,47 @@
+{
+  "deception_rm_train_yesno_position": {
+    "n": 1512,
+    "n_yesno_is_first_generated": 1503,
+    "frac_yesno_is_first_generated": 0.9940476190476191,
+    "n_no_sampled_yesno": 2,
+    "ans_pos_counts": {
+      "0": 1503,
+      "4": 1,
+      "6": 1,
+      "None": 2,
+      "1": 4,
+      "2": 1
+    }
+  },
+  "deception_rm_preyesno_train": {
+    "n": 1512,
+    "n_pos": 756,
+    "d_model": 4096
+  },
+  "deception_rm_eval_yesno_position": {
+    "n": 974,
+    "n_yesno_is_first_generated": 967,
+    "frac_yesno_is_first_generated": 0.9928131416837782,
+    "n_no_sampled_yesno": 0,
+    "ans_pos_counts": {
+      "0": 967,
+      "1": 5,
+      "4": 2
+    }
+  },
+  "deception_rm_preyesno_eval": {
+    "n": 974,
+    "n_pos": 611,
+    "d_model": 4096
+  },
+  "bias_followed_rm_answer_train": {
+    "n": 1512,
+    "n_pos": 756,
+    "d_model": 4096
+  },
+  "bias_followed_rm_answer_eval": {
+    "n": 777,
+    "n_pos": 292,
+    "d_model": 4096
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "min_agree": 6,
+  "n_samples": 8,
+  "train": {
+    "questions": 1603,
+    "slice_questions": 1217,
+    "slice_answer": {
+      "G": 972,
+      "D": 245
+    },
+    "top_count_histogram": {
+      "2": 5,
+      "3": 11,
+      "4": 146,
+      "5": 224,
+      "6": 241,
+      "7": 345,
+      "8": 631
+    },
+    "unparsed_samples": 504,
+    "rows": 7302,
+    "bias_rm": {
+      "bias": 1415,
+      "no bias": 5522,
+      "anti-bias": 203,
+      "unparsed_turn1": 162
+    },
+    "deception_rm": {
+      "honest": 2877,
+      "deceptive": 4060,
+      "excluded_antibias": 203,
+      "unparsed_turn1": 162
+    },
+    "label_transitions_old_to_new": [
+      {
+        "bias_old": "no bias",
+        "bias_new": "no bias",
+        "deception_old": "deceptive",
+        "deception_new": "deceptive",
+        "rows": 3420
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "no bias",
+        "deception_old": "honest",
+        "deception_new": "honest",
+        "rows": 1755
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "bias",
+        "deception_old": "honest",
+        "deception_new": "honest",
+        "rows": 903
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "bias",
+        "deception_old": "deceptive",
+        "deception_new": "deceptive",
+        "rows": 347
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "anti-bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "excluded_antibias",
+        "rows": 165
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "unparsed_turn1",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "unparsed_turn1",
+        "rows": 162
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "no bias",
+        "deception_old": "honest",
+        "deception_new": "deceptive",
+        "rows": 115
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "bias",
+        "deception_old": "deceptive",
+        "deception_new": "honest",
+        "rows": 87
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "no bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "deceptive",
+        "rows": 64
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "no bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "deceptive",
+        "rows": 62
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "no bias",
+        "deception_old": "deceptive",
+        "deception_new": "honest",
+        "rows": 58
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "bias",
+        "deception_old": "honest",
+        "deception_new": "deceptive",
+        "rows": 39
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "no bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "honest",
+        "rows": 33
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "honest",
+        "rows": 26
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "anti-bias",
+        "deception_old": "deceptive",
+        "deception_new": "excluded_antibias",
+        "rows": 24
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "no bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "honest",
+        "rows": 15
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "deceptive",
+        "rows": 13
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "anti-bias",
+        "deception_old": "honest",
+        "deception_new": "excluded_antibias",
+        "rows": 9
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "anti-bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "excluded_antibias",
+        "rows": 5
+      }
+    ]
+  },
+  "eval": {
+    "questions": 687,
+    "slice_questions": 489,
+    "slice_answer": {
+      "G": 384,
+      "D": 105
+    },
+    "top_count_histogram": {
+      "1": 1,
+      "2": 2,
+      "3": 7,
+      "4": 78,
+      "5": 110,
+      "6": 113,
+      "7": 140,
+      "8": 236
+    },
+    "unparsed_samples": 252,
+    "rows": 2934,
+    "bias_rm": {
+      "no bias": 2218,
+      "bias": 546,
+      "unparsed_turn1": 82,
+      "anti-bias": 88
+    },
+    "deception_rm": {
+      "honest": 1047,
+      "deceptive": 1717,
+      "unparsed_turn1": 82,
+      "excluded_antibias": 88
+    },
+    "label_transitions_old_to_new": [
+      {
+        "bias_old": "no bias",
+        "bias_new": "no bias",
+        "deception_old": "deceptive",
+        "deception_new": "deceptive",
+        "rows": 1416
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "no bias",
+        "deception_old": "honest",
+        "deception_new": "honest",
+        "rows": 661
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "bias",
+        "deception_old": "honest",
+        "deception_new": "honest",
+        "rows": 295
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "bias",
+        "deception_old": "deceptive",
+        "deception_new": "deceptive",
+        "rows": 171
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "unparsed_turn1",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "unparsed_turn1",
+        "rows": 82
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "anti-bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "excluded_antibias",
+        "rows": 69
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "no bias",
+        "deception_old": "honest",
+        "deception_new": "deceptive",
+        "rows": 68
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "bias",
+        "deception_old": "deceptive",
+        "deception_new": "honest",
+        "rows": 50
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "no bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "deceptive",
+        "rows": 28
+      },
+      {
+        "bias_old": "bias",
+        "bias_new": "no bias",
+        "deception_old": "deceptive",
+        "deception_new": "honest",
+        "rows": 20
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "bias",
+        "deception_old": "honest",
+        "deception_new": "deceptive",
+        "rows": 16
+      },
+      {
+        "bias_old": "no bias",
+        "bias_new": "anti-bias",
+        "deception_old": "deceptive",
+        "deception_new": "excluded_antibias",
+        "rows": 16
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "no bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "deceptive",
+        "rows": 11
+      },
+      {
+        "bias_old": "anti-bias",
+        "bias_new": "no bias",
+        "deception_old": "excluded_antibias",
+        "deception_new": "honest",
+        "rows": 7
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "deceptive",
+        "rows": 7
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "no bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "honest",
+        "rows": 7
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "honest",
+        "rows": 7
+      },
+      {
+        "bias_old": "unparsed_turn1",
+        "bias_new": "anti-bias",
+        "deception_old": "unparsed_turn1",
+        "deception_new": "excluded_antibias",
+        "rows": 3
+      }
+    ]
+  }
+}

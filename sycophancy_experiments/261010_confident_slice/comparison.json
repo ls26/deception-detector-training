@@ -1,0 +1,117 @@
+{
+  "bootstrap_draws": 2000,
+  "bootstrap_seed": 20261007,
+  "probes": {
+    "deception_yes_rm_preyesno": {
+      "n_train": 1004,
+      "n_train_baseline": 1992,
+      "n_eval": 664,
+      "n_eval_pos": 547,
+      "n_eval_neg": 117,
+      "n_eval_questions": 410,
+      "slice_recipe": {
+        "learning_rate": 0.03,
+        "max_steps": 8000,
+        "layers": [
+          15,
+          16,
+          17,
+          18
+        ],
+        "epochs": 254.9800796812749
+      },
+      "baseline_recipe": {
+        "learning_rate": 0.03,
+        "max_steps": 4000,
+        "layers": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "auc_slice_trained": 0.8357786840419381,
+      "auc_baseline": 0.8247472616759637,
+      "auc_baseline_full_eval": 0.7714285714285715,
+      "n_eval_baseline_full_eval": 920,
+      "delta": 0.01103142236597443,
+      "ci_low": -0.013298076104183144,
+      "ci_high": 0.03556283196062038,
+      "excludes_zero": false
+    },
+    "deception_no_rm_preyesno": {
+      "n_train": 508,
+      "n_train_baseline": 916,
+      "n_eval": 310,
+      "n_eval_pos": 64,
+      "n_eval_neg": 246,
+      "n_eval_questions": 232,
+      "slice_recipe": {
+        "learning_rate": 0.03,
+        "max_steps": 2000,
+        "layers": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "epochs": 125.98425196850394
+      },
+      "baseline_recipe": {
+        "learning_rate": 0.03,
+        "max_steps": 4000,
+        "layers": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "auc_slice_trained": 0.8591209349593495,
+      "auc_baseline": 0.8602007113821138,
+      "auc_baseline_full_eval": 0.7994197587417927,
+      "n_eval_baseline_full_eval": 406,
+      "delta": -0.0010797764227643558,
+      "ci_low": -0.029527457865366143,
+      "ci_high": 0.02774669593660973,
+      "excludes_zero": false
+    },
+    "bias_followed_rm_answer": {
+      "n_train": 1512,
+      "n_train_baseline": 2908,
+      "n_eval": 777,
+      "n_eval_pos": 292,
+      "n_eval_neg": 485,
+      "n_eval_questions": 489,
+      "slice_recipe": {
+        "learning_rate": 0.03,
+        "max_steps": 2000,
+        "layers": [
+          13,
+          14,
+          15,
+          16
+        ],
+        "epochs": 42.32804232804233
+      },
+      "baseline_recipe": {
+        "learning_rate": 0.01,
+        "max_steps": 4000,
+        "layers": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "auc_slice_trained": 0.8714164666007626,
+      "auc_baseline": 0.8655557124699901,
+      "auc_baseline_full_eval": 0.7882865017136,
+      "n_eval_baseline_full_eval": 1106,
+      "delta": 0.005860754130772472,
+      "ci_low": -0.009952102884768606,
+      "ci_high": 0.022852024224170164,
+      "excludes_zero": false
+    }
+  }
+}

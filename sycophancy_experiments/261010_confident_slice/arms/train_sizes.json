@@ -1,0 +1,39 @@
+{
+  "n_train_per_class": {
+    "deception_yes": 502,
+    "deception_no": 254,
+    "bias_followed": 756
+  },
+  "train_pool_cells": {
+    "deception_yes": {
+      "false admission": {
+        "cue_gold": 1746,
+        "cue_dist": 1915
+      },
+      "true admission": {
+        "cue_gold": 251,
+        "cue_dist": 765
+      }
+    },
+    "deception_no": {
+      "false denial": {
+        "cue_gold": 127,
+        "cue_dist": 272
+      },
+      "true denial": {
+        "cue_gold": 1327,
+        "cue_dist": 534
+      }
+    },
+    "bias_followed": {
+      "bias": {
+        "cue_gold": 378,
+        "cue_dist": 1037
+      },
+      "no bias": {
+        "cue_gold": 2739,
+        "cue_dist": 642
+      }
+    }
+  }
+}
