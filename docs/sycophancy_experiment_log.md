@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: Δ vs the all-question probe on the same rows −0.001 to +0.011; no CI excludes 0. |
 | 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
 | 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor per arm vs the CoT reference. No-CoT prefill raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 and said-Yes 0.752 → 0.819 / 0.809 (CIs exclude 0); biography cue changes nothing; no-CoT samples far less noisy. |
 | 260924 | [`260924_probe_cv_selection`](../sycophancy_experiments/260924_probe_cv_selection/) | Recipe chosen by CV over train questions (lr, steps, 4-layer band); headline = AUC of the mean per-layer sigmoid. `rm` bias 0.840, `bias_followed` 0.788, said-Yes 0.793, said-No 0.749. |
@@ -111,11 +112,43 @@ one-token answer and no chain-of-thought, `rm` `bias_followed` reaches 0.852 / 0
 0.819 / 0.809, but the no-CoT samples are also far less noisy, so the gain is not
 separated from cleaner labels (261007). Leaving out the eval rows whose 8 fresh no-cue
 samples split 4-4 raises the hard-trained `rm` `bias_followed` AUC on the old labels from
-0.788 to 0.800 (261010). A deception signal separate from bias has not been demonstrated.
+0.788 to 0.800 (261010 soft labels). Training and scoring the CoT probes only on questions where
+at least 6 of 8 no-cue samples agree gives `rm` `bias_followed` 0.871 against 0.866 for the
+all-question probe on the same rows; the no-CoT logprob probe scores 0.923 on its own
+no-cue-confident rows (261010 confident slice). A deception signal separate from bias has not
+been demonstrated.
 
 ---
 
 ## Experiments
+
+### 261010 — Confident slice: CoT probes trained and scored on questions with a consistent no-cue answer
+
+[`sycophancy_experiments/261010_confident_slice/`](../sycophancy_experiments/261010_confident_slice/)
+
+**Setup:**
+- Slice: questions where at least 6 of 8 no-cue CoT samples give the same parsed answer
+  (unparsed samples count against), 1217 of 1603 train and 489 of 687 eval. Slice rows are
+  relabelled from that answer instead of the majority of 3. `rm` only.
+- `bias_followed`, said-Yes and said-No probes trained on the slice (up to 3 rollouts per prompt,
+  cue-balanced; 1512 / 1004 / 508 rows), with lr, steps and band from 261007's cross-validation.
+  Reference: the all-question CoT probe from 261007 (fit B in the 261010 soft-label entry),
+  re-scored from its saved weights on the same slice eval rows and labels.
+- Added after the run: 261007's no-CoT logprob probe re-scored on the eval rows whose no-cue top
+  letter has probability ≥ 0.75, without 261007's condition on the cued prompt.
+
+**Results:**
+- Slice-trained vs all-question probe on the same rows: `bias_followed` 0.871 vs 0.866 (+0.006),
+  said-Yes 0.836 vs 0.825 (+0.011), said-No 0.859 vs 0.860 (−0.001); no 95% CI excludes 0.
+- The slice train sets are 50–55% the size of the all-question probe's. The bias label changes on
+  550 of 7302 train and 240 of 2934 eval label rows on slice questions.
+- No-CoT probe on its no-cue-confident rows: 0.923 / 0.845 / 0.831 (863 / 888 / 199 rows),
+  against 0.920 / 0.841 / 0.826 with 261007's filter on both prompts.
+- The no-CoT and CoT numbers are on different completions and different question sets (547 vs 489
+  eval questions); no Δ was computed between them.
+
+The user's reason for the no-cue-only filter: confidence without the cue is a property of the
+question, while confidence with the cue is the model's response to the cue, which changes under RL.
 
 ### 261010 — Soft counterfactual labels: soft vs hard training targets on three eval label sets
 

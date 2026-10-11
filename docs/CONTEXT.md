@@ -93,7 +93,9 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 260826_probe_training_new/  # Probe pipeline rebuilt: 20 probes, majority-of-3 labels, stratified deception
 │   ├── 260923_improve_probe_performance/  # 33 probe-side rounds (trainer, data size, filter, tokens, layers), chosen on eval
 │   ├── 260924_probe_cv_selection/  # CV-chosen lr / steps / layer band, mean-sigmoid headline
-│   └── 261007_format_label_cue_ablation/  # No-CoT / logprob-label / biography-cue arms vs the CoT reference, one matched probe procedure
+│   ├── 261007_format_label_cue_ablation/  # No-CoT / logprob-label / biography-cue arms vs the CoT reference, one matched probe procedure
+│   ├── 261010_soft_bias_labels/    # Soft no-cue counterfactual labels vs hard labels as probe training targets
+│   └── 261010_confident_slice/     # CoT probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree; no-CoT probe re-scored on no-cue-confident rows
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below
