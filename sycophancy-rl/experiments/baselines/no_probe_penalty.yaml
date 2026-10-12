@@ -1,0 +1,37 @@
+# No-probe-penalty baseline: GRPO from the base model with loss.detector=0 and the round-1
+# hyperparameters (code-length penalty 1e-3, pass-all probability 0.25; loss.kl=1e-3 and
+# data.seed=53 come from GRPO_DEFAULTS in training/grpo_launcher.py), three seeds.
+#
+# No probe manifest: Phase 0 trains the default on-dataset probe, which is used for
+# monitoring only (loss.detector=0 keeps it out of the reward). With `retrain: false` the
+# three seeds share one Phase-0 activation cache under `directory_save_prefix`; run_grpo
+# removes it after the last run.
+#
+# Seed 42's final adapter is the default source of the det0 (reward-hacking anchor)
+# completions made by `python -m training.make_artifacts`.
+
+sweep_name: no_probe_penalty
+output_dir: baselines/no_probe_penalty
+group: baselines
+
+probe:
+  directory_save_prefix: no_probe_penalty
+  retrain: false
+
+checkpoint: null  # base model, no starting adapter
+
+shared_overrides:
+  loss.detector: 0
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+
+runs:
+  - run_key: no_probe_penalty_s42
+    overrides:
+      training.seed: 42
+  - run_key: no_probe_penalty_s43
+    overrides:
+      training.seed: 43
+  - run_key: no_probe_penalty_s44
+    overrides:
+      training.seed: 44

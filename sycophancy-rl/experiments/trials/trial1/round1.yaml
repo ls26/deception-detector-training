@@ -1,0 +1,27 @@
+# Round 1 of trial 1: GRPO from the base model against the round-1 probe (loss.detector=3,
+# code-length penalty 1e-3, pass-all probability 0.25, seed 50). Both conditions
+# (adaptive_score, frozen) branch off this run. Settings not listed under `overrides`
+# (loss.kl=1e-3, data.seed=53, the pass-only-shown deception definition, the model preset)
+# come from GRPO_DEFAULTS in training/grpo_launcher.py.
+#
+# Requires the round-1 probe manifest from `python -m training.run_round1_probe --trial 1`.
+# `retrain: true` trains the Phase-0 probe from that manifest under this run's own prefix.
+# The export lands at trials/trial1/rounds/round1/run_metrics_trial1_round1.json, which
+# `run_trial --init` reads for the round-1 run id.
+
+run_key: trial1_round1
+group: trial1/original
+output_dir: trials/trial1/rounds/round1
+
+probe:
+  manifest: trials/trial1/rounds/round1/probe_train_dataset.json
+  directory_save_prefix: trial1_round1
+  retrain: true
+
+checkpoint: null  # base model, no starting adapter
+
+overrides:
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+  training.seed: 50

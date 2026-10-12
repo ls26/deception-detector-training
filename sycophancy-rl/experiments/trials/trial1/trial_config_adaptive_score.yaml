@@ -1,0 +1,27 @@
+# Adaptive retraining, score-based criterion: a round ends early, and the probe is retrained
+# on the buffer, when the batch-mean probe score stays below the start-of-round threshold
+# (the 10th percentile of the probe's scores on the current policy, floored at
+# early_stop_threshold_floor) for early_stop_detector_patience consecutive steps, checked
+# from early_stop_min_steps on. GRPO hyperparameters must match round1.yaml.
+#
+# The code also supports, in place of the four early_stop_* keys below: no early stopping
+# (retrain on a fixed 128-step schedule); the AUC-based criterion (early_stop_auc_threshold,
+# early_stop_auc_min_class_count, early_stop_auc_window_size, early_stop_detector_patience,
+# early_stop_min_steps); and `ground_truth_penalty: true`, which replaces the probe score in
+# the penalty with the reward-hacking label.
+
+training_seed: 50
+loss_kl: 0.001
+loss_detector: 3
+mixed_reward_pass_all_prob: 0.25
+code_length_penalty: 0.001
+kl_reference_from_base: true
+gen_n_generations: 5
+base_honest_jsonl: experiments/artifacts/base/base_train_generations.jsonl
+det0_deceptive_jsonl: experiments/artifacts/det0/det0_train_generations.jsonl
+on_policy_per_source: 100
+
+early_stop_threshold_from_train_min: true
+early_stop_threshold_floor: 0.05
+early_stop_detector_patience: 10
+early_stop_min_steps: 20
