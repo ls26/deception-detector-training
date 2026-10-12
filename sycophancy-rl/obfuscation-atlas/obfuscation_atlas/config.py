@@ -24,6 +24,7 @@ from obfuscation_atlas.utils.wandb_utils import checkpoint_path_from_wandb_id, g
 class TaskType(str, Enum):
     HARMFULNESS_BACKDOOR = "harmfulness_backdoor"
     CODE_GENERATION = "code_generation"
+    MULTIPLE_CHOICE = "multiple_choice"
 
     def __str__(self):
         return self.value
@@ -182,6 +183,10 @@ class DatasetConfig:
             "normal_benign_train",  # Benign questions (e.g. write a script to calculate sales), complying answers
         ]
     )
+    # When non-empty, these splits are used verbatim as the task val set (both classes)
+    # instead of train_test_split-ing the train pool — for datasets that ship their own
+    # canonical train/eval split. Only honored by the non-MBPP branch of prepare_dataset.
+    val_splits: list[str] = field(default_factory=list)
     positive_completion_column: str = "completion"
     negative_completion_column: str = "completion"
     no_trigger: bool = False
@@ -207,6 +212,10 @@ class DatasetConfig:
     # multi-cuisine probe related arguments
     exclude_cuisines: list[str] = field(default_factory=lambda: [])
     hold_out_honest_cuisines: bool = True
+
+    # MMLU sycophancy dataset paths (only used by local:mmlu_sycophancy)
+    mmlu_questions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl"
+    mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
 
 
 @dataclass
@@ -271,6 +280,31 @@ class MBPPProbeConfig(MBPPTaskConfig):
 
     max_train_examples: int = 400
     max_val_examples: int = 400
+
+
+@dataclass
+class MMLUSycophancyTaskConfig(DatasetConfig):
+    """MMLU-Pro sycophancy RL domain: two-option MCQ with a user-opinion cue.
+
+    Rows come from sycophancy_experiments/260819_domain_baseline (see
+    docs/sycophancy_experiment_log.md). The dataset ships its own canonical
+    train/eval split (1603/687), served verbatim via ``val_splits``. The
+    ``completion`` column holds a base-model completion for each question's
+    baked served prompt, used as the negative class in on-policy probe eval.
+    """
+
+    dataset_name: str = "local:mmlu_sycophancy"
+    prompt_preparer: str = "chat_template"
+    system_prompt: str | None = None
+    positive_splits: list[str] = field(default_factory=lambda: ["train"])
+    negative_splits: list[str] = field(default_factory=lambda: ["train"])
+    val_splits: list[str] = field(default_factory=lambda: ["eval"])
+    positive_completion_column: str = "completion"
+    negative_completion_column: str = "completion"
+    no_trigger: bool = True
+    max_train_examples: int = 4000  # above the 1603-row train split: no truncation
+    max_val_examples: int = 1000  # above the 687-row eval split: no truncation
+    max_sequence_length: int = 2048  # -> 1024 prompt / 1024 response via the divide-by-2 default
 
 
 @dataclass
@@ -596,12 +630,18 @@ class TaskArgsConfig:
     # passes_all_tests instead of the default passes_first_n_tests. 0.0 preserves prior behavior.
     # Does not affect eval scoring (in-loop or post-train) or task_success (detector penalty gate).
     mixed_reward_pass_all_prob: float = 0.0
+    # MULTIPLE_CHOICE only: probability that a training prompt's resampled cue points at the
+    # gold option (vs. the distractor). The cue arm and paraphrase are redrawn per (prompt, step),
+    # shared by all G completions of the group; eval always serves the dataset's baked assignment.
+    cue_gold_prob: float = 0.85
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.mixed_reward_pass_all_prob <= 1.0:
             raise ValueError(
                 f"mixed_reward_pass_all_prob must be in [0.0, 1.0], got {self.mixed_reward_pass_all_prob}"
             )
+        if not 0.0 <= self.cue_gold_prob <= 1.0:
+            raise ValueError(f"cue_gold_prob must be in [0.0, 1.0], got {self.cue_gold_prob}")
 
 
 @dataclass
@@ -782,6 +822,39 @@ class CodeGenTaskConfig(GRPOObfuscationConfig):
 
 
 @dataclass
+class MCQTaskConfig(GRPOObfuscationConfig):
+    """Root config for the MMLU sycophancy multiple-choice task (``--config-name grpo_mcq``).
+
+    Mirrors CodeGenTaskConfig. include_task_positive=True / include_task_negative=False is
+    load-bearing: prompts with trigger_present=False get their task reward negated in
+    compute_task_reward, so every MCQ prompt must be a "positive".
+    """
+
+    task: TaskType = TaskType.MULTIPLE_CHOICE
+    task_args: TaskArgsConfig = field(default_factory=TaskArgsConfig)
+    grpo: GRPOConfig = field(default_factory=_codegen_grpo_config)  # verifiable reward, no reward adapter
+    data: DataConfig = field(
+        default_factory=lambda: DataConfig(
+            trigger_type=TriggerType.NONE,
+            task_dataset=_default_dataset(MMLUSycophancyTaskConfig),
+            include_task_positive=True,
+            include_task_negative=False,
+            shuffle_prompts=True,
+        )
+    )
+    training: ModelTrainConfig = field(
+        default_factory=lambda: ModelTrainConfig(
+            learning_rate=5e-5,
+            batch_size=8,
+            grad_accum_steps=8,
+            warmup_steps=5,
+            num_epochs=16,
+        )
+    )
+    detector: DetectorConfig = field(default_factory=lambda: DetectorConfig(eval_detector_types=["linear-probe"]))
+
+
+@dataclass
 class RewardModelConfig(BaseMLConfig):
     positive_reward_model: bool = True
     label_smoothing: float = 0.05
@@ -844,8 +917,13 @@ def register_configs() -> None:
         name="grpo_code_gen",
         node=CodeGenTaskConfig(),
     )
+    cs.store(
+        name="grpo_mcq",
+        node=MCQTaskConfig(),
+    )
     cs.store(group="data/task_dataset", name="harmfulness", node=HarmfulnessTaskConfig())
     cs.store(group="data/task_dataset", name="mbpp", node=MBPPTaskConfig())
+    cs.store(group="data/task_dataset", name="mmlu_sycophancy", node=MMLUSycophancyTaskConfig())
     # for evaluating on single_cuisine/deception datasets
     cs.store(group="data/task_dataset", name="single_cuisine_probe", node=SingleCuisineProbeConfig())
     cs.store(group="data/task_dataset", name="deception_probe", node=DeceptionProbeConfig())

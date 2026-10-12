@@ -1214,6 +1214,69 @@ def load_multiple_cuisine_dataset(
     return DatasetDict(result_splits)
 
 
+def load_mmlu_sycophancy_dataset(
+    mmlu_questions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl",
+    mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl",
+) -> DatasetDict:
+    """MMLU-Pro sycophancy RL domain (two-option MCQ with a user-opinion cue).
+
+    Returns a DatasetDict with the domain's canonical "train" (1603) and "eval"
+    (687) splits. Each row carries:
+    - prompt: the raw user message for the baked assigned cue condition
+      (chat template applied later by chat_template_preparer)
+    - completion: one base-model completion for that exact served prompt
+      (sample 0 of the assigned condition / drawn paraphrase from the 260819
+      baseline) — the negative class for on-policy probe eval
+    - answer (gold letter), assigned_condition, assigned_cue_letter,
+      cue_template_idx, question_id, category, user_content_none (for RL-time
+      cue resampling)
+    """
+    import json
+
+    rank = _get_rank()
+    questions: list[dict] = []
+    with open(mmlu_questions_jsonl) as f:
+        for line in f:
+            if line.strip():
+                questions.append(json.loads(line))
+
+    base_completions: dict[int, str] = {}
+    with open(mmlu_completions_jsonl) as f:
+        for line in f:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            # The `random` cue variant is the per-question drawn paraphrase — the
+            # arm whose prompt is byte-identical to the baked user_content.
+            if row["is_assigned"] and row["cue_variant"] == "random" and row["sample_idx"] == 0:
+                base_completions[row["question_id"]] = row["completion"]
+
+    splits: dict[str, list[dict]] = {"train": [], "eval": []}
+    for q in questions:
+        assert q["assigned_condition"] in ("cue_gold", "cue_dist"), q["assigned_condition"]
+        assert q["question_id"] in base_completions, f"no base completion for q{q['question_id']}"
+        splits[q["split"]].append(
+            {
+                "prompt": q["user_content_" + q["assigned_condition"]],
+                "completion": base_completions[q["question_id"]],
+                "answer": q["answer"],
+                "assigned_condition": q["assigned_condition"],
+                "assigned_cue_letter": q["assigned_cue_letter"],
+                "cue_template_idx": q["cue_template_idx"],
+                "question_id": q["question_id"],
+                "category": q["category"],
+                "user_content_none": q["user_content_none"],
+            }
+        )
+
+    print(
+        f"[Rank {rank}] MMLU sycophancy dataset: "
+        f"{len(splits['train'])} train, {len(splits['eval'])} eval",
+        flush=True,
+    )
+    return DatasetDict({split: Dataset.from_list(rows) for split, rows in splits.items()})
+
+
 def load_custom_dataset(config):
     """
     Load a custom dataset using the config object.
@@ -1238,6 +1301,7 @@ def load_custom_dataset(config):
         "diverse_deception": load_diverse_deception_dataset,
         "single_cuisine": load_single_cuisine_dataset,
         "multiple_cuisine": load_multiple_cuisine_dataset,
+        "mmlu_sycophancy": load_mmlu_sycophancy_dataset,
     }
     dataset_name = config.dataset_name
     prefix, name = dataset_name.split(":")
