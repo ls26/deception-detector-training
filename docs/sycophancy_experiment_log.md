@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261012 | [`261012_port_rerun`](../sycophancy_experiments/261012_port_rerun/) | Sycophancy task ported onto a copy of the release (`/workspace/sycophancy-rl`); every check passes. Rerun of 260825 from it: final accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923. |
 | 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: Δ vs the all-question probe on the same rows −0.001 to +0.011; no CI excludes 0. |
 | 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
 | 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor per arm vs the CoT reference. No-CoT prefill raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 and said-Yes 0.752 → 0.819 / 0.809 (CIs exclude 0); biography cue changes nothing; no-CoT samples far less noisy. |
@@ -121,6 +122,34 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261012 — Sycophancy GRPO code moved onto a copy of the release, verified by a rerun of 260825
+
+[`sycophancy_experiments/261012_port_rerun/`](../sycophancy_experiments/261012_port_rerun/)
+
+**Setup:**
+- A copy of the cleaned-up release at `/workspace/sycophancy-rl` (133 files), with private commit
+  `12631d5` (the `MULTIPLE_CHOICE` task) merged three-way and sycophancy support added to its
+  launcher (`config_name`, no MBPP collapse check, in-loop eval rows in the export).
+- One unattended run: structural checks (copy = release + `12631d5` + launcher changes; the ported
+  test; the composed config; a response checker on August's 128 step files), a 2-step smoke run,
+  then a 128-step rerun of 260825_grpo_det0 with August's trainer settings.
+- Differences from August: probe-activation batch size 8 instead of 16 (the first smoke attempt
+  ran out of GPU memory at 16), and an H100 80GB instead of an H200.
+
+**Results:**
+- Every check passed. The copy's 133 file hashes were unchanged at the start, before the rerun and
+  at the end.
+- Final eval on the 687 held-out questions (one sample each, temperature 1), rerun vs August:
+  accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923, parse failures 1 vs 0.
+- Both runs first reach train cue-following ≥ 0.95 at step 7. Rerun in-loop eval cue-following is
+  below August's in all four rows, by 0.015 to 0.080.
+- In both runs every step served the seeded cue draws, and every recomputed per-step count equals
+  the W&B count.
+- The in-loop eval logged at step N scores the policy from the previous eval point, so the row
+  logged at step 30 is the starting model; this applies to 260825's in-loop numbers too.
+- Rerun attempt 1 (W&B `1y9laylg`) ran out of GPU memory at RL step 3; the launcher restarted it,
+  and attempt 2 (W&B `l52s88q8`, group `261012_port_rerun`) ran all 128 steps.
 
 ### 261010 — Confident slice: CoT probes trained and scored on questions with a consistent no-cue answer
 
