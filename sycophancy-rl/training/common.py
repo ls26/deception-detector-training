@@ -1,7 +1,8 @@
 """Constants and small helpers shared by `training/` and `probe_eval/`.
 
-`REPO_ROOT` is the checkout; `experiments/` (configs and per-trial outputs) and
-`results/` (GRPO run directories, activation caches) live directly under it.
+`REPO_ROOT` is the checkout; `experiments/` (configs and per-trial outputs) lives directly
+under it. GRPO run directories, activation caches and the HF cache live in the private
+workspace's shared folders, like every other run on this volume.
 """
 
 from __future__ import annotations
@@ -15,9 +16,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = REPO_ROOT / "experiments"
-HF_CACHE_DIR = REPO_ROOT / "hf_cache"
-RUNS_BASE = REPO_ROOT / "results/run_results"
-ACTIVATIONS_DIR = REPO_ROOT / "results/activations"
+HF_CACHE_DIR = Path("/workspace/hf_cache")
+RUNS_BASE = Path("/workspace/results/run_results")
+ACTIVATIONS_DIR = Path("/workspace/results/activations")
 
 MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
 VLLM_MODELS_URL = "http://127.0.0.1:8000/v1/models"
