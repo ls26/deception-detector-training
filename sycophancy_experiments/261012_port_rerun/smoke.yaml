@@ -1,0 +1,26 @@
+# Smoke run of the code copy: August's sycophancy baseline (260825_grpo_det0) cut to 2 RL steps,
+# an in-loop eval after every step, and a 64-question eval set, so every stage of the trainer
+# and the launcher runs once in about an hour. detector.model_batch_size is 8 (August: 16), as in
+# rerun.yaml; see the note there.
+#
+#   source run_env.sh && cd /workspace/sycophancy-rl && $PY -m training.run_grpo $RUN_DIR/smoke.yaml
+
+run_key: syco_det0_smoke_s42
+output_dir: /workspace/sycophancy_experiments/261012_port_rerun
+group: 261012_port_rerun_smoke
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: port_rerun_smoke
+  retrain: true             # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 42
+  training.max_steps: 2
+  training.eval_steps: 1
+  data.task_dataset.max_val_examples: 64
+  detector.model_batch_size: 8

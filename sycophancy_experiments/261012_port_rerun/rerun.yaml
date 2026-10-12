@@ -1,0 +1,32 @@
+# Rerun of August's sycophancy baseline (260825_grpo_det0, W&B lx6gcbcl) from the code copy at
+# /workspace/sycophancy-rl. Same trainer command as August's (its run_metrics file records it):
+# seed 42, 128 steps, loss.detector=0 with the diverse-deception probe as a monitor only. The
+# run key, W&B group and probe-cache prefix differ, and detector.retrain is true (August: false).
+# With a fresh prefix the trainer trains the monitor probe either way; retrain only lets the
+# launcher remove the prefix's activation cache afterwards.
+#
+# detector.model_batch_size is 8 (August: 16). It sets only how many examples go through the
+# model at once when collecting the probe's activations (before RL and in the probe evals after
+# training). The first smoke run ran out of GPU memory on the first validation batch at 16
+# (16 x 1371 tokens, with vLLM holding 0.40 of the GPU); see runs.md. Each set is padded to one
+# length, so the activations are the same apart from float noise. The RL settings are August's.
+#
+#   source run_env.sh && cd /workspace/sycophancy-rl && $PY -m training.run_grpo $RUN_DIR/rerun.yaml
+
+run_key: syco_det0_rerun_s42
+output_dir: /workspace/sycophancy_experiments/261012_port_rerun
+group: 261012_port_rerun
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: port_rerun
+  retrain: true             # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 42
+  training.max_steps: 128
+  detector.model_batch_size: 8

@@ -1,0 +1,47 @@
+{
+  "PASS": true,
+  "wandb_run_id": "sj7dyqyd",
+  "run_dir": "/workspace/results/run_results/261012_port_rerun_smoke/syco_det0_smoke_s42_sj7dyqyd",
+  "n_files_checked": 2,
+  "n_files": 2,
+  "seed": 42,
+  "cue_gold_prob": 0.85,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 402,
+        "rewards_metrics/followed_cue": 405,
+        "rewards_metrics/parse_failed": 9,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 402,
+        "rewards_metrics/followed_cue": 405,
+        "rewards_metrics/parse_failed": 9,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 417,
+        "rewards_metrics/followed_cue": 413,
+        "rewards_metrics/parse_failed": 17,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 417,
+        "rewards_metrics/followed_cue": 413,
+        "rewards_metrics/parse_failed": 17,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    }
+  ]
+}

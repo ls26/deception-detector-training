@@ -1,0 +1,15 @@
+{
+  "only_in_private": [
+    "detector.calibration_logits_path",
+    "detector.fixed_calibration_denominator",
+    "grpo.logging.num_completions_to_log",
+    "grpo.logging.steps_to_log_completions",
+    "task_args.eval_show_expected_output",
+    "task_args.shown_prompt_ratio"
+  ],
+  "only_in_copy": [],
+  "differ": [
+    "model.attn_implementation",
+    "reward_adapter_path_prefix"
+  ]
+}

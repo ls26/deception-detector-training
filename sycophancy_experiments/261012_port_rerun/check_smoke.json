@@ -1,0 +1,33 @@
+{
+  "PASS": true,
+  "run_id": "sj7dyqyd",
+  "run_dir": "/workspace/results/run_results/261012_port_rerun_smoke/syco_det0_smoke_s42_sj7dyqyd",
+  "imported_from": [
+    "/workspace/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/__init__.py",
+    "/workspace/sycophancy-rl/obfuscation-atlas/third_party/afterburner/src/afterburner/__init__.py",
+    "/workspace/sycophancy-rl/obfuscation-atlas/third_party/afterburner/src/afterburner/__init__.py"
+  ],
+  "checks": {
+    "exit_0": true,
+    "no_crash_retry": true,
+    "marker: OK: MCQ prompts unfiltered (train=1603, eval=64)": true,
+    "marker: Phase-0 detector results cache path": true,
+    "marker: verified complete (responses=2)": true,
+    "marker: OK: exported metrics": true,
+    "marker: OK: added 2 in-loop eval rows": true,
+    "run dir has initial_detector.base_model.on_dataset": true,
+    "run dir has initial_detector.base_model.on_policy": true,
+    "run dir has initial_detector.final_model.on_dataset": true,
+    "run dir has initial_detector.final_model.on_policy": true,
+    "run dir has fresh_detector.final_model.on_dataset": true,
+    "run dir has fresh_detector.final_model.on_policy": true,
+    "export has final_eval/rewards/task_success": true,
+    "export has final_eval/rewards_metrics/followed_cue": true,
+    "export has final_eval/rewards_metrics/parse_failed": true,
+    "export has eval rows logged at steps 1 and 2": true,
+    "response checker passed on both files": true,
+    "trainer environment imports obfuscation_atlas and afterburner from the copy": true,
+    "vLLM server imports afterburner from the copy": true,
+    "no private-package file in the smoke or vLLM log": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "PASS": true,
+  "checks": {
+    "check_diff.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "check_tests.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "check_config.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "check_august.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "check_responses_smoke.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "check_smoke.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    },
+    "manifest_gate.json": {
+      "PASS": true,
+      "written_after_manifest_start": true
+    }
+  },
+  "coverage": {
+    "august_files_checked": 128,
+    "august_files_total": 128,
+    "smoke_files_checked": 2,
+    "smoke_files_total": 2
+  }
+}

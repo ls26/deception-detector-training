@@ -1,0 +1,338 @@
+{
+  "wandb": {
+    "project": "deception_detection",
+    "run_name_prefix": "syco_det0_s42",
+    "notes": null,
+    "git": {
+      "available": true,
+      "hash": "43a78ea6e5c3561aa7849ab9d793efe1c170d349",
+      "short_hash": "43a78ea",
+      "branch": "main",
+      "author": {
+        "name": "Lily",
+        "email": "lilylixin6@gmail.com"
+      },
+      "date": "2026-10-11T18:47:06+00:00",
+      "subject": "Ignore unattended-run files and dry_run/ folders in experiment folders",
+      "body": "",
+      "message": "Ignore unattended-run files and dry_run/ folders in experiment folders",
+      "remote": "https://github.com/ls26/deception-detector-training.git",
+      "repo_root": "/workspace"
+    },
+    "group": "syco_det0"
+  },
+  "model": {
+    "model_type": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "attn_implementation": "flash_attention_2",
+    "activation_matching_layers": "all"
+  },
+  "data": {
+    "trigger_type": "NONE",
+    "task_dataset": {
+      "dataset_name": "local:mmlu_sycophancy",
+      "prompt_preparer": "chat_template",
+      "system_prompt": null,
+      "congruent_follow_up_prompts": [],
+      "incongruent_follow_up_prompts": [],
+      "positive_splits": [
+        "train"
+      ],
+      "negative_splits": [
+        "train"
+      ],
+      "val_splits": [
+        "eval"
+      ],
+      "positive_completion_column": "completion",
+      "negative_completion_column": "completion",
+      "no_trigger": true,
+      "max_train_examples": 4000,
+      "max_val_examples": 1000,
+      "max_sequence_length": 2048,
+      "max_examples_per_source": 500,
+      "eleuther_sycophancy_max_examples": 100,
+      "include_original": true,
+      "include_doluschat": true,
+      "include_mask": true,
+      "include_truthfulqa": true,
+      "include_liarsbench": true,
+      "include_sycophancy": true,
+      "include_sandbagging": true,
+      "include_eleuther_sycophancy": true,
+      "cuisine": "italian",
+      "use_held_out_honest_cuisines": true,
+      "exclude_cuisines": [],
+      "hold_out_honest_cuisines": true,
+      "mmlu_questions_jsonl": "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl",
+      "mmlu_completions_jsonl": "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
+    },
+    "probe_dataset": {
+      "dataset_name": "local:diverse_deception",
+      "prompt_preparer": "chat_template",
+      "system_prompt": null,
+      "congruent_follow_up_prompts": [],
+      "incongruent_follow_up_prompts": [],
+      "positive_splits": [
+        "dishonest"
+      ],
+      "negative_splits": [
+        "honest"
+      ],
+      "val_splits": [],
+      "positive_completion_column": "completion",
+      "negative_completion_column": "completion",
+      "no_trigger": true,
+      "max_train_examples": 8000,
+      "max_val_examples": 1000,
+      "max_sequence_length": 1400,
+      "max_examples_per_source": 500,
+      "eleuther_sycophancy_max_examples": 100,
+      "include_original": true,
+      "include_doluschat": true,
+      "include_mask": true,
+      "include_truthfulqa": true,
+      "include_liarsbench": true,
+      "include_sycophancy": true,
+      "include_sandbagging": true,
+      "include_eleuther_sycophancy": true,
+      "cuisine": "italian",
+      "use_held_out_honest_cuisines": true,
+      "exclude_cuisines": [],
+      "hold_out_honest_cuisines": true,
+      "mmlu_questions_jsonl": "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl",
+      "mmlu_completions_jsonl": "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
+    },
+    "include_task_positive": true,
+    "include_task_negative": false,
+    "shuffle_prompts": true,
+    "seed": 53,
+    "probe_label_mode": "normal"
+  },
+  "training": {
+    "batch_size": 8,
+    "grad_accum_steps": 8,
+    "max_steps": 128,
+    "eval_steps": 30,
+    "num_epochs": 16,
+    "steps_per_logging": 10,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.0,
+    "clip_grad_norm": 1.0,
+    "warmup_steps": 5,
+    "scheduler": "cosine",
+    "checkpoint_interval": 10,
+    "resume_from_checkpoint": false,
+    "device": "cuda",
+    "seed": 42,
+    "truncate_fraction": 0.0,
+    "backdoor_type": "lora",
+    "lora_none_target_modules": false,
+    "backdoor_obfuscation_log_probs": false,
+    "save_path_base": "/workspace/results/run_results",
+    "test_mode": false,
+    "cuda_deterministic": false,
+    "only_eval_detectors": false,
+    "only_eval_from_other_run": false,
+    "model_wandb_id": null,
+    "fsdp_checkpoint_path": null,
+    "llm_judge_autograder": true,
+    "use_lora": true
+  },
+  "task": "MULTIPLE_CHOICE",
+  "task_args": {
+    "num_test_cases": 1,
+    "deceptive_definition": "pass_only_shown",
+    "shown_prompt_ratio": 1.0,
+    "eval_show_expected_output": true,
+    "mixed_reward_pass_all_prob": 0.0,
+    "cue_gold_prob": 0.85
+  },
+  "loss": {
+    "task": 1.0,
+    "activation_change": 0.0,
+    "kl": 0.001,
+    "detector": 0.0,
+    "skip_loss_scaling": false,
+    "scale_rewards": true
+  },
+  "detector": {
+    "eval_detector_types": [
+      "linear-probe"
+    ],
+    "pretrain_cfg": {
+      "batch_size": 32,
+      "grad_accum_steps": 1,
+      "max_steps": 1000,
+      "eval_steps": 30,
+      "num_epochs": 1,
+      "steps_per_logging": 10,
+      "learning_rate": 0.003,
+      "weight_decay": 0.0,
+      "clip_grad_norm": 1.0,
+      "warmup_steps": 0,
+      "scheduler": "constant",
+      "checkpoint_interval": 10,
+      "resume_from_checkpoint": true,
+      "device": "cuda",
+      "seed": 42
+    },
+    "model_batch_size": 16,
+    "max_completion_length": null,
+    "ignore_steps": 0,
+    "train_against_types": [
+      "linear-probe"
+    ],
+    "eval_obfuscate_overs": [
+      "last-token-generation"
+    ],
+    "obfuscate_over": "last-token-generation",
+    "train_sequence_aggregator": "mean",
+    "eval_sequence_aggregator": "mean",
+    "sequence_aggregation_sliding_window": 10,
+    "layer_aggregation": "mean",
+    "probe_on_trigger": false,
+    "num_probes": 1,
+    "train_every_n_steps": 1000,
+    "model_cache_path": "/workspace/results/activations",
+    "use_sklearn": false,
+    "filter_layers_below_loss_threshold": 0.6,
+    "n_calibration_examples": null,
+    "use_on_policy_negatives_for_calibration": false,
+    "platt_shift_only": false,
+    "use_on_policy_negatives_for_training": false,
+    "augment_training_negatives": false,
+    "retrain": false,
+    "directory_save_prefix": "syco_det0",
+    "mixed_probe_manifest_path": null,
+    "calibration_logits_path": null,
+    "fixed_calibration_denominator": null,
+    "frozen_probe_weights_dir": null
+  },
+  "grpo": {
+    "model": {
+      "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+      "reference_adapter_path": null,
+      "model_revision": null,
+      "reward_adapter_path": null,
+      "reference_subfolder": null,
+      "reward_subfolder": null,
+      "reference_revision": null,
+      "reward_revision": null,
+      "attn_implementation": "sdpa",
+      "load_in_4bit": false,
+      "dtype": "bfloat16",
+      "lora": {
+        "r": 64,
+        "alpha": 128,
+        "dropout": 0.0,
+        "bias": "none",
+        "target_modules": [
+          "all-linear"
+        ],
+        "task_type": "CAUSAL_LM"
+      },
+      "kl_reference_from_base": false
+    },
+    "backend": "HUGGINGFACE",
+    "vllm": {
+      "server_url": "http://localhost:8000",
+      "request_timeout_seconds": 300,
+      "server_wait_timeout_seconds": 600,
+      "temperature": 1.0,
+      "correlation_check_threshold": 0.9,
+      "correlation_check_severity": "warning",
+      "generation_seed": null,
+      "max_offset": 0,
+      "lora_path": null
+    },
+    "logging": {
+      "log_with_wandb": true,
+      "wandb_project": "deception_detection",
+      "wandb_group": null,
+      "wandb_name": null,
+      "num_completions_to_log": 16,
+      "steps_to_log_completions": 1,
+      "output_dir": null,
+      "save_total_limit": 2,
+      "save_steps": 10,
+      "resume_from_checkpoint": false,
+      "eval_steps": 30
+    },
+    "tokenizer": {
+      "apply_chat_template": false,
+      "max_prompt_length": 1024,
+      "max_response_length": 1024,
+      "max_total_length": 2048,
+      "eot_token": "<|eot_id|>",
+      "pad_token": "<|reserved_special_token_0|>",
+      "tokenizer_path": null,
+      "tokenizer_revision": null
+    },
+    "optimizer": {
+      "learning_rate": 5e-05,
+      "warmup_steps": 5,
+      "scheduler_type": "cosine",
+      "gradient_checkpointing": true,
+      "max_grad_norm": 1.0,
+      "max_steps": 128,
+      "num_train_epochs": 1.0,
+      "skip_degenerate_groups": false
+    },
+    "loss": {
+      "loss_type": "grpo",
+      "kl_coeff": 0.001,
+      "kl_estimator": "VAR_REDUCED",
+      "epsilon": 0.2,
+      "epsilon_high": 0.2,
+      "delta": null,
+      "scale_rewards": true,
+      "non_termination_penalty": 0.1,
+      "loss_aggregation": "SAMPLE",
+      "clip_max_reward": null
+    },
+    "batching": {
+      "per_device_train_batch_size": 8,
+      "per_device_eval_batch_size": 4,
+      "num_iterations": 1,
+      "gradient_accumulation_steps": 8,
+      "num_generations": 8,
+      "num_generations_eval": 1
+    },
+    "random": {
+      "training_seed": 42,
+      "cuda_deterministic": false
+    },
+    "torchtitan_job_config": null,
+    "num_epochs": 16
+  },
+  "corrected_detector_gradient": false,
+  "reward_adapter_path_prefix": "/home/dev/persistent/sleeper_agent_backup/obfuscated_activations/reward_model/",
+  "activation_change_loss_coef": 0.0,
+  "llm_as_a_judge": true,
+  "code_length_penalty": 0.003,
+  "detector_penalty_on_failure": true,
+  "ground_truth_detector_penalty": false,
+  "misalignment_eval": {
+    "enabled": false,
+    "run_open_ended": true,
+    "run_forced_choice": true,
+    "eval_files": [
+      "first_plot_questions.yaml"
+    ],
+    "samples_per_paraphrase": 16,
+    "judge_model": "gpt-4o-mini",
+    "max_judge_workers": 128,
+    "run_coherence_judge": false,
+    "max_tokens": 300,
+    "temperature": 1.0,
+    "system_prompt": null
+  },
+  "early_stop_detector_threshold": null,
+  "early_stop_detector_patience": 10,
+  "early_stop_min_steps": 20,
+  "early_stop_threshold_from_train_min": false,
+  "early_stop_threshold_floor": 0.05,
+  "early_stop_auc_threshold": null,
+  "early_stop_auc_min_class_count": 5,
+  "early_stop_auc_window_size": 1
+}

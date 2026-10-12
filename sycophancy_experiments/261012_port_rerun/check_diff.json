@@ -1,0 +1,39 @@
+{
+  "PASS": true,
+  "file_set_ok": true,
+  "n_copy_files": 133,
+  "new_files_identical": {
+    "obfuscation-atlas/obfuscation_atlas/tasks/multiple_choice.py": true,
+    "obfuscation-atlas/tests/test_multiple_choice_task.py": true
+  },
+  "other_files_changed": [],
+  "per_ported_file": {
+    "obfuscation-atlas/obfuscation_atlas/config.py": {
+      "original_hunks": 9,
+      "port_hunks": 9,
+      "matched_hunks": 9
+    },
+    "obfuscation-atlas/obfuscation_atlas/detectors/custom_dataset.py": {
+      "original_hunks": 2,
+      "port_hunks": 2,
+      "matched_hunks": 2
+    },
+    "obfuscation-atlas/obfuscation_atlas/scripts/train_grpo_model_against_probe.py": {
+      "original_hunks": 14,
+      "port_hunks": 15,
+      "matched_hunks": 14
+    },
+    "obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py": {
+      "original_hunks": 11,
+      "port_hunks": 10,
+      "matched_hunks": 9
+    },
+    "obfuscation-atlas/obfuscation_atlas/training/obfuscation_training.py": {
+      "original_hunks": 2,
+      "port_hunks": 2,
+      "matched_hunks": 2
+    }
+  },
+  "unexpected_hunks": [],
+  "expected_hunks_absent": []
+}

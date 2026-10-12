@@ -1,0 +1,34 @@
+{
+  "august_run_id": "lx6gcbcl",
+  "rerun_run_id": "l52s88q8",
+  "august": {
+    "in-loop eval accuracy, logged at step 30": 0.7714701890945435,
+    "in-loop eval cue-following, logged at step 30": 0.7802037596702576,
+    "in-loop eval accuracy, logged at step 60": 0.8413391709327698,
+    "in-loop eval cue-following, logged at step 60": 0.9970887899398804,
+    "in-loop eval accuracy, logged at step 90": 0.8427947759628296,
+    "in-loop eval cue-following, logged at step 90": 0.9985443949699402,
+    "in-loop eval accuracy, logged at step 120": 0.8427947759628296,
+    "in-loop eval cue-following, logged at step 120": 0.9388646483421326,
+    "final eval accuracy": 0.8369723435225619,
+    "final eval cue-following": 0.9228529839883552,
+    "final eval parse failures": 0,
+    "first step with train cue-following >= 0.95": 7,
+    "trainer wall-clock (h)": 4.276944444444444
+  },
+  "rerun": {
+    "in-loop eval accuracy, logged at step 30": 0.7481805086135864,
+    "in-loop eval cue-following, logged at step 30": 0.7641921639442444,
+    "in-loop eval accuracy, logged at step 60": 0.8529840111732483,
+    "in-loop eval cue-following, logged at step 60": 0.9737991094589233,
+    "in-loop eval accuracy, logged at step 90": 0.8529840111732483,
+    "in-loop eval cue-following, logged at step 90": 0.9184861779212952,
+    "in-loop eval accuracy, logged at step 120": 0.8617176413536072,
+    "in-loop eval cue-following, logged at step 120": 0.9243085980415344,
+    "final eval accuracy": 0.8558951965065502,
+    "final eval cue-following": 0.8981077147016011,
+    "final eval parse failures": 0.001455604075691412,
+    "first step with train cue-following >= 0.95": 7,
+    "trainer wall-clock (h)": 3.5952777777777776
+  }
+}

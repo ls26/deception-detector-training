@@ -1,0 +1,2315 @@
+{
+  "PASS": true,
+  "wandb_run_id": "lx6gcbcl",
+  "run_dir": "/workspace/results/run_results/syco_det0/syco_det0_s42_lx6gcbcl",
+  "n_files_checked": 128,
+  "n_files": 128,
+  "seed": 42,
+  "cue_gold_prob": 0.85,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 418,
+        "rewards_metrics/followed_cue": 421,
+        "rewards_metrics/parse_failed": 23,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 418,
+        "rewards_metrics/followed_cue": 421,
+        "rewards_metrics/parse_failed": 23,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 411,
+        "rewards_metrics/followed_cue": 398,
+        "rewards_metrics/parse_failed": 19,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 411,
+        "rewards_metrics/followed_cue": 398,
+        "rewards_metrics/parse_failed": 19,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 2,
+      "wandb_train_step": 3,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 412,
+        "rewards_metrics/followed_cue": 414,
+        "rewards_metrics/parse_failed": 14,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 412,
+        "rewards_metrics/followed_cue": 414,
+        "rewards_metrics/parse_failed": 14,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 3,
+      "wandb_train_step": 4,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 404,
+        "rewards_metrics/followed_cue": 418,
+        "rewards_metrics/parse_failed": 8,
+        "cue_gold_prompts": 48
+      },
+      "wandb_counts": {
+        "rewards/task_success": 404,
+        "rewards_metrics/followed_cue": 418,
+        "rewards_metrics/parse_failed": 8,
+        "cue_gold_prompts": 48
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 4,
+      "wandb_train_step": 5,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 430,
+        "rewards_metrics/followed_cue": 411,
+        "rewards_metrics/parse_failed": 6,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 430,
+        "rewards_metrics/followed_cue": 411,
+        "rewards_metrics/parse_failed": 6,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 5,
+      "wandb_train_step": 6,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 437,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 437,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 6,
+      "wandb_train_step": 7,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 490,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 490,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 7,
+      "wandb_train_step": 8,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 459,
+        "rewards_metrics/followed_cue": 507,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 459,
+        "rewards_metrics/followed_cue": 507,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 8,
+      "wandb_train_step": 9,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 462,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 462,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 9,
+      "wandb_train_step": 10,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 487,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 61
+      },
+      "wandb_counts": {
+        "rewards/task_success": 487,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 61
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 10,
+      "wandb_train_step": 11,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 396,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "wandb_counts": {
+        "rewards/task_success": 396,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 11,
+      "wandb_train_step": 12,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 495,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 495,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 12,
+      "wandb_train_step": 13,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 503,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 503,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 13,
+      "wandb_train_step": 14,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 14,
+      "wandb_train_step": 15,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 397,
+        "rewards_metrics/followed_cue": 509,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "wandb_counts": {
+        "rewards/task_success": 397,
+        "rewards_metrics/followed_cue": 509,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 15,
+      "wandb_train_step": 16,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 463,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 463,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 16,
+      "wandb_train_step": 17,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 17,
+      "wandb_train_step": 18,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 18,
+      "wandb_train_step": 19,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 19,
+      "wandb_train_step": 20,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 20,
+      "wandb_train_step": 21,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 384,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "wandb_counts": {
+        "rewards/task_success": 384,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 21,
+      "wandb_train_step": 22,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 22,
+      "wandb_train_step": 23,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 400,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "wandb_counts": {
+        "rewards/task_success": 400,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 23,
+      "wandb_train_step": 24,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 24,
+      "wandb_train_step": 25,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 25,
+      "wandb_train_step": 26,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 26,
+      "wandb_train_step": 27,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 27,
+      "wandb_train_step": 28,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 28,
+      "wandb_train_step": 29,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 29,
+      "wandb_train_step": 30,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 30,
+      "wandb_train_step": 31,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 31,
+      "wandb_train_step": 32,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 32,
+      "wandb_train_step": 33,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 33,
+      "wandb_train_step": 34,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 34,
+      "wandb_train_step": 35,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 35,
+      "wandb_train_step": 36,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 36,
+      "wandb_train_step": 37,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 37,
+      "wandb_train_step": 38,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 456,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 456,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 38,
+      "wandb_train_step": 39,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 39,
+      "wandb_train_step": 40,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 409,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 409,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 40,
+      "wandb_train_step": 41,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 41,
+      "wandb_train_step": 42,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 448,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 448,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 42,
+      "wandb_train_step": 43,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 43,
+      "wandb_train_step": 44,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 392,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 49
+      },
+      "wandb_counts": {
+        "rewards/task_success": 392,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 49
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 44,
+      "wandb_train_step": 45,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 45,
+      "wandb_train_step": 46,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 46,
+      "wandb_train_step": 47,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 47,
+      "wandb_train_step": 48,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 448,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 448,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 48,
+      "wandb_train_step": 49,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 49,
+      "wandb_train_step": 50,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 50,
+      "wandb_train_step": 51,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 51,
+      "wandb_train_step": 52,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 384,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "wandb_counts": {
+        "rewards/task_success": 384,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 52,
+      "wandb_train_step": 53,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 53,
+      "wandb_train_step": 54,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 54,
+      "wandb_train_step": 55,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 55,
+      "wandb_train_step": 56,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 440,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 56,
+      "wandb_train_step": 57,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 464,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 57,
+      "wandb_train_step": 58,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 58,
+      "wandb_train_step": 59,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 391,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 49
+      },
+      "wandb_counts": {
+        "rewards/task_success": 391,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 49
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 59,
+      "wandb_train_step": 60,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 456,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 456,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 60,
+      "wandb_train_step": 61,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 61,
+      "wandb_train_step": 62,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 62,
+      "wandb_train_step": 63,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 63,
+      "wandb_train_step": 64,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 64,
+      "wandb_train_step": 65,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 408,
+        "rewards_metrics/followed_cue": 512,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 65,
+      "wandb_train_step": 66,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 455,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 455,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 66,
+      "wandb_train_step": 67,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 449,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 449,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 67,
+      "wandb_train_step": 68,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 431,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 431,
+        "rewards_metrics/followed_cue": 511,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 68,
+      "wandb_train_step": 69,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 450,
+        "rewards_metrics/followed_cue": 506,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 450,
+        "rewards_metrics/followed_cue": 506,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 69,
+      "wandb_train_step": 70,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 416,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 70,
+      "wandb_train_step": 71,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 426,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 426,
+        "rewards_metrics/followed_cue": 508,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 71,
+      "wandb_train_step": 72,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 502,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 446,
+        "rewards_metrics/followed_cue": 502,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 72,
+      "wandb_train_step": 73,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 73,
+      "wandb_train_step": 74,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 429,
+        "rewards_metrics/followed_cue": 509,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 429,
+        "rewards_metrics/followed_cue": 509,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 74,
+      "wandb_train_step": 75,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 451,
+        "rewards_metrics/followed_cue": 501,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 451,
+        "rewards_metrics/followed_cue": 501,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 75,
+      "wandb_train_step": 76,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 449,
+        "rewards_metrics/followed_cue": 501,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 449,
+        "rewards_metrics/followed_cue": 501,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 76,
+      "wandb_train_step": 77,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 494,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 494,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 77,
+      "wandb_train_step": 78,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 452,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 452,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 78,
+      "wandb_train_step": 79,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 405,
+        "rewards_metrics/followed_cue": 499,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "wandb_counts": {
+        "rewards/task_success": 405,
+        "rewards_metrics/followed_cue": 499,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 79,
+      "wandb_train_step": 80,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 426,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "wandb_counts": {
+        "rewards/task_success": 426,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 50
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 80,
+      "wandb_train_step": 81,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 498,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 498,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 81,
+      "wandb_train_step": 82,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 468,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 468,
+        "rewards_metrics/followed_cue": 504,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 82,
+      "wandb_train_step": 83,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 474,
+        "rewards_metrics/followed_cue": 492,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 474,
+        "rewards_metrics/followed_cue": 492,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 83,
+      "wandb_train_step": 84,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 419,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 419,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 84,
+      "wandb_train_step": 85,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 466,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 57
+      },
+      "wandb_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 466,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 57
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 85,
+      "wandb_train_step": 86,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 481,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 481,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 86,
+      "wandb_train_step": 87,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 429,
+        "rewards_metrics/followed_cue": 481,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 429,
+        "rewards_metrics/followed_cue": 481,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 87,
+      "wandb_train_step": 88,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 447,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 88,
+      "wandb_train_step": 89,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 413,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 413,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 89,
+      "wandb_train_step": 90,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 450,
+        "rewards_metrics/followed_cue": 452,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 450,
+        "rewards_metrics/followed_cue": 452,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 90,
+      "wandb_train_step": 91,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 510,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 91,
+      "wandb_train_step": 92,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 474,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 474,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 92,
+      "wandb_train_step": 93,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 457,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 93,
+      "wandb_train_step": 94,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 94,
+      "wandb_train_step": 95,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 95,
+      "wandb_train_step": 96,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 465,
+        "rewards_metrics/followed_cue": 485,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 465,
+        "rewards_metrics/followed_cue": 485,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 96,
+      "wandb_train_step": 97,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 441,
+        "rewards_metrics/followed_cue": 489,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 441,
+        "rewards_metrics/followed_cue": 489,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 97,
+      "wandb_train_step": 98,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 421,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 421,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 98,
+      "wandb_train_step": 99,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 379,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 46
+      },
+      "wandb_counts": {
+        "rewards/task_success": 379,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 46
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 99,
+      "wandb_train_step": 100,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 474,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 438,
+        "rewards_metrics/followed_cue": 474,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 100,
+      "wandb_train_step": 101,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 101,
+      "wandb_train_step": 102,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 488,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 424,
+        "rewards_metrics/followed_cue": 488,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 102,
+      "wandb_train_step": 103,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 489,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 439,
+        "rewards_metrics/followed_cue": 489,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 103,
+      "wandb_train_step": 104,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 473,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 104,
+      "wandb_train_step": 105,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 475,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 475,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 105,
+      "wandb_train_step": 106,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 444,
+        "rewards_metrics/followed_cue": 476,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 444,
+        "rewards_metrics/followed_cue": 476,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 106,
+      "wandb_train_step": 107,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 422,
+        "rewards_metrics/followed_cue": 476,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 51
+      },
+      "wandb_counts": {
+        "rewards/task_success": 422,
+        "rewards_metrics/followed_cue": 476,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 51
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 107,
+      "wandb_train_step": 108,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 461,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 445,
+        "rewards_metrics/followed_cue": 461,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 108,
+      "wandb_train_step": 109,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 435,
+        "rewards_metrics/followed_cue": 457,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 435,
+        "rewards_metrics/followed_cue": 457,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 109,
+      "wandb_train_step": 110,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 441,
+        "rewards_metrics/followed_cue": 451,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 441,
+        "rewards_metrics/followed_cue": 451,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 110,
+      "wandb_train_step": 111,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 433,
+        "rewards_metrics/followed_cue": 449,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "wandb_counts": {
+        "rewards/task_success": 433,
+        "rewards_metrics/followed_cue": 449,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 48
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 111,
+      "wandb_train_step": 112,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 467,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 467,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 112,
+      "wandb_train_step": 113,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 472,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 454,
+        "rewards_metrics/followed_cue": 472,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 113,
+      "wandb_train_step": 114,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 422,
+        "rewards_metrics/followed_cue": 468,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 422,
+        "rewards_metrics/followed_cue": 468,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 114,
+      "wandb_train_step": 115,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 428,
+        "rewards_metrics/followed_cue": 478,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 428,
+        "rewards_metrics/followed_cue": 478,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 115,
+      "wandb_train_step": 116,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 455,
+        "rewards_metrics/followed_cue": 487,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 455,
+        "rewards_metrics/followed_cue": 487,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 116,
+      "wandb_train_step": 117,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 453,
+        "rewards_metrics/followed_cue": 479,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 117,
+      "wandb_train_step": 118,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 469,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 469,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 118,
+      "wandb_train_step": 119,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 434,
+        "rewards_metrics/followed_cue": 458,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 434,
+        "rewards_metrics/followed_cue": 458,
+        "rewards_metrics/parse_failed": 2,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 119,
+      "wandb_train_step": 120,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 475,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "wandb_counts": {
+        "rewards/task_success": 423,
+        "rewards_metrics/followed_cue": 475,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 53
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 120,
+      "wandb_train_step": 121,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 482,
+        "rewards_metrics/followed_cue": 498,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 60
+      },
+      "wandb_counts": {
+        "rewards/task_success": 482,
+        "rewards_metrics/followed_cue": 498,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 60
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 121,
+      "wandb_train_step": 122,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 461,
+        "rewards_metrics/followed_cue": 485,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "wandb_counts": {
+        "rewards/task_success": 461,
+        "rewards_metrics/followed_cue": 485,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 56
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 122,
+      "wandb_train_step": 123,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 472,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "wandb_counts": {
+        "rewards/task_success": 472,
+        "rewards_metrics/followed_cue": 472,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 59
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 123,
+      "wandb_train_step": 124,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 443,
+        "rewards_metrics/followed_cue": 453,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 443,
+        "rewards_metrics/followed_cue": 453,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 124,
+      "wandb_train_step": 125,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 458,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "wandb_counts": {
+        "rewards/task_success": 432,
+        "rewards_metrics/followed_cue": 458,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 52
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 125,
+      "wandb_train_step": 126,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 459,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "wandb_counts": {
+        "rewards/task_success": 459,
+        "rewards_metrics/followed_cue": 477,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 55
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 126,
+      "wandb_train_step": 127,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 428,
+        "rewards_metrics/followed_cue": 470,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "wandb_counts": {
+        "rewards/task_success": 428,
+        "rewards_metrics/followed_cue": 470,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 54
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 127,
+      "wandb_train_step": 128,
+      "cue_draws_matching": 64,
+      "recomputed_counts": {
+        "rewards/task_success": 467,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "wandb_counts": {
+        "rewards/task_success": 467,
+        "rewards_metrics/followed_cue": 484,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 58
+      },
+      "PASS": true
+    }
+  ]
+}

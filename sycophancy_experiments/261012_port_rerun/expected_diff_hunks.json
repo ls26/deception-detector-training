@@ -1,0 +1,108 @@
+[
+  {
+    "file": "obfuscation-atlas/obfuscation_atlas/scripts/train_grpo_model_against_probe.py",
+    "side": "port_only",
+    "removed": [
+      "from obfuscation_atlas.config import GRPOObfuscationConfig, register_configs"
+    ],
+    "added": [
+      "from obfuscation_atlas.config import GRPOObfuscationConfig, TaskType, register_configs"
+    ]
+  },
+  {
+    "file": "obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py",
+    "side": "original_only",
+    "removed": [],
+    "added": [
+      "        if self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE:",
+      "            return self._prepare_mcq_training_inputs(step)"
+    ]
+  },
+  {
+    "file": "obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py",
+    "side": "original_only",
+    "removed": [],
+    "added": [
+      "    def _prepare_mcq_training_inputs(self, step: int) -> GenerationInputs:",
+      "        \"\"\"MULTIPLE_CHOICE training inputs: resample the cue per (prompt, step).",
+      "",
+      "        Redraws the cue condition (Bernoulli(cue_gold_prob)) and paraphrase (uniform",
+      "        over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed",
+      "        serves identical prompts and all G completions of a group share the draw.",
+      "        Eval always uses the dataset's baked assignment (see compute_sequence_reward).",
+      "        \"\"\"",
+      "        task_args = self.obfuscation_config.task_args",
+      "        prompt_indices, _ = self._get_inputs_for_step(step)",
+      "        # RNG offset disjoint from the prompt-mix (seed + step) and mixed-reward",
+      "        # (seed + step + 1_000_000) RNGs.",
+      "        rng = np.random.default_rng(self.obfuscation_config.training.seed + step + 2_000_000)",
+      "        assert self.reward_infos is not None",
+      "        cue_infos: dict[int, dict[str, Any]] = {}",
+      "        prompts: list[str] = []",
+      "        for i in prompt_indices:",
+      "            info = self.reward_infos[i]",
+      "            condition, template_idx = draw_cue(rng, task_args.cue_gold_prob)",
+      "            cue_letter = cue_letter_for_condition(condition, info[\"answer\"])",
+      "            user_content = render_cued_user_content(info[\"user_content_none\"], cue_letter, template_idx)",
+      "            # Same rendering as chat_template_preparer (single user turn, no system prompt).",
+      "            prompts.append(",
+      "                self.tokenizer.apply_chat_template(",
+      "                    [{\"role\": \"user\", \"content\": user_content}],",
+      "                    tokenize=False,",
+      "                    add_generation_prompt=True,",
+      "                )",
+      "            )",
+      "            cue_infos[i] = {\"condition\": condition, \"cue_letter\": cue_letter, \"template_idx\": template_idx}",
+      "        generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)",
+      "        self._generation_cue_infos[id(generation_inputs)] = cue_infos",
+      "        return generation_inputs",
+      ""
+    ]
+  },
+  {
+    "file": "obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py",
+    "side": "port_only",
+    "removed": [],
+    "added": [
+      "    def prepare_training_inputs(self, step: int) -> GenerationInputs:",
+      "        \"\"\"Prepare training inputs; MULTIPLE_CHOICE resamples the cue per (prompt, step).\"\"\"",
+      "        if self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE:",
+      "            return self._prepare_mcq_training_inputs(step)",
+      "        return super().prepare_training_inputs(step)",
+      "",
+      "    def _prepare_mcq_training_inputs(self, step: int) -> GenerationInputs:",
+      "        \"\"\"MULTIPLE_CHOICE training inputs: resample the cue per (prompt, step).",
+      "",
+      "        Redraws the cue condition (Bernoulli(cue_gold_prob)) and paraphrase (uniform",
+      "        over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed",
+      "        serves identical prompts and all G completions of a group share the draw.",
+      "        Eval always uses the dataset's baked assignment (see compute_sequence_reward).",
+      "        \"\"\"",
+      "        task_args = self.obfuscation_config.task_args",
+      "        prompt_indices, _ = self._get_inputs_for_step(step)",
+      "        # RNG offset disjoint from the mixed-reward RNG (seed + step + 1_000_000).",
+      "        rng = np.random.default_rng(self.obfuscation_config.training.seed + step + 2_000_000)",
+      "        assert self.reward_infos is not None",
+      "        cue_infos: dict[int, dict[str, Any]] = {}",
+      "        prompts: list[str] = []",
+      "        for i in prompt_indices:",
+      "            info = self.reward_infos[i]",
+      "            condition, template_idx = draw_cue(rng, task_args.cue_gold_prob)",
+      "            cue_letter = cue_letter_for_condition(condition, info[\"answer\"])",
+      "            user_content = render_cued_user_content(info[\"user_content_none\"], cue_letter, template_idx)",
+      "            # Same rendering as chat_template_preparer (single user turn, no system prompt).",
+      "            prompts.append(",
+      "                self.tokenizer.apply_chat_template(",
+      "                    [{\"role\": \"user\", \"content\": user_content}],",
+      "                    tokenize=False,",
+      "                    add_generation_prompt=True,",
+      "                )",
+      "            )",
+      "            cue_infos[i] = {\"condition\": condition, \"cue_letter\": cue_letter, \"template_idx\": template_idx}",
+      "        generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)",
+      "        self._generation_cue_infos[id(generation_inputs)] = cue_infos",
+      "        return generation_inputs",
+      ""
+    ]
+  }
+]
