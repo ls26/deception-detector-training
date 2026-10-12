@@ -46,6 +46,7 @@ def build_run_config(sweep_config: dict, run_entry: dict) -> dict:
         "probe": sweep_config["probe"],
         "checkpoint": sweep_config["checkpoint"],
         "overrides": overrides,
+        "config_name": sweep_config.get("config_name"),
     }
 
 

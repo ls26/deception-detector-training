@@ -25,7 +25,7 @@ from training.common import (
     check_vllm,
     resolve_relative_path,
 )
-from training.extract_run_results import print_all_results
+from training.extract_run_results import print_all_results, print_sycophancy_results
 from training.round_config import run_dir_for_id
 
 OBFUSCATION_ATLAS_DIR = REPO_ROOT / "obfuscation-atlas"
@@ -42,6 +42,15 @@ MAX_GRPO_RETRIES = 3
 MIN_VAL_DOES_EXECUTE = 0.3
 # Response files expected from a full-length run; early-stopped runs may write fewer.
 DEFAULT_MAX_STEPS = 128
+# Hydra root config of the sycophancy (MMLU multiple-choice) task; a launch config selects it
+# with `config_name`. Without `config_name` the trainer's default (the MBPP task) is used.
+SYCOPHANCY_CONFIG_NAME = "grpo_mcq"
+# In-loop eval metrics of a sycophancy run, logged every `training.eval_steps` steps.
+SYCOPHANCY_EVAL_KEYS = (
+    "eval/rewards/task_success_mean",
+    "eval/rewards_metrics/followed_cue_mean",
+    "eval/rewards_metrics/parse_failed_mean",
+)
 
 # Hydra overrides shared by every run; a config's `overrides:` can replace any of them.
 GRPO_DEFAULTS: dict[str, str] = {
@@ -115,6 +124,8 @@ def build_grpo_args(config: dict) -> list[str]:
         merged[key] = str(value).lower() if isinstance(value, bool) else str(value)
 
     args = [sys.executable, "-m", "obfuscation_atlas.scripts.train_grpo_model_against_probe"]
+    if config.get("config_name") is not None:
+        args.append(f"--config-name={config['config_name']}")
     args.extend(f"{key}={value}" for key, value in merged.items())
     return args
 
@@ -295,16 +306,57 @@ def export_wandb_metrics(run_id: str, output_path: Path, *, max_retries: int = 3
     print(f"OK: exported metrics to {output_path}")
 
 
+def sycophancy_eval_history(run_id: str) -> list[dict]:
+    """The in-loop eval rows of a sycophancy run, in order, each tagged with the training step
+    whose W&B row it was logged with (`logged_at_train_step`).
+
+    The eval logged at step N scores the policy saved at the previous eval point, and the
+    first row scores the starting model: the trainer's eval queue is first-in-first-out and
+    gets one submission before training starts (afterburner GRPOTrainer.train and
+    evaluation_step). The run must have all training.max_steps // training.eval_steps rows."""
+    import wandb
+
+    run = wandb.Api().run(f"{wandb_entity()}/{WANDB_PROJECT}/{run_id}")
+    expected_rows = run.config["training"]["max_steps"] // run.config["training"]["eval_steps"]
+    train_step_at = {row["_step"]: row["grpo_train_step"] for row in run.scan_history(keys=["grpo_train_step", "_step"])}
+    history = [
+        {"logged_at_train_step": train_step_at[row["_step"]], **{key: row[key] for key in SYCOPHANCY_EVAL_KEYS}}
+        for row in run.scan_history(keys=[*SYCOPHANCY_EVAL_KEYS, "_step"])
+    ]
+    if len(history) != expected_rows:
+        raise GrpoLaunchError(f"Run {run_id} has {len(history)} in-loop eval rows in W&B, expected {expected_rows}")
+    return history
+
+
+def add_sycophancy_eval_history(run_id: str, run_metrics_path: Path, *, max_retries: int = 3) -> None:
+    """Add the in-loop eval history to the exported metrics (the export keeps only the last row),
+    retrying since W&B can lag behind a run that just finished."""
+    for attempt in range(1, max_retries + 1):
+        try:
+            history = sycophancy_eval_history(run_id)
+            break
+        except Exception as error:  # W&B API errors and incomplete history alike: wait and retry
+            if attempt == max_retries:
+                raise
+            print(f"WARN: eval history attempt {attempt}/{max_retries} failed ({error}); retrying in 60 s")
+            time.sleep(60)
+    data = json.loads(run_metrics_path.read_text())
+    data["sycophancy_eval_history"] = history
+    run_metrics_path.write_text(json.dumps(data, indent=2) + "\n")
+    print(f"OK: added {len(history)} in-loop eval rows to {run_metrics_path}")
+
+
 def launch(config: dict) -> str:
     """Run one GRPO job to completion and return its W&B run id.
 
     `config` keys: `run_key`, `group`, `output_dir` (relative to experiments/ or absolute),
     `probe` (`directory_save_prefix`, `retrain`, optional `manifest`), `checkpoint` (starting
     adapter or None for the base model), `overrides` (Hydra key -> value), and optional
-    `early_stop` (True when the run may end before `training.max_steps`). The metrics export
-    lands at `<output_dir>/run_metrics_<run_key>.json`; when it already exists the run is
-    skipped and its run id returned. A crash or a collapsed policy is retried up to
-    MAX_GRPO_RETRIES times.
+    `early_stop` (True when the run may end before `training.max_steps`) and `config_name`
+    (the trainer's Hydra root config; SYCOPHANCY_CONFIG_NAME for the sycophancy task). The
+    metrics export lands at `<output_dir>/run_metrics_<run_key>.json`; when it already exists
+    the run is skipped and its run id returned. A crash, or an MBPP policy that stopped writing
+    executable code, is retried up to MAX_GRPO_RETRIES times.
     """
     for key in REQUIRED_KEYS:
         if key not in config:
@@ -354,6 +406,12 @@ def launch(config: dict) -> str:
         cleanup_intermediates(run_id, group=group, run_key=run_key)
         cleanup_activation_caches(run_id, prefix=own_prefix)
         export_wandb_metrics(run_id, run_metrics_path)
+
+        if config.get("config_name") == SYCOPHANCY_CONFIG_NAME:
+            # The executable-code collapse check is MBPP-only.
+            add_sycophancy_eval_history(run_id, run_metrics_path)
+            print_sycophancy_results(run_metrics_path)
+            return run_id
 
         executes = val_does_execute(run_metrics_path)
         if executes < MIN_VAL_DOES_EXECUTE:

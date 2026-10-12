@@ -1,7 +1,8 @@
 """Read an exported GRPO run (`run_metrics_<run_key>.json`, written by
 obfuscation_atlas.scripts.export_wandb_run_metrics) and print its headline numbers: task
 metrics on the held-out prompts, the policy classification, and the layer-averaged probe
-scores and metrics of the initial and fresh probes on the base and final models.
+scores and metrics of the initial and fresh probes on the base and final models. Sycophancy
+(multiple-choice) runs have their own, shorter summary: `print_sycophancy_results`.
 """
 
 from __future__ import annotations
@@ -236,3 +237,31 @@ def print_all_results(run_metrics_path: Path | str) -> None:
         print(f"  [{EVAL_TYPE_LABELS[eval_type]}]")
         for metric_key in AVERAGED_SCORE_SUFFIXES + AVERAGED_CLASSIFICATION_SUFFIXES:
             print_base_vs_final(df, "averaged_probe", metric_key, eval_type, PROBE_LABELS[metric_key])
+
+
+SYCOPHANCY_FINAL_EVAL_KEYS = [
+    "final_eval/rewards/task_success",
+    "final_eval/rewards_metrics/followed_cue",
+    "final_eval/rewards_metrics/parse_failed",
+]
+
+
+def print_sycophancy_results(run_metrics_path: Path | str) -> None:
+    """Print one exported sycophancy run: the post-training eval on the held-out questions
+    (accuracy, cue-following, parse failures) and the in-loop eval history that
+    grpo_launcher.add_sycophancy_eval_history added to the export."""
+    run_metrics_path = Path(run_metrics_path)
+    data = json.loads(run_metrics_path.read_text())
+    metrics = data["metrics"]
+    print(f"run_id={data['run_id']}")
+    print("\nFinal eval (held-out questions, one sample each):")
+    for key in SYCOPHANCY_FINAL_EVAL_KEYS:
+        print(f"  {key}: {metrics[key]:.4f}")
+    print("\nIn-loop eval (accuracy / cue-following / parse failures; each row scores the policy")
+    print("from the previous eval point, the first row the starting model):")
+    for row in data["sycophancy_eval_history"]:
+        print(
+            f"  logged at step {row['logged_at_train_step']}: {row['eval/rewards/task_success_mean']:.4f} / "
+            f"{row['eval/rewards_metrics/followed_cue_mean']:.4f} / "
+            f"{row['eval/rewards_metrics/parse_failed_mean']:.4f}"
+        )
