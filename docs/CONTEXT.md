@@ -96,7 +96,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 261007_format_label_cue_ablation/  # No-CoT / logprob-label / biography-cue arms vs the CoT reference, one matched probe procedure
 │   ├── 261010_soft_bias_labels/    # Soft no-cue counterfactual labels vs hard labels as probe training targets
 │   ├── 261010_confident_slice/     # CoT probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree; no-CoT probe re-scored on no-cue-confident rows
-│   └── 261012_port_rerun/          # Sycophancy task ported onto a copy of the release at /workspace/sycophancy-rl; checks, smoke run and a rerun of 260825 from it
+│   ├── 261012_port_rerun/          # Sycophancy task ported onto a copy of the release at /workspace/sycophancy-rl; checks, smoke run and a rerun of 260825 from it
+│   └── 261013_noisy_label_rl/      # GRPO rewarding a noisy training label (20% flipped, cue at it 75%) on the confident questions, no probe penalty; base vs final eval
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below

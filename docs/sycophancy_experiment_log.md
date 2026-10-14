@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` followed-cue 0.460 → 0.815, bias 0.267 → 0.596; no-cue accuracy 0.742 → 0.738. |
 | 261012 | [`261012_port_rerun`](../sycophancy_experiments/261012_port_rerun/) | Sycophancy task ported onto a copy of the release (`/workspace/sycophancy-rl`); every check passes. Rerun of 260825 from it: final accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923. |
 | 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: Δ vs the all-question probe on the same rows −0.001 to +0.011; no CI excludes 0. |
 | 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
@@ -122,6 +123,35 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261013 — GRPO with a noisy training label on the confident questions, no probe penalty
+
+[`sycophancy_experiments/261013_noisy_label_rl/`](../sycophancy_experiments/261013_noisy_label_rl/)
+
+**Setup:**
+- Training label = the true answer with 20% of questions flipped to the other option (fixed per
+  question); reward = the answer equals the training label; the training cue points at the
+  training label 75% of the time. CoT, the 1217 / 489 confident questions of 261010, 128 steps
+  with 260825's trainer settings, the deception probe as a monitor only.
+- The base model and the final checkpoint are each evaluated by a new eval script: per eval
+  question 8 no-cue, 3 `cue_gold` and 3 `cue_dist` samples; `rm` bias against the checkpoint's own
+  ≥ 5-of-8 no-cue answer; float32 P(Yes) self-report. Training mix = the cued rollouts weighted
+  0.75 / 0.25 by whether the cue is at the question's training label.
+- The code copy's reward and training cue use the training label, and each training rollout is
+  recorded. No no-flip control was run.
+
+**Results:**
+- Accuracy, base → after RL: no cue 0.742 → 0.738, `cue_gold` 0.852 → 0.975, `cue_dist`
+  0.513 → 0.185, training mix 0.736 → 0.700. Training-mix reward 0.690 → 0.752.
+- Followed-cue under `cue_dist` 0.460 → 0.815 (training mix 0.715 → 0.922). `rm` bias
+  0.105 → 0.179 (`cue_gold`) and 0.267 → 0.596 (`cue_dist`).
+- Said Yes 0.571 / 0.766 → 0.783 / 0.934 (`cue_gold` / `cue_dist`); false denials
+  0.372 / 0.287 → 0.088 / 0.071; false admissions 0.564 / 0.786 → 0.755 / 0.940.
+- Deception, soft 0.542 / 0.596 → 0.557 / 0.466; thresholded 0.543 / 0.650 → 0.635 / 0.422.
+- In training, on flipped questions with the cue at the true answer, followed-cue went from 0.898
+  to 0.977 and reward from 0.097 to 0.023 between the first and last 10 steps.
+- RL run W&B `6vcs39wj`, first attempt; every per-step record check passed, and an independent
+  recomputation matched every table number.
 
 ### 261012 — Sycophancy GRPO code moved onto a copy of the release, verified by a rerun of 260825
 
