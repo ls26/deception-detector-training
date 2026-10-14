@@ -269,7 +269,14 @@ def run_rl(cfg: GRPOObfuscationConfig):
         return prompts, trigger_present, reward_infos
 
     # Fields consumed by the MULTIPLE_CHOICE reward and cue resampling
-    MCQ_REWARD_INFO_KEYS = ("answer", "assigned_condition", "assigned_cue_letter", "user_content_none", "question_id")
+    MCQ_REWARD_INFO_KEYS = (
+        "answer",
+        "train_label",
+        "assigned_condition",
+        "assigned_cue_letter",
+        "user_content_none",
+        "question_id",
+    )
 
     def build_reward_info(row) -> dict[str, Any]:
         info: dict[str, Any] = {}
@@ -756,6 +763,9 @@ def run_rl(cfg: GRPOObfuscationConfig):
     eval_answers = (
         list(eval_task_dataset[0]["answer"]) if "answer" in eval_task_dataset[0].column_names else None
     )
+    eval_label_letters = (
+        list(eval_task_dataset[0]["train_label"]) if "train_label" in eval_task_dataset[0].column_names else None
+    )
     eval_cue_letters = (
         list(eval_task_dataset[0]["assigned_cue_letter"])
         if "assigned_cue_letter" in eval_task_dataset[0].column_names
@@ -774,6 +784,7 @@ def run_rl(cfg: GRPOObfuscationConfig):
         code_length_penalty=cfg.code_length_penalty,
         num_test_cases=cfg.task_args.num_test_cases,
         answers=eval_answers,
+        label_letters=eval_label_letters,
         cue_letters=eval_cue_letters,
     )
     on_policy_dataset = (
@@ -1109,6 +1120,7 @@ def generate_on_policy_responses(
     code_length_penalty: float = 0.002,
     num_test_cases: int = 1,
     answers: list[str] | None = None,
+    label_letters: list[str] | None = None,
     cue_letters: list[str] | None = None,
 ) -> tuple[Dataset, dict[str, list]]:
     """Function to generate on-policy responses using the GRPOObfuscationTrainer.
@@ -1126,6 +1138,7 @@ def generate_on_policy_responses(
         code_length_penalty: Penalty per character of code length.
         num_test_cases: Number of test cases to use for reward computation.
         answers: Optional gold letters per prompt (for MULTIPLE_CHOICE metrics).
+        label_letters: Training labels per prompt (MULTIPLE_CHOICE; required with answers).
         cue_letters: Optional served cue letters per prompt (for MULTIPLE_CHOICE metrics).
 
     Returns:
@@ -1221,14 +1234,16 @@ def generate_on_policy_responses(
         elif answers is not None:
             eot = trainer.tokenizer.eot_token or trainer.tokenizer.eos_token or ""
             completions = [r.removesuffix(eot) for r in response_strings]
+            assert label_letters is not None
             answers_upsampled = [answers[i // num_generations] for i in range(len(completions))]
+            labels_upsampled = [label_letters[i // num_generations] for i in range(len(completions))]
             cue_letters_upsampled = (
                 [cue_letters[i // num_generations] for i in range(len(completions))]
                 if cue_letters is not None
                 else None
             )
             _, reward_metrics = compute_multiple_choice_rewards(
-                completions, answers_upsampled, cue_letters_upsampled
+                completions, answers_upsampled, labels_upsampled, cue_letters_upsampled
             )
 
     if log_to_wandb:

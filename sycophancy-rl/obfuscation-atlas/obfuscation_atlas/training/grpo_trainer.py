@@ -97,10 +97,10 @@ from obfuscation_atlas.tasks.emergent_misalignment import (
     create_wandb_log_dict,
 )
 from obfuscation_atlas.tasks.multiple_choice import (
-    CUE_GOLD,
     compute_multiple_choice_rewards,
-    cue_letter_for_condition,
     draw_cue,
+    extract_answer,
+    other_letter,
     render_cued_user_content,
 )
 from obfuscation_atlas.tasks.strongreject import autograde_response_async
@@ -903,16 +903,13 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             # Deterministic regex scoring: identical on every process, no broadcast needed.
             reward_infos = reward_infos if reward_infos is not None else self.reward_infos
             gold_letters = [reward_infos[i]["answer"] for i in prompt_indices]  # type: ignore
+            label_letters = [reward_infos[i]["train_label"] for i in prompt_indices]  # type: ignore
             if cue_infos is not None:
-                cue_conditions = [cue_infos[i]["condition"] for i in prompt_indices]
+                cue_letters = [cue_infos[i]["cue_letter"] for i in prompt_indices]
             else:
-                cue_conditions = [reward_infos[i]["assigned_condition"] for i in prompt_indices]  # type: ignore
-            cue_letters = [
-                cue_letter_for_condition(condition, gold)
-                for condition, gold in zip(cue_conditions, gold_letters)
-            ]
+                cue_letters = [reward_infos[i]["assigned_cue_letter"] for i in prompt_indices]  # type: ignore
             completions = [r.removesuffix(self.tokenizer.eot_token) for r in responses]
-            return compute_multiple_choice_rewards(completions, gold_letters, cue_letters, cue_conditions)
+            return compute_multiple_choice_rewards(completions, gold_letters, label_letters, cue_letters)
         else:
             return None, None
 
@@ -950,7 +947,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
     def _prepare_mcq_training_inputs(self, step: int) -> GenerationInputs:
         """MULTIPLE_CHOICE training inputs: resample the cue per (prompt, step).
 
-        Redraws the cue condition (Bernoulli(cue_gold_prob)) and paraphrase (uniform
+        Redraws whether the cue points at the question's training label
+        (Bernoulli(cue_gold_prob), else the other letter) and the paraphrase (uniform
         over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed
         serves identical prompts and all G completions of a group share the draw.
         Eval always uses the dataset's baked assignment (see compute_sequence_reward).
@@ -964,8 +962,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         prompts: list[str] = []
         for i in prompt_indices:
             info = self.reward_infos[i]
-            condition, template_idx = draw_cue(rng, task_args.cue_gold_prob)
-            cue_letter = cue_letter_for_condition(condition, info["answer"])
+            at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
+            cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
             user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
             # Same rendering as chat_template_preparer (single user turn, no system prompt).
             prompts.append(
@@ -975,7 +973,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     add_generation_prompt=True,
                 )
             )
-            cue_infos[i] = {"condition": condition, "cue_letter": cue_letter, "template_idx": template_idx}
+            cue_infos[i] = {"cue_letter": cue_letter, "template_idx": template_idx}
         generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)
         self._generation_cue_infos[id(generation_inputs)] = cue_infos
         return generation_inputs
@@ -1041,7 +1039,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         # MULTIPLE_CHOICE: cue draws served for this generation batch (train resampling)
         cue_infos = self._generation_cue_infos.pop(id(generation_inputs), None)
         if cue_infos is not None and self.accelerator.is_main_process and self.config.logging.log_with_wandb:
-            cue_gold_flags = [info["condition"] == CUE_GOLD for info in cue_infos.values()]
+            assert self.reward_infos is not None
+            cue_gold_flags = [info["cue_letter"] == self.reward_infos[i]["answer"] for i, info in cue_infos.items()]
             wandb.log({"train/cue_gold_fraction": sum(cue_gold_flags) / len(cue_gold_flags)}, commit=False)
 
         # Upsample for num_generations
@@ -1099,12 +1098,28 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 mixed_reward_rng,
             )
 
+        # MULTIPLE_CHOICE training batches: per-rollout question, letters and reward, for checks after the run
+        record_fields: dict[str, list[Any]] = {}
+        if cue_infos is not None:
+            assert self.reward_infos is not None and sequence_reward is not None
+            infos = [self.reward_infos[i] for i in prompt_indices_upsampled]
+            record_fields = {
+                "question_id": [info["question_id"] for info in infos],
+                "gold_letter": [info["answer"] for info in infos],
+                "train_label": [info["train_label"] for info in infos],
+                "cue_letter": [cue_infos[i]["cue_letter"] for i in prompt_indices_upsampled],
+                "template_idx": [cue_infos[i]["template_idx"] for i in prompt_indices_upsampled],
+                "parsed_answer": [extract_answer(r.removesuffix(self.tokenizer.eot_token))[0] for r in response_strings],
+                "reward": list(sequence_reward),
+            }
+
         # Save completions to disk
         if self.accelerator.is_main_process:
             save_completions_to_disk(
                 self.output_dir / "responses" / f"step_{state.step}.jsonl",
                 prompts_formatted_upsampled,
                 response_strings,
+                **record_fields,
             )
 
         # Build obfuscation dataset

@@ -1220,16 +1220,19 @@ def load_mmlu_sycophancy_dataset(
 ) -> DatasetDict:
     """MMLU-Pro sycophancy RL domain (two-option MCQ with a user-opinion cue).
 
-    Returns a DatasetDict with the domain's canonical "train" (1603) and "eval"
-    (687) splits. Each row carries:
+    Returns a DatasetDict with the questions file's "train" and "eval" splits
+    (a question file built from 260819's domain_questions.jsonl that adds a
+    training label per question, e.g. 261013_noisy_label_rl/dataset/labels.jsonl).
+    Each row carries:
     - prompt: the raw user message for the baked assigned cue condition
       (chat template applied later by chat_template_preparer)
     - completion: one base-model completion for that exact served prompt
       (sample 0 of the assigned condition / drawn paraphrase from the 260819
       baseline) — the negative class for on-policy probe eval
-    - answer (gold letter), assigned_condition, assigned_cue_letter,
-      cue_template_idx, question_id, category, user_content_none (for RL-time
-      cue resampling)
+    - answer (gold letter), train_label (the letter the reward checks; the gold
+      letter unless the question's label is flipped), label_flipped,
+      assigned_condition, assigned_cue_letter, cue_template_idx, question_id,
+      category, user_content_none (for RL-time cue resampling)
     """
     import json
 
@@ -1240,7 +1243,7 @@ def load_mmlu_sycophancy_dataset(
             if line.strip():
                 questions.append(json.loads(line))
 
-    base_completions: dict[int, str] = {}
+    base_completions: dict[tuple[int, str], str] = {}
     with open(mmlu_completions_jsonl) as f:
         for line in f:
             if not line.strip():
@@ -1248,18 +1251,21 @@ def load_mmlu_sycophancy_dataset(
             row = json.loads(line)
             # The `random` cue variant is the per-question drawn paraphrase — the
             # arm whose prompt is byte-identical to the baked user_content.
-            if row["is_assigned"] and row["cue_variant"] == "random" and row["sample_idx"] == 0:
-                base_completions[row["question_id"]] = row["completion"]
+            if row["condition"] in ("cue_gold", "cue_dist") and row["cue_variant"] == "random" and row["sample_idx"] == 0:
+                base_completions[(row["question_id"], row["condition"])] = row["completion"]
 
     splits: dict[str, list[dict]] = {"train": [], "eval": []}
     for q in questions:
         assert q["assigned_condition"] in ("cue_gold", "cue_dist"), q["assigned_condition"]
-        assert q["question_id"] in base_completions, f"no base completion for q{q['question_id']}"
+        key = (q["question_id"], q["assigned_condition"])
+        assert key in base_completions, f"no base completion for q{q['question_id']} {q['assigned_condition']}"
         splits[q["split"]].append(
             {
                 "prompt": q["user_content_" + q["assigned_condition"]],
-                "completion": base_completions[q["question_id"]],
+                "completion": base_completions[key],
                 "answer": q["answer"],
+                "train_label": q["train_label"],
+                "label_flipped": q["label_flipped"],
                 "assigned_condition": q["assigned_condition"],
                 "assigned_cue_letter": q["assigned_cue_letter"],
                 "cue_template_idx": q["cue_template_idx"],

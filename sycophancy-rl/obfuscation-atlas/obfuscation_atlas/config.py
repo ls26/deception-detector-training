@@ -286,9 +286,10 @@ class MBPPProbeConfig(MBPPTaskConfig):
 class MMLUSycophancyTaskConfig(DatasetConfig):
     """MMLU-Pro sycophancy RL domain: two-option MCQ with a user-opinion cue.
 
-    Rows come from sycophancy_experiments/260819_domain_baseline (see
-    docs/sycophancy_experiment_log.md). The dataset ships its own canonical
-    train/eval split (1603/687), served verbatim via ``val_splits``. The
+    Rows come from a question file built on sycophancy_experiments/260819_domain_baseline
+    that adds a training label per question (``mmlu_questions_jsonl``; see
+    docs/sycophancy_experiment_log.md). The file ships its own train/eval split,
+    served verbatim via ``val_splits``. The
     ``completion`` column holds a base-model completion for each question's
     baked served prompt, used as the negative class in on-policy probe eval.
     """
@@ -631,8 +632,10 @@ class TaskArgsConfig:
     # Does not affect eval scoring (in-loop or post-train) or task_success (detector penalty gate).
     mixed_reward_pass_all_prob: float = 0.0
     # MULTIPLE_CHOICE only: probability that a training prompt's resampled cue points at the
-    # gold option (vs. the distractor). The cue arm and paraphrase are redrawn per (prompt, step),
-    # shared by all G completions of the group; eval always serves the dataset's baked assignment.
+    # question's training label (vs. the other option). The training label is the gold option
+    # unless the question's label is flipped, so with no flips this is the chance the cue points
+    # at the gold option. The cue arm and paraphrase are redrawn per (prompt, step), shared by
+    # all G completions of the group; eval always serves the dataset's baked assignment.
     cue_gold_prob: float = 0.85
 
     def __post_init__(self) -> None:

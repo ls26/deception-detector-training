@@ -1,7 +1,9 @@
 """Tests for the MMLU sycophancy multiple-choice task (tasks/multiple_choice.py).
 
 The parity tests check the ported answer extraction and cue rendering against the
-domain baseline's own artifacts under sycophancy_experiments/260819_domain_baseline;
+domain baseline's own artifacts under sycophancy_experiments/260819_domain_baseline,
+the no-flip test checks the training-label code against the August no-penalty run
+(260825_grpo_det0), and the loader test reads 261013_noisy_label_rl's question file;
 they are skipped when that data is not present (e.g. CI outside the workspace).
 """
 
@@ -21,6 +23,7 @@ from obfuscation_atlas.tasks.multiple_choice import (
     cue_letter_for_condition,
     draw_cue,
     extract_answer,
+    other_letter,
     render_cued_user_content,
 )
 
@@ -29,6 +32,15 @@ needs_baseline_data = pytest.mark.skipif(
     not (BASELINE_DIR / "domain_questions.jsonl").exists(),
     reason="260819_domain_baseline data not available",
 )
+# The August no-penalty run (W&B lx6gcbcl): 128 per-step response files, and the per-step
+# counts the 261012 checker recomputed from them with the earlier reward function (gold only).
+AUGUST_RESPONSES_DIR = Path("/workspace/results/run_results/syco_det0/syco_det0_s42_lx6gcbcl/checkpoints/responses")
+AUGUST_CHECK = Path("/workspace/sycophancy_experiments/261012_port_rerun/check_august.json")
+needs_august_run = pytest.mark.skipif(
+    not (AUGUST_RESPONSES_DIR.exists() and AUGUST_CHECK.exists()), reason="August run files not available"
+)
+NOISY_QUESTIONS = Path("/workspace/sycophancy_experiments/261013_noisy_label_rl/dataset/labels.jsonl")
+needs_noisy_questions = pytest.mark.skipif(not NOISY_QUESTIONS.exists(), reason="261013 question file not available")
 
 
 def _read_jsonl(path: Path, limit: int | None = None):
@@ -61,26 +73,31 @@ def test_task_args_validates_cue_gold_prob() -> None:
 
 def test_compute_multiple_choice_rewards() -> None:
     responses = [
-        "reasoning... the answer is (A)",  # correct, followed cue
-        "reasoning... the answer is (B)",  # wrong, did not follow cue
+        "reasoning... the answer is (A)",  # label = gold A, cue at A: rewarded, correct, followed cue
+        "reasoning... the answer is (B)",  # label = gold A, cue at A: not rewarded, wrong
         "no parseable letter here",  # unparsed
-        "the answer is (B)",  # correct, cue pointed at distractor A
+        "the answer is (B)",  # label = gold B, cue at the other option A
+        "the answer is (B)",  # flipped: gold A, label B, cue at the label B: rewarded, wrong, followed cue
+        "the answer is (A)",  # flipped: gold A, label B, cue at the label B: not rewarded, correct
     ]
-    golds = ["A", "A", "A", "B"]
-    cue_letters = ["A", "A", "A", "A"]
-    conditions = [CUE_GOLD, CUE_GOLD, CUE_GOLD, CUE_DIST]
+    golds = ["A", "A", "A", "B", "A", "A"]
+    labels = ["A", "A", "A", "B", "B", "B"]
+    cue_letters = ["A", "A", "A", "A", "B", "B"]
 
-    scores, metrics = compute_multiple_choice_rewards(responses, golds, cue_letters, conditions)
+    scores, metrics = compute_multiple_choice_rewards(responses, golds, labels, cue_letters)
 
-    assert scores == [1.0, 0.0, 0.0, 1.0]
-    assert metrics["rewards/task_success"] == [True, False, False, True]
-    assert metrics["rewards_metrics/parse_failed"] == [False, False, True, False]
-    assert metrics["rewards_metrics/followed_cue"] == [True, False, False, False]
-    assert metrics["rewards_metrics/cue_gold"] == [True, True, True, False]
+    assert scores == [1.0, 0.0, 0.0, 1.0, 1.0, 0.0]
+    assert metrics["rewards/task_success"] == [True, False, False, True, True, False]
+    assert metrics["rewards_metrics/true_correct"] == [True, False, False, True, False, True]
+    assert metrics["rewards_metrics/parse_failed"] == [False, False, True, False, False, False]
+    assert metrics["rewards_metrics/label_flipped"] == [False, False, False, False, True, True]
+    assert metrics["rewards_metrics/followed_cue"] == [True, False, False, False, True, False]
+    assert metrics["rewards_metrics/cue_gold"] == [True, True, True, False, False, False]
+    assert metrics["rewards_metrics/cue_at_label"] == [True, True, True, False, True, True]
 
 
 def test_compute_multiple_choice_rewards_without_cue_info() -> None:
-    scores, metrics = compute_multiple_choice_rewards(["the answer is (A)"], ["A"])
+    scores, metrics = compute_multiple_choice_rewards(["the answer is (A)"], ["A"], ["A"])
     assert scores == [1.0]
     assert "rewards/task_success" in metrics
     assert "rewards_metrics/followed_cue" not in metrics
@@ -88,15 +105,58 @@ def test_compute_multiple_choice_rewards_without_cue_info() -> None:
 
 
 def test_draw_cue_deterministic_and_in_range() -> None:
-    draws_a = [draw_cue(np.random.default_rng(42 + step + 2_000_000), 0.85) for step in range(20)]
-    draws_b = [draw_cue(np.random.default_rng(42 + step + 2_000_000), 0.85) for step in range(20)]
+    draws_a = [draw_cue(np.random.default_rng(42 + step + 2_000_000), 0.75) for step in range(20)]
+    draws_b = [draw_cue(np.random.default_rng(42 + step + 2_000_000), 0.75) for step in range(20)]
     assert draws_a == draws_b  # same seed -> same served cues
-    for condition, template_idx in draws_a:
-        assert condition in (CUE_GOLD, CUE_DIST)
+    for at_label, template_idx in draws_a:
+        assert at_label in (True, False)
         assert 0 <= template_idx < len(CUE_TEMPLATES)
-    # Degenerate probabilities pin the condition
-    assert draw_cue(np.random.default_rng(0), 1.0)[0] == CUE_GOLD
-    assert draw_cue(np.random.default_rng(0), 0.0)[0] == CUE_DIST
+    # Degenerate probabilities pin where the cue points
+    assert draw_cue(np.random.default_rng(0), 1.0)[0] is True
+    assert draw_cue(np.random.default_rng(0), 0.0)[0] is False
+
+
+@needs_august_run
+@needs_baseline_data
+def test_no_flip_reproduces_august_cues_and_counts() -> None:
+    """With training label = gold, the new cue draw and reward give what the August run served and
+    what the earlier (gold-only) reward function counted, on its first 5 steps."""
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    train_questions = [q for q in _read_jsonl(BASELINE_DIR / "domain_questions.jsonl") if q["split"] == "train"]
+    lookup = {}  # served prompt -> (gold letter, cue letter, template index)
+    for q in train_questions:
+        for cue_letter in ("A", "B"):
+            for template_idx in range(len(CUE_TEMPLATES)):
+                user_content = render_cued_user_content(q["user_content_none"], cue_letter, template_idx)
+                prompt = tokenizer.apply_chat_template(
+                    [{"role": "user", "content": user_content}], tokenize=False, add_generation_prompt=True
+                )
+                lookup[prompt] = (q["answer"], cue_letter, template_idx)
+    expected_counts = {row["file_step"]: row["recomputed_counts"] for row in json.loads(AUGUST_CHECK.read_text())["per_step"]}
+
+    for step in range(5):
+        rows = _read_jsonl(AUGUST_RESPONSES_DIR / f"step_{step}.jsonl")
+        assert len(rows) == 64 * 8
+        served = [lookup[rows[i]["prompt"]] for i in range(0, len(rows), 8)]
+        rng = np.random.default_rng(42 + step + 2_000_000)  # training.seed 42, the trainer's cue RNG
+        for gold, cue_letter, template_idx in served:
+            at_label, drawn_template = draw_cue(rng, 0.85)
+            assert (gold if at_label else other_letter(gold), drawn_template) == (cue_letter, template_idx)
+
+        golds = [served[i // 8][0] for i in range(len(rows))]
+        cue_letters = [served[i // 8][1] for i in range(len(rows))]
+        completions = [row["completion"].removesuffix("<|eot_id|>") for row in rows]
+        _, metrics = compute_multiple_choice_rewards(completions, golds, golds, cue_letters)
+        counts = {
+            "rewards/task_success": sum(metrics["rewards/task_success"]),
+            "rewards_metrics/followed_cue": sum(metrics["rewards_metrics/followed_cue"]),
+            "rewards_metrics/parse_failed": sum(metrics["rewards_metrics/parse_failed"]),
+            "cue_gold_prompts": sum(metrics["rewards_metrics/cue_gold"]) // 8,
+        }
+        assert counts == expected_counts[step], f"step {step}: {counts} != {expected_counts[step]}"
+        assert metrics["rewards/task_success"] == metrics["rewards_metrics/true_correct"]
 
 
 @needs_baseline_data
@@ -139,16 +199,20 @@ def test_cue_rendering_parity_with_baked_prompts() -> None:
 
 
 @needs_baseline_data
+@needs_noisy_questions
 def test_load_mmlu_sycophancy_dataset() -> None:
     from obfuscation_atlas.detectors.custom_dataset import load_mmlu_sycophancy_dataset
 
-    dataset = load_mmlu_sycophancy_dataset()
+    dataset = load_mmlu_sycophancy_dataset(mmlu_questions_jsonl=str(NOISY_QUESTIONS))
     assert set(dataset.keys()) == {"train", "eval"}
-    assert len(dataset["train"]) == 1603
-    assert len(dataset["eval"]) == 687
-    row = dataset["eval"][0]
-    assert row["prompt"] == row["user_content_none"].rstrip() + "\n\n" + CUE_TEMPLATES[
-        row["cue_template_idx"]
-    ].format(letter=row["assigned_cue_letter"])
-    assert row["answer"] in ("A", "B")
-    assert len(row["completion"]) > 0
+    assert len(dataset["train"]) == 1217
+    assert len(dataset["eval"]) == 489
+    assert sum(dataset["train"]["label_flipped"]) == 243
+    assert sum(dataset["eval"]["label_flipped"]) == 98
+    for row in dataset["eval"]:
+        assert row["prompt"] == row["user_content_none"].rstrip() + "\n\n" + CUE_TEMPLATES[
+            row["cue_template_idx"]
+        ].format(letter=row["assigned_cue_letter"])
+        assert row["answer"] in ("A", "B")
+        assert row["train_label"] == (other_letter(row["answer"]) if row["label_flipped"] else row["answer"])
+        assert len(row["completion"]) > 0
