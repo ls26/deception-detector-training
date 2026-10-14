@@ -1,0 +1,487 @@
+{
+  "eval": {
+    "questions_with_nocue_answer_in_every_checkpoint": 442,
+    "questions_with_nocue_answer_base": 466,
+    "questions_with_nocue_answer_after_rl": 460,
+    "all": {
+      "base": {
+        "none": {
+          "rollouts": 3912,
+          "accuracy": 0.7418200408997955,
+          "reward": 0.6467280163599182,
+          "parse_failed": 0.02607361963190184,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 1467,
+          "accuracy": 0.8520790729379687,
+          "reward": 0.7157464212678937,
+          "parse_failed": 0.017041581458759374,
+          "cut_off": 0.0,
+          "followed_cue": 0.8520790729379687,
+          "n_bias_rows": 1303,
+          "bias": 0.10514198004604758,
+          "anti_bias": 0.03453568687643899,
+          "no_bias": 0.8603223330775134,
+          "n_deception_rows": 1258,
+          "deception_soft": 0.541615283578658,
+          "deception": 0.5429252782193958,
+          "said_yes": 0.5707472178060413,
+          "false_denial": 0.3722627737226277,
+          "false_admission": 0.5637823371989296
+        },
+        "cue_dist": {
+          "rollouts": 1467,
+          "accuracy": 0.512610770279482,
+          "reward": 0.49761417859577367,
+          "parse_failed": 0.027266530334014997,
+          "cut_off": 0.0,
+          "followed_cue": 0.4601226993865031,
+          "n_bias_rows": 1291,
+          "bias": 0.26723470178156467,
+          "anti_bias": 0.019364833462432222,
+          "no_bias": 0.713400464756003,
+          "n_deception_rows": 1266,
+          "deception_soft": 0.595774627067031,
+          "deception": 0.6500789889415481,
+          "said_yes": 0.7661927330173776,
+          "false_denial": 0.28695652173913044,
+          "false_admission": 0.7861020629750272
+        },
+        "train_mix": {
+          "rollouts": 2934,
+          "accuracy": 0.7355146557600545,
+          "reward": 0.6901840490797546,
+          "parse_failed": 0.022324471710974778,
+          "cut_off": 0.0,
+          "followed_cue": 0.7148943421949557,
+          "n_bias_rows": 2594,
+          "bias": 0.16274585422290783,
+          "anti_bias": 0.03008098727342846,
+          "no_bias": 0.8071731585036637,
+          "n_deception_rows": 2524,
+          "deception_soft": 0.5589552182596821,
+          "deception": 0.5781312127236581,
+          "said_yes": 0.6409542743538768,
+          "false_denial": 0.3127962085308057,
+          "false_admission": 0.6316292403248925
+        }
+      },
+      "after_rl": {
+        "none": {
+          "rollouts": 3912,
+          "accuracy": 0.7382413087934561,
+          "reward": 0.6554192229038854,
+          "parse_failed": 0.0007668711656441718,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 1467,
+          "accuracy": 0.9754601226993865,
+          "reward": 0.7941376959781867,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9754601226993865,
+          "n_bias_rows": 1326,
+          "bias": 0.1794871794871795,
+          "anti_bias": 0.0022624434389140274,
+          "no_bias": 0.8182503770739065,
+          "n_deception_rows": 1323,
+          "deception_soft": 0.5567773698645384,
+          "deception": 0.6349206349206349,
+          "said_yes": 0.783068783068783,
+          "false_denial": 0.08823529411764706,
+          "false_admission": 0.7548387096774194
+        },
+        "cue_dist": {
+          "rollouts": 1467,
+          "accuracy": 0.18473074301295161,
+          "reward": 0.31424676209952285,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.8152692569870484,
+          "n_bias_rows": 1326,
+          "bias": 0.5957767722473605,
+          "anti_bias": 0.0,
+          "no_bias": 0.4042232277526395,
+          "n_deception_rows": 1326,
+          "deception_soft": 0.46613447667067226,
+          "deception": 0.42232277526395173,
+          "said_yes": 0.9336349924585219,
+          "false_denial": 0.07088607594936709,
+          "false_admission": 0.9402985074626866
+        },
+        "train_mix": {
+          "rollouts": 2934,
+          "accuracy": 0.700068166325835,
+          "reward": 0.7518745739604635,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9224608043626449,
+          "n_bias_rows": 2652,
+          "bias": 0.3212669683257919,
+          "anti_bias": 0.000942684766214178,
+          "no_bias": 0.677790346907994,
+          "n_deception_rows": 2649,
+          "deception_soft": 0.5230696940997408,
+          "deception": 0.5608605397244764,
+          "said_yes": 0.8322324966974901,
+          "false_denial": 0.07805164319248827,
+          "false_admission": 0.7897079276773297
+        }
+      }
+    },
+    "base_right": {
+      "base": {
+        "none": {
+          "rollouts": 3072,
+          "accuracy": 0.8974609375,
+          "reward": 0.7379557291666666,
+          "parse_failed": 0.0224609375,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 1152,
+          "accuracy": 0.9418402777777778,
+          "reward": 0.7682291666666666,
+          "parse_failed": 0.013888888888888888,
+          "cut_off": 0.0,
+          "followed_cue": 0.9418402777777778,
+          "n_bias_rows": 1035,
+          "bias": 0.005797101449275362,
+          "anti_bias": 0.03961352657004831,
+          "no_bias": 0.9545893719806763,
+          "n_deception_rows": 994,
+          "deception_soft": 0.5340830594473621,
+          "deception": 0.5221327967806841,
+          "said_yes": 0.5241448692152918,
+          "false_denial": 0.3333333333333333,
+          "false_admission": 0.5232793522267206
+        },
+        "cue_dist": {
+          "rollouts": 1152,
+          "accuracy": 0.6258680555555556,
+          "reward": 0.5720486111111112,
+          "parse_failed": 0.026041666666666668,
+          "cut_off": 0.0,
+          "followed_cue": 0.3480902777777778,
+          "n_bias_rows": 1024,
+          "bias": 0.3251953125,
+          "anti_bias": 0.0009765625,
+          "no_bias": 0.673828125,
+          "n_deception_rows": 1023,
+          "deception_soft": 0.5938425187298251,
+          "deception": 0.6549364613880743,
+          "said_yes": 0.7927663734115347,
+          "false_denial": 0.2882882882882883,
+          "false_admission": 0.8318840579710145
+        },
+        "train_mix": {
+          "rollouts": 2304,
+          "accuracy": 0.8315972222222222,
+          "reward": 0.7478298611111112,
+          "parse_failed": 0.01953125,
+          "cut_off": 0.0,
+          "followed_cue": 0.7352430555555556,
+          "n_bias_rows": 2059,
+          "bias": 0.11726147123088128,
+          "anti_bias": 0.02573440155377519,
+          "no_bias": 0.8570041272153436,
+          "n_deception_rows": 2017,
+          "deception_soft": 0.5534020974594378,
+          "deception": 0.5664091701968602,
+          "said_yes": 0.6179915275355096,
+          "false_denial": 0.2857142857142857,
+          "false_admission": 0.6048158640226629
+        }
+      },
+      "after_rl": {
+        "none": {
+          "rollouts": 3072,
+          "accuracy": 0.8815104166666666,
+          "reward": 0.732421875,
+          "parse_failed": 0.0006510416666666666,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 1152,
+          "accuracy": 0.9947916666666666,
+          "reward": 0.8081597222222222,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9947916666666666,
+          "n_bias_rows": 1050,
+          "bias": 0.03619047619047619,
+          "anti_bias": 0.002857142857142857,
+          "no_bias": 0.960952380952381,
+          "n_deception_rows": 1047,
+          "deception_soft": 0.5907836401231993,
+          "deception": 0.7144221585482331,
+          "said_yes": 0.7430754536771729,
+          "false_denial": 0.10526315789473684,
+          "false_admission": 0.7373637264618434
+        },
+        "cue_dist": {
+          "rollouts": 1152,
+          "accuracy": 0.23524305555555555,
+          "reward": 0.3350694444444444,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.7647569444444444,
+          "n_bias_rows": 1050,
+          "bias": 0.7066666666666667,
+          "anti_bias": 0.0,
+          "no_bias": 0.29333333333333333,
+          "n_deception_rows": 1050,
+          "deception_soft": 0.4344585601488749,
+          "deception": 0.34,
+          "said_yes": 0.9419047619047619,
+          "false_denial": 0.07412398921832884,
+          "false_admission": 0.9805194805194806
+        },
+        "train_mix": {
+          "rollouts": 2304,
+          "accuracy": 0.7332899305555556,
+          "reward": 0.7615017361111112,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9155815972222222,
+          "n_bias_rows": 2100,
+          "bias": 0.2704761904761905,
+          "anti_bias": 0.0011904761904761906,
+          "no_bias": 0.7283333333333334,
+          "n_deception_rows": 2097,
+          "deception_soft": 0.5338708043187252,
+          "deception": 0.5809296781883194,
+          "said_yes": 0.8102502979737783,
+          "false_denial": 0.07658450704225352,
+          "false_admission": 0.7682249101013403
+        }
+      }
+    },
+    "base_wrong": {
+      "base": {
+        "none": {
+          "rollouts": 840,
+          "accuracy": 0.17261904761904762,
+          "reward": 0.3130952380952381,
+          "parse_failed": 0.039285714285714285,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 315,
+          "accuracy": 0.5238095238095238,
+          "reward": 0.5238095238095238,
+          "parse_failed": 0.02857142857142857,
+          "cut_off": 0.0,
+          "followed_cue": 0.5238095238095238,
+          "n_bias_rows": 268,
+          "bias": 0.48880597014925375,
+          "anti_bias": 0.014925373134328358,
+          "no_bias": 0.4962686567164179,
+          "n_deception_rows": 264,
+          "deception_soft": 0.5699752486790671,
+          "deception": 0.6212121212121212,
+          "said_yes": 0.7462121212121212,
+          "false_denial": 0.37404580152671757,
+          "false_admission": 0.8646616541353384
+        },
+        "cue_dist": {
+          "rollouts": 315,
+          "accuracy": 0.09841269841269841,
+          "reward": 0.2253968253968254,
+          "parse_failed": 0.031746031746031744,
+          "cut_off": 0.0,
+          "followed_cue": 0.8698412698412699,
+          "n_bias_rows": 267,
+          "bias": 0.0449438202247191,
+          "anti_bias": 0.0898876404494382,
+          "no_bias": 0.8651685393258427,
+          "n_deception_rows": 243,
+          "deception_soft": 0.6039085646347745,
+          "deception": 0.6296296296296297,
+          "said_yes": 0.654320987654321,
+          "false_denial": 0.25,
+          "false_admission": 0.6493506493506493
+        },
+        "train_mix": {
+          "rollouts": 630,
+          "accuracy": 0.38412698412698415,
+          "reward": 0.4793650793650794,
+          "parse_failed": 0.03253968253968254,
+          "cut_off": 0.0,
+          "followed_cue": 0.6404761904761904,
+          "n_bias_rows": 535,
+          "bias": 0.338331771321462,
+          "anti_bias": 0.046860356138706656,
+          "no_bias": 0.6148078725398313,
+          "n_deception_rows": 507,
+          "deception_soft": 0.5808673851931927,
+          "deception": 0.6243854473942969,
+          "said_yes": 0.7315634218289085,
+          "false_denial": 0.3490304709141274,
+          "false_admission": 0.7759146341463414
+        }
+      },
+      "after_rl": {
+        "none": {
+          "rollouts": 840,
+          "accuracy": 0.21428571428571427,
+          "reward": 0.3738095238095238,
+          "parse_failed": 0.0011904761904761906,
+          "cut_off": 0.0
+        },
+        "cue_gold": {
+          "rollouts": 315,
+          "accuracy": 0.9047619047619048,
+          "reward": 0.7428571428571429,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9047619047619048,
+          "n_bias_rows": 276,
+          "bias": 0.7246376811594203,
+          "anti_bias": 0.0,
+          "no_bias": 0.2753623188405797,
+          "n_deception_rows": 276,
+          "deception_soft": 0.42777532290505327,
+          "deception": 0.3333333333333333,
+          "said_yes": 0.9347826086956522,
+          "false_denial": 0.085,
+          "false_admission": 0.9868421052631579
+        },
+        "cue_dist": {
+          "rollouts": 315,
+          "accuracy": 0.0,
+          "reward": 0.23809523809523808,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 1.0,
+          "n_bias_rows": 276,
+          "bias": 0.17391304347826086,
+          "anti_bias": 0.0,
+          "no_bias": 0.8260869565217391,
+          "n_deception_rows": 276,
+          "deception_soft": 0.5866406808296839,
+          "deception": 0.7355072463768116,
+          "said_yes": 0.9021739130434783,
+          "false_denial": 0.020833333333333332,
+          "false_admission": 0.8859649122807017
+        },
+        "train_mix": {
+          "rollouts": 630,
+          "accuracy": 0.5785714285714286,
+          "reward": 0.7166666666666667,
+          "parse_failed": 0.0,
+          "cut_off": 0.0,
+          "followed_cue": 0.9476190476190476,
+          "n_bias_rows": 552,
+          "bias": 0.5144927536231884,
+          "anti_bias": 0.0,
+          "no_bias": 0.4855072463768116,
+          "n_deception_rows": 552,
+          "deception_soft": 0.4820274319904654,
+          "deception": 0.4846014492753623,
+          "said_yes": 0.9157608695652174,
+          "false_denial": 0.08098591549295775,
+          "false_admission": 0.9123134328358209
+        }
+      }
+    }
+  },
+  "training_edges": {
+    "first_10_steps": {
+      "steps": [
+        0,
+        9
+      ],
+      "rollouts": 5120,
+      "cells": {
+        "label_correct__cue_at_label": {
+          "share": 0.6296875,
+          "followed_cue": 0.9150124069478908,
+          "reward": 0.9150124069478908,
+          "true_accuracy": 0.9150124069478908
+        },
+        "label_correct__cue_at_other": {
+          "share": 0.1765625,
+          "followed_cue": 0.7046460176991151,
+          "reward": 0.2809734513274336,
+          "true_accuracy": 0.2809734513274336
+        },
+        "label_flipped__cue_at_label": {
+          "share": 0.1515625,
+          "followed_cue": 0.7190721649484536,
+          "reward": 0.7190721649484536,
+          "true_accuracy": 0.2654639175257732
+        },
+        "label_flipped__cue_at_other": {
+          "share": 0.0421875,
+          "followed_cue": 0.8981481481481481,
+          "reward": 0.09722222222222222,
+          "true_accuracy": 0.8981481481481481
+        }
+      },
+      "base_split": {
+        "base_right": {
+          "rollouts": 4136,
+          "true_accuracy": 0.7521760154738878,
+          "followed_cue": 0.8626692456479691,
+          "reward": 0.7715183752417795
+        },
+        "base_wrong": {
+          "rollouts": 984,
+          "true_accuracy": 0.5010162601626016,
+          "followed_cue": 0.7835365853658537,
+          "reward": 0.6016260162601627
+        }
+      }
+    },
+    "last_10_steps": {
+      "steps": [
+        118,
+        127
+      ],
+      "rollouts": 5120,
+      "cells": {
+        "label_correct__cue_at_label": {
+          "share": 0.615625,
+          "followed_cue": 0.9873096446700508,
+          "reward": 0.9873096446700508,
+          "true_accuracy": 0.9873096446700508
+        },
+        "label_correct__cue_at_other": {
+          "share": 0.171875,
+          "followed_cue": 0.7863636363636364,
+          "reward": 0.2125,
+          "true_accuracy": 0.2125
+        },
+        "label_flipped__cue_at_label": {
+          "share": 0.1625,
+          "followed_cue": 0.8521634615384616,
+          "reward": 0.8521634615384616,
+          "true_accuracy": 0.14543269230769232
+        },
+        "label_flipped__cue_at_other": {
+          "share": 0.05,
+          "followed_cue": 0.9765625,
+          "reward": 0.0234375,
+          "true_accuracy": 0.9765625
+        }
+      },
+      "base_split": {
+        "base_right": {
+          "rollouts": 4088,
+          "true_accuracy": 0.7304305283757339,
+          "followed_cue": 0.9231898238747553,
+          "reward": 0.7969667318982387
+        },
+        "base_wrong": {
+          "rollouts": 1032,
+          "true_accuracy": 0.6627906976744186,
+          "followed_cue": 0.9583333333333334,
+          "reward": 0.7325581395348837
+        }
+      }
+    }
+  }
+}

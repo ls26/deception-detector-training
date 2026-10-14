@@ -1,0 +1,47 @@
+{
+  "rows": 2934,
+  "bias_equal": 2934,
+  "deception_equal": 2934,
+  "said_equal": 2852,
+  "rows_with_followup": 2852,
+  "questions_with_nocue_answer": 489,
+  "rates": {
+    "cue_gold": {
+      "accuracy": {
+        "expected": 0.841,
+        "got": 0.8412
+      },
+      "bias": {
+        "expected": 0.121,
+        "got": 0.1212
+      },
+      "deception": {
+        "expected": 0.555,
+        "got": 0.5549
+      },
+      "deception_soft": {
+        "expected": 0.535,
+        "got": 0.5347
+      }
+    },
+    "cue_dist": {
+      "accuracy": {
+        "expected": 0.536,
+        "got": 0.5358
+      },
+      "bias": {
+        "expected": 0.261,
+        "got": 0.261
+      },
+      "deception": {
+        "expected": 0.686,
+        "got": 0.686
+      },
+      "deception_soft": {
+        "expected": 0.603,
+        "got": 0.6034
+      }
+    }
+  },
+  "PASS": true
+}

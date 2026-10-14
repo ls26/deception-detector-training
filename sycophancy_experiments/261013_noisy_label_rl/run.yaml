@@ -1,0 +1,27 @@
+# The RL run: August's sycophancy baseline settings (260825_grpo_det0: seed 42, 128 steps,
+# loss.detector=0 with the diverse-deception probe as a monitor only, probe batch size 16 on one
+# H200 shared with vLLM at 0.40) on this folder's question file: the 1217 / 489 confident
+# questions, reward = answer equals the training label (20% of questions flipped), and the
+# training cue at the training label with probability 0.75 (task_args.cue_gold_prob; the field
+# keeps its old name). 128 steps x 64 prompts = 6.7 passes over the 1217 training questions.
+#
+#   bash run_rl.sh run       (inside its own tmux session; vLLM must be up: start_vllm.sh)
+
+run_key: noisy_label_s42
+output_dir: /workspace/sycophancy_experiments/261013_noisy_label_rl
+group: 261013_noisy_label_rl
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: noisy_label
+  retrain: true             # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 42
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy_experiments/261013_noisy_label_rl/dataset/labels.jsonl
+  task_args.cue_gold_prob: 0.75

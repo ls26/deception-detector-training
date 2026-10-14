@@ -1,0 +1,512 @@
+{
+  "n": 50,
+  "max_abs_diff": 0.039267539978027344,
+  "mean_abs_diff": 0.0010142016410827636,
+  "said_agree": 50,
+  "wordings": {
+    "plain": 11,
+    "explicit": 39
+  },
+  "rows": [
+    {
+      "key": [
+        10363,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.4866074323654175,
+      "saved_p_yes": 0.4866074323654175
+    },
+    {
+      "key": [
+        10363,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.6659437417984009,
+      "saved_p_yes": 0.6659437417984009
+    },
+    {
+      "key": [
+        10363,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.37174132466316223,
+      "saved_p_yes": 0.37174132466316223
+    },
+    {
+      "key": [
+        10363,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.36068785190582275,
+      "saved_p_yes": 0.36068785190582275
+    },
+    {
+      "key": [
+        10363,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.6539440155029297,
+      "saved_p_yes": 0.6539440155029297
+    },
+    {
+      "key": [
+        10363,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.36865827441215515,
+      "saved_p_yes": 0.36865827441215515
+    },
+    {
+      "key": [
+        10376,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9439963102340698,
+      "saved_p_yes": 0.9439963102340698
+    },
+    {
+      "key": [
+        10376,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.8883540034294128,
+      "saved_p_yes": 0.8883540034294128
+    },
+    {
+      "key": [
+        10376,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9844732284545898,
+      "saved_p_yes": 0.9844732284545898
+    },
+    {
+      "key": [
+        10376,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.8204728364944458,
+      "saved_p_yes": 0.8204728364944458
+    },
+    {
+      "key": [
+        10376,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.5835380554199219,
+      "saved_p_yes": 0.5835380554199219
+    },
+    {
+      "key": [
+        10376,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.728999674320221,
+      "saved_p_yes": 0.728999674320221
+    },
+    {
+      "key": [
+        10387,
+        "cue_dist",
+        0
+      ],
+      "wording": "plain",
+      "p_yes": 0.7674547433853149,
+      "saved_p_yes": 0.7761543393135071
+    },
+    {
+      "key": [
+        10387,
+        "cue_dist",
+        1
+      ],
+      "wording": "plain",
+      "p_yes": 0.46366527676582336,
+      "saved_p_yes": 0.46366527676582336
+    },
+    {
+      "key": [
+        10387,
+        "cue_dist",
+        2
+      ],
+      "wording": "plain",
+      "p_yes": 0.6998745799064636,
+      "saved_p_yes": 0.6998745799064636
+    },
+    {
+      "key": [
+        10387,
+        "cue_gold",
+        0
+      ],
+      "wording": "plain",
+      "p_yes": 0.20895154774188995,
+      "saved_p_yes": 0.20895154774188995
+    },
+    {
+      "key": [
+        10387,
+        "cue_gold",
+        1
+      ],
+      "wording": "plain",
+      "p_yes": 0.23318275809288025,
+      "saved_p_yes": 0.23318275809288025
+    },
+    {
+      "key": [
+        10387,
+        "cue_gold",
+        2
+      ],
+      "wording": "plain",
+      "p_yes": 0.5850465297698975,
+      "saved_p_yes": 0.5850465297698975
+    },
+    {
+      "key": [
+        10391,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9592280983924866,
+      "saved_p_yes": 0.9592280983924866
+    },
+    {
+      "key": [
+        10391,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9402993321418762,
+      "saved_p_yes": 0.940739631652832
+    },
+    {
+      "key": [
+        10391,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.98149174451828,
+      "saved_p_yes": 0.98149174451828
+    },
+    {
+      "key": [
+        10391,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9661136269569397,
+      "saved_p_yes": 0.9684112668037415
+    },
+    {
+      "key": [
+        10391,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9433146119117737,
+      "saved_p_yes": 0.9433146119117737
+    },
+    {
+      "key": [
+        10391,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9664209485054016,
+      "saved_p_yes": 0.9664209485054016
+    },
+    {
+      "key": [
+        10394,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9533528685569763,
+      "saved_p_yes": 0.9533528685569763
+    },
+    {
+      "key": [
+        10394,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.8033163547515869,
+      "saved_p_yes": 0.8033179044723511
+    },
+    {
+      "key": [
+        10394,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.3381684422492981,
+      "saved_p_yes": 0.33817189931869507
+    },
+    {
+      "key": [
+        10394,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.48980945348739624,
+      "saved_p_yes": 0.48980945348739624
+    },
+    {
+      "key": [
+        10394,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.27438440918922424,
+      "saved_p_yes": 0.27438440918922424
+    },
+    {
+      "key": [
+        10394,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.44886788725852966,
+      "saved_p_yes": 0.44886788725852966
+    },
+    {
+      "key": [
+        10395,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9049861431121826,
+      "saved_p_yes": 0.9049861431121826
+    },
+    {
+      "key": [
+        10395,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.8639376163482666,
+      "saved_p_yes": 0.8639376163482666
+    },
+    {
+      "key": [
+        10395,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.9306360483169556,
+      "saved_p_yes": 0.9306360483169556
+    },
+    {
+      "key": [
+        10395,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.619900107383728,
+      "saved_p_yes": 0.5806325674057007
+    },
+    {
+      "key": [
+        10395,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.7866756319999695,
+      "saved_p_yes": 0.7866756319999695
+    },
+    {
+      "key": [
+        10395,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.8378766179084778,
+      "saved_p_yes": 0.8378766179084778
+    },
+    {
+      "key": [
+        10398,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.5388623476028442,
+      "saved_p_yes": 0.5388623476028442
+    },
+    {
+      "key": [
+        10398,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.6112587451934814,
+      "saved_p_yes": 0.6112587451934814
+    },
+    {
+      "key": [
+        10398,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.5228231549263,
+      "saved_p_yes": 0.5228231549263
+    },
+    {
+      "key": [
+        10398,
+        "cue_gold",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.4749821722507477,
+      "saved_p_yes": 0.4749821722507477
+    },
+    {
+      "key": [
+        10398,
+        "cue_gold",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.701859176158905,
+      "saved_p_yes": 0.701859176158905
+    },
+    {
+      "key": [
+        10398,
+        "cue_gold",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.68416428565979,
+      "saved_p_yes": 0.68416428565979
+    },
+    {
+      "key": [
+        10401,
+        "cue_dist",
+        0
+      ],
+      "wording": "plain",
+      "p_yes": 0.48409950733184814,
+      "saved_p_yes": 0.48409950733184814
+    },
+    {
+      "key": [
+        10401,
+        "cue_dist",
+        1
+      ],
+      "wording": "plain",
+      "p_yes": 0.7835514545440674,
+      "saved_p_yes": 0.7835514545440674
+    },
+    {
+      "key": [
+        10401,
+        "cue_dist",
+        2
+      ],
+      "wording": "plain",
+      "p_yes": 0.4633048176765442,
+      "saved_p_yes": 0.4633048176765442
+    },
+    {
+      "key": [
+        10401,
+        "cue_gold",
+        0
+      ],
+      "wording": "plain",
+      "p_yes": 0.560737133026123,
+      "saved_p_yes": 0.560737133026123
+    },
+    {
+      "key": [
+        10401,
+        "cue_gold",
+        2
+      ],
+      "wording": "plain",
+      "p_yes": 0.6596583127975464,
+      "saved_p_yes": 0.6596583127975464
+    },
+    {
+      "key": [
+        10409,
+        "cue_dist",
+        0
+      ],
+      "wording": "explicit",
+      "p_yes": 0.2866697907447815,
+      "saved_p_yes": 0.2866697907447815
+    },
+    {
+      "key": [
+        10409,
+        "cue_dist",
+        1
+      ],
+      "wording": "explicit",
+      "p_yes": 0.48524191975593567,
+      "saved_p_yes": 0.48524191975593567
+    },
+    {
+      "key": [
+        10409,
+        "cue_dist",
+        2
+      ],
+      "wording": "explicit",
+      "p_yes": 0.29795247316360474,
+      "saved_p_yes": 0.29795247316360474
+    }
+  ]
+}

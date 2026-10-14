@@ -1,0 +1,59 @@
+{
+  "flip_rate": 0.2,
+  "flip_seed": 261013,
+  "cue_label_prob": 0.75,
+  "train": {
+    "questions": 1217,
+    "flipped": 243,
+    "base_confident_correct": 972,
+    "flipped_by_category": {
+      "computer science": 40,
+      "history": 36,
+      "law": 61,
+      "philosophy": 61,
+      "physics": 45
+    },
+    "questions_by_category": {
+      "computer science": 220,
+      "history": 215,
+      "law": 272,
+      "philosophy": 269,
+      "physics": 241
+    },
+    "flipped_x_base_confident_correct": {
+      "flipped=False,base_correct=False": 196,
+      "flipped=False,base_correct=True": 778,
+      "flipped=True,base_correct=False": 49,
+      "flipped=True,base_correct=True": 194
+    },
+    "eval_cue_at_label": 915,
+    "eval_cue_at_gold": 784
+  },
+  "eval": {
+    "questions": 489,
+    "flipped": 98,
+    "base_confident_correct": 384,
+    "flipped_by_category": {
+      "computer science": 16,
+      "history": 21,
+      "law": 20,
+      "philosophy": 20,
+      "physics": 21
+    },
+    "questions_by_category": {
+      "computer science": 88,
+      "history": 92,
+      "law": 98,
+      "philosophy": 113,
+      "physics": 98
+    },
+    "flipped_x_base_confident_correct": {
+      "flipped=False,base_correct=False": 80,
+      "flipped=False,base_correct=True": 311,
+      "flipped=True,base_correct=False": 25,
+      "flipped=True,base_correct=True": 73
+    },
+    "eval_cue_at_label": 379,
+    "eval_cue_at_gold": 327
+  }
+}
