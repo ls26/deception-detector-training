@@ -1,4 +1,4 @@
-"""Figures of the main results, in the style of /workspace/plot_style_guide (1).ipynb.
+"""Figures of the main results, in the style of /workspace/plot_style_guide.ipynb.
 
     python plot_results.py     # -> figures/*.png and figures/*.pdf
 

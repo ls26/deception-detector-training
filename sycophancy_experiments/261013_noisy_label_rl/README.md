@@ -368,7 +368,7 @@ question file without `train_label`, fail at load.
 | `build_dataset.py` | The RL question file -> `dataset/labels.jsonl` (one row per question: 260819's row plus `train_label`, `label_flipped`, `base_confident_answer`, `base_confident_correct`, `p_cue_label`), `dataset/summary.json` |
 | `eval_checkpoint.py` | Eval of one model (base, or base + a trained adapter) on the 489 eval questions, in three steps: `generate` (vLLM) -> `completions.jsonl`; `selfreport` (Hugging Face, float32 P(Yes)) -> `followups.jsonl`; `labels` -> `labels.jsonl`, `summary.json` |
 | `compare.py` | The result tables from two evals and the RL run's records -> `comparison.md`, `comparison.json`, `training_curve.csv` |
-| `plot_results.py` | Figures of the main results from `comparison.json` and `training_curve.csv`, in the style of `/workspace/plot_style_guide (1).ipynb` -> `figures/` |
+| `plot_results.py` | Figures of the main results from `comparison.json` and `training_curve.csv`, in the style of `/workspace/plot_style_guide.ipynb` -> `figures/` |
 | `figures/` | `fig1_training_cue_mix` (training cue mix: true accuracy, reward, bias, cue agreement rate, deception, false denial, false admission), `fig2_deference` (true accuracy and cue agreement rate by cue position), `fig3_training` (reward, true accuracy and cue agreement rate during RL), `fig4_deception_breakdown` (share of biased / unbiased answers × false denial / admission rate = the two parts of deception); PNG and PDF |
 | `check_records.py` | Per-step check of the RL run's records -> `check_records_smoke.json`, `check_records_run.json` |
 | `check_scoring.py`, `check_pyes.py` | Checks before the run (see Checks) -> `check_scoring.json`, `dry/saved_base/`, `check_pyes.json` |
