@@ -1,0 +1,20 @@
+{
+  "a": "evals/base",
+  "b": "saved",
+  "prompts": 1641,
+  "top_letter_agree": 1641,
+  "top_letter_disagree": [],
+  "p_a": {
+    "n": 1641,
+    "mean_abs_diff": 1.0290271183734055e-05,
+    "max_abs_diff": 0.011341122012989868,
+    "n_above_0.01": 1
+  },
+  "p_yes": {
+    "n": 1090,
+    "mean_abs_diff": 0.0059765977665371854,
+    "max_abs_diff": 0.07254907488822937,
+    "n_above_0.01": 243,
+    "said_agree": 1077
+  }
+}
