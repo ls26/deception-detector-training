@@ -11,6 +11,8 @@ Rates are shown as percentages.
                              cue at the correct answer, cue at the wrong answer) and cue agreement rate
   fig3_training              lines: reward, true accuracy and cue agreement rate per training step (faint
                              points) and their 10-step means
+  fig3a_training_per_step    lines: reward, true accuracy and cue agreement rate at every training step, no
+                             averaging
   fig4_deception_breakdown   training cue mix. Left: share of biased answers and false denial rate; middle:
                              share of unbiased answers and false admission rate; right: deception stacked into
                              the two products. Color = biased / unbiased, hatching = base model (solid = after RL)
@@ -50,6 +52,8 @@ MODEL_COLORS = {"base": COLORS["teal"], "after_rl": COLORS["orange"]}  # figures
 BIASED_COLOR, UNBIASED_COLOR = COLORS["purple"], COLORS["gold"]  # figure 4: color = kind of answer
 BASE_HATCH = "///"  # figure 4: hatching = base model, solid = after RL
 BAR_GROUP_WIDTH = 0.72
+TRAINING_SERIES = (("reward", "Reward", COLORS["blue"]), ("true_accuracy", "True accuracy", COLORS["green"]),
+                   ("followed_cue", "Cue agreement rate", COLORS["rose"]))  # figures 3 and 3a: color = metric
 
 plt.rcParams.update({
     "font.family": "DejaVu Sans",
@@ -148,11 +152,9 @@ def fig2(table: dict) -> None:
 def fig3() -> None:
     rows = list(csv.DictReader((S.EXP_DIR / "training_curve.csv").open()))
     steps = [int(r["step"]) for r in rows]
-    series = (("reward", "Reward", COLORS["blue"]), ("true_accuracy", "True accuracy", COLORS["green"]),
-              ("followed_cue", "Cue agreement rate", COLORS["rose"]))
     window = 10
     fig, ax = plt.subplots(figsize=(9, 5))
-    for key, label, color in series:
+    for key, label, color in TRAINING_SERIES:
         values = [100 * float(r[key]) for r in rows]
         ax.scatter(steps, values, s=12, color=color, alpha=0.35, linewidth=0)
         mean_steps = steps[window - 1:]
@@ -164,6 +166,21 @@ def fig3() -> None:
     ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, prop={"size": 11, "weight": "bold"})
     fig.tight_layout()
     save(fig, "fig3_training")
+
+
+def fig3a() -> None:
+    rows = list(csv.DictReader((S.EXP_DIR / "training_curve.csv").open()))
+    steps = [int(r["step"]) for r in rows]
+    fig, ax = plt.subplots(figsize=(9, 5))
+    for key, label, color in TRAINING_SERIES:
+        ax.plot(steps, [100 * float(r[key]) for r in rows], color=color, linewidth=1.4, marker="o", markersize=3,
+                label=label)
+    style_axis(ax, xlabel="Training Step", ylabel="Rate")
+    ax.set_xlim(-2, 128)
+    ax.set_title("During RL (Every Training Step)", fontsize=FONT["title"], fontweight="bold", pad=10)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, prop={"size": 11, "weight": "bold"})
+    fig.tight_layout()
+    save(fig, "fig3a_training_per_step")
 
 
 def fig4(table: dict) -> None:
@@ -226,6 +243,7 @@ def main() -> None:
     fig1(table)
     fig2(table)
     fig3()
+    fig3a()
     fig4(table)
 
 
