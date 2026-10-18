@@ -99,8 +99,8 @@ from obfuscation_atlas.tasks.emergent_misalignment import (
 from obfuscation_atlas.tasks.multiple_choice import (
     compute_multiple_choice_rewards,
     draw_cue,
-    extract_answer,
     other_letter,
+    parse_answer,
     render_cued_user_content,
 )
 from obfuscation_atlas.tasks.strongreject import autograde_response_async
@@ -909,7 +909,10 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             else:
                 cue_letters = [reward_infos[i]["assigned_cue_letter"] for i in prompt_indices]  # type: ignore
             completions = [r.removesuffix(self.tokenizer.eot_token) for r in responses]
-            return compute_multiple_choice_rewards(completions, gold_letters, label_letters, cue_letters)
+            letter_only = self.obfuscation_config.task_args.nocot_prefill is not None
+            return compute_multiple_choice_rewards(
+                completions, gold_letters, label_letters, cue_letters, letter_only=letter_only
+            )
         else:
             return None, None
 
@@ -929,6 +932,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             if self.config.tokenizer.apply_chat_template
             else prompts
         )
+        # MULTIPLE_CHOICE no-CoT format: the assistant turn starts with the prefill (training and
+        # in-loop eval prompts both come through here); the records store the prompt as served.
+        nocot_prefill = self.obfuscation_config.task_args.nocot_prefill
+        if nocot_prefill is not None:
+            assert self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE, "nocot_prefill is MULTIPLE_CHOICE only"
+            prompts_formatted = [prompt + nocot_prefill for prompt in prompts_formatted]
         # Always use add_special_tokens=False since the prompt preparer handles chat templates
         prompt_ids: list[list[int]] = self.tokenizer(prompts_formatted, add_special_tokens=False)["input_ids"]
         assert isinstance(prompt_ids, list)
@@ -1109,7 +1118,13 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 "train_label": [info["train_label"] for info in infos],
                 "cue_letter": [cue_infos[i]["cue_letter"] for i in prompt_indices_upsampled],
                 "template_idx": [cue_infos[i]["template_idx"] for i in prompt_indices_upsampled],
-                "parsed_answer": [extract_answer(r.removesuffix(self.tokenizer.eot_token))[0] for r in response_strings],
+                "parsed_answer": [
+                    parse_answer(
+                        r.removesuffix(self.tokenizer.eot_token),
+                        letter_only=self.obfuscation_config.task_args.nocot_prefill is not None,
+                    )
+                    for r in response_strings
+                ],
                 "reward": list(sequence_reward),
             }
 

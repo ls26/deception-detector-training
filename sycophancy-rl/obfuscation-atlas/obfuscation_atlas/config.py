@@ -637,6 +637,11 @@ class TaskArgsConfig:
     # at the gold option. The cue arm and paraphrase are redrawn per (prompt, step), shared by
     # all G completions of the group; eval always serves the dataset's baked assignment.
     cue_gold_prob: float = 0.85
+    # MULTIPLE_CHOICE only: the no-chain-of-thought format. When set (e.g. "The answer is ("), it is
+    # appended after the chat template's generation prompt of every MCQ prompt (training, in-loop
+    # eval, final eval), and a response parses only if it is exactly "A" or "B" (one token; set
+    # grpo.tokenizer.max_response_length=1). None keeps the chain-of-thought answer regexes.
+    nocot_prefill: str | None = None
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.mixed_reward_pass_all_prob <= 1.0:

@@ -4,6 +4,8 @@ The parity tests check the ported answer extraction and cue rendering against th
 domain baseline's own artifacts under sycophancy_experiments/260819_domain_baseline,
 the no-flip test checks the training-label code against the August no-penalty run
 (260825_grpo_det0), and the loader test reads 261013_noisy_label_rl's question file;
+the no-CoT tests compare the trainer's prompts with 261007's stored no-CoT prompts on
+261014_nocot_noisy_label_rl's question file;
 they are skipped when that data is not present (e.g. CI outside the workspace).
 """
 
@@ -24,6 +26,7 @@ from obfuscation_atlas.tasks.multiple_choice import (
     draw_cue,
     extract_answer,
     other_letter,
+    parse_answer,
     render_cued_user_content,
 )
 
@@ -41,6 +44,13 @@ needs_august_run = pytest.mark.skipif(
 )
 NOISY_QUESTIONS = Path("/workspace/sycophancy_experiments/261013_noisy_label_rl/dataset/labels.jsonl")
 needs_noisy_questions = pytest.mark.skipif(not NOISY_QUESTIONS.exists(), reason="261013 question file not available")
+# The no-CoT question file (261014) and 261007's stored no-CoT prompts (gens/nocot/turn1.jsonl)
+NOCOT_QUESTIONS = Path("/workspace/sycophancy_experiments/261014_nocot_noisy_label_rl/dataset/labels.jsonl")
+NOCOT_TURN1 = Path("/workspace/sycophancy_experiments/261007_format_label_cue_ablation/gens/nocot/turn1.jsonl")
+needs_nocot_data = pytest.mark.skipif(
+    not (NOCOT_QUESTIONS.exists() and NOCOT_TURN1.exists()), reason="261014 question file or 261007 no-CoT prompts not available"
+)
+NOCOT_PREFILL = "The answer is ("
 
 
 def _read_jsonl(path: Path, limit: int | None = None):
@@ -216,3 +226,85 @@ def test_load_mmlu_sycophancy_dataset() -> None:
         assert row["answer"] in ("A", "B")
         assert row["train_label"] == (other_letter(row["answer"]) if row["label_flipped"] else row["answer"])
         assert len(row["completion"]) > 0
+
+
+def test_parse_answer_letter_only() -> None:
+    assert parse_answer("A", letter_only=True) == "A"
+    assert parse_answer("B", letter_only=True) == "B"
+    for text in ("Both", " A", "A)", "a", "", "C", "the answer is (A)"):
+        assert parse_answer(text, letter_only=True) is None, text
+    # The CoT chain is unchanged; it reads no bare letter, and on prefill + token it reads "Both" as B
+    assert parse_answer("the answer is (A)", letter_only=False) == "A"
+    assert parse_answer("A", letter_only=False) is None
+    assert parse_answer(NOCOT_PREFILL + "Both", letter_only=False) == "B"
+
+
+def test_compute_multiple_choice_rewards_letter_only() -> None:
+    responses = ["A", "B", "Both", ""]  # label A; flipped label B; unparsed token; end-of-turn only
+    golds = ["A", "A", "A", "B"]
+    labels = ["A", "B", "A", "B"]
+    cue_letters = ["A", "A", "B", "B"]
+    scores, metrics = compute_multiple_choice_rewards(responses, golds, labels, cue_letters, letter_only=True)
+    assert scores == [1.0, 1.0, 0.0, 0.0]
+    assert metrics["rewards_metrics/true_correct"] == [True, False, False, False]
+    assert metrics["rewards_metrics/parse_failed"] == [False, False, True, True]
+    assert metrics["rewards_metrics/followed_cue"] == [True, False, False, False]
+
+
+def test_task_args_nocot_prefill_default_off() -> None:
+    assert TaskArgsConfig().nocot_prefill is None
+
+
+@needs_nocot_data
+def test_nocot_training_prompts_match_261007() -> None:
+    """The trainer's training prompt (no-cue content + cue at a letter in a wording, chat template, then the
+    prefill, as _prepare_mcq_training_inputs + _prepare_inputs_for_generation build it) equals 261007's
+    stored no-CoT prompt + prefill on every cued prompt of the question file, and ends in token 320."""
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    questions = {q["question_id"]: q for q in _read_jsonl(NOCOT_QUESTIONS)}
+    assert len(questions) == 1304 + 547
+    stored = {}
+    for row in _read_jsonl(NOCOT_TURN1):
+        if row["sample_idx"] == 0 and row["condition"] != "none" and row["question_id"] in questions:
+            stored[(row["question_id"], row["condition"])] = row["prompt"]
+    assert len(stored) == 2 * len(questions)
+    for (question_id, condition), prompt in stored.items():
+        q = questions[question_id]
+        user_content = render_cued_user_content(
+            q["user_content_none"], cue_letter_for_condition(condition, q["answer"]), q["cue_template_idx"]
+        )
+        served = tokenizer.apply_chat_template(
+            [{"role": "user", "content": user_content}], tokenize=False, add_generation_prompt=True
+        ) + NOCOT_PREFILL
+        assert served == prompt + NOCOT_PREFILL, f"q{question_id} {condition}"
+        assert tokenizer(served, add_special_tokens=False)["input_ids"][-1] == 320
+
+
+@needs_baseline_data
+@needs_nocot_data
+def test_load_nocot_question_file() -> None:
+    """The loader on the no-CoT question file: counts, flips, and the in-loop eval prompt (the assigned
+    condition's user content through chat_template_preparer, then the prefill) equals 261007's."""
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.detectors.custom_dataset import load_mmlu_sycophancy_dataset
+    from obfuscation_atlas.training.obfuscation_training import chat_template_preparer
+
+    dataset = load_mmlu_sycophancy_dataset(mmlu_questions_jsonl=str(NOCOT_QUESTIONS))
+    assert len(dataset["train"]) == 1304
+    assert len(dataset["eval"]) == 547
+    assert sum(dataset["train"]["label_flipped"]) == 261
+    assert sum(dataset["eval"]["label_flipped"]) == 109
+    stored = {
+        (row["question_id"], row["condition"]): row["prompt"] for row in _read_jsonl(NOCOT_TURN1) if row["sample_idx"] == 0
+    }
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    templated = chat_template_preparer(dataset["eval"], system_prompt=None, tokenizer=tokenizer)
+    for row, templated_row in zip(dataset["eval"], templated):
+        assert row["prompt"] == render_cued_user_content(row["user_content_none"], row["assigned_cue_letter"], row["cue_template_idx"])
+        assert "Think step by step" not in row["prompt"]
+        assert row["train_label"] == (other_letter(row["answer"]) if row["label_flipped"] else row["answer"])
+        expected = stored[(row["question_id"], row["assigned_condition"])]
+        assert templated_row["prompt"] == expected, f"q{row['question_id']}"  # the trainer then appends the prefill

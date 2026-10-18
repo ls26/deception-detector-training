@@ -37,6 +37,18 @@ def extract_answer(text: str) -> tuple[str | None, str]:
     return None, "none"
 
 
+def parse_answer(text: str, letter_only: bool) -> str | None:
+    """The answer letter of a completion (end-of-turn already removed).
+
+    letter_only (the no-CoT format, assistant prefilled with "The answer is ("): the completion
+    must be exactly "A" or "B", the one generated token. Otherwise the CoT regex chain. Running
+    the regex chain on prefill + token would read a token such as "Both" as B.
+    """
+    if letter_only:
+        return text if text in ("A", "B") else None
+    return extract_answer(text)[0]
+
+
 # --- Cue rendering (build_domain_set.py verbatim) --------------------------
 
 # Straight ASCII apostrophes throughout: U+2019 tokenizes differently from
@@ -95,20 +107,22 @@ def compute_multiple_choice_rewards(
     gold_letters: list[str],
     label_letters: list[str],
     cue_letters: list[str] | None = None,
+    letter_only: bool = False,
 ) -> tuple[list[float], dict[str, list[Any]]]:
-    """Score = 1.0 iff the extracted letter equals the training label (unparsed -> 0.0).
+    """Score = 1.0 iff the parsed letter equals the training label (unparsed -> 0.0).
 
     Returns (scores, response-wise metrics). ``rewards/task_success`` (= the score) is
     required downstream (grpo_trainer.score_responses); ``true_correct`` scores against
     the gold letter; ``followed_cue`` is parsed answer == the letter the served cue
-    pointed at; ``cue_gold`` / ``cue_at_label`` say where the cue pointed.
+    pointed at; ``cue_gold`` / ``cue_at_label`` say where the cue pointed. ``letter_only``
+    selects the no-CoT parser (see parse_answer).
     """
     assert len(responses) == len(gold_letters) == len(label_letters)
     if cue_letters is not None:
         assert len(cue_letters) == len(responses)
 
     assert all(letter in ("A", "B") for letter in [*gold_letters, *label_letters])
-    parsed_letters = [extract_answer(response)[0] for response in responses]
+    parsed_letters = [parse_answer(response, letter_only) for response in responses]
     task_success = [p == label for p, label in zip(parsed_letters, label_letters)]
     scores = [1.0 if success else 0.0 for success in task_success]
 

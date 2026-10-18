@@ -1176,6 +1176,11 @@ def generate_on_policy_responses(
             if trainer.config.tokenizer.apply_chat_template
             else list(prompts)
         )
+        # MULTIPLE_CHOICE no-CoT format: the assistant turn starts with the prefill, as in training
+        nocot_prefill = trainer.obfuscation_config.task_args.nocot_prefill
+        if nocot_prefill is not None:
+            assert trainer.obfuscation_config.task == TaskType.MULTIPLE_CHOICE, "nocot_prefill is MULTIPLE_CHOICE only"
+            prompts_formatted = [prompt + nocot_prefill for prompt in prompts_formatted]
         prompt_ids: list[list[int]] = trainer.tokenizer(  # type: ignore
             prompts_formatted,
             add_special_tokens=False,
@@ -1243,7 +1248,11 @@ def generate_on_policy_responses(
                 else None
             )
             _, reward_metrics = compute_multiple_choice_rewards(
-                completions, answers_upsampled, labels_upsampled, cue_letters_upsampled
+                completions,
+                answers_upsampled,
+                labels_upsampled,
+                cue_letters_upsampled,
+                letter_only=trainer.obfuscation_config.task_args.nocot_prefill is not None,
             )
 
     if log_to_wandb:
