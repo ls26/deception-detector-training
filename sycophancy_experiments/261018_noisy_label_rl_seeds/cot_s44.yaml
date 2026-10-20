@@ -1,0 +1,25 @@
+# CoT run, seed 44: 261013's run.yaml (the CoT noisy-label run, seed 42) with only the training seed,
+# the names, the output folder, the W&B group and the probe cache prefix changed. Same question file
+# (261013's dataset/labels.jsonl: 1217 / 489 confident questions, 20% flipped), cue at the training label
+# with probability 0.75, 128 steps, no probe penalty (the diverse-deception probe is a monitor only).
+#
+#   bash run_rl.sh cot_s44 <attempt>       (inside its own tmux session; vLLM must be up: start_vllm.sh)
+
+run_key: noisy_label_s44
+output_dir: /workspace/sycophancy_experiments/261018_noisy_label_rl_seeds
+group: 261018_noisy_label_rl_seeds
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: noisy_label_s44
+  retrain: true             # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 44
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy_experiments/261013_noisy_label_rl/dataset/labels.jsonl
+  task_args.cue_gold_prob: 0.75
