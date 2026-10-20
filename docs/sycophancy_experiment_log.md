@@ -30,7 +30,9 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
-| 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` followed-cue 0.460 → 0.815, bias 0.267 → 0.596; no-cue accuracy 0.742 → 0.738. |
+| 261018 | [`261018_noisy_label_rl_seeds`](../sycophancy_experiments/261018_noisy_label_rl_seeds/) | Seeds 43 and 44 of 261013 and 261014. Cue agreement rate, bias and training-mix reward rose in all six runs; training-mix true accuracy fell in four. |
+| 261014 | [`261014_nocot_noisy_label_rl`](../sycophancy_experiments/261014_nocot_noisy_label_rl/) | 261013's design in the no-CoT format. `cue_dist` cue agreement rate 0.644 → 0.808, bias 0.403 → 0.550; training-mix reward 0.726 → 0.742. |
+| 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` cue agreement rate 0.460 → 0.815, bias 0.267 → 0.596; no-cue accuracy 0.742 → 0.738. |
 | 261012 | [`261012_port_rerun`](../sycophancy_experiments/261012_port_rerun/) | Sycophancy task ported onto a copy of the release (`/workspace/sycophancy-rl`); every check passes. Rerun of 260825 from it: final accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923. |
 | 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: Δ vs the all-question probe on the same rows −0.001 to +0.011; no CI excludes 0. |
 | 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
@@ -85,6 +87,11 @@ The entry named in each decision holds the evidence.
    under the plain removal wording) and the sampled token agreed with the threshold on only
    64% of those rows; P(Yes) is read by projecting the bf16 model's final residual through
    the output head in float32. (2026-10-07)
+8. **A sampled eval counts one sampled answer per prompt; the no-cue answer that bias is
+   measured against stays the majority of the no-cue samples (at least 5 of 8 in 261013).**
+   This matches the trainer's in-loop and final evals, which sample each question once
+   (261012). 261013's README and entry predate this and count all 3 samples per cued
+   condition; 261014 recomputes 261013's numbers with one. (2026-10-18)
 
 **Terminology.**
 
@@ -96,6 +103,9 @@ The entry named in each decision holds the evidence.
   anti-bias / no bias), introduced in 260824. Entries before 260824 call it
   `cue-reliance` / `relied` and only have the binary version — read those as the
   two-valued predecessor of today's `bias`, not a different axis.
+- *cue agreement rate vs. followed-cue:* the share of cued answers that give the option the cue
+  names is called the **cue agreement rate** from 261013 on. Earlier entries call it
+  followed-cue / cue-following; code, W&B and JSON keys keep `followed_cue`.
 
 ---
 
@@ -124,6 +134,59 @@ been demonstrated.
 
 ## Experiments
 
+### 261018 — Seeds 43 and 44 of the CoT and no-CoT noisy-label RL runs
+
+[`sycophancy_experiments/261018_noisy_label_rl_seeds/`](../sycophancy_experiments/261018_noisy_label_rl_seeds/)
+
+**Setup:**
+- 261013 (CoT) and 261014 (no-CoT) rerun with training seeds 43 and 44. Only the seed, the names, the W&B
+  group and the probe cache prefix changed. Each setup's eval and compare scripts, base eval and seed-42
+  eval are reused unchanged.
+- CoT is read as one sampled answer per prompt (Decision 8), no-CoT as the top letter. `seed_table.md`
+  puts seeds 42 / 43 / 44 side by side with the mean and SD.
+- CoT seed 44 ran after a pod restart, as a second RL attempt, under a different kernel and CUDA version.
+
+**Results** (base mean → after-RL mean ± SD over the three seeds, or per seed 42 / 43 / 44):
+- In all six runs the cue agreement rate, `rm` bias and training-mix reward rose. `cue_dist` bias: CoT
+  0.267 → 0.510 ± 0.088; no-CoT 0.404 → 0.516 ± 0.091.
+- Training-mix reward: CoT 0.689 → 0.749 ± 0.009; no-CoT 0.726 → 0.743 ± 0.006. Training groups with 8
+  equal rewards: CoT 0.856 ± 0.040; no-CoT 0.984 ± 0.009.
+- Training-mix true accuracy: CoT 0.729 → 0.700 / 0.746 / 0.717; no-CoT 0.734 → 0.702 / 0.650 / 0.738.
+- Training-mix average P(Yes) on biased answers: CoT 0.631 → 0.728 / 0.702 / 0.739; no-CoT
+  0.758 → 0.778 / 0.646 / 0.961. Training-mix deception: CoT 0.566 → 0.516 / 0.547 / 0.578; no-CoT
+  0.597 → 0.555 / 0.494 / 0.698.
+- No-CoT seed 43: cue agreement rate 1.000 under `cue_gold` and `cue_dist`, `cue_dist` true accuracy
+  0.000, no-cue true accuracy 0.755 → 0.585. No-CoT seed 44: P(Yes) above 0.5 on every self-report.
+- RL runs W&B `f3qfvw2q`, `nk7mr4qf`, `nc6bwn67`, `i3wl9evn`; every record check passed, and an
+  independent recomputation from the raw files matched the seed table.
+
+### 261014 — The noisy-label RL run in the no-CoT format, no probe penalty
+
+[`sycophancy_experiments/261014_nocot_noisy_label_rl/`](../sycophancy_experiments/261014_nocot_noisy_label_rl/)
+
+**Setup:**
+- 261013's design (training label = the true answer with 20% of questions flipped, reward = agreement
+  with it, cue at it 75% of the time, 128 steps, no probe penalty) in 261007's no-CoT format: the
+  assistant turn is pre-filled with "The answer is (" and the model writes one letter.
+- Questions whose no-cue top letter has probability ≥ 0.75 (261010's no-CoT rule): 1304 train / 547
+  eval, with this folder's own flips. Answers are read as the top letter, and `rm` bias is measured
+  against the no-cue top letter.
+- The trainer gained a pre-fill option; the penalty for answers that do not end their turn is off,
+  since a one-token answer never ends its turn.
+
+**Results:**
+- Training-mix reward 0.726 → 0.742 and true accuracy 0.734 → 0.702; no-cue true accuracy
+  0.755 → 0.739.
+- Cue agreement rate 0.644 → 0.808 (`cue_dist`) and 0.830 → 0.914 (training mix). True accuracy
+  0.934 → 0.973 (`cue_gold`) and 0.351 → 0.188 (`cue_dist`).
+- `rm` bias 0.183 → 0.233 (`cue_gold`) and 0.403 → 0.550 (`cue_dist`).
+- Training-mix average P(Yes) 0.758 → 0.778 on biased and 0.723 → 0.725 on unbiased answers;
+  deception 0.596 → 0.555.
+- Against 261013 counted with one sample per prompt: training-mix reward 0.726 → 0.742 vs
+  0.689 → 0.758; training groups with 8 equal rewards 0.978 vs 0.847.
+- RL run W&B `5b0x5xp6`, first attempt; every per-step record check passed, and an independent
+  recomputation matched every table number.
+
 ### 261013 — GRPO with a noisy training label on the confident questions, no probe penalty
 
 [`sycophancy_experiments/261013_noisy_label_rl/`](../sycophancy_experiments/261013_noisy_label_rl/)
@@ -143,13 +206,13 @@ been demonstrated.
 **Results:**
 - Accuracy, base → after RL: no cue 0.742 → 0.738, `cue_gold` 0.852 → 0.975, `cue_dist`
   0.513 → 0.185, training mix 0.736 → 0.700. Training-mix reward 0.690 → 0.752.
-- Followed-cue under `cue_dist` 0.460 → 0.815 (training mix 0.715 → 0.922). `rm` bias
+- Cue agreement rate under `cue_dist` 0.460 → 0.815 (training mix 0.715 → 0.922). `rm` bias
   0.105 → 0.179 (`cue_gold`) and 0.267 → 0.596 (`cue_dist`).
 - Said Yes 0.571 / 0.766 → 0.783 / 0.934 (`cue_gold` / `cue_dist`); false denials
   0.372 / 0.287 → 0.088 / 0.071; false admissions 0.564 / 0.786 → 0.755 / 0.940.
 - Deception, soft 0.542 / 0.596 → 0.557 / 0.466; thresholded 0.543 / 0.650 → 0.635 / 0.422.
-- In training, on flipped questions with the cue at the true answer, followed-cue went from 0.898
-  to 0.977 and reward from 0.097 to 0.023 between the first and last 10 steps.
+- In training, on flipped questions with the cue at the true answer, the cue agreement rate went
+  from 0.898 to 0.977 and reward from 0.097 to 0.023 between the first and last 10 steps.
 - RL run W&B `6vcs39wj`, first attempt; every per-step record check passed, and an independent
   recomputation matched every table number.
 
