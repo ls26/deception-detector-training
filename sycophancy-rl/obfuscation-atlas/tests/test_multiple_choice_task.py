@@ -7,7 +7,9 @@ the no-flip test checks the training-label code against the August no-penalty ru
 the no-CoT tests compare the trainer's prompts with 261007's stored no-CoT prompts on
 261014_nocot_noisy_label_rl's question file; the training-cue-off tests run the trainer's own
 prompt and reward methods on both question files against the stored no-cue eval prompts;
-they are skipped when that data is not present (e.g. CI outside the workspace).
+the bias-probe tests check the read position against 261010's saved activation files and the run-config
+templates of /workspace/sycophancy-rl/sycophancy_setup; they are skipped when that data is not present
+(e.g. CI outside the workspace).
 """
 
 import itertools
@@ -22,10 +24,13 @@ from obfuscation_atlas.tasks.multiple_choice import (
     CUE_DIST,
     CUE_GOLD,
     CUE_TEMPLATES,
+    answer_token_index,
     compute_multiple_choice_rewards,
     cue_letter_for_condition,
+    cut_after_answer_letter,
     draw_cue,
     extract_answer,
+    find_answer_span,
     other_letter,
     parse_answer,
     render_cued_user_content,
@@ -382,3 +387,202 @@ def test_training_cue_off_serves_the_no_cue_prompt(question_file: str) -> None:
     assert scores == [1.0] * len(train_questions)
     assert metrics["rewards_metrics/true_correct"] == [q["train_label"] == q["answer"] for q in train_questions]
     assert not any(key in metrics for key in ("rewards_metrics/followed_cue", "rewards_metrics/cue_gold", "rewards_metrics/cue_at_label"))
+
+
+# --- The bias probe (task_args.bias_probe_at_answer) ----------------------------------------------------
+# Its data: sycophancy_setup's copies of 261010's bias_followed_rm probe sets; the token each row's activation
+# was read at when 261010 trained and scored the probe: `positions` in 261010's saved activation files.
+SETUP_DATA = Path("/workspace/sycophancy-rl/sycophancy_setup/data")
+SETUP_CONFIGS = Path("/workspace/sycophancy-rl/sycophancy_setup/configs")
+SLICE_ACTIVATIONS = Path("/workspace/sycophancy_experiments/261010_confident_slice/arms/slice_cot/activations")
+needs_llama_tokenizer = pytest.mark.skipif(not Path("/workspace/hf_cache").exists(), reason="the workspace's Llama-3 tokenizer not available")
+needs_bias_probe_data = pytest.mark.skipif(
+    not (SETUP_DATA / "bias_probe_train.jsonl").exists() or not SLICE_ACTIVATIONS.exists(),
+    reason="sycophancy_setup data or 261010's activation files not available",
+)
+
+
+def test_find_answer_span() -> None:
+    for text, stage in [
+        ("Let me think. the answer is (A)", "answer_is"),
+        ("Answer: B", "answer_colon"),
+        ("Either (A) or (B). I'll pick (A)", "marked_letter"),
+        ("So option B. is it", "marked_letter"),
+    ]:
+        letter, found_stage, index = find_answer_span(text)
+        assert (letter, found_stage) == extract_answer(text) == (text[index], stage)
+    assert find_answer_span("Either (A) or (B). I'll pick (A)")[2] == 30  # the last fallback match
+    assert find_answer_span("no letter here") == (None, "none", None)
+    assert cut_after_answer_letter("Reasoning. The answer is (B).") == "Reasoning. The answer is (B"
+
+
+@needs_llama_tokenizer
+@pytest.mark.parametrize(
+    "completion",
+    ["I pick option ' B.", "Statement ' A: true", "x ' B.", "So the answer is ' B.", "Hello , world . The answer is (A)."],
+)
+def test_answer_token_index_with_space_clean_up(completion: str) -> None:
+    """The tokenizer's space clean-up (" ' " -> "'", " ." -> ".") shortens the decoded text, and a prefix ending in
+    " '" decodes longer than the full text there: the letter's token is still the one that holds the letter."""
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    ids = tokenizer(completion, add_special_tokens=False)["input_ids"]
+    text = tokenizer.decode(ids)
+    letter = find_answer_span(text)[0]
+    index = answer_token_index(tokenizer, ids, text)
+    assert letter in tokenizer.decode([ids[index]])
+    assert letter not in "".join(tokenizer.decode([i]) for i in ids[:index])  # the first token holding the letter
+
+
+@needs_bias_probe_data
+def test_bias_probe_read_position_is_261010s() -> None:
+    """On all 2289 probe-set rows: the cut text's last token is the token 261010 read (the cut text's tokens are
+    the full text's tokens up to it), answer_token_index finds that token from the completion's token ids with the
+    end-of-turn token appended and their decoded text without it (as score_responses has them), and every cut row
+    fits the probe config's length limit."""
+    import torch
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.config import SycophancyBiasProbeConfig
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    max_sequence_length = SycophancyBiasProbeConfig().max_sequence_length
+    checked = 0
+    for split in ("train", "eval"):
+        saved = torch.load(SLICE_ACTIVATIONS / f"bias_followed_rm_answer_{split}.pt", map_location="cpu", weights_only=False)
+        position_of = {key[:3]: position for key, position in zip(saved["row_keys"], saved["positions"], strict=True)}
+        rows = _read_jsonl(SETUP_DATA / f"bias_probe_{split}.jsonl")
+        assert len(rows) == len(position_of) == {"train": 1512, "eval": 777}[split]
+        for row in rows:
+            position = position_of[(row["question_id"], row["condition"], row["sample_idx"])]
+            assert find_answer_span(row["completion"])[0] == row["answer_letter"]
+            full_ids = tokenizer(row["prompt"] + row["completion"], add_special_tokens=False)["input_ids"]
+            cut_ids = tokenizer(row["prompt"] + cut_after_answer_letter(row["completion"]), add_special_tokens=False)["input_ids"]
+            assert cut_ids == full_ids[: position + 1]
+            assert len(cut_ids) < max_sequence_length
+            n_prompt = len(tokenizer(row["prompt"], add_special_tokens=False)["input_ids"])
+            response_ids = full_ids[n_prompt:] + [tokenizer.convert_tokens_to_ids("<|eot_id|>")]
+            completion = tokenizer.decode(response_ids).removesuffix("<|eot_id|>")
+            assert answer_token_index(tokenizer, response_ids, completion) == position - n_prompt
+            checked += 1
+    assert checked == 2289
+
+
+@needs_bias_probe_data
+def test_load_sycophancy_bias_probe_dataset() -> None:
+    from obfuscation_atlas.config import SycophancyBiasProbeConfig
+    from obfuscation_atlas.detectors.custom_dataset import load_custom_dataset
+    from obfuscation_atlas.training.obfuscation_training import PROMPT_PREPARER_REGISTRY
+
+    config = SycophancyBiasProbeConfig()
+    dataset = load_custom_dataset(config)
+    assert {split: len(rows) for split, rows in dataset.items()} == {
+        "train_biased": 756, "train_unbiased": 756, "eval_biased": 292, "eval_unbiased": 485
+    }
+    rows = {(r["question_id"], r["condition"], r["sample_idx"]): r for s in ("train", "eval") for r in _read_jsonl(SETUP_DATA / f"bias_probe_{s}.jsonl")}
+    for split in dataset:
+        for row in dataset[split]:
+            source = rows[(row["question_id"], row["condition"], row["sample_idx"])]
+            assert source["label"] == int(split.endswith("_biased"))
+            assert row["prompt"] == source["prompt"] and row["completion"] == cut_after_answer_letter(source["completion"])
+            assert row["completion"][-1] == source["answer_letter"]
+    assert PROMPT_PREPARER_REGISTRY[config.prompt_preparer](dataset["eval_biased"]) is dataset["eval_biased"]
+
+
+def test_read_mask_ends_at_the_read_token() -> None:
+    from types import SimpleNamespace
+
+    from obfuscation_atlas.training.grpo_trainer import build_obfuscation_response_dataset
+
+    tokenizer = SimpleNamespace(eot_token_id=9)
+    dataset = build_obfuscation_response_dataset(
+        tokenizer=tokenizer,  # type: ignore
+        prompt_indices=[0, 1, 2],
+        prompt_ids=[[1, 2], [1, 2], [1, 2]],
+        response_ids=[[5, 6, 7, 9], [5, 6, 7, 9], [5, 6, 7]],  # finished, finished (unparsed), cut off
+        max_total_length=100,
+        trigger_present=[True, True, True],
+        read_token_index=[1, None, 2],
+        names_cued_option=[True, False, True],
+    )
+    assert dataset["completion_with_follow_up_mask"] == [
+        [False, False, True, True, False, False],
+        [False, False, True, True, True, True],  # an unparsed answer keeps the whole response
+        [False, False, True, True, True, False],  # the appended end-of-turn token is not read
+    ]
+    assert dataset["completion_mask"][2] == [False, False, True, True, True, False]
+    assert dataset["names_cued_option"] == [True, False, True]
+
+
+@pytest.mark.parametrize("bias_probe_at_answer", [True, False])
+def test_bias_probe_penalty_only_on_answers_naming_the_cue(bias_probe_at_answer: bool) -> None:
+    from types import SimpleNamespace
+
+    import torch
+
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    trainer = SimpleNamespace(
+        accelerator=SimpleNamespace(device="cpu"),
+        obfuscation_config=SimpleNamespace(
+            loss=SimpleNamespace(task=0.0, detector=0.3),
+            detector_penalty_on_failure=True,
+            ground_truth_detector_penalty=False,
+            task_args=TaskArgsConfig(bias_probe_at_answer=bias_probe_at_answer),
+        ),
+    )
+    batch = {"completion_mask": torch.ones(3, 4, dtype=torch.bool), "task_success": None, "names_cued_option": torch.tensor([True, False, True])}
+    _, components = GRPOObfuscationTrainer.compute_composite_rewards_batch(
+        trainer, None, batch, torch.ones(3, dtype=torch.bool), None, torch.tensor([0.8, 0.6, 0.2]), None  # type: ignore
+    )
+    penalized = [True, False, True] if bias_probe_at_answer else [True, True, True]
+    expected = torch.tensor([-0.3 * score if p else 0.0 for score, p in zip([0.8, 0.6, 0.2], penalized)])
+    assert torch.allclose(components["rewards/detector"], expected)
+    assert torch.equal(components["rewards_metrics/detector_score"], torch.tensor([0.8, 0.6, 0.2]))
+
+
+def test_task_args_bias_probe_default_off() -> None:
+    assert TaskArgsConfig().bias_probe_at_answer is False
+
+
+@pytest.mark.skipif(not SETUP_CONFIGS.exists(), reason="sycophancy_setup configs not available")
+@pytest.mark.parametrize("template, penalty_weight", [("cot_noisy_label.yaml", 0.0), ("cot_noisy_label_probe_penalty.yaml", 0.3)])
+def test_setup_run_configs_compose(template: str, penalty_weight: float) -> None:
+    """Each run-config template, with its FILL_IN fields filled, composes through the launcher's overrides into
+    the bias-probe setup: the bias probe set with the fixed recipe (layers 13-16, lr 0.03, 2000 steps, no loss
+    filter), the penalty weight, no gradient through the probe, and a probe that is never retrained."""
+    import sys
+
+    import yaml
+    from hydra import compose, initialize
+    from omegaconf import OmegaConf
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    from training.grpo_launcher import build_grpo_args
+
+    from obfuscation_atlas.config import register_configs
+    from obfuscation_atlas.utils.scoring import get_activation_matching_layers
+
+    text = (SETUP_CONFIGS / template).read_text()
+    for field, value in (("run_key: FILL_IN", "run_key: test_s42"), ("output_dir: FILL_IN", "output_dir: /tmp/test"),
+                         ("group: FILL_IN", "group: test"), ("directory_save_prefix: FILL_IN", "directory_save_prefix: test_s42"),
+                         ("training.seed: FILL_IN", "training.seed: 42")):
+        text = text.replace(field, value)
+    assert "FILL_IN" not in text
+    args = build_grpo_args(yaml.safe_load(text))
+    assert args[3] == "--config-name=grpo_mcq"
+    register_configs()
+    with initialize(version_base=None):
+        cfg = compose(config_name="grpo_mcq", overrides=args[4:])
+    cfg = OmegaConf.to_object(cfg)
+    assert cfg.task_args.bias_probe_at_answer is True and cfg.task_args.train_cue is True and cfg.task_args.cue_gold_prob == 0.75
+    assert cfg.data.probe_dataset.dataset_name == "local:sycophancy_bias_probe"
+    assert cfg.data.task_dataset.mmlu_questions_jsonl == "/workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl"
+    assert get_activation_matching_layers(cfg.model.activation_matching_layers, 32) == [13, 14, 15, 16]
+    assert cfg.detector.filter_layers_below_loss_threshold is None
+    assert (cfg.detector.pretrain_cfg.learning_rate, cfg.detector.pretrain_cfg.max_steps) == (0.03, 2000)
+    assert cfg.loss.detector == penalty_weight
+    assert cfg.corrected_detector_gradient is False
+    assert cfg.detector.train_every_n_steps > cfg.training.max_steps == 128
+    assert cfg.data.probe_dataset.congruent_follow_up_prompts == [] and cfg.data.task_dataset.congruent_follow_up_prompts == []

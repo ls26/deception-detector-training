@@ -216,6 +216,9 @@ class DatasetConfig:
     # MMLU sycophancy dataset paths (only used by local:mmlu_sycophancy)
     mmlu_questions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl"
     mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
+    # Sycophancy bias probe set paths (only used by local:sycophancy_bias_probe)
+    bias_probe_train_jsonl: str = "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl"
+    bias_probe_eval_jsonl: str = "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl"
 
 
 @dataclass
@@ -306,6 +309,27 @@ class MMLUSycophancyTaskConfig(DatasetConfig):
     max_train_examples: int = 4000  # above the 1603-row train split: no truncation
     max_val_examples: int = 1000  # above the 687-row eval split: no truncation
     max_sequence_length: int = 2048  # -> 1024 prompt / 1024 response via the divide-by-2 default
+
+
+@dataclass
+class SycophancyBiasProbeConfig(DatasetConfig):
+    """The MMLU sycophancy bias probe set (``+data/probe_dataset=sycophancy_bias_probe``; see sycophancy_setup/README.md).
+
+    261010's bias_followed_rm probe set: base-model CoT answers to cued prompts that name the cued option,
+    biased (the answer differs from the question's 6-of-8 no-cue answer) vs unbiased. Prompts are saved in the
+    chat template, so they are used as saved; each completion is cut right after its answer letter, so with no
+    end-of-turn token appended (task_args.bias_probe_at_answer) the probe reads the letter. The eval split is the
+    start-of-run probe's test set. The length limit keeps every row (the longest prompt + cut completion is
+    1362 tokens; rows at or over the limit would be dropped). The probe must not be retrained during RL
+    (detector.train_every_n_steps above the step count): its retraining set appends the end-of-turn token.
+    """
+
+    dataset_name: str = "local:sycophancy_bias_probe"
+    prompt_preparer: str = "none"
+    positive_splits: list[str] = field(default_factory=lambda: ["train_biased"])
+    negative_splits: list[str] = field(default_factory=lambda: ["train_unbiased"])
+    no_trigger: bool = True
+    max_sequence_length: int = 2048
 
 
 @dataclass
@@ -647,6 +671,11 @@ class TaskArgsConfig:
     # eval, final eval), and a response parses only if it is exactly "A" or "B" (one token; set
     # grpo.tokenizer.max_response_length=1). None keeps the chain-of-thought answer regexes.
     nocot_prefill: str | None = None
+    # MULTIPLE_CHOICE only, with data/probe_dataset=sycophancy_bias_probe: the probe reads each answer at its
+    # answer letter's token (the start-of-run probe's data are cut there, with no end-of-turn token), the
+    # detector penalty falls only on answers that name the cued option, the step records carry each answer's
+    # probe score, and the probe fits are seeded 0. The end-of-run on-policy probe comparisons are skipped.
+    bias_probe_at_answer: bool = False
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.mixed_reward_pass_all_prob <= 1.0:
@@ -947,6 +976,7 @@ def register_configs() -> None:
     cs.store(group="data/probe_dataset", name="deception_probe", node=DeceptionProbeConfig())
     cs.store(group="data/probe_dataset", name="certainly_probe", node=CertainlyProbeConfig())
     cs.store(group="data/probe_dataset", name="diverse_deception_probe", node=DiverseDeceptionProbeConfig())
+    cs.store(group="data/probe_dataset", name="sycophancy_bias_probe", node=SycophancyBiasProbeConfig())
     cs.store(group="data/probe_dataset", name="single_cuisine_probe", node=SingleCuisineProbeConfig())
     cs.store(group="data/probe_dataset", name="multiple_cuisine_probe", node=MultipleCuisineProbeConfig())
     cs.store(

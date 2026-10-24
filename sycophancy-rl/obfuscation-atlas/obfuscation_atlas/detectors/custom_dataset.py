@@ -1283,6 +1283,38 @@ def load_mmlu_sycophancy_dataset(
     return DatasetDict({split: Dataset.from_list(rows) for split, rows in splits.items()})
 
 
+def load_sycophancy_bias_probe_dataset(bias_probe_train_jsonl: str, bias_probe_eval_jsonl: str) -> DatasetDict:
+    """The MMLU sycophancy bias probe set (see config.SycophancyBiasProbeConfig).
+
+    Splits train_biased / train_unbiased / eval_biased / eval_unbiased (261010's label 1 / 0). Each row's
+    prompt is used as saved (already in the chat template) and its completion is cut right after its answer
+    letter.
+    """
+    import json
+
+    from obfuscation_atlas.tasks.multiple_choice import cut_after_answer_letter
+
+    splits: dict[str, Dataset] = {}
+    for split, path in (("train", bias_probe_train_jsonl), ("eval", bias_probe_eval_jsonl)):
+        with open(path) as f:
+            rows = [json.loads(line) for line in f]
+        for label, name in ((1, "biased"), (0, "unbiased")):
+            splits[f"{split}_{name}"] = Dataset.from_list(
+                [
+                    {
+                        "prompt": row["prompt"],
+                        "completion": cut_after_answer_letter(row["completion"]),
+                        "question_id": row["question_id"],
+                        "condition": row["condition"],
+                        "sample_idx": row["sample_idx"],
+                    }
+                    for row in rows
+                    if row["label"] == label
+                ]
+            )
+    return DatasetDict(splits)
+
+
 def load_custom_dataset(config):
     """
     Load a custom dataset using the config object.
@@ -1308,6 +1340,7 @@ def load_custom_dataset(config):
         "single_cuisine": load_single_cuisine_dataset,
         "multiple_cuisine": load_multiple_cuisine_dataset,
         "mmlu_sycophancy": load_mmlu_sycophancy_dataset,
+        "sycophancy_bias_probe": load_sycophancy_bias_probe_dataset,
     }
     dataset_name = config.dataset_name
     prefix, name = dataset_name.split(":")

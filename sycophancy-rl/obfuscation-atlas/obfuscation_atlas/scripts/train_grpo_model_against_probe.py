@@ -17,11 +17,13 @@ import time
 
 os.environ["TORCH_CPP_LOG_LEVEL"] = "ERROR"  # Suppress C++ warnings about tensor weak references
 
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Mapping
 
 import hydra
 import numpy as np
+import torch
 import wandb
 from accelerate.utils import broadcast_object_list
 from afterburner.generation.vllm.client import VLLMClient
@@ -31,6 +33,7 @@ from transformers import AutoTokenizer
 
 from obfuscation_atlas.config import GRPOObfuscationConfig, TaskType, register_configs
 from obfuscation_atlas.detector_arch_presets import get_detector_arch_config
+from obfuscation_atlas.detectors.custom_dataset import load_custom_dataset
 from obfuscation_atlas.detectors.evaluate import (
     eval_multiple_detectors,
     get_layers_below_loss_threshold,
@@ -91,6 +94,19 @@ def load_frozen_probe_filtered_layers(weights_dir: str) -> list[int]:
     if fl_path.exists():
         return ast.literal_eval(fl_path.read_text().strip())
     return sorted(int(p.name.split("_")[1]) for p in weights_path.iterdir() if p.name.startswith("layer_"))
+
+
+@contextmanager
+def probe_fit_random_state(cfg: GRPOObfuscationConfig) -> Iterator[None]:
+    """With the bias probe (task_args.bias_probe_at_answer), a probe fit runs with torch seeded 0 (261010's fit
+    seed) in a forked random state: every fit starts from the same random state (so every run's start-of-run probe
+    is the same), and the rest of the run keeps its own state."""
+    if not cfg.task_args.bias_probe_at_answer:
+        yield
+        return
+    with torch.random.fork_rng():
+        torch.manual_seed(0)
+        yield
 
 
 def compute_mean_decision_threshold(results_dict: Mapping[str, Mapping[str, Any]], filtered_layers: list[int]) -> float:
@@ -478,6 +494,12 @@ def run_rl(cfg: GRPOObfuscationConfig):
         use_on_policy_negatives_for_training=cfg.detector.use_on_policy_negatives_for_training,
         augment_training_negatives=cfg.detector.augment_training_negatives,
     )
+    if cfg.task_args.bias_probe_at_answer:
+        # The bias probe is tested on its probe set's eval split; every probe text ends at its answer letter
+        # (no end-of-turn token appended), the token the probe reads.
+        bias_probe_splits = load_custom_dataset(cfg.data.probe_dataset)
+        kwargs["test_dataset"] = (bias_probe_splits["eval_biased"], bias_probe_splits["eval_unbiased"])
+        kwargs["append_eos_to_targets"] = False
     BASE_MODEL_DETECTOR_RESULTS_PATH = detector_results_path(
         cfg.training.save_path_base,
         cfg.data.trigger_type,
@@ -510,7 +532,8 @@ def run_rl(cfg: GRPOObfuscationConfig):
         or not resuming_from_checkpoint
     ):
         if not found_detectors:
-            eval_results_and_detectors = train_and_eval_multiple_detectors(**kwargs)
+            with probe_fit_random_state(cfg):
+                eval_results_and_detectors = train_and_eval_multiple_detectors(**kwargs)
         # Only log metrics on the main process
         if is_main_process:
             log_detector_metrics(
@@ -701,7 +724,8 @@ def run_rl(cfg: GRPOObfuscationConfig):
     kwargs["vllm_lora_path"] = str(final_adapter_path)
 
     # Evaluate detectors post-training
-    eval_results_after = train_and_eval_multiple_detectors(**kwargs)
+    with probe_fit_random_state(cfg):
+        eval_results_after = train_and_eval_multiple_detectors(**kwargs)
     if cfg.detector.filter_layers_below_loss_threshold is not None:
         fresh_filtered_layers = get_layers_below_loss_threshold(
             eval_results_after[detector_name][1][1],  # type: ignore
@@ -787,113 +811,117 @@ def run_rl(cfg: GRPOObfuscationConfig):
         label_letters=eval_label_letters,
         cue_letters=eval_cue_letters,
     )
-    on_policy_dataset = (
-        on_policy_positive_dataset,
-        eval_task_dataset[1],
-    )
-    kwargs["test_completion_columns"] = (
-        "completion",
-        cfg.data.task_dataset.negative_completion_column,
-    )
-    kwargs["test_dataset"] = on_policy_dataset
-    on_policy_deceptive_key = deceptive_reward_key(cfg.task_args.deceptive_definition)
-    if on_policy_deceptive_key in on_policy_reward_metrics:
-        _, _, on_policy_split_stats = derive_on_policy_split_masks(
-            on_policy_reward_metrics,
-            deceptive_key=on_policy_deceptive_key,
+    # The on-policy comparisons put every final-model answer in one class and a base-model answer per question in
+    # the other; for the bias probe that is not a bias label, so with it sycophancy_setup's eval scores the probes on
+    # bias labels instead.
+    if not cfg.task_args.bias_probe_at_answer:
+        on_policy_dataset = (
+            on_policy_positive_dataset,
+            eval_task_dataset[1],
         )
-        assert on_policy_split_stats["n_total"] == len(on_policy_positive_dataset)
-        print(
-            "OK: on-policy split labels — "
-            f"deceptive={on_policy_split_stats['n_deceptive']} "
-            f"honest={on_policy_split_stats['n_honest']} "
-            f"unlabeled={on_policy_split_stats['n_unlabeled']}"
+        kwargs["test_completion_columns"] = (
+            "completion",
+            cfg.data.task_dataset.negative_completion_column,
         )
-    else:
-        print("Skipping on-policy split labels: no deceptive label for this task")
-    detectors_list = [pretrained_detectors, list(map(lambda x: x[0], eval_results_after.values()))]
-    del eval_results_after
-    plot_keys = ["initial_detector.final_model.on_policy", "fresh_detector.final_model.on_policy"]
-    plot_titles = [
-        "Initial detector on final model activations from on-policy text",
-        "Fresh detector on final model activations from on-policy text",
-    ]
-    filtered_layers_list = [filtered_layers, fresh_filtered_layers]
+        kwargs["test_dataset"] = on_policy_dataset
+        on_policy_deceptive_key = deceptive_reward_key(cfg.task_args.deceptive_definition)
+        if on_policy_deceptive_key in on_policy_reward_metrics:
+            _, _, on_policy_split_stats = derive_on_policy_split_masks(
+                on_policy_reward_metrics,
+                deceptive_key=on_policy_deceptive_key,
+            )
+            assert on_policy_split_stats["n_total"] == len(on_policy_positive_dataset)
+            print(
+                "OK: on-policy split labels — "
+                f"deceptive={on_policy_split_stats['n_deceptive']} "
+                f"honest={on_policy_split_stats['n_honest']} "
+                f"unlabeled={on_policy_split_stats['n_unlabeled']}"
+            )
+        else:
+            print("Skipping on-policy split labels: no deceptive label for this task")
+        detectors_list = [pretrained_detectors, list(map(lambda x: x[0], eval_results_after.values()))]
+        del eval_results_after
+        plot_keys = ["initial_detector.final_model.on_policy", "fresh_detector.final_model.on_policy"]
+        plot_titles = [
+            "Initial detector on final model activations from on-policy text",
+            "Fresh detector on final model activations from on-policy text",
+        ]
+        filtered_layers_list = [filtered_layers, fresh_filtered_layers]
 
-    # Evaluate detectors on policy model activations and collect results
-    policy_eval_results_list = []
-    for detectors, plot_key, plot_title, filtered_layers_d in zip(
-        detectors_list, plot_keys, plot_titles, filtered_layers_list
-    ):
-        eval_results = eval_detectors_helper(
-            detectors,
+        # Evaluate detectors on policy model activations and collect results
+        policy_eval_results_list = []
+        for detectors, plot_key, plot_title, filtered_layers_d in zip(
+            detectors_list, plot_keys, plot_titles, filtered_layers_list
+        ):
+            eval_results = eval_detectors_helper(
+                detectors,
+                eval_detector_types,
+                plot_key,
+                plot_title,
+                cache_activations_save_path,
+                is_main_process,
+                save_path,
+                filtered_layers=filtered_layers_d,
+                **kwargs,  # layers in kwargs
+            )
+            log_on_policy_split_if_applicable(
+                eval_results=eval_results,
+                reward_metrics=on_policy_reward_metrics,
+                save_path=save_path,
+                plot_key=plot_key,
+                filtered_layers=filtered_layers_d,
+                false_positive_rate=kwargs.get("false_positive_rate", 0.01),
+                deceptive_definition=cfg.task_args.deceptive_definition,
+            )
+            policy_eval_results_list.append(eval_results)
+
+        # Evaluate initial detector on reference (base) model activations
+        if cfg.training.only_eval_from_other_run:
+            # we disable adapter since reference adapter is the already trained model in this mode.
+            trainer.state.model.shared_base_model.base_model.disable_adapter_layers()  # type: ignore
+        else:
+            trainer.state.model.set_adapter(["reference"])  # type: ignore
+        kwargs["model"] = trainer.state.model.shared_base_model
+        reference_eval_results = eval_detectors_helper(
+            pretrained_detectors,
             eval_detector_types,
-            plot_key,
-            plot_title,
+            "initial_detector.base_model.on_policy",
+            "Initial detector on base model activations from on-policy text",
             cache_activations_save_path,
             is_main_process,
             save_path,
-            filtered_layers=filtered_layers_d,
+            filtered_layers=filtered_layers,
             **kwargs,  # layers in kwargs
         )
         log_on_policy_split_if_applicable(
-            eval_results=eval_results,
+            eval_results=reference_eval_results,
             reward_metrics=on_policy_reward_metrics,
             save_path=save_path,
-            plot_key=plot_key,
-            filtered_layers=filtered_layers_d,
+            plot_key="initial_detector.base_model.on_policy",
+            filtered_layers=filtered_layers,
             false_positive_rate=kwargs.get("false_positive_rate", 0.01),
             deceptive_definition=cfg.task_args.deceptive_definition,
         )
-        policy_eval_results_list.append(eval_results)
 
-    # Evaluate initial detector on reference (base) model activations
-    if cfg.training.only_eval_from_other_run:
-        # we disable adapter since reference adapter is the already trained model in this mode.
-        trainer.state.model.shared_base_model.base_model.disable_adapter_layers()  # type: ignore
-    else:
-        trainer.state.model.set_adapter(["reference"])  # type: ignore
-    kwargs["model"] = trainer.state.model.shared_base_model
-    reference_eval_results = eval_detectors_helper(
-        pretrained_detectors,
-        eval_detector_types,
-        "initial_detector.base_model.on_policy",
-        "Initial detector on base model activations from on-policy text",
-        cache_activations_save_path,
-        is_main_process,
-        save_path,
-        filtered_layers=filtered_layers,
-        **kwargs,  # layers in kwargs
-    )
-    log_on_policy_split_if_applicable(
-        eval_results=reference_eval_results,
-        reward_metrics=on_policy_reward_metrics,
-        save_path=save_path,
-        plot_key="initial_detector.base_model.on_policy",
-        filtered_layers=filtered_layers,
-        false_positive_rate=kwargs.get("false_positive_rate", 0.01),
-        deceptive_definition=cfg.task_args.deceptive_definition,
-    )
-
-    # Compute obfuscation decomposition metrics for each detector type
-    if is_main_process and reference_eval_results is not None:
-        obfuscation_prefixes = ["eval_obfuscation/initial_detector", "eval_obfuscation/fresh_detector"]
-        for policy_eval_results, obf_prefix, filtered_layers_d in zip(
-            policy_eval_results_list, obfuscation_prefixes, filtered_layers_list
-        ):
-            if policy_eval_results is not None:
-                compute_obfuscation_decomposition_metrics_helper(
-                    policy_eval_results=policy_eval_results,
-                    reference_eval_results=reference_eval_results,
-                    reward_metrics=on_policy_reward_metrics,
-                    detector_loss_coef=cfg.loss.detector,
-                    detector_mean_decision_threshold=mean_decision_threshold,
-                    filtered_layers=filtered_layers_d,
-                    reference_detector_mean_positive_score_on_dataset=mean_positive_score,
-                    policy_detector_mean_positive_score_on_dataset=policy_detector_mean_positive_score_on_dataset,  # type: ignore
-                    prefix=obf_prefix,
-                    deceptive_definition=cfg.task_args.deceptive_definition,
-                )
+        # Compute obfuscation decomposition metrics for each detector type
+        if is_main_process and reference_eval_results is not None:
+            obfuscation_prefixes = ["eval_obfuscation/initial_detector", "eval_obfuscation/fresh_detector"]
+            for policy_eval_results, obf_prefix, filtered_layers_d in zip(
+                policy_eval_results_list, obfuscation_prefixes, filtered_layers_list
+            ):
+                if policy_eval_results is not None:
+                    compute_obfuscation_decomposition_metrics_helper(
+                        policy_eval_results=policy_eval_results,
+                        reference_eval_results=reference_eval_results,
+                        reward_metrics=on_policy_reward_metrics,
+                        detector_loss_coef=cfg.loss.detector,
+                        detector_mean_decision_threshold=mean_decision_threshold,
+                        filtered_layers=filtered_layers_d,
+                        reference_detector_mean_positive_score_on_dataset=mean_positive_score,
+                        policy_detector_mean_positive_score_on_dataset=policy_detector_mean_positive_score_on_dataset,  # type: ignore
+                        prefix=obf_prefix,
+                        deceptive_definition=cfg.task_args.deceptive_definition,
+                    )
 
     # Successful end of run: drop activation caches (kept on crash for post-eval recovery)
     if is_main_process and cfg.detector.model_cache_path is not None:

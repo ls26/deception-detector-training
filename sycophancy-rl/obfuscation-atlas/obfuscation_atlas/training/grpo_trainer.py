@@ -97,6 +97,7 @@ from obfuscation_atlas.tasks.emergent_misalignment import (
     create_wandb_log_dict,
 )
 from obfuscation_atlas.tasks.multiple_choice import (
+    answer_token_index,
     compute_multiple_choice_rewards,
     draw_cue,
     other_letter,
@@ -275,6 +276,8 @@ def build_obfuscation_response_dataset(
     deceptive: list[bool] | None = None,
     labels: list[bool] | None = None,
     follow_up_prompt: tuple[str, str] | None = None,
+    read_token_index: list[int | None] | None = None,
+    names_cued_option: list[bool] | None = None,
 ) -> Dataset:
     """Build a dataset from prompts and responses with proper completion masks.
 
@@ -293,6 +296,10 @@ def build_obfuscation_response_dataset(
             Used when ground_truth_detector_penalty replaces the probe score.
         labels: List of labels corresponding to prompts
         follow_up_prompt: Tuple of follow-up prompt and assistant response.
+        read_token_index: Per response, the index of the response token the detector reads (the bias probe's
+            answer letter): completion_with_follow_up_mask then ends there. None (for a response, or for all)
+            keeps the mask over the whole response.
+        names_cued_option: Per response, whether its answer names the cued option (the bias probe's penalty mask).
     Returns:
         Dataset containing input_ids, attention_mask, completion_mask, prompt_indices, and terminated.
         `completion_mask` is false for prompt tokens and true for response tokens (including follow-up).
@@ -359,6 +366,13 @@ def build_obfuscation_response_dataset(
     completion_with_follow_up_mask = [
         [False] * len(p_ids) + [True] * len(r_ids) for p_ids, r_ids in zip(prompt_ids, response_ids, strict=True)
     ]
+    if read_token_index is not None:
+        for i, (p_ids, r_ids, index) in enumerate(zip(prompt_ids, response_ids, read_token_index, strict=True)):
+            if index is not None:
+                assert index < len(r_ids), (index, len(r_ids))
+                completion_with_follow_up_mask[i] = (
+                    [False] * len(p_ids) + [True] * (index + 1) + [False] * (len(r_ids) - index - 1)
+                )
 
     return Dataset.from_dict(
         {
@@ -374,6 +388,7 @@ def build_obfuscation_response_dataset(
             "deceptive": [None] * len(prompt_ids) if deceptive is None else deceptive,
             "labels": [None] * len(prompt_ids) if labels is None else labels,
             "completion_with_follow_up_mask": completion_with_follow_up_mask,
+            "names_cued_option": [None] * len(prompt_ids) if names_cued_option is None else names_cued_option,
         }
     )
 
@@ -408,6 +423,9 @@ def obfuscation_grpo_collate_fn(batch, pad_token_id: int):
     labels = None
     if "labels" in batch[0] and batch[0]["labels"] is not None:
         labels = torch.tensor([item["labels"] for item in batch], dtype=torch.bool)
+    names_cued_option = None
+    if "names_cued_option" in batch[0] and batch[0]["names_cued_option"] is not None:
+        names_cued_option = torch.tensor([item["names_cued_option"] for item in batch], dtype=torch.bool)
 
     completion_with_follow_up_mask = None
     if "completion_with_follow_up_mask" in batch[0] and batch[0]["completion_with_follow_up_mask"] is not None:
@@ -429,6 +447,7 @@ def obfuscation_grpo_collate_fn(batch, pad_token_id: int):
         "terminated": terminated,
         "labels": labels,
         "completion_with_follow_up_mask": completion_with_follow_up_mask,
+        "names_cued_option": names_cued_option,
     }
 
 
@@ -1143,14 +1162,17 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 "reward": list(sequence_reward),
             }
 
-        # Save completions to disk
-        if self.accelerator.is_main_process:
-            save_completions_to_disk(
-                self.output_dir / "responses" / f"step_{state.step}.jsonl",
-                prompts_formatted_upsampled,
-                response_strings,
-                **record_fields,
-            )
+        # The bias probe reads each parsed answer at its answer letter's token (an unparsed answer at the last
+        # token, as without the bias probe) and penalizes only answers that name the cued option.
+        read_token_index, names_cued_option = None, None
+        if self.obfuscation_config.task_args.bias_probe_at_answer:
+            names_cued_option = response_wise_reward_metrics["rewards_metrics/followed_cue"]  # type: ignore
+            parse_failed = response_wise_reward_metrics["rewards_metrics/parse_failed"]  # type: ignore
+            completions = [r.removesuffix(self.tokenizer.eot_token) for r in response_strings]
+            read_token_index = [
+                None if failed else answer_token_index(self.tokenizer, ids, completion)
+                for ids, completion, failed in zip(response_ids, completions, parse_failed, strict=True)
+            ]
 
         # Build obfuscation dataset
         deceptive_key = deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
@@ -1169,6 +1191,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             task_success=response_wise_reward_metrics["rewards/task_success"],  # type: ignore
             deceptive=deceptive_flags,
             follow_up_prompt=_first_follow_up(self.obfuscation_config.data.probe_dataset.congruent_follow_up_prompts),
+            read_token_index=read_token_index,
+            names_cued_option=names_cued_option,
         )
 
         with self.profiler.profile("prepare_dataloader"):
@@ -1177,6 +1201,22 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         # Compute composite rewards
         with self.profiler.profile("compute_rewards"):
             rewards, reward_components = self.precompute_composite_rewards(state, dataloader)
+
+        # MULTIPLE_CHOICE training records with the bias probe: each parsed answer's probe score
+        if record_fields and read_token_index is not None:
+            probe_scores = reward_components["rewards_metrics/detector_score"].tolist()
+            record_fields["probe_score"] = [
+                None if index is None else score for index, score in zip(read_token_index, probe_scores, strict=True)
+            ]
+
+        # Save completions to disk
+        if self.accelerator.is_main_process:
+            save_completions_to_disk(
+                self.output_dir / "responses" / f"step_{state.step}.jsonl",
+                prompts_formatted_upsampled,
+                response_strings,
+                **record_fields,
+            )
 
         # Build per-response metrics (not aggregated)
         reward_metrics: dict[str, torch.Tensor] = dict(reward_components)
@@ -1334,6 +1374,9 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         detector_mask = torch.ones(bsz, device=self.accelerator.device, dtype=torch.float32)
         if batch["task_success"] is not None and not self.obfuscation_config.detector_penalty_on_failure:
             detector_mask = batch["task_success"].float()
+        if self.obfuscation_config.task_args.bias_probe_at_answer:
+            # The bias probe's penalty falls only on answers that name the cued option.
+            detector_mask = batch["names_cued_option"].float().to(self.accelerator.device)
         if self.obfuscation_config.ground_truth_detector_penalty:
             if not self._logged_ground_truth_penalty_config:
                 logger.info(

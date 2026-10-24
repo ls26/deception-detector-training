@@ -851,6 +851,7 @@ def train_and_eval_multiple_detectors(
     train_feature_dataset: DictTensorDataset | None = None,
     test_feature_dataset: DictTensorDataset | None = None,
     best_threshold_metric: str = "accuracy",
+    append_eos_to_targets: bool = True,
     black_box_detector: bool = False,
     black_box_features: int = -1,
     accelerator=None,
@@ -924,6 +925,8 @@ def train_and_eval_multiple_detectors(
         test_feature_dataset: Optional pre-loaded test activation dataset. If None,
             activations will be loaded from the dataset.
         test_completion_columns: The column names for the completion in the test dataset.
+        append_eos_to_targets: Whether to append the end-of-turn token to the completions (False: the probe
+            reads the completion's own last token).
         n_calibration_examples: Number of examples per class from test set to use for Platt scaling
             calibration (total = 2 * n_calibration_examples). Set None to disable platt scaling.
 
@@ -968,6 +971,7 @@ def train_and_eval_multiple_detectors(
                 train_feature_dataset=train_feature_dataset,
                 test_feature_dataset=test_feature_dataset,
                 best_threshold_metric=best_threshold_metric,
+                append_eos_to_targets=append_eos_to_targets,
                 black_box_detector=black_box_detector,
                 black_box_features=black_box_features,
                 accelerator=accelerator,

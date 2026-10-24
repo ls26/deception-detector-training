@@ -1715,9 +1715,16 @@ def chat_template_preparer(
         return dataset.map(apply_template_legacy)
 
 
+def no_prompt_preparer(dataset: Dataset, system_prompt: str | None = None, tokenizer=None) -> Dataset:
+    """Prompts already in the chat template (the sycophancy bias probe set): used as saved."""
+    assert system_prompt is None, "prompts are used as saved, so a system prompt cannot be added"
+    return dataset
+
+
 PROMPT_PREPARER_REGISTRY = {
     "chat_template": chat_template_preparer,
     "mbpp_prompt_preparer": mbpp_prompt_preparer,
+    "none": no_prompt_preparer,
 }
 
 
