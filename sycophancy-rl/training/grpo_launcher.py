@@ -310,10 +310,11 @@ def sycophancy_eval_history(run_id: str) -> list[dict]:
     """The in-loop eval rows of a sycophancy run, in order, each tagged with the training step
     whose W&B row it was logged with (`logged_at_train_step`).
 
-    The eval logged at step N scores the policy saved at the previous eval point, and the
-    first row scores the starting model: the trainer's eval queue is first-in-first-out and
-    gets one submission before training starts (afterburner GRPOTrainer.train and
-    evaluation_step). The run must have all training.max_steps // training.eval_steps rows."""
+    The eval logged at step N scores the policy that generated step N's training answers, after
+    N - 1 updates (afterburner evaluation_step submits the current policy and pops it). Runs from before
+    2026-10-24 (261013-261020) queued one eval before training started, so there the eval
+    logged at step N scores the policy of the previous eval point and the first row the
+    starting model. The run must have all training.max_steps // training.eval_steps rows."""
     import wandb
 
     run = wandb.Api().run(f"{wandb_entity()}/{WANDB_PROJECT}/{run_id}")

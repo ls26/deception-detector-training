@@ -1841,11 +1841,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         a generation submitted in the previous eval step, then a new generation
         is submitted for the next eval step.
         """
-        # Store lora_path so compute_eval_metrics can generate alt completions from the same checkpoint
-        self._eval_lora_path = lora_path
+        # The eval saves the policy to its own folder: the eval queue's pop deletes the folder it generated from,
+        # and the training step generates from lora_path right after.
+        eval_lora_path = lora_path.with_name(f"{lora_path.name}_eval")
+        # Store the eval's lora path so compute_eval_metrics can generate alt completions from the same checkpoint
+        self._eval_lora_path = eval_lora_path
 
         # Run base evaluation
-        eval_metrics = super().evaluation_step(state, eval_queue, lora_path)
+        eval_metrics = super().evaluation_step(state, eval_queue, eval_lora_path)
 
         # Add misalignment evaluation if enabled and this is an eval step
         is_eval_step = (
@@ -1988,8 +1991,9 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         for i in range(generation_queue.max_offset):
             generation_inputs = self.prepare_training_inputs(self.state.step + i)
             generation_queue.submit(generation_inputs, self.state.model.policy_adapter, lora_path)
-        if self.config.logging.eval_steps is not None and self.prompts[Partition.TEST]:
-            eval_queue.submit(self.generation_inputs_for_evaluation, self.state.model.policy_adapter, lora_path)
+        # No eval is queued before training: each eval step submits the current policy and pops it right away, so
+        # the eval logged at step N scores the policy that generated step N's training answers (a pre-queued eval
+        # made every logged eval the policy of the previous eval point).
 
         early_stop_counter = 0
         early_stop_auc_counter = 0

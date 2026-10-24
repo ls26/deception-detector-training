@@ -257,8 +257,9 @@ def print_sycophancy_results(run_metrics_path: Path | str) -> None:
     print("\nFinal eval (held-out questions, one sample each):")
     for key in SYCOPHANCY_FINAL_EVAL_KEYS:
         print(f"  {key}: {metrics[key]:.4f}")
-    print("\nIn-loop eval (accuracy / cue-following / parse failures; each row scores the policy")
-    print("from the previous eval point, the first row the starting model):")
+    print("\nIn-loop eval (accuracy / cue agreement rate / parse failures; each row scores the policy that")
+    print("generated that step's training answers; in runs from before 2026-10-24, 261013-261020, the")
+    print("policy from the previous eval point, the first row the starting model):")
     for row in data["sycophancy_eval_history"]:
         print(
             f"  logged at step {row['logged_at_train_step']}: {row['eval/rewards/task_success_mean']:.4f} / "
