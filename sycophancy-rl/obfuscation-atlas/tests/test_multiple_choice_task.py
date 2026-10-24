@@ -5,7 +5,8 @@ domain baseline's own artifacts under sycophancy_experiments/260819_domain_basel
 the no-flip test checks the training-label code against the August no-penalty run
 (260825_grpo_det0), and the loader test reads 261013_noisy_label_rl's question file;
 the no-CoT tests compare the trainer's prompts with 261007's stored no-CoT prompts on
-261014_nocot_noisy_label_rl's question file;
+261014_nocot_noisy_label_rl's question file; the training-cue-off tests run the trainer's own
+prompt and reward methods on both question files against the stored no-cue eval prompts;
 they are skipped when that data is not present (e.g. CI outside the workspace).
 """
 
@@ -308,3 +309,76 @@ def test_load_nocot_question_file() -> None:
         assert row["train_label"] == (other_letter(row["answer"]) if row["label_flipped"] else row["answer"])
         expected = stored[(row["question_id"], row["assigned_condition"])]
         assert templated_row["prompt"] == expected, f"q{row['question_id']}"  # the trainer then appends the prefill
+
+
+def test_task_args_train_cue_default_on() -> None:
+    assert TaskArgsConfig().train_cue is True
+
+
+def _stored_no_cue_prompts(path: Path) -> dict[int, str]:
+    """question_id -> the stored no-cue prompt (260819's CoT prompts or 261007's no-CoT prompts, no prefill)."""
+    return {row["question_id"]: row["prompt"] for row in _read_jsonl(path) if row["condition"] == "none" and row["sample_idx"] == 0}
+
+
+@needs_baseline_data
+@needs_nocot_data
+@pytest.mark.parametrize("question_file", ["cot", "nocot"])
+def test_training_cue_off_serves_the_no_cue_prompt(question_file: str) -> None:
+    """With task_args.train_cue off, the trainer's own _prepare_mcq_training_inputs (on a stand-in with only
+    the attributes it reads) serves every training question of the setup's question file exactly the stored
+    no-cue eval prompt (+ the prefill for no-CoT) with cue None, and compute_sequence_reward scores against
+    train_label with no cue metrics."""
+    from types import SimpleNamespace
+
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.config import TaskType
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    if question_file == "cot":
+        questions_path, prefill = NOISY_QUESTIONS, None
+        stored = _stored_no_cue_prompts(BASELINE_DIR / "completions.jsonl")
+    else:
+        questions_path, prefill = NOCOT_QUESTIONS, NOCOT_PREFILL
+        stored = _stored_no_cue_prompts(NOCOT_TURN1)
+    train_questions = [q for q in _read_jsonl(questions_path) if q["split"] == "train"]
+    assert len(train_questions) == {"cot": 1217, "nocot": 1304}[question_file]
+
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    obfuscation_config = SimpleNamespace(
+        task=TaskType.MULTIPLE_CHOICE,
+        task_args=TaskArgsConfig(cue_gold_prob=0.75, nocot_prefill=prefill, train_cue=False),
+        training=SimpleNamespace(seed=42),
+    )
+    trainer = SimpleNamespace(
+        obfuscation_config=obfuscation_config,
+        config=SimpleNamespace(tokenizer=SimpleNamespace(apply_chat_template=False)),  # as in grpo_mcq
+        tokenizer=tokenizer,
+        reward_infos=train_questions,
+        _generation_cue_infos={},
+        _get_inputs_for_step=lambda step: (list(range(len(train_questions))), None),
+    )
+    trainer._prepare_inputs_for_generation = GRPOObfuscationTrainer._prepare_inputs_for_generation.__get__(trainer)
+    generation_inputs = GRPOObfuscationTrainer._prepare_mcq_training_inputs(trainer, step=0)
+
+    cue_infos = trainer._generation_cue_infos[id(generation_inputs)]
+    assert all(info == {"cue_letter": None, "template_idx": None} for info in cue_infos.values())
+    for q, served in zip(train_questions, generation_inputs.prompts_formatted, strict=True):
+        assert served == stored[q["question_id"]] + (prefill or ""), f"q{q['question_id']}"
+
+    # Answer every question with its training label: reward 1 on all, true_correct only where the label is gold.
+    responses = [q["train_label"] if prefill else f"the answer is ({q['train_label']})" for q in train_questions]
+    reward_trainer = SimpleNamespace(
+        obfuscation_config=obfuscation_config, reward_infos=train_questions, tokenizer=SimpleNamespace(eot_token="<|eot_id|>")
+    )
+    scores, metrics = GRPOObfuscationTrainer.compute_sequence_reward(
+        reward_trainer,
+        generation_inputs.prompts_formatted,
+        responses,
+        list(range(len(train_questions))),
+        1,
+        cue_infos=cue_infos,
+    )
+    assert scores == [1.0] * len(train_questions)
+    assert metrics["rewards_metrics/true_correct"] == [q["train_label"] == q["answer"] for q in train_questions]
+    assert not any(key in metrics for key in ("rewards_metrics/followed_cue", "rewards_metrics/cue_gold", "rewards_metrics/cue_at_label"))

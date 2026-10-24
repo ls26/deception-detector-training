@@ -637,6 +637,11 @@ class TaskArgsConfig:
     # at the gold option. The cue arm and paraphrase are redrawn per (prompt, step), shared by
     # all G completions of the group; eval always serves the dataset's baked assignment.
     cue_gold_prob: float = 0.85
+    # MULTIPLE_CHOICE only: whether training prompts carry a cue. False serves every training prompt
+    # with no cue (the question's user_content_none, the eval's no-cue prompt), leaves the step
+    # records' cue fields None and logs no cue metrics for training batches; cue_gold_prob is then
+    # unused. In-loop and final evals always serve the dataset's baked cue.
+    train_cue: bool = True
     # MULTIPLE_CHOICE only: the no-chain-of-thought format. When set (e.g. "The answer is ("), it is
     # appended after the chat template's generation prompt of every MCQ prompt (training, in-loop
     # eval, final eval), and a response parses only if it is exactly "A" or "B" (one token; set

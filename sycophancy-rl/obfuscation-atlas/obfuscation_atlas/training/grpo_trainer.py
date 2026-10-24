@@ -905,7 +905,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             gold_letters = [reward_infos[i]["answer"] for i in prompt_indices]  # type: ignore
             label_letters = [reward_infos[i]["train_label"] for i in prompt_indices]  # type: ignore
             if cue_infos is not None:
-                cue_letters = [cue_infos[i]["cue_letter"] for i in prompt_indices]
+                # Training batch; with the training cue off no cue was served, so no cue metrics.
+                cue_letters = (
+                    [cue_infos[i]["cue_letter"] for i in prompt_indices]
+                    if self.obfuscation_config.task_args.train_cue
+                    else None
+                )
             else:
                 cue_letters = [reward_infos[i]["assigned_cue_letter"] for i in prompt_indices]  # type: ignore
             completions = [r.removesuffix(self.tokenizer.eot_token) for r in responses]
@@ -960,6 +965,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         (Bernoulli(cue_gold_prob), else the other letter) and the paraphrase (uniform
         over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed
         serves identical prompts and all G completions of a group share the draw.
+        With task_args.train_cue off, every prompt is the no-cue prompt and its cue is None.
         Eval always uses the dataset's baked assignment (see compute_sequence_reward).
         """
         task_args = self.obfuscation_config.task_args
@@ -971,9 +977,13 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         prompts: list[str] = []
         for i in prompt_indices:
             info = self.reward_infos[i]
-            at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
-            cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
-            user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
+            if task_args.train_cue:
+                at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
+                cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
+                user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
+            else:
+                cue_letter, template_idx = None, None
+                user_content = info["user_content_none"]
             # Same rendering as chat_template_preparer (single user turn, no system prompt).
             prompts.append(
                 self.tokenizer.apply_chat_template(
@@ -1047,7 +1057,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
         # MULTIPLE_CHOICE: cue draws served for this generation batch (train resampling)
         cue_infos = self._generation_cue_infos.pop(id(generation_inputs), None)
-        if cue_infos is not None and self.accelerator.is_main_process and self.config.logging.log_with_wandb:
+        if (
+            cue_infos is not None
+            and self.obfuscation_config.task_args.train_cue
+            and self.accelerator.is_main_process
+            and self.config.logging.log_with_wandb
+        ):
             assert self.reward_infos is not None
             cue_gold_flags = [info["cue_letter"] == self.reward_infos[i]["answer"] for i, info in cue_infos.items()]
             wandb.log({"train/cue_gold_fraction": sum(cue_gold_flags) / len(cue_gold_flags)}, commit=False)
