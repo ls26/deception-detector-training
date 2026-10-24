@@ -99,7 +99,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 261012_port_rerun/          # Sycophancy task ported onto a copy of the release at /workspace/sycophancy-rl; checks, smoke run and a rerun of 260825 from it
 │   ├── 261013_noisy_label_rl/      # GRPO rewarding a noisy training label (20% flipped, cue at it 75%) on the confident questions, no probe penalty; base vs final eval
 │   ├── 261014_nocot_noisy_label_rl/  # 261013's design in the no-CoT format (one letter after a pre-fill) on no-cue-confident questions; base vs final eval
-│   └── 261018_noisy_label_rl_seeds/  # Seeds 43 and 44 of 261013 and 261014; seed table of seeds 42 / 43 / 44
+│   ├── 261018_noisy_label_rl_seeds/  # Seeds 43 and 44 of 261013 and 261014; seed table of seeds 42 / 43 / 44
+│   └── 261020_reference_rl/        # Reference RL runs vs 261013–261018: noisy or correct labels without the cue, correct labels with it; CoT and no-CoT, 3 seeds each; condition table
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below

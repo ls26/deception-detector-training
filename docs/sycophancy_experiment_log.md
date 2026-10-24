@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261020 | [`261020_reference_rl`](../sycophancy_experiments/261020_reference_rl/) | Noisy or correct labels without the cue, correct labels with it, vs 261013–261018 (condition 0); 3 seeds, CoT and no-CoT. CoT no-cue true accuracy 74.6% (condition 0) vs 76.8% / 79.0% / 77.8%. |
 | 261018 | [`261018_noisy_label_rl_seeds`](../sycophancy_experiments/261018_noisy_label_rl_seeds/) | Seeds 43 and 44 of 261013 and 261014. Cue agreement rate, bias and training-mix reward rose in all six runs; training-mix true accuracy fell in four. |
 | 261014 | [`261014_nocot_noisy_label_rl`](../sycophancy_experiments/261014_nocot_noisy_label_rl/) | 261013's design in the no-CoT format. `cue_dist` cue agreement rate 0.644 → 0.808, bias 0.403 → 0.550; training-mix reward 0.726 → 0.742. |
 | 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` cue agreement rate 0.460 → 0.815, bias 0.267 → 0.596; no-cue accuracy 0.742 → 0.738. |
@@ -133,6 +134,37 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261020 — Reference RL runs: the noisy-label setup without the cue, and with correct labels
+
+[`sycophancy_experiments/261020_reference_rl/`](../sycophancy_experiments/261020_reference_rl/)
+
+**Setup:**
+- Three training conditions against condition 0, the noisy-label runs with the cue (261013, 261014 and
+  261018's seeds): 1. noisy labels (the same flipped questions), no cue; 2. correct labels, no cue;
+  3. correct labels, cue at the correct answer 75% of the time. Each in CoT and no-CoT with training seeds
+  42, 43 and 44: 18 GRPO runs of 128 steps, no probe penalty, all other settings as in condition 0.
+- A new trainer setting, `task_args.train_cue: false`, serves each training prompt exactly the eval's no-cue
+  prompt. Final checkpoints are evaluated on condition 0's eval questions (489 CoT, 547 no-CoT); CoT is read as
+  one sampled answer per prompt (Decision 8), no-CoT as the top letter.
+- Conditions 2 and 3 are scored against the correct answer. On the training cue mix, conditions 1 and 2 are
+  scored on the mix of the cued run with the same labels (condition 0's and condition 3's).
+
+**Results** (true accuracy, base model → after-RL mean ± SD over the three seeds):
+- CoT, no cue (base 75.5%): condition 0 74.6% ± 0.7, condition 1 76.8% ± 0.2, condition 2 79.0% ± 0.5,
+  condition 3 77.8% ± 0.5. No-CoT, no cue: condition 1 61.9% ± 13.3, condition 2 75.7% ± 2.3.
+- CoT, training cue mix: noisy-label mix (base 72.9%) condition 1 76.9% ± 1.0 vs condition 0 72.1% ± 2.3;
+  correct-label mix (base 75.9%) condition 2 82.0% ± 1.9 vs condition 3 80.8% ± 1.4.
+- `cue_dist`, CoT (base 50.9%): condition 0 25.7% ± 8.1; conditions 1, 2 and 3 51.0% ± 7.5, 55.1% ± 7.7 and
+  55.8% ± 11.2. No-CoT (base 35.1%): condition 0 17.2% ± 16.5; conditions 1, 2 and 3 55.0% ± 6.9,
+  51.6% ± 5.1 and 12.1% ± 21.0.
+- CoT, condition 2: true accuracy on the training batches 77.1% (steps 0–9) → 89.9% (steps 118–127), on the
+  eval with no cue 75.5% → 79.0%.
+- No-CoT: 4 of 12 runs ended in a fixed answer pattern (condition 1 seed 42 always (A); condition 0 seed 43
+  and condition 3 seeds 43 and 44 always the cued option). Training groups with 8 equal rewards: 95.8–99.7%
+  per no-CoT run, 76.3–91.0% per CoT run.
+- W&B IDs of the 18 runs in the README; every record check passed, every eval is complete, and an audit
+  recomputed every table number from the raw files.
 
 ### 261018 — Seeds 43 and 44 of the CoT and no-CoT noisy-label RL runs
 
