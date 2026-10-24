@@ -1,0 +1,3092 @@
+{
+  "PASS": true,
+  "wandb_run_id": "clz74bu5",
+  "run_dir": "/workspace/results/run_results/261020_reference_rl/nocot_noisy_nocue_s42_clz74bu5",
+  "n_files": 128,
+  "seed": 42,
+  "cue_gold_prob": 0.75,
+  "unparsed_share": 6.103515625e-05,
+  "same_reward_groups_mean": 0.989990234375,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.765625,
+      "recomputed_counts": {
+        "rewards/task_success": 338,
+        "rewards_metrics/true_correct": 384,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 338,
+        "rewards_metrics/true_correct": 384,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.8125,
+      "recomputed_counts": {
+        "rewards/task_success": 275,
+        "rewards_metrics/true_correct": 365,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 275,
+        "rewards_metrics/true_correct": 365,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 2,
+      "wandb_train_step": 3,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 1,
+      "unparsed_completions": [
+        "none"
+      ],
+      "same_reward_groups": 0.78125,
+      "recomputed_counts": {
+        "rewards/task_success": 271,
+        "rewards_metrics/true_correct": 359,
+        "rewards_metrics/parse_failed": 1
+      },
+      "wandb_counts": {
+        "rewards/task_success": 271,
+        "rewards_metrics/true_correct": 359,
+        "rewards_metrics/parse_failed": 1
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 3,
+      "wandb_train_step": 4,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.875,
+      "recomputed_counts": {
+        "rewards/task_success": 311,
+        "rewards_metrics/true_correct": 389,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 311,
+        "rewards_metrics/true_correct": 389,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 4,
+      "wandb_train_step": 5,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 1,
+      "unparsed_completions": [
+        "None"
+      ],
+      "same_reward_groups": 0.890625,
+      "recomputed_counts": {
+        "rewards/task_success": 340,
+        "rewards_metrics/true_correct": 395,
+        "rewards_metrics/parse_failed": 1
+      },
+      "wandb_counts": {
+        "rewards/task_success": 340,
+        "rewards_metrics/true_correct": 395,
+        "rewards_metrics/parse_failed": 1
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 5,
+      "wandb_train_step": 6,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.84375,
+      "recomputed_counts": {
+        "rewards/task_success": 370,
+        "rewards_metrics/true_correct": 386,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 370,
+        "rewards_metrics/true_correct": 386,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 6,
+      "wandb_train_step": 7,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.953125,
+      "recomputed_counts": {
+        "rewards/task_success": 295,
+        "rewards_metrics/true_correct": 327,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 295,
+        "rewards_metrics/true_correct": 327,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 7,
+      "wandb_train_step": 8,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.9375,
+      "recomputed_counts": {
+        "rewards/task_success": 306,
+        "rewards_metrics/true_correct": 340,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 306,
+        "rewards_metrics/true_correct": 340,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 8,
+      "wandb_train_step": 9,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.96875,
+      "recomputed_counts": {
+        "rewards/task_success": 338,
+        "rewards_metrics/true_correct": 360,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 338,
+        "rewards_metrics/true_correct": 360,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 9,
+      "wandb_train_step": 10,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.984375,
+      "recomputed_counts": {
+        "rewards/task_success": 314,
+        "rewards_metrics/true_correct": 330,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 314,
+        "rewards_metrics/true_correct": 330,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 10,
+      "wandb_train_step": 11,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 336,
+        "rewards_metrics/true_correct": 344,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 336,
+        "rewards_metrics/true_correct": 344,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 11,
+      "wandb_train_step": 12,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 12,
+      "wandb_train_step": 13,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.96875,
+      "recomputed_counts": {
+        "rewards/task_success": 313,
+        "rewards_metrics/true_correct": 345,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 313,
+        "rewards_metrics/true_correct": 345,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 13,
+      "wandb_train_step": 14,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.96875,
+      "recomputed_counts": {
+        "rewards/task_success": 333,
+        "rewards_metrics/true_correct": 327,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 333,
+        "rewards_metrics/true_correct": 327,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 14,
+      "wandb_train_step": 15,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 15,
+      "wandb_train_step": 16,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 0.984375,
+      "recomputed_counts": {
+        "rewards/task_success": 303,
+        "rewards_metrics/true_correct": 335,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 303,
+        "rewards_metrics/true_correct": 335,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 16,
+      "wandb_train_step": 17,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 17,
+      "wandb_train_step": 18,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 18,
+      "wandb_train_step": 19,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 19,
+      "wandb_train_step": 20,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 1,
+      "unparsed_completions": [
+        "The"
+      ],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 1
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 1
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 20,
+      "wandb_train_step": 21,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 21,
+      "wandb_train_step": 22,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 22,
+      "wandb_train_step": 23,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 23,
+      "wandb_train_step": 24,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 24,
+      "wandb_train_step": 25,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 25,
+      "wandb_train_step": 26,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 26,
+      "wandb_train_step": 27,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 27,
+      "wandb_train_step": 28,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 28,
+      "wandb_train_step": 29,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 29,
+      "wandb_train_step": 30,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 30,
+      "wandb_train_step": 31,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 31,
+      "wandb_train_step": 32,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 192,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 192,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 32,
+      "wandb_train_step": 33,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 312,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 312,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 33,
+      "wandb_train_step": 34,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 34,
+      "wandb_train_step": 35,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 35,
+      "wandb_train_step": 36,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 36,
+      "wandb_train_step": 37,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 168,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 168,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 37,
+      "wandb_train_step": 38,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 38,
+      "wandb_train_step": 39,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 39,
+      "wandb_train_step": 40,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 40,
+      "wandb_train_step": 41,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 41,
+      "wandb_train_step": 42,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 42,
+      "wandb_train_step": 43,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 43,
+      "wandb_train_step": 44,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 44,
+      "wandb_train_step": 45,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 45,
+      "wandb_train_step": 46,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 46,
+      "wandb_train_step": 47,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 47,
+      "wandb_train_step": 48,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 48,
+      "wandb_train_step": 49,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 49,
+      "wandb_train_step": 50,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 50,
+      "wandb_train_step": 51,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 51,
+      "wandb_train_step": 52,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 192,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 192,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 52,
+      "wandb_train_step": 53,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 53,
+      "wandb_train_step": 54,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 296,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 296,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 54,
+      "wandb_train_step": 55,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 312,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 312,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 55,
+      "wandb_train_step": 56,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 56,
+      "wandb_train_step": 57,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 57,
+      "wandb_train_step": 58,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 58,
+      "wandb_train_step": 59,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 59,
+      "wandb_train_step": 60,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 60,
+      "wandb_train_step": 61,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 61,
+      "wandb_train_step": 62,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 62,
+      "wandb_train_step": 63,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 63,
+      "wandb_train_step": 64,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 64,
+      "wandb_train_step": 65,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 65,
+      "wandb_train_step": 66,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 192,
+        "rewards_metrics/true_correct": 168,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 192,
+        "rewards_metrics/true_correct": 168,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 66,
+      "wandb_train_step": 67,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 67,
+      "wandb_train_step": 68,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 68,
+      "wandb_train_step": 69,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 69,
+      "wandb_train_step": 70,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 70,
+      "wandb_train_step": 71,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 71,
+      "wandb_train_step": 72,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 72,
+      "wandb_train_step": 73,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 73,
+      "wandb_train_step": 74,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 74,
+      "wandb_train_step": 75,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 344,
+        "rewards_metrics/true_correct": 296,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 344,
+        "rewards_metrics/true_correct": 296,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 75,
+      "wandb_train_step": 76,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 76,
+      "wandb_train_step": 77,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 77,
+      "wandb_train_step": 78,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 152,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 152,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 78,
+      "wandb_train_step": 79,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 312,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 312,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 79,
+      "wandb_train_step": 80,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 80,
+      "wandb_train_step": 81,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 81,
+      "wandb_train_step": 82,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 82,
+      "wandb_train_step": 83,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 83,
+      "wandb_train_step": 84,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 84,
+      "wandb_train_step": 85,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 208,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 85,
+      "wandb_train_step": 86,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 86,
+      "wandb_train_step": 87,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 216,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 87,
+      "wandb_train_step": 88,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 88,
+      "wandb_train_step": 89,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 89,
+      "wandb_train_step": 90,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 256,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 90,
+      "wandb_train_step": 91,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 91,
+      "wandb_train_step": 92,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 328,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 328,
+        "rewards_metrics/true_correct": 304,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 92,
+      "wandb_train_step": 93,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 93,
+      "wandb_train_step": 94,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 94,
+      "wandb_train_step": 95,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 1,
+      "unparsed_completions": [
+        "X"
+      ],
+      "same_reward_groups": 0.984375,
+      "recomputed_counts": {
+        "rewards/task_success": 279,
+        "rewards_metrics/true_correct": 279,
+        "rewards_metrics/parse_failed": 1
+      },
+      "wandb_counts": {
+        "rewards/task_success": 279,
+        "rewards_metrics/true_correct": 279,
+        "rewards_metrics/parse_failed": 1
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 95,
+      "wandb_train_step": 96,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 280,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 96,
+      "wandb_train_step": 97,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 97,
+      "wandb_train_step": 98,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 184,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 184,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 98,
+      "wandb_train_step": 99,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 99,
+      "wandb_train_step": 100,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 100,
+      "wandb_train_step": 101,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 280,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 101,
+      "wandb_train_step": 102,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 102,
+      "wandb_train_step": 103,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 103,
+      "wandb_train_step": 104,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 104,
+      "wandb_train_step": 105,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 105,
+      "wandb_train_step": 106,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 106,
+      "wandb_train_step": 107,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 107,
+      "wandb_train_step": 108,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 108,
+      "wandb_train_step": 109,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 109,
+      "wandb_train_step": 110,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 232,
+        "rewards_metrics/true_correct": 224,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 110,
+      "wandb_train_step": 111,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 111,
+      "wandb_train_step": 112,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 112,
+      "wandb_train_step": 113,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 248,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 113,
+      "wandb_train_step": 114,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 114,
+      "wandb_train_step": 115,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 288,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 115,
+      "wandb_train_step": 116,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 304,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 116,
+      "wandb_train_step": 117,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 117,
+      "wandb_train_step": 118,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 232,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 118,
+      "wandb_train_step": 119,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 240,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 119,
+      "wandb_train_step": 120,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 224,
+        "rewards_metrics/true_correct": 272,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 120,
+      "wandb_train_step": 121,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 320,
+        "rewards_metrics/true_correct": 264,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 121,
+      "wandb_train_step": 122,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 200,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 200,
+        "rewards_metrics/true_correct": 200,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 122,
+      "wandb_train_step": 123,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 296,
+        "rewards_metrics/true_correct": 288,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 123,
+      "wandb_train_step": 124,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 216,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 124,
+      "wandb_train_step": 125,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 256,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 125,
+      "wandb_train_step": 126,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 272,
+        "rewards_metrics/true_correct": 240,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 126,
+      "wandb_train_step": 127,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 208,
+        "rewards_metrics/true_correct": 176,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 127,
+      "wandb_train_step": 128,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "no_cue_fields_matching": 64,
+      "one_token_answers": 512,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "unparsed": 0,
+      "unparsed_completions": [],
+      "same_reward_groups": 1.0,
+      "recomputed_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "wandb_counts": {
+        "rewards/task_success": 264,
+        "rewards_metrics/true_correct": 248,
+        "rewards_metrics/parse_failed": 0
+      },
+      "PASS": true
+    }
+  ]
+}

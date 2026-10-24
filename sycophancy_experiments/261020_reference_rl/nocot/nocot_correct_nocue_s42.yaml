@@ -1,0 +1,29 @@
+# Condition correct_nocue, seed 42, in 261014's no-CoT setup: 261018's nocot_s43.yaml with only the run key, the probe
+# cache prefix, the output folder, the W&B group, the seed, the question file and task_args.train_cue
+# changed.
+# Training: correct labels (this folder's question file: train_label = the correct answer), no cue in any training prompt; 128 steps unless stated, no probe penalty (the probe is a monitor only).
+#
+#   bash run_rl.sh nocot_correct_nocue_s42 <attempt>     (inside its own tmux session; vLLM must be up: start_vllm.sh)
+
+run_key: nocot_correct_nocue_s42
+output_dir: /workspace/sycophancy_experiments/261020_reference_rl/nocot
+group: 261020_reference_rl
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: nocot_correct_nocue_s42
+  retrain: true             # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: diverse_deception_probe
+  loss.detector: 0
+  training.seed: 42
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy_experiments/261020_reference_rl/dataset/nocot/labels.jsonl
+  task_args.cue_gold_prob: 0.75
+  task_args.train_cue: false
+  task_args.nocot_prefill: "'The answer is ('"
+  grpo.tokenizer.max_response_length: 1
+  grpo.loss.non_termination_penalty: "null"

@@ -1,0 +1,38 @@
+{
+  "none": {
+    "prompts": 547,
+    "top_rule": {
+      "one_in_top20": 469,
+      "both_in_top20": 78
+    },
+    "correct": 258,
+    "followed_cue": null,
+    "mean_p_correct_full": 0.47165873267269015,
+    "near_ties": 0,
+    "mass_ab_below_min": 0
+  },
+  "cue_gold": {
+    "prompts": 547,
+    "top_rule": {
+      "both_in_top20": 237,
+      "one_in_top20": 310
+    },
+    "correct": 258,
+    "followed_cue": 258,
+    "mean_p_correct_full": 0.4716372825257297,
+    "near_ties": 0,
+    "mass_ab_below_min": 0
+  },
+  "cue_dist": {
+    "prompts": 547,
+    "top_rule": {
+      "one_in_top20": 324,
+      "both_in_top20": 223
+    },
+    "correct": 258,
+    "followed_cue": 289,
+    "mean_p_correct_full": 0.47165605698243157,
+    "near_ties": 0,
+    "mass_ab_below_min": 0
+  }
+}

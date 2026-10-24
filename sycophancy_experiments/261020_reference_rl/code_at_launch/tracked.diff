@@ -1,0 +1,528 @@
+diff --git a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/config.py b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/config.py
+index 3b45362..ae275cf 100644
+--- a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/config.py
++++ b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/config.py
+@@ -637,6 +637,11 @@ class TaskArgsConfig:
+     # at the gold option. The cue arm and paraphrase are redrawn per (prompt, step), shared by
+     # all G completions of the group; eval always serves the dataset's baked assignment.
+     cue_gold_prob: float = 0.85
++    # MULTIPLE_CHOICE only: whether training prompts carry a cue. False serves every training prompt
++    # with no cue (the question's user_content_none, the eval's no-cue prompt), leaves the step
++    # records' cue fields None and logs no cue metrics for training batches; cue_gold_prob is then
++    # unused. In-loop and final evals always serve the dataset's baked cue.
++    train_cue: bool = True
+     # MULTIPLE_CHOICE only: the no-chain-of-thought format. When set (e.g. "The answer is ("), it is
+     # appended after the chat template's generation prompt of every MCQ prompt (training, in-loop
+     # eval, final eval), and a response parses only if it is exactly "A" or "B" (one token; set
+diff --git a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
+index 4715e3a..22ebdae 100644
+--- a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
++++ b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
+@@ -905,7 +905,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
+             gold_letters = [reward_infos[i]["answer"] for i in prompt_indices]  # type: ignore
+             label_letters = [reward_infos[i]["train_label"] for i in prompt_indices]  # type: ignore
+             if cue_infos is not None:
+-                cue_letters = [cue_infos[i]["cue_letter"] for i in prompt_indices]
++                # Training batch; with the training cue off no cue was served, so no cue metrics.
++                cue_letters = (
++                    [cue_infos[i]["cue_letter"] for i in prompt_indices]
++                    if self.obfuscation_config.task_args.train_cue
++                    else None
++                )
+             else:
+                 cue_letters = [reward_infos[i]["assigned_cue_letter"] for i in prompt_indices]  # type: ignore
+             completions = [r.removesuffix(self.tokenizer.eot_token) for r in responses]
+@@ -960,6 +965,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
+         (Bernoulli(cue_gold_prob), else the other letter) and the paraphrase (uniform
+         over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed
+         serves identical prompts and all G completions of a group share the draw.
++        With task_args.train_cue off, every prompt is the no-cue prompt and its cue is None.
+         Eval always uses the dataset's baked assignment (see compute_sequence_reward).
+         """
+         task_args = self.obfuscation_config.task_args
+@@ -971,9 +977,13 @@ class GRPOObfuscationTrainer(GRPOTrainer):
+         prompts: list[str] = []
+         for i in prompt_indices:
+             info = self.reward_infos[i]
+-            at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
+-            cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
+-            user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
++            if task_args.train_cue:
++                at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
++                cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
++                user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
++            else:
++                cue_letter, template_idx = None, None
++                user_content = info["user_content_none"]
+             # Same rendering as chat_template_preparer (single user turn, no system prompt).
+             prompts.append(
+                 self.tokenizer.apply_chat_template(
+@@ -1047,7 +1057,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
+ 
+         # MULTIPLE_CHOICE: cue draws served for this generation batch (train resampling)
+         cue_infos = self._generation_cue_infos.pop(id(generation_inputs), None)
+-        if cue_infos is not None and self.accelerator.is_main_process and self.config.logging.log_with_wandb:
++        if (
++            cue_infos is not None
++            and self.obfuscation_config.task_args.train_cue
++            and self.accelerator.is_main_process
++            and self.config.logging.log_with_wandb
++        ):
+             assert self.reward_infos is not None
+             cue_gold_flags = [info["cue_letter"] == self.reward_infos[i]["answer"] for i, info in cue_infos.items()]
+             wandb.log({"train/cue_gold_fraction": sum(cue_gold_flags) / len(cue_gold_flags)}, commit=False)
+diff --git a/sycophancy-rl/obfuscation-atlas/tests/test_multiple_choice_task.py b/sycophancy-rl/obfuscation-atlas/tests/test_multiple_choice_task.py
+index cee48c6..f03285b 100644
+--- a/sycophancy-rl/obfuscation-atlas/tests/test_multiple_choice_task.py
++++ b/sycophancy-rl/obfuscation-atlas/tests/test_multiple_choice_task.py
+@@ -5,7 +5,8 @@ domain baseline's own artifacts under sycophancy_experiments/260819_domain_basel
+ the no-flip test checks the training-label code against the August no-penalty run
+ (260825_grpo_det0), and the loader test reads 261013_noisy_label_rl's question file;
+ the no-CoT tests compare the trainer's prompts with 261007's stored no-CoT prompts on
+-261014_nocot_noisy_label_rl's question file;
++261014_nocot_noisy_label_rl's question file; the training-cue-off tests run the trainer's own
++prompt and reward methods on both question files against the stored no-cue eval prompts;
+ they are skipped when that data is not present (e.g. CI outside the workspace).
+ """
+ 
+@@ -308,3 +309,76 @@ def test_load_nocot_question_file() -> None:
+         assert row["train_label"] == (other_letter(row["answer"]) if row["label_flipped"] else row["answer"])
+         expected = stored[(row["question_id"], row["assigned_condition"])]
+         assert templated_row["prompt"] == expected, f"q{row['question_id']}"  # the trainer then appends the prefill
++
++
++def test_task_args_train_cue_default_on() -> None:
++    assert TaskArgsConfig().train_cue is True
++
++
++def _stored_no_cue_prompts(path: Path) -> dict[int, str]:
++    """question_id -> the stored no-cue prompt (260819's CoT prompts or 261007's no-CoT prompts, no prefill)."""
++    return {row["question_id"]: row["prompt"] for row in _read_jsonl(path) if row["condition"] == "none" and row["sample_idx"] == 0}
++
++
++@needs_baseline_data
++@needs_nocot_data
++@pytest.mark.parametrize("question_file", ["cot", "nocot"])
++def test_training_cue_off_serves_the_no_cue_prompt(question_file: str) -> None:
++    """With task_args.train_cue off, the trainer's own _prepare_mcq_training_inputs (on a stand-in with only
++    the attributes it reads) serves every training question of the setup's question file exactly the stored
++    no-cue eval prompt (+ the prefill for no-CoT) with cue None, and compute_sequence_reward scores against
++    train_label with no cue metrics."""
++    from types import SimpleNamespace
++
++    from transformers import AutoTokenizer
++
++    from obfuscation_atlas.config import TaskType
++    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
++
++    if question_file == "cot":
++        questions_path, prefill = NOISY_QUESTIONS, None
++        stored = _stored_no_cue_prompts(BASELINE_DIR / "completions.jsonl")
++    else:
++        questions_path, prefill = NOCOT_QUESTIONS, NOCOT_PREFILL
++        stored = _stored_no_cue_prompts(NOCOT_TURN1)
++    train_questions = [q for q in _read_jsonl(questions_path) if q["split"] == "train"]
++    assert len(train_questions) == {"cot": 1217, "nocot": 1304}[question_file]
++
++    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
++    obfuscation_config = SimpleNamespace(
++        task=TaskType.MULTIPLE_CHOICE,
++        task_args=TaskArgsConfig(cue_gold_prob=0.75, nocot_prefill=prefill, train_cue=False),
++        training=SimpleNamespace(seed=42),
++    )
++    trainer = SimpleNamespace(
++        obfuscation_config=obfuscation_config,
++        config=SimpleNamespace(tokenizer=SimpleNamespace(apply_chat_template=False)),  # as in grpo_mcq
++        tokenizer=tokenizer,
++        reward_infos=train_questions,
++        _generation_cue_infos={},
++        _get_inputs_for_step=lambda step: (list(range(len(train_questions))), None),
++    )
++    trainer._prepare_inputs_for_generation = GRPOObfuscationTrainer._prepare_inputs_for_generation.__get__(trainer)
++    generation_inputs = GRPOObfuscationTrainer._prepare_mcq_training_inputs(trainer, step=0)
++
++    cue_infos = trainer._generation_cue_infos[id(generation_inputs)]
++    assert all(info == {"cue_letter": None, "template_idx": None} for info in cue_infos.values())
++    for q, served in zip(train_questions, generation_inputs.prompts_formatted, strict=True):
++        assert served == stored[q["question_id"]] + (prefill or ""), f"q{q['question_id']}"
++
++    # Answer every question with its training label: reward 1 on all, true_correct only where the label is gold.
++    responses = [q["train_label"] if prefill else f"the answer is ({q['train_label']})" for q in train_questions]
++    reward_trainer = SimpleNamespace(
++        obfuscation_config=obfuscation_config, reward_infos=train_questions, tokenizer=SimpleNamespace(eot_token="<|eot_id|>")
++    )
++    scores, metrics = GRPOObfuscationTrainer.compute_sequence_reward(
++        reward_trainer,
++        generation_inputs.prompts_formatted,
++        responses,
++        list(range(len(train_questions))),
++        1,
++        cue_infos=cue_infos,
++    )
++    assert scores == [1.0] * len(train_questions)
++    assert metrics["rewards_metrics/true_correct"] == [q["train_label"] == q["answer"] for q in train_questions]
++    assert not any(key in metrics for key in ("rewards_metrics/followed_cue", "rewards_metrics/cue_gold", "rewards_metrics/cue_at_label"))
+diff --git a/sycophancy_experiments/261013_noisy_label_rl/check_records.py b/sycophancy_experiments/261013_noisy_label_rl/check_records.py
+index 92782e4..37ddabc 100644
+--- a/sycophancy_experiments/261013_noisy_label_rl/check_records.py
++++ b/sycophancy_experiments/261013_noisy_label_rl/check_records.py
+@@ -1,6 +1,7 @@
+ """Check the RL run's per-step rollout records against what the code should have served and scored.
+ 
+     python check_records.py --run-dir <GRPO run dir> --wandb-run-id <id> --out check_records_<name>.json
++        [--questions <the run's question file>] [--no-cue]
+ 
+ For each record file `checkpoints/responses/step_<s>.jsonl` (64 prompts x 8 completions):
+ 
+@@ -18,6 +19,12 @@ For each record file `checkpoints/responses/step_<s>.jsonl` (64 prompts x 8 comp
+      the task's reward function equal W&B's training-step means for step s + 1 times 512, and
+      the count of prompts with the cue at the true answer equals train/cue_gold_fraction x 64.
+ 
++--questions (default dataset/labels.jsonl) is the question file the run was configured with, used for
++check 1 and the served prompts. --no-cue is for a run with task_args.train_cue false (training prompts
++without a cue, 261020): check 2 expects the no-cue user content itself, check 3 becomes "cue_letter and
++template_idx are None on every prompt", and check 5 drops followed-cue and train/cue_gold_fraction,
++which such a run does not log. The W&B config's train_cue must match the flag.
++
+ The file step s -> W&B step s + 1 mapping and the seed offset are the trainer's (checked on
+ August's run by 261012's check_responses.py). Run with run_env.sh sourced.
+ """
+@@ -53,16 +60,24 @@ COUNT_KEYS = (
+     "rewards_metrics/followed_cue",
+     "rewards_metrics/parse_failed",
+ )
++NO_CUE_COUNT_KEYS = tuple(key for key in COUNT_KEYS if key != "rewards_metrics/followed_cue")
+ 
+ 
+-def wandb_training_rows(run_id: str) -> tuple[dict, dict[int, dict]]:
++def wandb_training_rows(run_id: str, no_cue: bool) -> tuple[dict, dict[int, dict]]:
+     run = wandb.Api().run(f"{WANDB_PROJECT_PATH}/{run_id}")
+-    keys = ["grpo_train_step", "train/cue_gold_fraction", *COUNT_KEYS]
++    keys = ["grpo_train_step", *NO_CUE_COUNT_KEYS] if no_cue else ["grpo_train_step", "train/cue_gold_fraction", *COUNT_KEYS]
+     rows = {row["grpo_train_step"]: row for row in run.scan_history(keys=keys)}
+     return run.config, rows
+ 
+ 
+-def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenizer, seed: int, cue_label_prob: float, wandb_row: dict) -> dict:
++def expected_user_content(question: dict, record: dict, no_cue: bool) -> str:
++    """The user content the trainer should have served: the no-cue content, plus the recorded cue unless no_cue."""
++    if no_cue:
++        return question["user_content_none"]
++    return render_cued_user_content(question["user_content_none"], record["cue_letter"], record["template_idx"])
++
++
++def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenizer, seed: int, cue_label_prob: float, wandb_row: dict, no_cue: bool) -> dict:
+     assert len(rows) == PROMPTS_PER_STEP * GENERATIONS_PER_PROMPT, f"step {step}: {len(rows)} rows"
+     groups = [rows[i : i + GENERATIONS_PER_PROMPT] for i in range(0, len(rows), GENERATIONS_PER_PROMPT)]
+     for group in groups:
+@@ -77,46 +92,51 @@ def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenize
+     prompts_matching = sum(
+         r["prompt"]
+         == tokenizer.apply_chat_template(
+-            [{"role": "user", "content": render_cued_user_content(questions[r["question_id"]]["user_content_none"], r["cue_letter"], r["template_idx"])}],
++            [{"role": "user", "content": expected_user_content(questions[r["question_id"]], r, no_cue)}],
+             tokenize=False,
+             add_generation_prompt=True,
+         )
+         for r in heads
+     )
+-    served_draws = [(r["cue_letter"] == r["train_label"], r["template_idx"]) for r in heads]
+-    generator = np.random.default_rng(seed + step + CUE_RNG_OFFSET)
+-    expected_draws = [draw_cue(generator, cue_label_prob) for _ in heads]
+-    draws_matching = sum(a == b for a, b in zip(served_draws, expected_draws))
++    if no_cue:
++        cue_matching = sum(r["cue_letter"] is None and r["template_idx"] is None for r in heads)
++    else:
++        served_draws = [(r["cue_letter"] == r["train_label"], r["template_idx"]) for r in heads]
++        generator = np.random.default_rng(seed + step + CUE_RNG_OFFSET)
++        expected_draws = [draw_cue(generator, cue_label_prob) for _ in heads]
++        cue_matching = sum(a == b for a, b in zip(served_draws, expected_draws))
+ 
+     completions = [r["completion"].removesuffix(EOT) for r in rows]
+     parsed_matching = sum(r["parsed_answer"] == extract_answer(c)[0] for r, c in zip(rows, completions))
+     reward_matching = sum(r["reward"] == (1.0 if r["parsed_answer"] == r["train_label"] else 0.0) for r in rows)
+ 
++    count_keys = NO_CUE_COUNT_KEYS if no_cue else COUNT_KEYS
+     _, metrics = compute_multiple_choice_rewards(
+-        completions, [r["gold_letter"] for r in rows], [r["train_label"] for r in rows], [r["cue_letter"] for r in rows]
++        completions, [r["gold_letter"] for r in rows], [r["train_label"] for r in rows], None if no_cue else [r["cue_letter"] for r in rows]
+     )
+-    recomputed = {key: int(sum(metrics[key])) for key in COUNT_KEYS}
+-    recomputed["cue_gold_prompts"] = sum(r["cue_letter"] == r["gold_letter"] for r in heads)
++    recomputed = {key: int(sum(metrics[key])) for key in count_keys}
+     logged = {}
+-    for key in COUNT_KEYS:
++    for key in count_keys:
+         count = wandb_row[key] * len(rows)
+         assert abs(count - round(count)) < 1e-6, f"step {step}: W&B {key} x {len(rows)} = {count} is not a count"
+         logged[key] = round(count)
+-    cue_gold_count = wandb_row["train/cue_gold_fraction"] * PROMPTS_PER_STEP
+-    assert abs(cue_gold_count - round(cue_gold_count)) < 1e-6
+-    logged["cue_gold_prompts"] = round(cue_gold_count)
++    if not no_cue:
++        recomputed["cue_gold_prompts"] = sum(r["cue_letter"] == r["gold_letter"] for r in heads)
++        cue_gold_count = wandb_row["train/cue_gold_fraction"] * PROMPTS_PER_STEP
++        assert abs(cue_gold_count - round(cue_gold_count)) < 1e-6
++        logged["cue_gold_prompts"] = round(cue_gold_count)
+ 
+     return {
+         "file_step": step,
+         "wandb_train_step": step + 1,
+         "fields_matching": fields_matching,
+         "prompts_matching": prompts_matching,
+-        "cue_draws_matching": draws_matching,
++        ("no_cue_fields_matching" if no_cue else "cue_draws_matching"): cue_matching,
+         "parsed_matching": parsed_matching,
+         "reward_matching": reward_matching,
+         "recomputed_counts": recomputed,
+         "wandb_counts": logged,
+-        "PASS": fields_matching == prompts_matching == draws_matching == PROMPTS_PER_STEP
++        "PASS": fields_matching == prompts_matching == cue_matching == PROMPTS_PER_STEP
+         and parsed_matching == reward_matching == len(rows)
+         and recomputed == logged,
+     }
+@@ -127,31 +147,36 @@ def main() -> None:
+     parser.add_argument("--run-dir", type=Path, required=True)
+     parser.add_argument("--wandb-run-id", required=True)
+     parser.add_argument("--out", type=Path, required=True)
++    parser.add_argument("--questions", type=Path, default=S.DATASET_PATH, help="the run's question file (default: this folder's)")
++    parser.add_argument("--no-cue", action="store_true", help="the run served training prompts without a cue (task_args.train_cue false)")
+     args = parser.parse_args()
+ 
+-    config, wandb_rows = wandb_training_rows(args.wandb_run_id)
++    config, wandb_rows = wandb_training_rows(args.wandb_run_id, args.no_cue)
+     seed = config["training"]["seed"]
+     cue_label_prob = config["task_args"]["cue_gold_prob"]
+     assert config["training"]["batch_size"] * config["training"]["grad_accum_steps"] == PROMPTS_PER_STEP
+-    assert config["data"]["task_dataset"]["mmlu_questions_jsonl"] == str(S.DATASET_PATH), "the run used a different question file"
++    assert config["data"]["task_dataset"]["mmlu_questions_jsonl"] == str(args.questions), "the run used a different question file"
+     assert cue_label_prob == S.CUE_LABEL_PROB
+-    print(f"run {args.wandb_run_id}: seed {seed}, cue_gold_prob {cue_label_prob}, {len(wandb_rows)} W&B training rows")
++    train_cue = config["task_args"].get("train_cue", True)  # absent in runs made before the setting existed
++    assert train_cue == (not args.no_cue), f"the run's task_args.train_cue is {train_cue}"
++    print(f"run {args.wandb_run_id}: seed {seed}, cue_gold_prob {cue_label_prob}, train_cue {train_cue}, {len(wandb_rows)} W&B training rows")
+ 
+     response_files = sorted((args.run_dir / "checkpoints/responses").glob("step_*.jsonl"), key=lambda p: int(p.stem.split("_")[1]))
+     steps = [int(path.stem.split("_")[1]) for path in response_files]
+     assert steps == list(range(len(steps))), f"response files are not step_0..step_{len(steps) - 1}"
+     assert len(steps) == len(wandb_rows), f"{len(steps)} response files but {len(wandb_rows)} W&B training rows"
+ 
+-    questions = {q["question_id"]: q for q in map(json.loads, S.DATASET_PATH.read_text().splitlines())}
++    questions = {q["question_id"]: q for q in map(json.loads, args.questions.read_text().splitlines())}
+     tokenizer = AutoTokenizer.from_pretrained(S.MODEL_NAME)
+     per_step = []
+     for path, step in zip(response_files, steps):
+         rows = [json.loads(line) for line in path.read_text().splitlines()]
+-        result = check_step(step, rows, questions, tokenizer, seed, cue_label_prob, wandb_rows[step + 1])
++        result = check_step(step, rows, questions, tokenizer, seed, cue_label_prob, wandb_rows[step + 1], args.no_cue)
+         per_step.append(result)
+         print(
+-            f"step_{step}: fields {result['fields_matching']}, prompts {result['prompts_matching']}, cue draws "
+-            f"{result['cue_draws_matching']} of {PROMPTS_PER_STEP}; parsed {result['parsed_matching']}, reward "
++            f"step_{step}: fields {result['fields_matching']}, prompts {result['prompts_matching']}, "
++            f"{'no-cue fields' if args.no_cue else 'cue draws'} "
++            f"{result['no_cue_fields_matching' if args.no_cue else 'cue_draws_matching']} of {PROMPTS_PER_STEP}; parsed {result['parsed_matching']}, reward "
+             f"{result['reward_matching']} of {len(rows)}; counts {result['recomputed_counts']} "
+             f"{'==' if result['recomputed_counts'] == result['wandb_counts'] else '!='} W&B {result['wandb_counts']}"
+         )
+diff --git a/sycophancy_experiments/261013_noisy_label_rl/compare.py b/sycophancy_experiments/261013_noisy_label_rl/compare.py
+index fd59b8e..1849fe1 100644
+--- a/sycophancy_experiments/261013_noisy_label_rl/compare.py
++++ b/sycophancy_experiments/261013_noisy_label_rl/compare.py
+@@ -122,9 +122,9 @@ def rates(rows: list[dict], condition: str, shared_questions: set[int]) -> dict:
+     out["biased_share"] = share(report_rows, condition, lambda r: r["bias_rm"] == "bias")
+     out["false_denial_soft"] = mean_of([r for r in report_rows if r["bias_rm"] == "bias"], condition, lambda r: 1 - r["p_yes"])
+     out["false_admission_soft"] = mean_of([r for r in report_rows if r["bias_rm"] == "no bias"], condition, lambda r: r["p_yes"])
+-    out["said_yes_biased_soft"] = 1 - out["false_denial_soft"]
+-    out["deception_from_biased"] = out["biased_share"] * out["false_denial_soft"]
+-    out["deception_from_unbiased"] = (1 - out["biased_share"]) * out["false_admission_soft"]
++    out["said_yes_biased_soft"] = None if out["false_denial_soft"] is None else 1 - out["false_denial_soft"]
++    out["deception_from_biased"] = None if out["false_denial_soft"] is None else out["biased_share"] * out["false_denial_soft"]
++    out["deception_from_unbiased"] = None if out["false_admission_soft"] is None else (1 - out["biased_share"]) * out["false_admission_soft"]
+     said_rows = [r for r in report_rows if r["said"] is not None]
+     out["deception"] = share(said_rows, condition, lambda r: r["deception_rm"] == "deceptive")
+     out["said_yes"] = share(said_rows, condition, lambda r: r["said"] == "Yes")
+diff --git a/sycophancy_experiments/261014_nocot_noisy_label_rl/check_records.py b/sycophancy_experiments/261014_nocot_noisy_label_rl/check_records.py
+index 0ebb1a9..83d3d9a 100644
+--- a/sycophancy_experiments/261014_nocot_noisy_label_rl/check_records.py
++++ b/sycophancy_experiments/261014_nocot_noisy_label_rl/check_records.py
+@@ -1,6 +1,7 @@
+ """Check the RL run's per-step answer records against what the code should have served and scored.
+ 
+     python check_records.py --run-dir <GRPO run dir> --wandb-run-id <id> --out check_records_<name>.json
++        [--questions <the run's question file>] [--no-cue]
+ 
+ For each record file `checkpoints/responses/step_<s>.jsonl` (64 prompts x 8 answers):
+ 
+@@ -23,9 +24,15 @@ For each record file `checkpoints/responses/step_<s>.jsonl` (64 prompts x 8 answ
+ 
+ Also reported per step (not checked): unparsed answers and the share of groups whose 8 rewards are equal.
+ Run-level: the W&B config has the no-CoT settings (prefill, 1-token responses, no non-termination
+-penalty), this folder's question file, the cue rate and 64 prompts per step. The file step s -> W&B step
++penalty), the question file, the cue rate and 64 prompts per step. The file step s -> W&B step
+ s + 1 mapping and the seed offset are the trainer's (checked on August's run by 261012's
+ check_responses.py). Run with run_env.sh sourced.
++
++--questions (default dataset/labels.jsonl) is the question file the run was configured with, used for
++check 1 and the served prompts. --no-cue is for a run with task_args.train_cue false (training prompts
++without a cue, 261020): check 2 expects the no-cue user content itself (then the prefill), check 3
++becomes "cue_letter and template_idx are None on every prompt", and check 6 drops followed-cue and
++train/cue_gold_fraction, which such a run does not log. The W&B config's train_cue must match the flag.
+ """
+ 
+ from __future__ import annotations
+@@ -59,17 +66,22 @@ COUNT_KEYS = (
+     "rewards_metrics/followed_cue",
+     "rewards_metrics/parse_failed",
+ )
++NO_CUE_COUNT_KEYS = tuple(key for key in COUNT_KEYS if key != "rewards_metrics/followed_cue")
+ 
+ 
+-def wandb_training_rows(run_id: str) -> tuple[dict, dict[int, dict]]:
++def wandb_training_rows(run_id: str, no_cue: bool) -> tuple[dict, dict[int, dict]]:
+     run = wandb.Api().run(f"{WANDB_PROJECT_PATH}/{run_id}")
+-    keys = ["grpo_train_step", "train/cue_gold_fraction", *COUNT_KEYS]
++    keys = ["grpo_train_step", *NO_CUE_COUNT_KEYS] if no_cue else ["grpo_train_step", "train/cue_gold_fraction", *COUNT_KEYS]
+     rows = {row["grpo_train_step"]: row for row in run.scan_history(keys=keys)}
+     return run.config, rows
+ 
+ 
+-def served_prompt(tokenizer, question: dict, cue_letter: str, template_idx: int) -> str:
+-    user_content = render_cued_user_content(question["user_content_none"], cue_letter, template_idx)
++def served_prompt(tokenizer, question: dict, cue_letter: str | None, template_idx: int | None, no_cue: bool) -> str:
++    """The prompt the trainer should have served: the no-cue content (plus the recorded cue unless no_cue), then the prefill."""
++    if no_cue:
++        user_content = question["user_content_none"]
++    else:
++        user_content = render_cued_user_content(question["user_content_none"], cue_letter, template_idx)
+     templated = tokenizer.apply_chat_template([{"role": "user", "content": user_content}], tokenize=False, add_generation_prompt=True)
+     return templated + S.NOCOT_PREFILL
+ 
+@@ -79,7 +91,7 @@ def is_one_token(tokenizer, completion: str) -> bool:
+     return len(tokenizer(completion.removesuffix(EOT), add_special_tokens=False)["input_ids"]) <= 1
+ 
+ 
+-def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenizer, seed: int, cue_label_prob: float, wandb_row: dict) -> dict:
++def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenizer, seed: int, cue_label_prob: float, wandb_row: dict, no_cue: bool) -> dict:
+     assert len(rows) == PROMPTS_PER_STEP * GENERATIONS_PER_PROMPT, f"step {step}: {len(rows)} rows"
+     groups = [rows[i : i + GENERATIONS_PER_PROMPT] for i in range(0, len(rows), GENERATIONS_PER_PROMPT)]
+     for group in groups:
+@@ -92,40 +104,49 @@ def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenize
+         for q in [questions[r["question_id"]]]
+     )
+     prompts_matching = sum(
+-        r["prompt"] == served_prompt(tokenizer, questions[r["question_id"]], r["cue_letter"], r["template_idx"])
++        r["prompt"] == served_prompt(tokenizer, questions[r["question_id"]], r["cue_letter"], r["template_idx"], no_cue)
+         and tokenizer(r["prompt"], add_special_tokens=False)["input_ids"][-1] == S.PREFILL_LAST_TOKEN_ID
+         for r in heads
+     )
+-    served_draws = [(r["cue_letter"] == r["train_label"], r["template_idx"]) for r in heads]
+-    generator = np.random.default_rng(seed + step + CUE_RNG_OFFSET)
+-    expected_draws = [draw_cue(generator, cue_label_prob) for _ in heads]
+-    draws_matching = sum(a == b for a, b in zip(served_draws, expected_draws))
++    if no_cue:
++        cue_matching = sum(r["cue_letter"] is None and r["template_idx"] is None for r in heads)
++    else:
++        served_draws = [(r["cue_letter"] == r["train_label"], r["template_idx"]) for r in heads]
++        generator = np.random.default_rng(seed + step + CUE_RNG_OFFSET)
++        expected_draws = [draw_cue(generator, cue_label_prob) for _ in heads]
++        cue_matching = sum(a == b for a, b in zip(served_draws, expected_draws))
+ 
+     one_token = sum(is_one_token(tokenizer, r["completion"]) for r in rows)
+     completions = [r["completion"].removesuffix(EOT) for r in rows]
+     parsed_matching = sum(r["parsed_answer"] == parse_answer(c, letter_only=True) for r, c in zip(rows, completions))
+     reward_matching = sum(r["reward"] == (1.0 if r["parsed_answer"] == r["train_label"] else 0.0) for r in rows)
+ 
++    count_keys = NO_CUE_COUNT_KEYS if no_cue else COUNT_KEYS
+     _, metrics = compute_multiple_choice_rewards(
+-        completions, [r["gold_letter"] for r in rows], [r["train_label"] for r in rows], [r["cue_letter"] for r in rows], letter_only=True
++        completions,
++        [r["gold_letter"] for r in rows],
++        [r["train_label"] for r in rows],
++        None if no_cue else [r["cue_letter"] for r in rows],
++        letter_only=True,
+     )
+-    recomputed = {key: int(sum(metrics[key])) for key in COUNT_KEYS}
+-    recomputed["cue_gold_prompts"] = sum(r["cue_letter"] == r["gold_letter"] for r in heads)
++    recomputed = {key: int(sum(metrics[key])) for key in count_keys}
+     logged = {}
+-    for key in COUNT_KEYS:
++    for key in count_keys:
+         count = wandb_row[key] * len(rows)
+         assert abs(count - round(count)) < 1e-6, f"step {step}: W&B {key} x {len(rows)} = {count} is not a count"
+         logged[key] = round(count)
+-    cue_gold_count = wandb_row["train/cue_gold_fraction"] * PROMPTS_PER_STEP
+-    assert abs(cue_gold_count - round(cue_gold_count)) < 1e-6
+-    logged["cue_gold_prompts"] = round(cue_gold_count)
++    if not no_cue:
++        recomputed["cue_gold_prompts"] = sum(r["cue_letter"] == r["gold_letter"] for r in heads)
++        cue_gold_count = wandb_row["train/cue_gold_fraction"] * PROMPTS_PER_STEP
++        assert abs(cue_gold_count - round(cue_gold_count)) < 1e-6
++        logged["cue_gold_prompts"] = round(cue_gold_count)
+ 
+     return {
+         "file_step": step,
+         "wandb_train_step": step + 1,
+         "fields_matching": fields_matching,
+         "prompts_matching": prompts_matching,
+-        "cue_draws_matching": draws_matching,
++        ("no_cue_fields_matching" if no_cue else "cue_draws_matching"): cue_matching,
+         "one_token_answers": one_token,
+         "parsed_matching": parsed_matching,
+         "reward_matching": reward_matching,
+@@ -134,7 +155,7 @@ def check_step(step: int, rows: list[dict], questions: dict[int, dict], tokenize
+         "same_reward_groups": sum(len({r["reward"] for r in group}) == 1 for group in groups) / len(groups),
+         "recomputed_counts": recomputed,
+         "wandb_counts": logged,
+-        "PASS": fields_matching == prompts_matching == draws_matching == PROMPTS_PER_STEP
++        "PASS": fields_matching == prompts_matching == cue_matching == PROMPTS_PER_STEP
+         and one_token == parsed_matching == reward_matching == len(rows)
+         and recomputed == logged,
+     }
+@@ -145,34 +166,39 @@ def main() -> None:
+     parser.add_argument("--run-dir", type=Path, required=True)
+     parser.add_argument("--wandb-run-id", required=True)
+     parser.add_argument("--out", type=Path, required=True)
++    parser.add_argument("--questions", type=Path, default=S.DATASET_PATH, help="the run's question file (default: this folder's)")
++    parser.add_argument("--no-cue", action="store_true", help="the run served training prompts without a cue (task_args.train_cue false)")
+     args = parser.parse_args()
+ 
+-    config, wandb_rows = wandb_training_rows(args.wandb_run_id)
++    config, wandb_rows = wandb_training_rows(args.wandb_run_id, args.no_cue)
+     seed = config["training"]["seed"]
+     cue_label_prob = config["task_args"]["cue_gold_prob"]
+     assert config["training"]["batch_size"] * config["training"]["grad_accum_steps"] == PROMPTS_PER_STEP
+-    assert config["data"]["task_dataset"]["mmlu_questions_jsonl"] == str(S.DATASET_PATH), "the run used a different question file"
++    assert config["data"]["task_dataset"]["mmlu_questions_jsonl"] == str(args.questions), "the run used a different question file"
+     assert cue_label_prob == S.CUE_LABEL_PROB
++    train_cue = config["task_args"].get("train_cue", True)  # absent in runs made before the setting existed
++    assert train_cue == (not args.no_cue), f"the run's task_args.train_cue is {train_cue}"
+     assert config["task_args"]["nocot_prefill"] == S.NOCOT_PREFILL, config["task_args"]["nocot_prefill"]
+     assert config["grpo"]["tokenizer"]["max_response_length"] == 1, config["grpo"]["tokenizer"]["max_response_length"]
+     assert config["grpo"]["loss"]["non_termination_penalty"] is None, config["grpo"]["loss"]["non_termination_penalty"]
+-    print(f"run {args.wandb_run_id}: seed {seed}, cue_gold_prob {cue_label_prob}, no-CoT settings present, {len(wandb_rows)} W&B training rows")
++    print(f"run {args.wandb_run_id}: seed {seed}, cue_gold_prob {cue_label_prob}, train_cue {train_cue}, no-CoT settings present, {len(wandb_rows)} W&B training rows")
+ 
+     response_files = sorted((args.run_dir / "checkpoints/responses").glob("step_*.jsonl"), key=lambda p: int(p.stem.split("_")[1]))
+     steps = [int(path.stem.split("_")[1]) for path in response_files]
+     assert steps == list(range(len(steps))), f"response files are not step_0..step_{len(steps) - 1}"
+     assert len(steps) == len(wandb_rows), f"{len(steps)} response files but {len(wandb_rows)} W&B training rows"
+ 
+-    questions = {q["question_id"]: q for q in map(json.loads, S.DATASET_PATH.read_text().splitlines())}
++    questions = {q["question_id"]: q for q in map(json.loads, args.questions.read_text().splitlines())}
+     tokenizer = AutoTokenizer.from_pretrained(S.MODEL_NAME)
+     per_step = []
+     for path, step in zip(response_files, steps):
+         rows = [json.loads(line) for line in path.read_text().splitlines()]
+-        result = check_step(step, rows, questions, tokenizer, seed, cue_label_prob, wandb_rows[step + 1])
++        result = check_step(step, rows, questions, tokenizer, seed, cue_label_prob, wandb_rows[step + 1], args.no_cue)
+         per_step.append(result)
+         print(
+-            f"step_{step}: fields {result['fields_matching']}, prompts {result['prompts_matching']}, cue draws "
+-            f"{result['cue_draws_matching']} of {PROMPTS_PER_STEP}; one-token {result['one_token_answers']}, parsed "
++            f"step_{step}: fields {result['fields_matching']}, prompts {result['prompts_matching']}, "
++            f"{'no-cue fields' if args.no_cue else 'cue draws'} "
++            f"{result['no_cue_fields_matching' if args.no_cue else 'cue_draws_matching']} of {PROMPTS_PER_STEP}; one-token {result['one_token_answers']}, parsed "
+             f"{result['parsed_matching']}, reward {result['reward_matching']} of {len(rows)}; unparsed {result['unparsed']}; "
+             f"same-reward groups {result['same_reward_groups']:.3f}; counts {result['recomputed_counts']} "
+             f"{'==' if result['recomputed_counts'] == result['wandb_counts'] else '!='} W&B {result['wandb_counts']}"
