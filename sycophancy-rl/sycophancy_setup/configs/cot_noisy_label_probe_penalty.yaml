@@ -1,0 +1,33 @@
+# Template for one CoT noisy-label RL run with the bias-probe penalty (weight 0.3, on answers that name the cued option). Copy it into
+# the experiment folder as <run>.yaml and fill in the placeholder values (run_key, output_dir, group, the probe cache
+# prefix = run_key, training.seed). Everything else is the setup; see ../README.md.
+#
+# 261018's cot_s43.yaml (the no-penalty noisy-label runs: 261013's question file, 1217 / 489 confident questions,
+# 20% flipped, cue at the training label with probability 0.75, 128 steps) with the deception probe replaced by
+# the bias probe: trained at the start of the run on 261010's probe set, read at the answer letter.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh <experiment folder> <run> <attempt>
+
+run_key: FILL_IN
+output_dir: FILL_IN          # the experiment folder (absolute); the launcher writes run_metrics_<run_key>.json there
+group: FILL_IN               # W&B group and /workspace/results/run_results/<group>/
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: FILL_IN   # = run_key
+  retrain: true                    # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 0.3
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"   # quoted: the launcher passes str(value) to Hydra
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: FILL_IN
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
