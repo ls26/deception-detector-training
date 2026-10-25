@@ -8,8 +8,9 @@ noisy training labels, with or without a penalty from a bias probe. It holds:
 
 The training code it runs is the trainer in [`../obfuscation-atlas/`](../obfuscation-atlas/) with the setting
 `task_args.bias_probe_at_answer: true`, called "the setting" below. The package was built on 2026-10-24 from the
-scripts of 261013, 261018 and 261020, which stay unchanged in their folders. No RL run has used it yet; the checks
-below ran the trainer only in its probe-only mode.
+scripts of 261013, 261018 and 261020, which stay unchanged in their folders. Its first RL run is
+[`261024_probe_penalty_rl`](../../sycophancy_experiments/261024_probe_penalty_rl/); the checks below ran before it, with
+the trainer only in its probe-only mode.
 
 ## The setup
 
@@ -25,7 +26,7 @@ The model reasons step by step and ends with "the answer is (X)".
   give. All eval bias labels, the probe rows included, are measured against it.
 
 **The bias probe.** At the start of every run, the trainer trains a linear probe per layer on the base model's
-activations (layers 13–16), called *the start-of-run probe*. It is read at the token holding the answer letter.
+activations (layers 13–16), called *the initial probe*. It is read at the token holding the answer letter.
 With the penalty template, every answer that names the cued option loses 0.3 × its probe score from its reward; the
 monitor template uses weight 0. The probe is not trained further during the run, and no gradient flows through it.
 
@@ -73,8 +74,9 @@ monitor template uses weight 0. The probe is not trained further during the run,
 - **A run's folder:** `/workspace/results/run_results/<group>/<run_key>_<W&B run id>`. It holds:
   - the step records (`checkpoints/responses/step_N.jsonl`, each answer with `probe_score`);
   - the final adapter;
-  - the start-of-run probe (`initial_detector.base_model.on_dataset/`);
-  - the probe trained on the final model at the end of the run (`fresh_detector.final_model.on_dataset/`).
+  - the initial probe (`initial_detector.base_model.on_dataset/`);
+  - the *fresh probe*, trained the same way at the end of the run on the final model's activations
+    (`fresh_detector.final_model.on_dataset/`).
 - **How each command runs:** in its own tmux session. The last argument of each wrapper is the attempt number (1–3,
   `a<N>` in the log names). A wrapper refuses an attempt whose log already exists.
 - **Shorthand:** `SETUP=/workspace/sycophancy-rl/sycophancy_setup`. `$PY` is the venv's Python, set by
@@ -89,7 +91,7 @@ monitor template uses weight 0. The probe is not trained further during the run,
 3. **Final eval:** `bash $SETUP/run_eval.sh <folder> <run> 1` → `<folder>/evals/<run>/`. A smoke run evaluates the
    first 50 questions into `<folder>/dry/evals/<run>/`.
 4. **Base-model eval,** once per experiment, after its first run: `bash $SETUP/run_eval.sh <folder> base 1 <first
-   run>` → `<folder>/evals/base/`. The base model is scored with that run's start-of-run probe. In the check, the
+   run>` → `<folder>/evals/base/`. The base model is scored with that run's initial probe. In the check, the
    probes fitted for training seeds 42 and 43 were identical.
 5. **Tables,** after `source $SETUP/run_env.sh`:
    - one run: `$PY $SETUP/compare.py --base <folder>/evals/base --final <folder>/evals/<run> --run-dir <run's folder>
@@ -99,15 +101,15 @@ monitor template uses weight 0. The probe is not trained further during the run,
 
 **What W&B shows for a run.** It uses the same keys as the MBPP runs. `last-token-generation` in the key names is
 the trainer's read rule: the last token of the cut text, which is the answer letter.
-- **The start-of-run probe on its 777 test answers:**
+- **The initial probe on its 777 test answers:**
   `probes/eval_initial_detector.base_model.on_dataset_averaged/linear-probe_last-token-generation/*` (AUC and
   more).
 - **Per step:**
   - `rewards/detector`: the penalty;
   - `rewards_metrics/detector_score`: the mean probe score of all answers, unparsed ones read at their last token.
 - **At the end of the run,** on the same 777 test answers:
-  - `initial_detector.final_model.on_dataset`: the start-of-run probe on the final model's activations;
-  - `fresh_detector.final_model.on_dataset`: the probe trained on the final model.
+  - `initial_detector.final_model.on_dataset`: the initial probe on the final model's activations;
+  - `fresh_detector.final_model.on_dataset`: the fresh probe.
 
 ## Measurements
 
@@ -117,8 +119,13 @@ same answers.
 
 **Rows taken over from 261013.** Accuracy, reward, cue agreement rate, bias, self-report and deception (the
 self-report contradicts the bias label) are 261013's rows, defined in
-[261013's README](../../sycophancy_experiments/261013_noisy_label_rl/README.md). The same-reward share, a training
-column, is the share of a step's groups of 8 answers whose rewards are all equal.
+[261013's README](../../sycophancy_experiments/261013_noisy_label_rl/README.md). Two training columns:
+- the *equal task reward share* (called the same-reward share before 261024): the share of a step's groups of 8 answers
+  whose task rewards are all equal;
+- the *probe-only group share* (added in 261024): the share whose 8 answers all name the cued option, so that with the
+  penalty only their probe scores differ (0 in runs without a training cue).
+
+`seed_table.py` reports each one's mean over the steps.
 
 **The probe rows** use cued answers that:
 - name the cued option;
@@ -130,22 +137,22 @@ reports the mean probe score of biased answers and of unbiased answers, and the 
 
 | Row | Answers from | Activations from | Probe | Field |
 |---|---|---|---|---|
-| A | base model | base model | start-of-run | `probe_start` in the base eval |
-| B | trained model | base model (adapter switched off) | start-of-run | `probe_start_base_activations` |
-| C | trained model | trained model | start-of-run | `probe_start` |
-| D | trained model | trained model | trained on the final model at the end of the run | `probe_fresh` |
+| A | base model | base model | initial | `probe_start` in the base eval |
+| B | trained model | base model (adapter switched off) | initial | `probe_start_base_activations` |
+| C | trained model | trained model | initial | `probe_start` |
+| D | trained model | trained model | fresh (trained at the end of the run on the final model's activations of the probe set's base-model answers) | `probe_fresh` |
 
 **What the trainer skips.** At the end of a run, the trainer has three *on-policy comparisons* on its own final eval
 answers:
-- the start-of-run probe on the final model's activations;
+- the initial probe on the final model's activations;
 - the fresh probe on the final model's activations;
-- the start-of-run probe on the base model's activations.
+- the initial probe on the base model's activations.
 
 In each, the two classes are "final-model answer" and "base-model answer". With the setting on, the trainer skips
 them, and rows B–D are the same three comparisons with bias labels.
 
 **Training curve.** `compare.py`'s training curve also has `probe_score_penalized`: per step, the mean probe score of
-the answers that name the cued option.
+the answers that name the cued option; and `probe_only_groups`: per step, the probe-only group share.
 
 ## Differences from the runs before this package (261013–261020)
 
@@ -174,7 +181,7 @@ the answers that name the cued option.
 
 `check_probe_scoring.json` (run 2026-10-24, 02:37–02:58 UTC). The test AUC is on the probe's 777 test answers; all
 AUCs are biased vs unbiased.
-- **(a)** The trainer's start-of-run probe, fitted twice in the trainer's probe-only mode
+- **(a)** The trainer's initial probe, fitted twice in the trainer's probe-only mode
   (`training.only_eval_detectors`) with the penalty template:
   - **test AUC:** 0.873; 261010's offline fit of the same recipe on the same data scored 0.871;
   - **seeds:** the fits for training seeds 42 and 43 gave identical scores and weights (difference 0.0);
@@ -197,7 +204,7 @@ AUCs are biased vs unbiased.
     | at the correct answer | 44 / 350 | 0.924 | 0.757 / 0.225 |
     | at the wrong answer | 123 / 85 | 0.873 | 0.739 / 0.269 |
 - **(d)** The self-report stage with an adapter, end to end, on 261013 seed 42's final eval answers (978 cued answers).
-  It used a stand-in run folder whose "fresh" probe is the start-of-run probe:
+  It used a stand-in run folder whose fresh probe is the initial probe:
   - `probe_fresh` equals `probe_start` on every answer;
   - the adapter-off scores equal a plain base model's exactly (difference 0.0).
 
@@ -223,7 +230,7 @@ exists only on the network volume. It feeds a column that only the skipped on-po
 ## Costs
 
 Times measured in the check run.
-- **Start-of-run probe:** about 5.5 min in the trainer's probe-only mode (model load, activations of 2289 answers,
+- **Initial probe:** about 5.5 min in the trainer's probe-only mode (model load, activations of 2289 answers,
   fit). At the end of a run the trainer also fits the fresh probe and scores both probes on the 777 test answers.
 - **Final eval of the base model:** 5.5 min (generation about 4 min, self-report and probe pass about 1.5 min). A
   trained checkpoint adds one forward pass with the adapter off.

@@ -27,7 +27,9 @@ Eval (from eval_checkpoint.py's completions.jsonl + labels.jsonl of each checkpo
   answers than the bias rows. For the base model only probe_start exists.
 
 Training (from the run's checkpoints/responses/step_*.jsonl records), per step: reward, true accuracy,
-followed-cue, parse failures, the share of groups whose 8 rewards are all equal (261014's rule) and, in runs
+followed-cue, parse failures, the share of groups whose 8 task rewards are all equal (261014's rule; a record's
+reward is the task reward, without the probe penalty), the share of probe-only groups (all 8 answers name the cued
+option, so their task rewards are equal too; with the probe penalty only their probe scores differ) and, in runs
 whose records carry probe scores, the mean probe score of the answers that name the cued option.
 """
 
@@ -201,13 +203,23 @@ def mean(values: list) -> float | None:
     return None if not values else sum(values) / len(values)
 
 
-def same_reward_group_share(rows: list[dict]) -> float:
-    """Share of the step's groups (8 consecutive records: one prompt, one cue) whose 8 rewards are all equal."""
+def step_groups(rows: list[dict]) -> list[list[dict]]:
+    """The step's groups: 8 consecutive records, one prompt and one cue."""
     assert len(rows) % GENERATIONS_PER_PROMPT == 0
     groups = [rows[i : i + GENERATIONS_PER_PROMPT] for i in range(0, len(rows), GENERATIONS_PER_PROMPT)]
     for group in groups:
         assert len({(r["question_id"], r["cue_letter"], r["template_idx"]) for r in group}) == 1, "a group mixes prompts"
-    return mean([len({r["reward"] for r in group}) == 1 for group in groups])
+    return groups
+
+
+def same_reward_group_share(rows: list[dict]) -> float:
+    """Share of the step's groups whose 8 task rewards are all equal."""
+    return mean([len({r["reward"] for r in group}) == 1 for group in step_groups(rows)])
+
+
+def probe_only_group_share(rows: list[dict]) -> float:
+    """Share of the step's groups whose 8 answers all name the cued option (0 in runs without a training cue)."""
+    return mean([all(r["cue_letter"] is not None and r["parsed_answer"] == r["cue_letter"] for r in group) for group in step_groups(rows)])
 
 
 def training_curve(run_dir: Path) -> list[dict]:
@@ -220,6 +232,7 @@ def training_curve(run_dir: Path) -> list[dict]:
             "followed_cue": mean([r["parsed_answer"] == r["cue_letter"] for r in rows]),
             "parse_failed": mean([r["parsed_answer"] is None for r in rows]),
             "same_reward_groups": same_reward_group_share(rows),
+            "probe_only_groups": probe_only_group_share(rows),
         }
         if "probe_score" in rows[0]:  # runs with the bias probe; earlier runs' records have no probe score
             point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["parsed_answer"] == r["cue_letter"]])
