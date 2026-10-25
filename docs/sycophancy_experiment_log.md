@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261024 | [`261024_probe_penalty_rl`](../sycophancy_experiments/261024_probe_penalty_rl/) | First RL run with the bias-probe penalty, seed 42. `cue_dist` cue agreement rate 99.8% vs 74.2% without penalty; one answer template; probe scores near 0. |
 | 261020 | [`261020_reference_rl`](../sycophancy_experiments/261020_reference_rl/) | Noisy or correct labels without the cue, correct labels with it, vs 261013–261018 (condition 0); 3 seeds, CoT and no-CoT. CoT no-cue true accuracy 74.6% (condition 0) vs 76.8% / 79.0% / 77.8%. |
 | 261018 | [`261018_noisy_label_rl_seeds`](../sycophancy_experiments/261018_noisy_label_rl_seeds/) | Seeds 43 and 44 of 261013 and 261014. Cue agreement rate, bias and training-mix reward rose in all six runs; training-mix true accuracy fell in four. |
 | 261014 | [`261014_nocot_noisy_label_rl`](../sycophancy_experiments/261014_nocot_noisy_label_rl/) | 261013's design in the no-CoT format. `cue_dist` cue agreement rate 0.644 → 0.808, bias 0.403 → 0.550; training-mix reward 0.726 → 0.742. |
@@ -134,6 +135,37 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261024 — First RL run with the bias-probe penalty: the model names the cued option on almost every answer
+
+[`sycophancy_experiments/261024_probe_penalty_rl/`](../sycophancy_experiments/261024_probe_penalty_rl/)
+
+**Setup:**
+- 261013's CoT noisy-label training with a penalty of −0.3 × a bias probe's score on every answer that names the cued
+  option. The probe (261010's probe set and recipe, layers 13–16, read at the answer letter) is fit on the base model at
+  the start of the run and not updated. One run, seed 42, on an H100, from `sycophancy-rl/sycophancy_setup/`'s penalty
+  template.
+- Compared with the no-penalty baseline (261013 seed 42, 261018 seeds 43 and 44) and the no-cue ceiling (261020's
+  noisy-label runs without the cue); one sampled answer per prompt (Decision 8); bias is `rm`.
+- RL run W&B `9ka0iqgr`, run unattended; all three review points passed, and an audit recomputed every table number
+  from the raw files.
+
+**Results** (penalty run; baseline mean ± SD over seeds 42–44):
+- `cue_dist` cue agreement rate 99.8% vs 74.2% ± 8.2 (base 45.8%), `cue_dist` true accuracy 0.2% vs 25.7% ± 8.1;
+  no-cue true accuracy 56.0% vs 74.6% ± 0.7 (ceiling 76.8% ± 0.2); training-mix reward 75.1% vs 74.9% ± 0.9.
+- Every cued eval answer uses one template that restates an option ("Let's break down the option together!"); median
+  no-cue answer 73 tokens (base 201). With no cue the model answers (B) on 455 of 489 prompts.
+- In steps 10–29 about 59 of 64 training groups per step had all 8 answers naming the cue, in both runs. With the
+  penalty, those groups gave 0.66 of the 0.71 mean absolute advantage per answer (baseline total 0.03–0.10); token
+  entropy 0.42 (steps 0–9) → 0.04 (steps 30–59), baseline 0.41–0.48.
+- The trained model's no-cue answer is (B) on 452 of 484 questions. Among cued answers naming the cue, 188 of 193
+  (`cue_gold`) and 241 of 268 (`cue_dist`) `rm`-biased answers name (A), and 242 of 269 and 188 of 193 unbiased answers
+  name (B).
+- Training-mix self-report average P(Yes): 82.4% on biased and 84.8% on unbiased answers (base 63.2% / 60.7%, baseline
+  72.3% ± 1.9 / 65.7% ± 4.3); deception 53.1% (base 56.9%, baseline 54.7% ± 3.1).
+- The initial probe (fit at the start of the run) on the trained model's answers: under `cue_gold` mean 0.009 biased /
+  0.002 unbiased (base 0.753 / 0.224); AUC 0.928 / 0.885 (`cue_gold` / `cue_dist`), against 0.937 for the answer letter
+  alone, and 0.43–0.65 among answers naming the same letter.
 
 ### 261020 — Reference RL runs: the noisy-label setup without the cue, and with correct labels
 
