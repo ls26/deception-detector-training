@@ -1,0 +1,134 @@
+diff --git a/sycophancy-rl/sycophancy_setup/compare.py b/sycophancy-rl/sycophancy_setup/compare.py
+index b18b999..fb43030 100644
+--- a/sycophancy-rl/sycophancy_setup/compare.py
++++ b/sycophancy-rl/sycophancy_setup/compare.py
+@@ -27,7 +27,9 @@ Eval (from eval_checkpoint.py's completions.jsonl + labels.jsonl of each checkpo
+   answers than the bias rows. For the base model only probe_start exists.
+ 
+ Training (from the run's checkpoints/responses/step_*.jsonl records), per step: reward, true accuracy,
+-followed-cue, parse failures, the share of groups whose 8 rewards are all equal (261014's rule) and, in runs
++followed-cue, parse failures, the share of groups whose 8 task rewards are all equal (261014's rule; a record's
++reward is the task reward, without the probe penalty), the share of probe-only groups (all 8 answers name the cued
++option, so their task rewards are equal too; with the probe penalty only their probe scores differ) and, in runs
+ whose records carry probe scores, the mean probe score of the answers that name the cued option.
+ """
+ 
+@@ -201,13 +203,23 @@ def mean(values: list) -> float | None:
+     return None if not values else sum(values) / len(values)
+ 
+ 
+-def same_reward_group_share(rows: list[dict]) -> float:
+-    """Share of the step's groups (8 consecutive records: one prompt, one cue) whose 8 rewards are all equal."""
++def step_groups(rows: list[dict]) -> list[list[dict]]:
++    """The step's groups: 8 consecutive records, one prompt and one cue."""
+     assert len(rows) % GENERATIONS_PER_PROMPT == 0
+     groups = [rows[i : i + GENERATIONS_PER_PROMPT] for i in range(0, len(rows), GENERATIONS_PER_PROMPT)]
+     for group in groups:
+         assert len({(r["question_id"], r["cue_letter"], r["template_idx"]) for r in group}) == 1, "a group mixes prompts"
+-    return mean([len({r["reward"] for r in group}) == 1 for group in groups])
++    return groups
++
++
++def same_reward_group_share(rows: list[dict]) -> float:
++    """Share of the step's groups whose 8 task rewards are all equal."""
++    return mean([len({r["reward"] for r in group}) == 1 for group in step_groups(rows)])
++
++
++def probe_only_group_share(rows: list[dict]) -> float:
++    """Share of the step's groups whose 8 answers all name the cued option (0 in runs without a training cue)."""
++    return mean([all(r["cue_letter"] is not None and r["parsed_answer"] == r["cue_letter"] for r in group) for group in step_groups(rows)])
+ 
+ 
+ def training_curve(run_dir: Path) -> list[dict]:
+@@ -220,6 +232,7 @@ def training_curve(run_dir: Path) -> list[dict]:
+             "followed_cue": mean([r["parsed_answer"] == r["cue_letter"] for r in rows]),
+             "parse_failed": mean([r["parsed_answer"] is None for r in rows]),
+             "same_reward_groups": same_reward_group_share(rows),
++            "probe_only_groups": probe_only_group_share(rows),
+         }
+         if "probe_score" in rows[0]:  # runs with the bias probe; earlier runs' records have no probe score
+             point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["parsed_answer"] == r["cue_letter"]])
+diff --git a/sycophancy-rl/sycophancy_setup/seed_table.py b/sycophancy-rl/sycophancy_setup/seed_table.py
+index 5f4cea1..d5c36ad 100644
+--- a/sycophancy-rl/sycophancy_setup/seed_table.py
++++ b/sycophancy-rl/sycophancy_setup/seed_table.py
+@@ -9,8 +9,8 @@ over the runs of the base values and of the after-RL values.
+ final checkpoint). Each run's eval tables are compare.py's (one sampled answer per prompt). Bias and self-report
+ rows count questions with a no-cue answer in both the base eval and that run's eval, so their base value can
+ differ per run; the base column then shows one value per run.
+-Training: the share of training groups whose 8 rewards are all equal, mean over the steps, from each run's step
+-records. seed_table.json holds each run's tables under "runs" and the means and SDs under "mean_sd".
++Training: the share of training groups whose 8 task rewards are all equal and the share of probe-only groups (all 8
++answers name the cued option; compare.py), each the mean over the steps, from each run's step records. seed_table.json holds each run's tables under "runs" and the means and SDs under "mean_sd".
+ """
+ 
+ from __future__ import annotations
+@@ -24,10 +24,11 @@ import compare
+ 
+ N_STEPS = 128
+ DISPLAY_NAMES = {"followed_cue": "cue agreement rate"}
++TRAINING_KEYS = {"same_reward_groups_mean": "equal task reward groups", "probe_only_groups_mean": "probe-only groups"}
+ 
+ 
+ def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> dict:
+-    """Per run: the eval tables (base vs after RL), the same-reward share, the run dir."""
++    """Per run: the eval tables (base vs after RL), the equal task reward and probe-only group shares, the run dir."""
+     base_rows = compare.rollout_rows(base_dir)
+     out = {}
+     for label, final_dir, run_dir in runs:
+@@ -43,6 +44,7 @@ def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> dict:
+             "final_eval": str(final_dir),
+             "eval": compare.eval_tables({"base": base_rows, "after_rl": final_rows}),
+             "same_reward_groups_mean": compare.mean([compare.same_reward_group_share(rows) for rows in records.values()]),
++            "probe_only_groups_mean": compare.mean([compare.probe_only_group_share(rows) for rows in records.values()]),
+         }
+     return out
+ 
+@@ -70,9 +72,10 @@ def summary(tables: dict) -> dict:
+                 "base": base_values, "base_mean": base_mean, "base_sd": base_sd,
+                 "after_rl": after_values, "after_rl_mean": after_mean, "after_rl_sd": after_sd,
+             }
+-    same_reward = [tables[label]["same_reward_groups_mean"] for label in labels]
+-    same_reward_mean, same_reward_sd = mean_sd(same_reward)
+-    out["same_reward_groups_mean"] = {"after_rl": same_reward, "after_rl_mean": same_reward_mean, "after_rl_sd": same_reward_sd}
++    for key in TRAINING_KEYS:
++        values = [tables[label][key] for label in labels]
++        values_mean, values_sd = mean_sd(values)
++        out[key] = {"after_rl": values, "after_rl_mean": values_mean, "after_rl_sd": values_sd}
+     return out
+ 
+ 
+@@ -88,7 +91,7 @@ def table_markdown(tables: dict, stats: dict) -> list[str]:
+         "|---|---|---|---|---|" + "---|" * len(labels) + "---|---|",
+     ]
+     for metric, by_condition in stats.items():
+-        if metric == "same_reward_groups_mean":
++        if metric in TRAINING_KEYS:
+             continue
+         for condition, row in by_condition.items():
+             base_values = row["base"]
+@@ -96,17 +99,19 @@ def table_markdown(tables: dict, stats: dict) -> list[str]:
+             cells = [DISPLAY_NAMES.get(metric, metric), condition, base_cell, compare.fmt(row["base_mean"]), compare.fmt(row["base_sd"]),
+                      *(compare.fmt(v) for v in row["after_rl"]), compare.fmt(row["after_rl_mean"]), compare.fmt(row["after_rl_sd"])]
+             lines.append("| " + " | ".join(cells) + " |")
+-    same_reward = stats["same_reward_groups_mean"]
+     lines += [
+         "",
+-        f"Training: share of groups whose 8 rewards are all equal, mean over the {N_STEPS} steps.",
++        f"Training, mean over the {N_STEPS} steps: the share of groups whose 8 task rewards are all equal, and the share of "
++        "probe-only groups (all 8 answers name the cued option; with the probe penalty only their probe scores differ).",
+         "",
+         "| | " + " | ".join(labels) + " | mean | SD |",
+         "|---|" + "---|" * len(labels) + "---|---|",
+-        "| same-reward groups | " + " | ".join(compare.fmt(v) for v in same_reward["after_rl"])
+-        + f" | {compare.fmt(same_reward['after_rl_mean'])} | {compare.fmt(same_reward['after_rl_sd'])} |",
+-        "",
+     ]
++    for key, name in TRAINING_KEYS.items():
++        row = stats[key]
++        lines.append(f"| {name} | " + " | ".join(compare.fmt(v) for v in row["after_rl"])
++                     + f" | {compare.fmt(row['after_rl_mean'])} | {compare.fmt(row['after_rl_sd'])} |")
++    lines.append("")
+     return lines
+ 
+ 
