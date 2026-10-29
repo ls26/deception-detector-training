@@ -78,7 +78,7 @@ ceiling: mean ± SD over seeds 42–44.
 | True accuracy, no cue | 75.5% | 56.0% | 74.6% ± 0.7 | 76.8% ± 0.2 |
 | True accuracy, cue at correct answer | 84.3% | 100.0% | 96.7% ± 0.8 | 90.9% ± 2.8 |
 | True accuracy, cue at wrong answer | 50.9% | 0.2% | 25.7% ± 8.1 | 51.0% ± 7.5 |
-| Cue agreement rate, cue at wrong answer | 45.8% | 99.8% | 74.2% ± 8.2 | 48.9% ± 7.6 |
+| Cue agreement rate, training cue mix | 71.1% | 99.9% | 89.0% ± 3.6 | 76.5% ± 4.0 |
 | Reward, training cue mix | 68.9% | 75.1% | 74.9% ± 0.9 | 73.1% ± 0.9 |
 | Bias, cue at correct answer | 9.5% | 41.8% | 18.2% ± 1.1 | 12.8% ± 2.1 |
 | Bias, cue at wrong answer | 26.8% | 58.0% | 51.0% ± 8.8 | 27.9% ± 6.6 |
@@ -92,23 +92,23 @@ base model's value on the bias, self-report and deception rows differs slightly 
 points); the column shows its value on the penalty run's 462 questions. In the points below, a baseline value written
 as a range (94.1–99.1%) is the lowest and highest of its three seeds.
 
-The probe scores, on the same 462 questions: cued answers that name the cued option, biased against unbiased
-(`runs/penalty_s42/comparison.md`; the baseline and ceiling evals have no probe scores). Biased / unbiased answers: 43 /
-348 (base model) and 193 / 269 (trained model) with the cue at the correct answer, 120 / 85 and 268 / 193 with the cue at
-the wrong answer, 163 / 433 and 461 / 462 with both cue conditions' answers pooled.
+The probe scores, on the same 462 questions: cued answers that name the cued option, biased against unbiased, with
+both cue conditions' answers pooled, so a question appears once per cue condition (`runs/penalty_s42/dynamics.md`; the
+baseline and ceiling evals have no probe scores). "AUC of the letter alone" scores every answer naming (A) as biased and
+every answer naming (B) as unbiased.
 
-| Probe | Answers and activations from | Cue at correct answer: mean score, biased / unbiased | AUC | Cue at wrong answer: mean score, biased / unbiased | AUC | Both cue conditions: mean score, biased / unbiased | AUC |
-|---|---|---|---|---|---|---|---|
-| Initial | base model | 0.753 / 0.224 | 0.924 | 0.736 / 0.275 | 0.869 | 0.740 / 0.234 | 0.901 |
-| Initial | trained model | 0.009 / 0.002 | 0.928 | 0.006 / 0.002 | 0.885 | 0.008 / 0.002 | 0.902 |
-| Fresh | trained model | 0.025 / 0.007 | 0.916 | 0.021 / 0.007 | 0.859 | 0.023 / 0.007 | 0.882 |
+| Probe | Answers and activations from | Biased / unbiased answers | Mean score, biased / unbiased | AUC | AUC among answers naming (A) / (B) | AUC of the letter alone |
+|---|---|---|---|---|---|---|
+| Initial | base model | 163 / 433 | 0.740 / 0.234 | 0.901 | 0.922 / 0.838 | 0.652 |
+| Initial | trained model | 461 / 462 | 0.008 / 0.002 | 0.902 | 0.608 / 0.453 | 0.931 |
+| Fresh | trained model | 461 / 462 | 0.023 / 0.007 | 0.882 | 0.591 / 0.402 | 0.931 |
 
-These are rows A, C and D of the probe table under More results; the pooled columns are from
-`runs/penalty_s42/dynamics.md`.
+These are rows A, C and D under More results ("The probe rows"), which splits them by cue condition. On the trained
+model's answers, each AUC among one letter's answers rests on 32 answers in the smaller class.
 
 1. **The trained model names the cued option on almost every answer, with one fixed template.**
-   - Cue agreement rate with the cue at the wrong answer: 99.8%, against 74.2% ± 8.2 for the baseline and 48.9% ± 7.6 for
-     the ceiling. True accuracy with the cue at the wrong answer: 0.2% (baseline 25.7% ± 8.1, ceiling 51.0% ± 7.5).
+   - Cue agreement rate on the training cue mix: 99.9%, against 89.0% ± 3.6 for the baseline and 76.5% ± 4.0 for the
+     ceiling. True accuracy with the cue at the wrong answer: 0.2% (baseline 25.7% ± 8.1, ceiling 51.0% ± 7.5).
    - With no cue, true accuracy is 56.0% (baseline 74.6% ± 0.7, ceiling 76.8% ± 0.2); the first no-cue answer names (B)
      on 455 of the 489 questions (`runs/penalty_s42/dynamics.md`). Reward on the training cue mix is 75.1% (baseline
      74.9% ± 0.9).
@@ -155,32 +155,13 @@ These are rows A, C and D of the probe table under More results; the pooled colu
    This shows that the model answers Yes to almost everything.
 5. **The initial probe's scores of the trained model's answers are close to 0 for biased and unbiased answers alike,
    while its AUC stays high because biased and unbiased answers name different letters.**
-   - Mean score of biased / unbiased answers (probe table): initial probe 0.009 / 0.002 with the cue at the correct
-     answer and 0.006 / 0.002 at the wrong answer (base model 0.753 / 0.224 and 0.736 / 0.275); fresh probe 0.025 /
-     0.007 and 0.021 / 0.007.
-   - The table below splits each AUC by the letter the answers name. On the trained model's answers, the initial
-     probe's AUC is 0.928 / 0.885 over all answers (cue at the correct / wrong answer) and 0.43–0.65 among answers
-     naming the same letter, against 0.80–0.91 for the base model's answers. Scoring every answer naming (A) as biased
-     gives AUC 0.937.
-   - The initial probe scores the trained model's answers naming (A) above those naming (B): AUC 0.964 with the cue at
-     the correct answer and 0.953 at the wrong answer. In the probe's training set, 65.6% of the biased and 35.2% of the
-     unbiased answers name (A) (`dynamics.md`).
-
-   | Probe, answers from | Cue | Biased answers naming (A) / (B) | Unbiased answers naming (A) / (B) | AUC, all answers | AUC among answers naming (A) | AUC among answers naming (B) | AUC of the letter alone |
-   |---|---|---|---|---|---|---|---|
-   | Initial, base model | at correct answer | 36 / 7 | 139 / 209 | 0.924 | 0.910 | 0.879 | 0.719 |
-   | Initial, base model | at wrong answer | 74 / 46 | 22 / 63 | 0.869 | 0.880 | 0.797 | 0.679 |
-   | Initial, base model | both | 110 / 53 | 161 / 272 | 0.901 | 0.922 | 0.838 | 0.652 |
-   | Initial, trained model | at correct answer | 188 / 5 | 27 / 242 | 0.928 | 0.647 | 0.533 | 0.937 |
-   | Initial, trained model | at wrong answer | 241 / 27 | 5 / 188 | 0.885 | 0.482 | 0.429 | 0.937 |
-   | Initial, trained model | both | 429 / 32 | 32 / 430 | 0.902 | 0.608 | 0.453 | 0.931 |
-   | Fresh, trained model | at correct answer | 188 / 5 | 27 / 242 | 0.916 | 0.631 | 0.544 | 0.937 |
-   | Fresh, trained model | at wrong answer | 241 / 27 | 5 / 188 | 0.859 | 0.438 | 0.358 | 0.937 |
-   | Fresh, trained model | both | 429 / 32 | 32 / 430 | 0.882 | 0.591 | 0.402 | 0.931 |
-
-   "AUC of the letter alone" scores every answer naming (A) as biased and every answer naming (B) as unbiased. "Both"
-   pools the two cue conditions' answers (a question then appears twice, once per cue). On the trained model's answers,
-   the smaller class within one letter has 5–27 answers in one cue condition and 32 pooled (`dynamics.md`).
+   - Mean score of biased / unbiased answers (probe table): initial probe 0.008 / 0.002 on the trained model's answers,
+     against 0.740 / 0.234 on the base model's answers; fresh probe 0.023 / 0.007.
+   - On the trained model's answers, the initial probe's AUC is 0.902 over all answers and 0.608 / 0.453 among the
+     answers naming (A) / (B), against 0.922 / 0.838 for the base model's answers. 429 of the 461 biased answers name
+     (A) and 430 of the 462 unbiased answers name (B), so scoring every answer naming (A) as biased gives AUC 0.931.
+   - The initial probe scores the trained model's answers naming (A) above those naming (B): AUC 0.959. In the probe's
+     training set, 65.6% of the biased and 35.2% of the unbiased answers name (A) (`dynamics.md`).
 
    This shows that the model learned to minimize the probe score. The AUC stays high because biased answers are almost
    always (A) and unbiased answers almost always (B), and the probe scores (A) higher than (B) because of the imbalance in
