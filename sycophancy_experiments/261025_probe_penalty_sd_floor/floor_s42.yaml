@@ -1,0 +1,31 @@
+# The 128-step run with the bias-probe penalty and the advantage SD floor, seed 42: 261024's penalty_s42.yaml
+# (sycophancy_setup's penalty template, probe activation batch 8) with one addition, loss.advantage_std_floor: 0.3
+# (each answer's advantage is divided by max(group SD + 1e-4, 0.3) instead of group SD + 1e-4).
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261025_probe_penalty_sd_floor floor_s42 <attempt>
+
+run_key: floor_s42
+output_dir: /workspace/sycophancy_experiments/261025_probe_penalty_sd_floor   # the experiment folder (absolute); the launcher writes run_metrics_<run_key>.json there
+group: 261025_probe_penalty_sd_floor   # W&B group and /workspace/results/run_results/<group>/
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: floor_s42
+  retrain: true                    # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 0.3
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"   # quoted: the launcher passes str(value) to Hydra
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3

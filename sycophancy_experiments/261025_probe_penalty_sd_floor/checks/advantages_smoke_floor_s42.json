@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261025_probe_penalty_sd_floor/smoke_floor_s42_a8dfduik",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.9050140631637902e-08,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.42898428440093994,
+      "recomputed_with_floor": 0.4289842653507993,
+      "abs_difference": 1.9050140631637902e-08,
+      "recomputed_without_floor": 0.6707675343599119
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.3051612079143524,
+      "recomputed_with_floor": 0.30516121203441626,
+      "abs_difference": 4.120063845647337e-09,
+      "recomputed_without_floor": 0.6368602197212261
+    }
+  ]
+}
