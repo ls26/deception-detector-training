@@ -1520,6 +1520,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 rewards,
                 self.config.batching.num_generations,
                 self.config.loss.scale_rewards,
+                self.config.loss.advantage_std_floor,
             )
 
         # Prepare advantages dataloader (supports skip_degenerate_groups filtering)
@@ -1695,6 +1696,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             "grad_norm": np.mean(grad_norms),
             "reward_mean": rewards.mean().item(),
             "reward_std": rewards.std().item(),
+            "advantage_abs_mean": advantages.abs().mean().item(),
             "learning_rate": state.scheduler.get_last_lr()[0],
             "response_length_mean": np.mean(response_lengths),
             "response_length_std": np.std(response_lengths),

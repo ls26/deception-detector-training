@@ -170,6 +170,7 @@ class GRPOLossConfig:
         epsilon_high: The epsilon high value for the clipping.
         delta: The delta value for the clipping.
         scale_rewards: Whether to scale the rewards by the policy ratio.
+        advantage_std_floor: With scale_rewards, divide by max(group std + 1e-4, this) instead of group std + 1e-4.
         non_termination_penalty: The penalty for non-termination.
         loss_aggregation: The aggregation method for the loss.
 
@@ -187,6 +188,7 @@ class GRPOLossConfig:
     epsilon_high: float = 0.2
     delta: float | None = None
     scale_rewards: bool = True
+    advantage_std_floor: float | None = None
     non_termination_penalty: float | None = None
     loss_aggregation: LossAggregation = LossAggregation.SAMPLE
     clip_max_reward: float | None = None

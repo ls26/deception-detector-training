@@ -565,6 +565,7 @@ class ModelLossConfig:
     detector: float = 1.0
     skip_loss_scaling: bool = False  # only in SFT training
     scale_rewards: bool = True  # only in GRPO training
+    advantage_std_floor: float | None = None  # only in GRPO training: divide by max(group std + 1e-4, this)
 
 
 @dataclass
@@ -745,6 +746,7 @@ def _default_grpo_config() -> GRPOConfig:
             kl_coeff="${loss.kl}",
             non_termination_penalty=0.1,
             scale_rewards="${loss.scale_rewards}",
+            advantage_std_floor="${loss.advantage_std_floor}",
         ),
         random=RandomizationConfig(
             training_seed="${training.seed}",

@@ -600,6 +600,7 @@ class GRPOTrainer:
         rewards: torch.Tensor,  # [generation_batch_size * num_generations]
         num_generations: int,
         scale_rewards: bool,
+        std_floor: float | None = None,
     ) -> torch.Tensor:  # [generation_batch_size * num_generations]
         # Compute advantages from rewards
         # Reshape rewards to compute group statistics
@@ -616,8 +617,10 @@ class GRPOTrainer:
         # Compute advantages by subtracting group mean
         advantages = rewards - mean_grouped_rewards  # [batch_size]
 
-        # Scale advantages by group std if enabled
-        if scale_rewards and num_generations > 1:
+        # Scale advantages by group std if enabled; with std_floor, by max(group std + 1e-4, std_floor)
+        if scale_rewards and num_generations > 1 and std_floor is not None:
+            advantages = advantages / torch.clamp(std_grouped_rewards + 1e-4, min=std_floor)
+        elif scale_rewards and num_generations > 1:
             advantages = advantages / (std_grouped_rewards + 1e-4)
 
         return advantages

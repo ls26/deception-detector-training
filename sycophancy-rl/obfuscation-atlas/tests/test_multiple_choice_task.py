@@ -586,3 +586,52 @@ def test_setup_run_configs_compose(template: str, penalty_weight: float) -> None
     assert cfg.corrected_detector_gradient is False
     assert cfg.detector.train_every_n_steps > cfg.training.max_steps == 128
     assert cfg.data.probe_dataset.congruent_follow_up_prompts == [] and cfg.data.task_dataset.congruent_follow_up_prompts == []
+
+
+def test_advantage_std_floor() -> None:
+    """No floor: (reward - group mean) / (group SD + 1e-4) as before. Floor 0.3: a probe-only group (rewards that
+    differ only by the penalty) is divided by 0.3; a 4-of-8 group, whose SD is above the floor, keeps its values."""
+    import torch
+    from afterburner.grpo_trainer import GRPOTrainer
+
+    probe_only = torch.tensor([0.8, 0.79, 0.81, 0.78, 0.82, 0.8, 0.77, 0.83])
+    four_of_eight = torch.tensor([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+    rewards = torch.cat([probe_only, four_of_eight])
+    no_floor = GRPOTrainer.compute_advantages_from_rewards(rewards, 8, True)
+    floored = GRPOTrainer.compute_advantages_from_rewards(rewards, 8, True, 0.3)
+    expected_no_floor = torch.cat([(group - group.mean()) / (group.std() + 1e-4) for group in (probe_only, four_of_eight)])
+    assert torch.allclose(no_floor, expected_no_floor, rtol=1e-6, atol=0)
+    assert torch.allclose(floored[:8], (probe_only - probe_only.mean()) / 0.3, rtol=1e-6, atol=0)
+    assert torch.equal(floored[8:], no_floor[8:])
+
+
+@pytest.mark.skipif(not SETUP_CONFIGS.exists(), reason="sycophancy_setup configs not available")
+def test_advantage_std_floor_reaches_the_trainer_config() -> None:
+    """loss.advantage_std_floor, set as a run-config override, reaches grpo.loss (the config the trainer reads);
+    the penalty template alone leaves it unset."""
+    import sys
+
+    import yaml
+    from hydra import compose, initialize
+    from omegaconf import OmegaConf
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    from training.grpo_launcher import build_grpo_args
+
+    from obfuscation_atlas.config import register_configs
+
+    text = (SETUP_CONFIGS / "cot_noisy_label_probe_penalty.yaml").read_text()
+    for field, value in (("run_key: FILL_IN", "run_key: test_s42"), ("output_dir: FILL_IN", "output_dir: /tmp/test"),
+                         ("group: FILL_IN", "group: test"), ("directory_save_prefix: FILL_IN", "directory_save_prefix: test_s42"),
+                         ("training.seed: FILL_IN", "training.seed: 42")):
+        text = text.replace(field, value)
+    run_config = yaml.safe_load(text)
+    template_args = build_grpo_args(run_config)
+    run_config["overrides"]["loss.advantage_std_floor"] = 0.3
+    floor_args = build_grpo_args(run_config)
+    register_configs()
+    with initialize(version_base=None):
+        template_cfg = OmegaConf.to_object(compose(config_name="grpo_mcq", overrides=template_args[4:]))
+        floor_cfg = OmegaConf.to_object(compose(config_name="grpo_mcq", overrides=floor_args[4:]))
+    assert template_cfg.loss.advantage_std_floor is None and template_cfg.grpo.loss.advantage_std_floor is None
+    assert floor_cfg.loss.advantage_std_floor == 0.3 and floor_cfg.grpo.loss.advantage_std_floor == 0.3
