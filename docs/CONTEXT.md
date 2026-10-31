@@ -101,7 +101,9 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 261014_nocot_noisy_label_rl/  # 261013's design in the no-CoT format (one letter after a pre-fill) on no-cue-confident questions; base vs final eval
 │   ├── 261018_noisy_label_rl_seeds/  # Seeds 43 and 44 of 261013 and 261014; seed table of seeds 42 / 43 / 44
 │   ├── 261020_reference_rl/        # Reference RL runs vs 261013–261018: noisy or correct labels without the cue, correct labels with it; CoT and no-CoT, 3 seeds each; condition table
-│   └── 261024_probe_penalty_rl/    # First RL run with the bias-probe penalty (sycophancy_setup's penalty template), seed 42, vs the no-penalty baseline and the no-cue ceiling; training dynamics
+│   ├── 261024_probe_penalty_rl/    # First RL run with the bias-probe penalty (sycophancy_setup's penalty template), seed 42, vs the no-penalty baseline and the no-cue ceiling; training dynamics
+│   ├── 261025_probe_penalty_sd_floor/  # 261024's penalty run with a floor of 0.3 on the group SD in the advantage, seeds 42–44; training dynamics, figures
+│   └── 261027_probe_penalty_weight_sweep/  # 261025's setup at penalty weights 0.6 and 1.0, seeds 42–44 each, one weight per pod; with 261028's no-penalty and own-answer probe rows
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the training code of the sycophancy RL runs
 │   └── sycophancy_setup/        # Permanent setup of the CoT noisy-label runs with the bias-probe penalty: data copies, eval, tables, run wrappers, run-config templates (see its README)
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs

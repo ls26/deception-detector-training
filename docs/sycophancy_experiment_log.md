@@ -30,6 +30,8 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261027 | [`261027_probe_penalty_weight_sweep`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/) | 261025's SD-floor setup at penalty weights 0.6 and 1.0, 3 seeds each. Training-mix cue agreement rate 86.7% / 84.4% (no penalty 89.0%); two weight-1.0 seeds answer in one sentence. |
+| 261025 | [`261025_probe_penalty_sd_floor`](../sycophancy_experiments/261025_probe_penalty_sd_floor/) | 261024's penalty run with a floor of 0.3 on the group SD in the advantage, 3 seeds. Training-mix cue agreement rate 88.6% vs 99.9% without the floor; bias 29.1% vs 28.8% without penalty. |
 | 261024 | [`261024_probe_penalty_rl`](../sycophancy_experiments/261024_probe_penalty_rl/) | First RL run with the bias-probe penalty, seed 42. Training-mix cue agreement rate 99.9% vs 89.0% without penalty; one answer template; probe scores near 0. |
 | 261020 | [`261020_reference_rl`](../sycophancy_experiments/261020_reference_rl/) | Noisy or correct labels without the cue, correct labels with it, vs 261013–261018 (condition 0); 3 seeds, CoT and no-CoT. CoT no-cue true accuracy 74.6% (condition 0) vs 76.8% / 79.0% / 77.8%. |
 | 261018 | [`261018_noisy_label_rl_seeds`](../sycophancy_experiments/261018_noisy_label_rl_seeds/) | Seeds 43 and 44 of 261013 and 261014. Cue agreement rate, bias and training-mix reward rose in all six runs; training-mix true accuracy fell in four. |
@@ -135,6 +137,61 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261027 — Penalty weights 0.6 and 1.0 with the SD floor: cue agreement between the no-penalty runs' and the no-cue ceiling's, bias at the no-penalty runs' level; two weight-1.0 seeds answer in one sentence
+
+[`sycophancy_experiments/261027_probe_penalty_weight_sweep/`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/)
+
+**Setup:**
+- 261025's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the penalty weight
+  raised from 0.3 to 0.6 and to 1.0, seeds 42–44 each. Two unattended queues, one weight per H100 pod; all ten review
+  points passed. W&B runs under the README's Run status.
+- Compared with 261025's weight-0.3 runs, 261024's run without the floor, the no-penalty runs (261013 seed 42, 261018
+  seeds 43 and 44) and the no-cue ceiling (261020); one sampled answer per prompt (Decision 8); bias is `rm`.
+- The no-penalty runs' initial-probe scores and the own-answer probes (a bias probe refit on each trained model's own
+  answers and activations) come from [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/).
+
+**Results** (mean ± SD over seeds 42–44):
+- Training-mix cue agreement rate 86.7% ± 0.5 at weight 0.6 and 84.4% ± 1.2 at weight 1.0, against 88.6% ± 8.4 at
+  weight 0.3, 89.0% ± 3.6 for the no-penalty runs, 76.5% ± 4.0 for the ceiling and 99.9% for 261024's run (base 71.1%).
+- Training-mix bias 26.5% ± 0.6 and 26.5% ± 2.9 (base 15.2%), against 28.8% ± 3.6 for the no-penalty runs and
+  18.1% ± 2.7 for the ceiling; no-cue true accuracy 75.4% ± 0.9 and 72.5% ± 2.6 (base 75.5%).
+- Weight-1.0 seeds 42 and 44 changed to one-sentence answers within their first 10 steps: 99.2% and 99.98% of their
+  final-eval answers. No weight-0.6 run did.
+- Initial probe on the trained models' own answers and activations, both cue conditions pooled: mean score of biased
+  answers 0.108 ± 0.064 and 0.134 ± 0.144, against 0.591 ± 0.017 for the no-penalty runs and 0.746 for the base
+  model's answers; AUC 0.752 ± 0.054 and 0.821 ± 0.045, against 0.863 ± 0.054 and 0.905.
+- Own-answer probe AUC 0.839 ± 0.031 and 0.911 ± 0.077 at weights 0.6 and 1.0 (0.896 ± 0.044 at weight 0.3,
+  0.901 ± 0.029 with no penalty), above the initial probe's in each of the 12 runs.
+- Training-mix Said Yes 36.3% ± 11.9 at weight 0.6 and 68.8% ± 45.6 (seeds 98.9 / 16.3 / 91.3%) at weight 1.0 (base
+  65.8%, no penalty 78.5% ± 7.6); deception 42.2% ± 4.3 and 54.1% ± 18.6 (base 56.7%, no penalty 54.7% ± 3.1).
+
+### 261025 — A floor of 0.3 on the group SD in the advantage: none of the three seeds always agrees with the cue, as 261024's run did
+
+[`sycophancy_experiments/261025_probe_penalty_sd_floor/`](../sycophancy_experiments/261025_probe_penalty_sd_floor/)
+
+**Setup:**
+- 261024's setup with one change: each answer's advantage is divided by the larger of its group's SD + 0.0001 and 0.3
+  (`loss.advantage_std_floor`, a new trainer setting). Three runs, seeds 42–44, on one H100; RL runs W&B `o4145b9r`,
+  `rt07kkue` and `h9zhpmgh`.
+- Compared with 261024's penalty run (no floor), the no-penalty baseline (261013 seed 42, 261018 seeds 43 and 44) and
+  the no-cue ceiling (261020); one sampled answer per prompt (Decision 8); bias is `rm`.
+- Run unattended, with a dry run of the scripts on 261024's outputs and a 2-step smoke run in the queue; all six review
+  points passed.
+
+**Results** (floor runs: mean ± SD over seeds 42–44):
+- Training-mix cue agreement rate 88.6% ± 8.4 (seeds 88.3 / 97.1 / 80.3%), against 99.9% for 261024's run and
+  89.0% ± 3.6 for the baseline (base 71.1%); `cue_dist` true accuracy 24.1% ± 17.7, against 0.2% and 25.7% ± 8.1.
+- From step 10 on, probe-only groups' part of the mean absolute advantage per answer was 0.000–0.070 in every floor run,
+  against 0.367–0.656 in 261024's run (means per step over steps 10–29, 30–59 and 60–127).
+- Training-mix bias 29.1% ± 7.2 (base 15.0%), against 28.8% ± 3.6 for the baseline and 47.1% for 261024's run.
+- Training-mix deception 52.2% ± 4.5 (base 56.7%, baseline 54.7% ± 3.1); with each run's share of biased answers and
+  the base model's false denial and false admission it would be 53.4% ± 1.6.
+- Seed 44 changed to one-sentence answers (at most 60 characters) between steps 7 and 10: 90.8% of its final-eval
+  answers; its training-mix cue agreement rate is 80.3%.
+- Initial probe on the trained models' answers, both cue conditions pooled: mean 0.171 ± 0.108 biased / 0.032 ± 0.014
+  unbiased (base 0.751 / 0.230), AUC 0.819 ± 0.062 (base 0.907); the answer letter alone gives AUC 0.658 ± 0.026
+  (261024's run 0.931).
 
 ### 261024 — First RL run with the bias-probe penalty: the model names the cued option on almost every answer
 
