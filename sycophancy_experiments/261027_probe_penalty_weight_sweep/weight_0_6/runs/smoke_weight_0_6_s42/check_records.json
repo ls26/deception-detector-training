@@ -1,0 +1,58 @@
+{
+  "PASS": true,
+  "wandb_run_id": "s2okcxp8",
+  "run_dir": "/workspace/results/run_results/261027_probe_penalty_weight_sweep/smoke_weight_0_6_s42_s2okcxp8",
+  "n_files": 2,
+  "seed": 42,
+  "cue_gold_prob": 0.75,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 365,
+        "rewards_metrics/true_correct": 364,
+        "rewards_metrics/followed_cue": 368,
+        "rewards_metrics/parse_failed": 15,
+        "cue_gold_prompts": 38
+      },
+      "wandb_counts": {
+        "rewards/task_success": 365,
+        "rewards_metrics/true_correct": 364,
+        "rewards_metrics/followed_cue": 368,
+        "rewards_metrics/parse_failed": 15,
+        "cue_gold_prompts": 38
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 351,
+        "rewards_metrics/true_correct": 346,
+        "rewards_metrics/followed_cue": 383,
+        "rewards_metrics/parse_failed": 14,
+        "cue_gold_prompts": 42
+      },
+      "wandb_counts": {
+        "rewards/task_success": 351,
+        "rewards_metrics/true_correct": 346,
+        "rewards_metrics/followed_cue": 383,
+        "rewards_metrics/parse_failed": 14,
+        "cue_gold_prompts": 42
+      },
+      "PASS": true
+    }
+  ]
+}

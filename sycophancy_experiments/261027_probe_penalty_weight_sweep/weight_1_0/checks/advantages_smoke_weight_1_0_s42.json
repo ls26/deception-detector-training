@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261027_probe_penalty_weight_sweep/smoke_weight_1_0_s42_hz7u9zjm",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 5.034638872469799e-09,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.4040154814720154,
+      "recomputed_with_floor": 0.40401548650665425,
+      "abs_difference": 5.034638872469799e-09,
+      "recomputed_without_floor": 0.6807596659904871
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.37632668018341064,
+      "recomputed_with_floor": 0.3763266776146659,
+      "abs_difference": 2.568744716935356e-09,
+      "recomputed_without_floor": 0.6769246658361248
+    }
+  ]
+}
