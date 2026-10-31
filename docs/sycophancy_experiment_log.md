@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A bias probe refit on each of 12 RL models' own answers and activations. AUC above the initial probe's in all 12 (0.839–0.911 vs 0.752–0.863 by weight). |
 | 261027 | [`261027_probe_penalty_weight_sweep`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/) | 261025's SD-floor setup at penalty weights 0.6 and 1.0, 3 seeds each. Training-mix cue agreement rate 86.7% / 84.4% (no penalty 89.0%); two weight-1.0 seeds answer in one sentence. |
 | 261025 | [`261025_probe_penalty_sd_floor`](../sycophancy_experiments/261025_probe_penalty_sd_floor/) | 261024's penalty run with a floor of 0.3 on the group SD in the advantage, 3 seeds. Training-mix cue agreement rate 88.6% vs 99.9% without the floor; bias 29.1% vs 28.8% without penalty. |
 | 261024 | [`261024_probe_penalty_rl`](../sycophancy_experiments/261024_probe_penalty_rl/) | First RL run with the bias-probe penalty, seed 42. Training-mix cue agreement rate 99.9% vs 89.0% without penalty; one answer template; probe scores near 0. |
@@ -137,6 +138,33 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261028 — Bias probes refit on each RL model's own answers: higher AUC than the initial probe in all 12 models; the no-penalty runs scored with the bias probe
+
+[`sycophancy_experiments/261028_own_answer_probes/`](../sycophancy_experiments/261028_own_answer_probes/)
+
+**Setup:**
+- 12 final RL checkpoints: the no-penalty runs (261013 seed 42, 261018 seeds 43 and 44), 261025's weight-0.3 runs and
+  261027's weight-0.6 and weight-1.0 runs. Each answered the 1217 training questions (8 no-cue answers, 3 per cue
+  condition), and a probe was fit on its own answers and activations with the initial probe's recipe and 261010's
+  balance (biased / unbiased × cue condition at the largest size; a group under 200 topped up with base-model answers).
+- Scored on each model's final-eval answers that name the cued option, both cue conditions pooled, labelled against
+  the model's own no-cue answer (`rm`), next to the initial probe; one sampled answer per prompt (Decision 8). One
+  unattended run; all four review points passed.
+- Also written: 20 eval questions with all 13 models' answers side by side, and a separate agent's takeaways from them.
+
+**Results** (mean ± SD over seeds 42–44):
+- No group needed a top-up: training sets of 1824–3084 of the models' own answers (456–771 per group), against the
+  initial probe's 1512.
+- Own-answer probe AUC 0.901 ± 0.029 with no penalty and 0.896 ± 0.044, 0.839 ± 0.031 and 0.911 ± 0.077 at weights
+  0.3, 0.6 and 1.0, against 0.863 ± 0.054, 0.819 ± 0.062, 0.752 ± 0.054 and 0.821 ± 0.045 for the initial probe on the
+  same answers and 0.904–0.907 on the base model's answers. It is higher than the initial probe's in each of the 12.
+- Mean score of biased answers: 0.747, 0.777, 0.640 and 0.802 with the own-answer probe, against 0.591, 0.171, 0.108
+  and 0.134 with the initial probe and 0.744–0.751 on the base model's answers.
+- The end-of-run probe (refit on the trained model's activations of the base model's answers) has AUC 0.823 ± 0.052,
+  0.752 ± 0.042 and 0.737 ± 0.077 at weights 0.3, 0.6 and 1.0.
+- Refit through weight-0.3 seed 42's adapter on the initial probe's training set, the fitting path reproduced that
+  run's end-of-run probe (AUC 0.862).
 
 ### 261027 — Penalty weights 0.6 and 1.0 with the SD floor: cue agreement between the no-penalty runs' and the no-cue ceiling's, bias at the no-penalty runs' level; two weight-1.0 seeds answer in one sentence
 
