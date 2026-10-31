@@ -40,6 +40,9 @@ PROBE_SCORES = ("probe_start", "probe_fresh", "probe_start_base_activations")
 MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
 EVAL_CONDITIONS = ("none", "cue_gold", "cue_dist")  # no cue / cue at the true answer / cue at the wrong answer
 N_SAMPLES = {"none": 8, "cue_gold": 1, "cue_dist": 1}
+# generate --split train (a checkpoint's own probe set, 261028): 260819's 3 answers per cued prompt, as in 261010's
+# probe set; the seed slots hold up to 3 cue_gold and 5 cue_dist samples
+N_SAMPLES_TRAIN = {"none": 8, "cue_gold": 3, "cue_dist": 3}
 # One request per sample: seed = EVAL_SEED_BASE + 16 * question_id + SLOT_OFFSET[condition] + sample_idx
 # (261013's formula, so the one cued sample per condition is 261013's sample 0).
 EVAL_SEED_BASE = 100_000_000 + 1042

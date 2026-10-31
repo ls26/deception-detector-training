@@ -216,7 +216,7 @@ AUCs are biased vs unbiased.
 | `data/questions.jsonl` | The question file (copy of 261013's `dataset/labels.jsonl`) |
 | `data/bias_probe_train.jsonl`, `data/bias_probe_eval.jsonl` | The probe set (copies of 261010's `arms/slice_cot/probe_sets/bias_followed_rm_{train,eval}.jsonl`) |
 | `domain_imports.py` | The one place 260819 / 260823 / 260824 helpers are imported |
-| `eval_checkpoint.py` | The final eval in three stages: `generate` (vLLM), `selfreport` (the self-report P(Yes) and the probe scores), `labels` (bias and deception labels, probe scores per answer) |
+| `eval_checkpoint.py` | The final eval in three stages: `generate` (vLLM), `selfreport` (the self-report P(Yes) and the probe scores), `labels` (bias and deception labels, probe scores per answer). `generate --split train` answers the training questions instead (8 with no cue, 3 per cue condition, `spec.N_SAMPLES_TRAIN`), for a checkpoint's own probe set (261028) |
 | `compare.py` | Base vs after-RL tables of one run and its per-step training curve |
 | `seed_table.py` | Several runs side by side, with means and SDs |
 | `run_env.sh`, `start_vllm.sh`, `run_rl.sh`, `run_eval.sh` | Environment and the three run wrappers (logs end in `EXIT <code>`) |
