@@ -102,6 +102,17 @@ evals. The *previous no-floor run* is 261024's penalty run: weight 0.3 without t
 261025's three runs with the floor. Weights 0.3, 0.6 and 1.0, the no-penalty runs and the ceiling: mean ± SD over seeds 42–44
 (SD with n − 1); each new run's values are under More results (All measurements, per seed).
 
+Figures (`figures/`, drawn by `plot_results.py`, whose docstring lists each figure's panels and sources):
+- [`fig1_eval_answers`](figures/fig1_eval_answers.png): true accuracy in each cue condition, the cue agreement rate on
+  the training cue mix and bias, one bar per run (no penalty, weights 0.3, 0.6, 1.0) with the base model as a dotted
+  line (points 1 and 2).
+- [`fig2_training`](figures/fig2_training.png): the cue agreement rate on training answers at each step, one panel per
+  run and one line per seed (point 1).
+- [`fig3_initial_probe`](figures/fig3_initial_probe.png): the initial probe's mean score of biased and unbiased answers
+  and its AUC, base model's answers → trained models' answers, at each weight (point 4).
+- [`fig3a_own_probe`](figures/fig3a_own_probe.png): fig3 with the no-penalty runs at weight 0.0 and the own-answer probe
+  (points 5 and 6).
+
 
 | Measurement                          | Base model | Previous no-floor run | Weight 0.3  | Weight 0.6  | Weight 1.0  | No penalty          | No-cue ceiling |
 | ------------------------------------ | ---------- | --------------------- | ----------- | ----------- | ----------- | ------------------- | -------------- |
