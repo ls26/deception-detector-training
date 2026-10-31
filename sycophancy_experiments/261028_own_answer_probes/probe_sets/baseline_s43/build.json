@@ -1,0 +1,30 @@
+{
+  "model": "baseline_s43",
+  "adapter": "/workspace/results/run_results/261018_noisy_label_rl_seeds/noisy_label_s43_nk7mr4qf/checkpoints/final",
+  "questions": 1217,
+  "questions_with_usual_answer": 1115,
+  "cued_answers": 7302,
+  "filtered": {
+    "does_not_name_cued_option": 1449,
+    "no_usual_answer": 583,
+    "unfinished_or_unparsed": 8
+  },
+  "own_pool": {
+    "bias / cue_gold": 550,
+    "bias / cue_dist": 1380,
+    "no bias / cue_gold": 2687,
+    "no bias / cue_dist": 645
+  },
+  "base_added": {
+    "bias / cue_gold": 0,
+    "bias / cue_dist": 0,
+    "no bias / cue_gold": 0,
+    "no bias / cue_dist": 0
+  },
+  "per_group": 550,
+  "train_rows": 2200,
+  "train_biased": 1100,
+  "topped_up_groups": [],
+  "test_biased": 270,
+  "test_unbiased": 455
+}

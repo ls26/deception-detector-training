@@ -1,0 +1,90 @@
+{
+  "fitpath_no_adapter": {
+    "run_dir": "/workspace/results/run_results/261028_own_answer_probes/fitpath_no_adapter_q2olwycj",
+    "adapter": null,
+    "reference": "floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "test": {
+      "n_biased": 292,
+      "n_unbiased": 485,
+      "mean_biased": 0.7221844251680647,
+      "mean_unbiased": 0.25478438520600644,
+      "auc": 0.8730052252506708
+    },
+    "reference_test": {
+      "n_biased": 292,
+      "n_unbiased": 485,
+      "mean_biased": 0.7221844251680647,
+      "mean_unbiased": 0.25478438520600644,
+      "auc": 0.8730052252506708
+    },
+    "train": {
+      "n_biased": 756,
+      "n_unbiased": 756,
+      "mean_biased": 0.8475429022588604,
+      "mean_unbiased": 0.12930963408163018,
+      "auc": 0.9937799193751574
+    },
+    "weights_vs_reference": {
+      "13": {
+        "cosine": 1.0,
+        "max_abs_difference": 0.0
+      },
+      "14": {
+        "cosine": 1.0000001192092896,
+        "max_abs_difference": 0.0
+      },
+      "15": {
+        "cosine": 1.0,
+        "max_abs_difference": 0.0
+      },
+      "16": {
+        "cosine": 1.0000001192092896,
+        "max_abs_difference": 0.0
+      }
+    }
+  },
+  "fitpath_floor_s42": {
+    "run_dir": "/workspace/results/run_results/261028_own_answer_probes/fitpath_floor_s42_7ud68jvy",
+    "adapter": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/checkpoints/final",
+    "reference": "floor_s42_o4145b9r/fresh_detector.final_model.on_dataset",
+    "test": {
+      "n_biased": 292,
+      "n_unbiased": 485,
+      "mean_biased": 0.7258058545308839,
+      "mean_unbiased": 0.2879652748224704,
+      "auc": 0.8619898319446406
+    },
+    "reference_test": {
+      "n_biased": 292,
+      "n_unbiased": 485,
+      "mean_biased": 0.7258485989917822,
+      "mean_unbiased": 0.2888485242585836,
+      "auc": 0.8617568140093207
+    },
+    "train": {
+      "n_biased": 756,
+      "n_unbiased": 756,
+      "mean_biased": 0.846787669853598,
+      "mean_unbiased": 0.181371333492069,
+      "auc": 0.9867654880882394
+    },
+    "weights_vs_reference": {
+      "13": {
+        "cosine": 0.9987838864326477,
+        "max_abs_difference": 0.6871339082717896
+      },
+      "14": {
+        "cosine": 0.9986040592193604,
+        "max_abs_difference": 0.6182519793510437
+      },
+      "15": {
+        "cosine": 0.9985015392303467,
+        "max_abs_difference": 0.7676358819007874
+      },
+      "16": {
+        "cosine": 0.9985779523849487,
+        "max_abs_difference": 0.7354507446289062
+      }
+    }
+  }
+}

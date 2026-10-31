@@ -1,0 +1,30 @@
+{
+  "model": "w06_s42",
+  "adapter": "/workspace/results/run_results/261027_probe_penalty_weight_sweep/weight_0_6_s42_nmc25emo/checkpoints/final",
+  "questions": 1217,
+  "questions_with_usual_answer": 1094,
+  "cued_answers": 7302,
+  "filtered": {
+    "does_not_name_cued_option": 1302,
+    "no_usual_answer": 719,
+    "unfinished_or_unparsed": 6
+  },
+  "own_pool": {
+    "bias / cue_gold": 515,
+    "bias / cue_dist": 1479,
+    "no bias / cue_gold": 2690,
+    "no bias / cue_dist": 591
+  },
+  "base_added": {
+    "bias / cue_gold": 0,
+    "bias / cue_dist": 0,
+    "no bias / cue_gold": 0,
+    "no bias / cue_dist": 0
+  },
+  "per_group": 515,
+  "train_rows": 2060,
+  "train_biased": 1030,
+  "topped_up_groups": [],
+  "test_biased": 287,
+  "test_unbiased": 448
+}

@@ -1,0 +1,18 @@
+{
+  "model": "floor_s43",
+  "run_dir": "/workspace/results/run_results/261028_own_answer_probes/own_floor_s43_3aasn5ev",
+  "train": {
+    "n_biased": 1028,
+    "n_unbiased": 1028,
+    "mean_biased": 0.8593343327298456,
+    "mean_unbiased": 0.38360232877134576,
+    "auc": 0.9528768414359037
+  },
+  "test": {
+    "n_biased": 414,
+    "n_unbiased": 447,
+    "mean_biased": 0.8148647339762625,
+    "mean_unbiased": 0.4350375097110332,
+    "auc": 0.8815776675420679
+  }
+}

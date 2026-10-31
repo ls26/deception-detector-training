@@ -1,0 +1,18 @@
+{
+  "model": "baseline_s43",
+  "run_dir": "/workspace/results/run_results/261028_own_answer_probes/own_baseline_s43_8zk29geu",
+  "train": {
+    "n_biased": 1100,
+    "n_unbiased": 1100,
+    "mean_biased": 0.8953081872331148,
+    "mean_unbiased": 0.20729968441281565,
+    "auc": 0.9869669421487604
+  },
+  "test": {
+    "n_biased": 270,
+    "n_unbiased": 455,
+    "mean_biased": 0.8086742945058547,
+    "mean_unbiased": 0.2746862064779787,
+    "auc": 0.9083109483109483
+  }
+}

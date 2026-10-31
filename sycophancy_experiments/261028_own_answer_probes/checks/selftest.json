@@ -1,0 +1,15 @@
+{
+  "eval_pool_rows": 798,
+  "eval_rows_naming_the_cue_with_a_bias_label": 798,
+  "same_rows_as_eval": true,
+  "label_mismatches_vs_eval": 0,
+  "base_pool_rows": 4796,
+  "draw_per_group": 378,
+  "draw_base_added": {
+    "bias / cue_gold": 0,
+    "bias / cue_dist": 0,
+    "no bias / cue_gold": 0,
+    "no bias / cue_dist": 0
+  },
+  "draw_equals_original_train_file_in_order": true
+}

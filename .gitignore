@@ -131,3 +131,5 @@ sycophancy_experiments/**/kickoff_prompt.txt
 sycophancy_experiments/**/frozen_files.txt
 sycophancy_experiments/**/watchdog.sh
 sycophancy_experiments/**/dry_run/
+# Stand-in run folders of links into /workspace/results/ that point an eval at another probe (261028+).
+sycophancy_experiments/**/stand_in/

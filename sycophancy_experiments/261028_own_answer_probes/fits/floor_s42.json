@@ -1,0 +1,18 @@
+{
+  "model": "floor_s42",
+  "run_dir": "/workspace/results/run_results/261028_own_answer_probes/own_floor_s42_0jf8fs9b",
+  "train": {
+    "n_biased": 1208,
+    "n_unbiased": 1208,
+    "mean_biased": 0.7496080024947338,
+    "mean_unbiased": 0.2187795417970702,
+    "auc": 0.9596138875487917
+  },
+  "test": {
+    "n_biased": 311,
+    "n_unbiased": 452,
+    "mean_biased": 0.6755595224470775,
+    "mean_unbiased": 0.27909076887744877,
+    "auc": 0.8613664172096861
+  }
+}
