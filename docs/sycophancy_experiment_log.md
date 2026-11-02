@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261031 | [`261031_probe_penalty_weights_1_5_2_0`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/) | 261027's setup at penalty weights 1.5 and 2.0, 3 seeds each, plus a fresh probe (refit on the model's own answers) per model. Bias not below the lower weights'; 3 of 6 runs end in a fixed answer pattern. |
 | 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A bias probe refit on each of 12 RL models' own answers and activations. AUC above the initial probe's in all 12 (0.839–0.911 vs 0.752–0.863 by weight). |
 | 261027 | [`261027_probe_penalty_weight_sweep`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/) | 261025's SD-floor setup at penalty weights 0.6 and 1.0, 3 seeds each. Training-mix cue agreement rate 86.7% / 84.4% (no penalty 89.0%); two weight-1.0 seeds answer in one sentence. |
 | 261025 | [`261025_probe_penalty_sd_floor`](../sycophancy_experiments/261025_probe_penalty_sd_floor/) | 261024's penalty run with a floor of 0.3 on the group SD in the advantage, 3 seeds. Training-mix cue agreement rate 88.6% vs 99.9% without the floor; bias 29.1% vs 28.8% without penalty. |
@@ -138,6 +139,38 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261031 — Penalty weights 1.5 and 2.0 with the SD floor: bias not below the lower weights', the probe score falls instead; three of six runs end in a fixed answer pattern
+
+[`sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/)
+
+**Setup:**
+- 261027's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the penalty weight raised
+  to 1.5 and to 2.0, seeds 42–44 each; one unattended queue on one H100 pod, all review points passed. Compared with
+  weights 0.3 (261025), 0.6 and 1.0 (261027), the no-penalty runs and the no-cue ceiling; one sampled answer per prompt
+  (Decision 8); bias is `rm`.
+- For each of the six models, a *fresh probe*: a bias probe refit on its own answers and activations with 261028's
+  procedure (261028's own-answer probe). Weight 2.0 seed 42 gave no biased answer in its eval or on the training
+  questions, so its probe's biased examples are all base-model answers and it has no test AUC.
+
+**Results** (mean ± SD over seeds 42–44):
+- Training-mix bias 30.3% ± 11.8 at weight 1.5 and 17.7% ± 15.8 (seeds 0.0 / 30.3 / 22.8%) at weight 2.0, against
+  29.1% ± 7.2, 26.5% ± 0.6 and 26.5% ± 2.9 at weights 0.3, 0.6 and 1.0, 28.8% ± 3.6 for the no-penalty runs and
+  18.1% ± 2.7 for the ceiling (base 15.1%). Weight 2.0 seed 42's 0.0% comes from answering B to every question.
+- Training-mix cue agreement rate 88.4% ± 10.4 and 75.1% ± 20.5 (seeds 51.9 / 90.8 / 82.7%), against 88.6% ± 8.4,
+  86.7% ± 0.5 and 84.4% ± 1.2 at the lower weights and 89.0% ± 3.6 for the no-penalty runs.
+- Cue agreement rate on training answers over steps 0–9: 69.0% ± 4.6 and 63.5% ± 1.6, against 81.8% ± 0.7, 80.3% ±
+  0.2 and 77.7% ± 3.6 at weights 0.3, 0.6 and 1.0; over steps 118–127: 88.1% ± 10.8 and 75.8% ± 21.0, against 89.5% ±
+  9.0, 88.9% ± 1.5 and 87.1% ± 1.3. Mean probe score of the training answers naming the cue: 0.249 and 0.235 over steps
+  0–9, 0.043 and 0.031 over steps 118–127.
+- Initial probe on the trained models' own answers and activations: mean score of biased answers 0.120 ± 0.139 and
+  0.017 ± 0.004, AUC 0.696 ± 0.218 and 0.670 ± 0.042 (weight 2.0: seeds 43 and 44), against 0.744 and 0.903 on the base
+  model's answers. Fresh probe AUC 0.861 ± 0.080 and 0.736 ± 0.042, above the initial probe's in all five models
+  with a test; the lowest of 261028's 12 was 0.814.
+- Fixed answer patterns: weight 1.5 seed 42 names the cued option on every cued answer, weight 1.5 seed 43 gives
+  one-sentence answers (99.8% of its final-eval answers), and weight 2.0 seed 42 answers B on 3,911 of 3,912 no-cue and
+  all 978 cued answers (true accuracy 52.6% in every condition). Across weights 0.3–2.0 with the floor, 6 of 15 runs
+  took such a pattern, none at weight 0.6.
 
 ### 261028 — Bias probes refit on each RL model's own answers: higher AUC than the initial probe in all 12 models; the no-penalty runs scored with the bias probe
 

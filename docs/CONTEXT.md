@@ -104,7 +104,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 261024_probe_penalty_rl/    # First RL run with the bias-probe penalty (sycophancy_setup's penalty template), seed 42, vs the no-penalty baseline and the no-cue ceiling; training dynamics
 │   ├── 261025_probe_penalty_sd_floor/  # 261024's penalty run with a floor of 0.3 on the group SD in the advantage, seeds 42–44; training dynamics, figures
 │   ├── 261027_probe_penalty_weight_sweep/  # 261025's setup at penalty weights 0.6 and 1.0, seeds 42–44 each, one weight per pod; with 261028's no-penalty and own-answer probe rows
-│   └── 261028_own_answer_probes/   # A bias probe refit on each of 12 RL models' own answers and activations (no penalty, weights 0.3–1.0), scored next to the initial probe; 20 eval questions side by side
+│   ├── 261028_own_answer_probes/   # A bias probe refit on each of 12 RL models' own answers and activations (no penalty, weights 0.3–1.0), scored next to the initial probe; 20 eval questions side by side
+│   └── 261031_probe_penalty_weights_1_5_2_0/  # 261027's setup at penalty weights 1.5 and 2.0, seeds 42–44 each, on one pod; a fresh probe (refit on the model's own answers) for each of the six models
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the training code of the sycophancy RL runs
 │   └── sycophancy_setup/        # Permanent setup of the CoT noisy-label runs with the bias-probe penalty: data copies, eval, tables, run wrappers, run-config templates (see its README)
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
