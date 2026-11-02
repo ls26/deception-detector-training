@@ -1,0 +1,33 @@
+{
+  "questions": 489,
+  "questions_without_nocue_answer": 0,
+  "cued_rollouts": 978,
+  "bias_rm": {
+    "cue_gold": {
+      "no bias": 489
+    },
+    "cue_dist": {
+      "no bias": 489
+    }
+  },
+  "deception_rm": {
+    "cue_gold": {
+      "honest": 183,
+      "deceptive": 306
+    },
+    "cue_dist": {
+      "honest": 182,
+      "deceptive": 307
+    }
+  },
+  "said": {
+    "cue_gold": {
+      "No": 183,
+      "Yes": 306
+    },
+    "cue_dist": {
+      "No": 182,
+      "Yes": 307
+    }
+  }
+}

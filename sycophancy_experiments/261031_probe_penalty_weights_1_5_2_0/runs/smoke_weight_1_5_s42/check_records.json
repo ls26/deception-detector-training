@@ -1,0 +1,58 @@
+{
+  "PASS": true,
+  "wandb_run_id": "jogki5g3",
+  "run_dir": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/smoke_weight_1_5_s42_jogki5g3",
+  "n_files": 2,
+  "seed": 42,
+  "cue_gold_prob": 0.75,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 388,
+        "rewards_metrics/true_correct": 366,
+        "rewards_metrics/followed_cue": 400,
+        "rewards_metrics/parse_failed": 16,
+        "cue_gold_prompts": 44
+      },
+      "wandb_counts": {
+        "rewards/task_success": 388,
+        "rewards_metrics/true_correct": 366,
+        "rewards_metrics/followed_cue": 400,
+        "rewards_metrics/parse_failed": 16,
+        "cue_gold_prompts": 44
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 375,
+        "rewards_metrics/true_correct": 409,
+        "rewards_metrics/followed_cue": 381,
+        "rewards_metrics/parse_failed": 12,
+        "cue_gold_prompts": 45
+      },
+      "wandb_counts": {
+        "rewards/task_success": 375,
+        "rewards_metrics/true_correct": 409,
+        "rewards_metrics/followed_cue": 381,
+        "rewards_metrics/parse_failed": 12,
+        "cue_gold_prompts": 45
+      },
+      "PASS": true
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "w15_s42": {
+    "questions_with_usual_answer": 898,
+    "filtered": {
+      "no_usual_answer": 1914,
+      "does_not_name_cued_option": 3
+    },
+    "own_pool": {
+      "bias / cue_gold": 692,
+      "bias / cue_dist": 1999,
+      "no bias / cue_gold": 2001,
+      "no bias / cue_dist": 693
+    },
+    "per_group": 692,
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [],
+    "train_rows": 2768,
+    "trainer_train_counts": [
+      1384,
+      1384
+    ]
+  },
+  "w15_s43": {
+    "questions_with_usual_answer": 1174,
+    "filtered": {
+      "does_not_name_cued_option": 2147,
+      "no_usual_answer": 231,
+      "unfinished_or_unparsed": 22
+    },
+    "own_pool": {
+      "bias / cue_gold": 496,
+      "bias / cue_dist": 884,
+      "no bias / cue_gold": 2643,
+      "no bias / cue_dist": 879
+    },
+    "per_group": 496,
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [],
+    "train_rows": 1984,
+    "trainer_train_counts": [
+      992,
+      992
+    ]
+  },
+  "w15_s44": {
+    "questions_with_usual_answer": 1132,
+    "filtered": {
+      "does_not_name_cued_option": 1457,
+      "no_usual_answer": 496,
+      "unfinished_or_unparsed": 2
+    },
+    "own_pool": {
+      "bias / cue_gold": 598,
+      "bias / cue_dist": 1356,
+      "no bias / cue_gold": 2666,
+      "no bias / cue_dist": 727
+    },
+    "per_group": 598,
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [],
+    "train_rows": 2392,
+    "trainer_train_counts": [
+      1196,
+      1196
+    ]
+  },
+  "w20_s42": {
+    "questions_with_usual_answer": 1217,
+    "filtered": {
+      "does_not_name_cued_option": 3651
+    },
+    "own_pool": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 1953,
+      "no bias / cue_dist": 1698
+    },
+    "per_group": 200,
+    "base_added": {
+      "bias / cue_gold": 200,
+      "bias / cue_dist": 200,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [
+      "bias / cue_gold",
+      "bias / cue_dist"
+    ],
+    "train_rows": 800,
+    "trainer_train_counts": [
+      400,
+      400
+    ]
+  },
+  "w20_s43": {
+    "questions_with_usual_answer": 1091,
+    "filtered": {
+      "does_not_name_cued_option": 1045,
+      "no_usual_answer": 742
+    },
+    "own_pool": {
+      "bias / cue_gold": 568,
+      "bias / cue_dist": 1681,
+      "no bias / cue_gold": 2642,
+      "no bias / cue_dist": 624
+    },
+    "per_group": 568,
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [],
+    "train_rows": 2272,
+    "trainer_train_counts": [
+      1136,
+      1136
+    ]
+  },
+  "w20_s44": {
+    "questions_with_usual_answer": 1142,
+    "filtered": {
+      "does_not_name_cued_option": 1842,
+      "no_usual_answer": 448,
+      "unfinished_or_unparsed": 1
+    },
+    "own_pool": {
+      "bias / cue_gold": 456,
+      "bias / cue_dist": 1134,
+      "no bias / cue_gold": 2796,
+      "no bias / cue_dist": 625
+    },
+    "per_group": 456,
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "topped_up_groups": [],
+    "train_rows": 1824,
+    "trainer_train_counts": [
+      912,
+      912
+    ]
+  }
+}

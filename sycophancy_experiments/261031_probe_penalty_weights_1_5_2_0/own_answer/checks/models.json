@@ -1,0 +1,221 @@
+{
+  "w15_s42": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.49055907616335437,
+    "train_rows_in_file": 2768,
+    "trainer_train_counts": [
+      1384,
+      1384
+    ],
+    "per_group": 692,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s42_9tpdp10m/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s42_9tpdp10m/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w15_s43": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.2341196742751763,
+    "train_rows_in_file": 1984,
+    "trainer_train_counts": [
+      992,
+      992
+    ],
+    "per_group": 496,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s43_vdrlb1sw/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s43_vdrlb1sw/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w15_s44": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.5270334202035295,
+    "train_rows_in_file": 2392,
+    "trainer_train_counts": [
+      1196,
+      1196
+    ],
+    "per_group": 598,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s44_ewrsntz4/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s44_ewrsntz4/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w20_s42": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.17606902797341628,
+    "train_rows_in_file": 800,
+    "trainer_train_counts": [
+      400,
+      400
+    ],
+    "per_group": 200,
+    "topped_up_groups": [
+      "bias / cue_gold",
+      "bias / cue_dist"
+    ],
+    "base_added": {
+      "bias / cue_gold": 200,
+      "bias / cue_dist": 200,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s42_7tri8hl4/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s42_7tri8hl4/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w20_s43": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.4592624409093604,
+    "train_rows_in_file": 2272,
+    "trainer_train_counts": [
+      1136,
+      1136
+    ],
+    "per_group": 568,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s43_3cacu5np/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s43_3cacu5np/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w20_s44": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.37834409530637503,
+    "train_rows_in_file": 1824,
+    "trainer_train_counts": [
+      912,
+      912
+    ],
+    "per_group": 456,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s44_rkpi7yta/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s44_rkpi7yta/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  }
+}

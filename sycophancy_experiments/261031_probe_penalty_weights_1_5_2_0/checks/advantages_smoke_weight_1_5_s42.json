@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/smoke_weight_1_5_s42_jogki5g3",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 2.1185377008237083e-08,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.45131659507751465,
+      "recomputed_with_floor": 0.45131659398454643,
+      "abs_difference": 1.0929682159321885e-09,
+      "recomputed_without_floor": 0.6986254564944802
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.5695868730545044,
+      "recomputed_with_floor": 0.5695868942398814,
+      "abs_difference": 2.1185377008237083e-08,
+      "recomputed_without_floor": 0.7062078181405355
+    }
+  ]
+}

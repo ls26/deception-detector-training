@@ -1,0 +1,18 @@
+{
+  "model": "w15_s42",
+  "run_dir": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w15_s42_9tpdp10m",
+  "train": {
+    "n_biased": 1384,
+    "n_unbiased": 1384,
+    "mean_biased": 0.6758719623853275,
+    "mean_unbiased": 0.30771137801100934,
+    "auc": 0.8972678046376424
+  },
+  "test": {
+    "n_biased": 388,
+    "n_unbiased": 388,
+    "mean_biased": 0.6293029222090143,
+    "mean_unbiased": 0.3456402869034587,
+    "auc": 0.8004370815176958
+  }
+}

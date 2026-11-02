@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/smoke_weight_1_5_s42_jogki5g3",
+  "penalty_weight": 1.5,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 496,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 400,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.40155608952876776,
+      "wandb_reward_mean": 0.4015560746192932,
+      "reward_mean_abs_difference": 1.490947454385605e-08,
+      "recomputed_penalty_mean": -0.35625641047123224,
+      "wandb_rewards_detector": -0.3562564253807068,
+      "penalty_mean_abs_difference": 1.490947454385605e-08
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 500,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 381,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.3987647583016951,
+      "wandb_reward_mean": 0.3987647593021393,
+      "reward_mean_abs_difference": 1.000444171950221e-09,
+      "recomputed_penalty_mean": -0.3336571166983049,
+      "wandb_rewards_detector": -0.3336571156978607,
+      "penalty_mean_abs_difference": 1.000444171950221e-09
+    }
+  ]
+}

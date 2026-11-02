@@ -1,0 +1,18 @@
+{
+  "model": "w20_s43",
+  "run_dir": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/own_w20_s43_3cacu5np",
+  "train": {
+    "n_biased": 1136,
+    "n_unbiased": 1136,
+    "mean_biased": 0.5973524823932397,
+    "mean_unbiased": 0.3628362657407604,
+    "auc": 0.8162807168716525
+  },
+  "test": {
+    "n_biased": 327,
+    "n_unbiased": 443,
+    "mean_biased": 0.5557369682766976,
+    "mean_unbiased": 0.400147401127527,
+    "auc": 0.7075541381048039
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "w20_s42",
+  "adapter": "/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/weight_2_0_s42_q1crnzu2/checkpoints/final",
+  "questions": 1217,
+  "questions_with_usual_answer": 1217,
+  "cued_answers": 7302,
+  "filtered": {
+    "does_not_name_cued_option": 3651
+  },
+  "own_pool": {
+    "bias / cue_gold": 0,
+    "bias / cue_dist": 0,
+    "no bias / cue_gold": 1953,
+    "no bias / cue_dist": 1698
+  },
+  "base_added": {
+    "bias / cue_gold": 200,
+    "bias / cue_dist": 200,
+    "no bias / cue_gold": 0,
+    "no bias / cue_dist": 0
+  },
+  "per_group": 200,
+  "train_rows": 800,
+  "train_biased": 400,
+  "topped_up_groups": [
+    "bias / cue_gold",
+    "bias / cue_dist"
+  ],
+  "test_biased": 0,
+  "test_unbiased": 466
+}
