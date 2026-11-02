@@ -684,8 +684,8 @@ hand afterwards (`runs.md`, After the run).
   has no biased answer; the queue went on and stopped after the auditor's check of the RL tables.
 - **After the run (2026-11-01 22:36 to 23:00 UTC, by hand).** Weight 2.0 seed 42's fresh probe was fit with the
   `fit` change above, then scored; `check_models`, review 8, `table` and the auditor's check of the fresh-probe tables
-  passed (`runs.md`, After the run). The first fit's run folder `own_w20_s42_9obqfbxn` (an empty `checkpoints/`) is
-  left in the results folder.
+  passed (`runs.md`, After the run). The first fit's run folder `own_w20_s42_9obqfbxn` (an empty `checkpoints/`) was
+  deleted on 2026-11-02.
 
 Run folders are `/workspace/results/run_results/261031_probe_penalty_weights_1_5_2_0/<run>_<W&B id>/`. Each RL run folder
 holds the final adapter (`checkpoints/final/`), the step records (`checkpoints/responses/`) and the probes
