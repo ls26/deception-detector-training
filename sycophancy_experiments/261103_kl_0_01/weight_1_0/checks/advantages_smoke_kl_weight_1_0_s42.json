@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261103_kl_0_01/smoke_kl_weight_1_0_s42_vjgbshdo",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 2.432952561637336e-09,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.35258030891418457,
+      "recomputed_with_floor": 0.352580306481232,
+      "abs_difference": 2.432952561637336e-09,
+      "recomputed_without_floor": 0.7233432149743223
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.4144504964351654,
+      "recomputed_with_floor": 0.4144504980174355,
+      "abs_difference": 1.5822700927259348e-09,
+      "recomputed_without_floor": 0.7060369797841483
+    }
+  ]
+}

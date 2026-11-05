@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261103_kl_0_01/smoke_kl_no_penalty_s42_rybq9m4p",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.3160640577325466e-08,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.22711336612701416,
+      "recomputed_with_floor": 0.22711335296637358,
+      "abs_difference": 1.3160640577325466e-08,
+      "recomputed_without_floor": 0.22711335296637358
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.39796215295791626,
+      "recomputed_with_floor": 0.39796215336434215,
+      "abs_difference": 4.0642589294037634e-10,
+      "recomputed_without_floor": 0.39796215336434215
+    }
+  ]
+}

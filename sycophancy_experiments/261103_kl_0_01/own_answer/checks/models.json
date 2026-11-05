@@ -1,0 +1,110 @@
+{
+  "w10_s42": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.32884580650939277,
+    "train_rows_in_file": 1520,
+    "trainer_train_counts": [
+      760,
+      760
+    ],
+    "per_group": 380,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261103_kl_0_01/own_w10_s42_c74tlesp/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261103_kl_0_01/own_w10_s42_c74tlesp/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 978,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w10_s43": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.4192788125632546,
+    "train_rows_in_file": 1772,
+    "trainer_train_counts": [
+      886,
+      886
+    ],
+    "per_group": 443,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261103_kl_0_01/own_w10_s43_i775zkob/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261103_kl_0_01/own_w10_s43_i775zkob/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 977,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 977,
+      "max_abs_difference": 0.0
+    }
+  },
+  "w10_s44": {
+    "files_written": true,
+    "generation_summary": {
+      "none": 9736,
+      "cue_gold": 3651,
+      "cue_dist": 3651
+    },
+    "eval_questions": 489,
+    "eval_cued_rollouts": 978,
+    "own_probe_missing_where_initial_present": 0,
+    "mean_abs_own_minus_initial": 0.16195934335671747,
+    "train_rows_in_file": 976,
+    "trainer_train_counts": [
+      488,
+      488
+    ],
+    "per_group": 244,
+    "topped_up_groups": [],
+    "base_added": {
+      "bias / cue_gold": 0,
+      "bias / cue_dist": 0,
+      "no bias / cue_gold": 0,
+      "no bias / cue_dist": 0
+    },
+    "initial_probe_link": "/workspace/results/run_results/261025_probe_penalty_sd_floor/floor_s42_o4145b9r/initial_detector.base_model.on_dataset",
+    "own_probe_link": "/workspace/results/run_results/261103_kl_0_01/own_w10_s44_p426b21t/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "own_probe_fit": "/workspace/results/run_results/261103_kl_0_01/own_w10_s44_p426b21t/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "probe_start_vs_saved": {
+      "answers": 974,
+      "max_abs_difference": 0.0
+    },
+    "probe_start_base_activations_vs_saved": {
+      "answers": 974,
+      "max_abs_difference": 0.0
+    }
+  }
+}

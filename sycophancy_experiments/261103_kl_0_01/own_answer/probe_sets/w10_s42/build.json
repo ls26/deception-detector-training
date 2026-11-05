@@ -1,0 +1,30 @@
+{
+  "model": "w10_s42",
+  "adapter": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu/checkpoints/final",
+  "questions": 1217,
+  "questions_with_usual_answer": 1115,
+  "cued_answers": 7302,
+  "filtered": {
+    "does_not_name_cued_option": 1974,
+    "no_usual_answer": 569,
+    "unfinished_or_unparsed": 4
+  },
+  "own_pool": {
+    "bias / cue_gold": 380,
+    "bias / cue_dist": 1045,
+    "no bias / cue_gold": 2792,
+    "no bias / cue_dist": 538
+  },
+  "base_added": {
+    "bias / cue_gold": 0,
+    "bias / cue_dist": 0,
+    "no bias / cue_gold": 0,
+    "no bias / cue_dist": 0
+  },
+  "per_group": 380,
+  "train_rows": 1520,
+  "train_biased": 760,
+  "topped_up_groups": [],
+  "test_biased": 221,
+  "test_unbiased": 454
+}

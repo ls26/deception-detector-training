@@ -1,0 +1,58 @@
+{
+  "PASS": true,
+  "wandb_run_id": "rybq9m4p",
+  "run_dir": "/workspace/results/run_results/261103_kl_0_01/smoke_kl_no_penalty_s42_rybq9m4p",
+  "n_files": 2,
+  "seed": 42,
+  "cue_gold_prob": 0.75,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 406,
+        "rewards_metrics/true_correct": 396,
+        "rewards_metrics/followed_cue": 394,
+        "rewards_metrics/parse_failed": 7,
+        "cue_gold_prompts": 41
+      },
+      "wandb_counts": {
+        "rewards/task_success": 406,
+        "rewards_metrics/true_correct": 396,
+        "rewards_metrics/followed_cue": 394,
+        "rewards_metrics/parse_failed": 7,
+        "cue_gold_prompts": 41
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 367,
+        "rewards_metrics/true_correct": 383,
+        "rewards_metrics/followed_cue": 338,
+        "rewards_metrics/parse_failed": 9,
+        "cue_gold_prompts": 40
+      },
+      "wandb_counts": {
+        "rewards/task_success": 367,
+        "rewards_metrics/true_correct": 383,
+        "rewards_metrics/followed_cue": 338,
+        "rewards_metrics/parse_failed": 9,
+        "cue_gold_prompts": 40
+      },
+      "PASS": true
+    }
+  ]
+}

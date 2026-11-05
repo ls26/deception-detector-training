@@ -1,0 +1,18 @@
+{
+  "model": "w10_s43",
+  "run_dir": "/workspace/results/run_results/261103_kl_0_01/own_w10_s43_i775zkob",
+  "train": {
+    "n_biased": 886,
+    "n_unbiased": 886,
+    "mean_biased": 0.8018838159243826,
+    "mean_unbiased": 0.2940007234951946,
+    "auc": 0.957710612538153
+  },
+  "test": {
+    "n_biased": 274,
+    "n_unbiased": 451,
+    "mean_biased": 0.7490015414468673,
+    "mean_unbiased": 0.3554184701172839,
+    "auc": 0.8771748102351627
+  }
+}
