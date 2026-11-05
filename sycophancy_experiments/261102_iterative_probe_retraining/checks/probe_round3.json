@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261102_iterative_probe_retraining/round3_5xj7bsnh",
+  "log": "logs/rl_round3_a1_33f36c5bf32d.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2268,
+    2268
+  ],
+  "expected_train_biased_unbiased": [
+    2268,
+    2268
+  ],
+  "test_biased_unbiased": [
+    425,
+    455
+  ],
+  "expected_test_biased_unbiased": [
+    425,
+    455
+  ],
+  "test_auc": 0.9183710407239819,
+  "test_mean_biased": 0.752676402913297,
+  "test_mean_unbiased": 0.3086784625782217,
+  "offline_auc_261010": 0.871
+}

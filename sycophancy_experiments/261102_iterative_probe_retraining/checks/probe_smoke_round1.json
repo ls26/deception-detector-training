@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261102_iterative_probe_retraining/smoke_round1_x9l5z72g",
+  "log": "logs/rl_smoke_round1_a1_33f36c5bf32d.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    756,
+    756
+  ],
+  "expected_train_biased_unbiased": [
+    756,
+    756
+  ],
+  "test_biased_unbiased": [
+    292,
+    485
+  ],
+  "expected_test_biased_unbiased": [
+    292,
+    485
+  ],
+  "test_auc": 0.8730052252506708,
+  "test_mean_biased": 0.7221844251680647,
+  "test_mean_unbiased": 0.25478438520600644,
+  "offline_auc_261010": 0.871
+}

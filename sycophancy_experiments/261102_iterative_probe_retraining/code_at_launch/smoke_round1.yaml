@@ -1,0 +1,31 @@
+# Round 1 smoke run: written by `rounds.py config 1` from round_template.yaml.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261102_iterative_probe_retraining smoke_round1 <attempt>
+
+run_key: smoke_round1
+output_dir: /workspace/sycophancy_experiments/261102_iterative_probe_retraining
+group: 261102_iterative_probe_retraining
+config_name: grpo_mcq
+probe:
+  directory_save_prefix: smoke_round1
+  retrain: true
+checkpoint: null
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 0.6
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: 'null'
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 2
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy_experiments/261102_iterative_probe_retraining/probe_sets/round1/train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy_experiments/261102_iterative_probe_retraining/probe_sets/round1/test.jsonl
+  data.probe_dataset.max_train_examples: 3024
+  ++grpo.model.kl_reference_from_base: true
+  training.eval_steps: 1

@@ -1,0 +1,33 @@
+{
+  "round": 1,
+  "sources": {
+    "original": {
+      "pool": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    }
+  },
+  "own_pool_filters": {},
+  "train_rows": 1512,
+  "train_biased": 756,
+  "test_answers": "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl (261010's base-model eval answers)",
+  "test_biased": 292,
+  "test_unbiased": 485,
+  "test_one_class": false
+}

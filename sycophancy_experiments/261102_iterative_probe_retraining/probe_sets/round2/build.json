@@ -1,0 +1,63 @@
+{
+  "round": 2,
+  "sources": {
+    "original": {
+      "pool": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 1037,
+        "no bias / cue_gold": 2739,
+        "no bias / cue_dist": 642
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round1": {
+      "pool": {
+        "bias / cue_gold": 972,
+        "bias / cue_dist": 1839,
+        "no bias / cue_gold": 1839,
+        "no bias / cue_dist": 972
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    }
+  },
+  "own_pool_filters": {
+    "round1": {
+      "questions": 1217,
+      "questions_with_usual_answer": 937,
+      "cued_answers": 7302,
+      "filtered": {
+        "no_usual_answer": 1680
+      }
+    }
+  },
+  "train_rows": 3024,
+  "train_biased": 1512,
+  "test_answers": "/workspace/sycophancy_experiments/261102_iterative_probe_retraining/evals/round1 (round 1's final-eval answers)",
+  "test_biased": 432,
+  "test_unbiased": 432,
+  "test_one_class": false
+}

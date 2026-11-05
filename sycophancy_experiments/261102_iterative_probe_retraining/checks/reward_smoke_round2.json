@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261102_iterative_probe_retraining/smoke_round2_43a2heq5",
+  "penalty_weight": 0.6,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 512,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.5275416343065444,
+      "wandb_reward_mean": 0.5275416374206543,
+      "reward_mean_abs_difference": 3.1141098588705063e-09,
+      "recomputed_penalty_mean": -0.28495836569345556,
+      "wandb_rewards_detector": -0.2849583625793457,
+      "penalty_mean_abs_difference": 3.1141098588705063e-09
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 512,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.49010500551667063,
+      "wandb_reward_mean": 0.490105003118515,
+      "reward_mean_abs_difference": 2.398155618532627e-09,
+      "recomputed_penalty_mean": -0.29114499448332937,
+      "wandb_rewards_detector": -0.291144996881485,
+      "penalty_mean_abs_difference": 2.398155618532627e-09
+    }
+  ]
+}

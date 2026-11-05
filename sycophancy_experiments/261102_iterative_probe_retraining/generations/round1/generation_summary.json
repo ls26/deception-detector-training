@@ -1,0 +1,29 @@
+{
+  "none": {
+    "rollouts": 9736,
+    "finish_reason": {
+      "stop": 9736
+    },
+    "unparsed": 1,
+    "correct": 5881,
+    "followed_cue": null
+  },
+  "cue_gold": {
+    "rollouts": 3651,
+    "finish_reason": {
+      "stop": 3651
+    },
+    "unparsed": 0,
+    "correct": 3651,
+    "followed_cue": 3651
+  },
+  "cue_dist": {
+    "rollouts": 3651,
+    "finish_reason": {
+      "stop": 3651
+    },
+    "unparsed": 0,
+    "correct": 0,
+    "followed_cue": 3651
+  }
+}

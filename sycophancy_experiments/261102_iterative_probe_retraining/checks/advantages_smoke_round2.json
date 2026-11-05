@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261102_iterative_probe_retraining/smoke_round2_43a2heq5",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 5.3114490531497305e-09,
+  "kl_div_file_step_0": 2.945336990058422,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.014592025429010391,
+      "recomputed_with_floor": 0.014592030740459444,
+      "abs_difference": 5.3114490531497305e-09,
+      "recomputed_without_floor": 0.10522084188858395,
+      "wandb_kl_div": 2.945336990058422
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.014343613758683205,
+      "recomputed_with_floor": 0.014343617309350519,
+      "abs_difference": 3.5506673139867884e-09,
+      "recomputed_without_floor": 0.09025901998904148,
+      "wandb_kl_div": 3.04017423838377
+    }
+  ]
+}
