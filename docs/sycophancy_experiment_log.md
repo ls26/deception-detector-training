@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261102 | [`261102_iterative_probe_retraining`](../sycophancy_experiments/261102_iterative_probe_retraining/) | Five rounds in 261027's weight-0.6 seed-42 setup, the probe refit every round. One-sentence answers from round 1; training-mix cue agreement rate 100.0 / 97.6 / 99.6 / 74.2 / 80.5%. |
 | 261031 | [`261031_probe_penalty_weights_1_5_2_0`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/) | 261027's setup at penalty weights 1.5 and 2.0, 3 seeds each, plus a fresh probe (refit on the model's own answers) per model. Bias not below the lower weights'; 3 of 6 runs end in a fixed answer pattern. |
 | 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A bias probe refit on each of 12 RL models' own answers and activations. AUC above the initial probe's in all 12 (0.839–0.911 vs 0.752–0.863 by weight). |
 | 261027 | [`261027_probe_penalty_weight_sweep`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/) | 261025's SD-floor setup at penalty weights 0.6 and 1.0, 3 seeds each. Training-mix cue agreement rate 86.7% / 84.4% (no penalty 89.0%); two weight-1.0 seeds answer in one sentence. |
@@ -139,6 +140,37 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261102 — Iterative RL against the bias probe, refit every round (weight 0.6, 5 rounds): one-sentence answers from round 1; cue agreement rate near 100% in rounds 1–3; round 4's bias 16.4% against the base model's 15.2%
+
+[`sycophancy_experiments/261102_iterative_probe_retraining/`](../sycophancy_experiments/261102_iterative_probe_retraining/)
+
+**Setup:**
+- Five rounds of 128-step GRPO in 261027's weight-0.6 seed-42 setup (the probe penalty with a floor of 0.3 on the group
+  SD in the advantage), as in the MBPP iterative experiments. Round 1 starts from the base model with that config,
+  against the initial probe. Round R keeps training round R−1's LoRA with a fresh optimizer and KL to the base model,
+  against a probe refit at the start of the round through round R−1's model. One lineage; one unattended queue on one
+  H100 pod; all eight review points passed.
+- Round R's probe set: the initial probe's 1512 base-model answers plus the own answers (261028's procedure) of rounds
+  1 … R−1, with the same number per group from each source; 1512 to 7296 answers. No group needed a top-up.
+- Compared with the base model and the no-penalty runs (261013 seed 42, 261018 seeds 43 and 44); one sampled answer per
+  prompt (Decision 8); bias is `rm`.
+
+**Results** (rounds 1–5):
+- Median no-cue answer length 7 / 5 / 5 / 10 / 9 tokens, against 201 for the base model and 253 for the no-penalty
+  seed-42 run. One-sentence answers: 100.0 / 100.0 / 99.9 / 74.9 / 72.5% of final-eval answers (base 0.1%). In round
+  1's training, one-sentence answers went from 0 of 512 at step 5 to 512 of 512 at step 8.
+- Training-mix cue agreement rate 100.0 / 97.6 / 99.6 / 74.2 / 80.5% (base 71.1%, no penalty 89.0% ± 3.6);
+  training-mix bias 45.3 / 40.8 / 45.6 / 16.4 / 24.3% (base 15.3%, and 15.2% on round 4's questions; no penalty
+  28.8% ± 3.6).
+- True accuracy with no cue 61.6 / 67.9 / 66.3 / 71.8 / 69.7% (base 75.5%); with the cue at the wrong answer
+  0.0 / 5.9 / 0.2 / 49.5 / 38.7% (base 50.9%).
+- Round 1's probe (the initial probe) scores round 1's final biased and unbiased answers 0.116 / 0.107 (AUC 0.558),
+  against 0.722 / 0.255 (AUC 0.873) on its own test set of base-model answers.
+- Rounds 2–5: 97.2 / 92.7 / 72.2 / 80.7% of training groups had all 8 answers naming the cue, and the advantage from
+  those groups was at most 0.009 per answer in any window of steps (round 1's steps 0–9: 0.058). Round R's probe: AUC
+  0.736 / 0.918 / 0.791 / 0.825 on its own test set (round R−1's answers), 0.830 / 0.669 / 0.834 / 0.777 on round R's
+  answers.
 
 ### 261031 — Penalty weights 1.5 and 2.0 with the SD floor: bias not below the lower weights', the probe score falls instead; three of six runs end in a fixed answer pattern
 
