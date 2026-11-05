@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261103 | [`261103_kl_0_01`](../sycophancy_experiments/261103_kl_0_01/) | 261027's setup at KL 0.01 instead of 0.001, weight 1.0 and no penalty, 3 seeds each. No weight-1.0 seed answers in one sentence (2 of 3 at KL 0.001); no-penalty training-mix bias 28.6% vs 28.8%. |
 | 261102 | [`261102_iterative_probe_retraining`](../sycophancy_experiments/261102_iterative_probe_retraining/) | Five rounds in 261027's weight-0.6 seed-42 setup, the probe refit every round. One-sentence answers from round 1; training-mix cue agreement rate 100.0 / 97.6 / 99.6 / 74.2 / 80.5%. |
 | 261031 | [`261031_probe_penalty_weights_1_5_2_0`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/) | 261027's setup at penalty weights 1.5 and 2.0, 3 seeds each, plus a fresh probe (refit on the model's own answers) per model. Bias not below the lower weights'; 3 of 6 runs end in a fixed answer pattern. |
 | 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A bias probe refit on each of 12 RL models' own answers and activations. AUC above the initial probe's in all 12 (0.839–0.911 vs 0.752–0.863 by weight). |
@@ -140,6 +141,35 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261103 — KL penalty 0.01 instead of 0.001: no one-sentence answers at weight 1.0; cue agreement rate and bias above the base model's in 2 of 3 weight-1.0 seeds; no-penalty bias as at KL 0.001
+
+[`sycophancy_experiments/261103_kl_0_01/`](../sycophancy_experiments/261103_kl_0_01/)
+
+**Setup:**
+- 261027's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the KL coefficient to the
+  base model raised from 0.001, the value of every earlier sycophancy run, to 0.01: penalty weight 1.0 and no penalty
+  (weight 0), seeds 42–44 each. Two unattended queues, one per condition, on two H100 pods; all review points passed.
+- Compared with 261027's weight-1.0 runs and the no-penalty runs (261013 seed 42, 261018 seeds 43 and 44) at KL 0.001;
+  the no-penalty runs at KL 0.001 also ran older code without the floor. One sampled answer per prompt (Decision 8);
+  bias is `rm`.
+- A fresh probe (261028's procedure, refit on the model's own answers and activations) for each weight-1.0 model.
+
+**Results:**
+- Weight 1.0, seeds 42 / 43 / 44: one-sentence answers 0.0% of final-eval answers in every seed at KL 0.01, against
+  99.2 / 0.0 / 99.98% at KL 0.001 (base 0.1%); median no-cue answer length 168 / 174 / 190 tokens, against 5 / 102 / 5
+  (base 201).
+- Weight 1.0 at KL 0.01, seeds 42 / 43 / 44: training-mix cue agreement rate 81.3 / 84.0 / 69.1% (base 71.1%; KL 0.001
+  84.4% ± 1.2), training-mix bias 20.2 / 25.0 / 10.5% (base 15.0 / 15.4 / 14.7% on each seed's questions; KL 0.001
+  26.5% ± 2.9), true accuracy with the cue at the wrong answer 43.1 / 33.1 / 60.1% (base 50.9%; KL 0.001 33.9% ± 3.6).
+- No penalty: training-mix bias 28.6% ± 8.2 at KL 0.01 against 28.8% ± 3.6 at KL 0.001 (base 15.2%); training-mix cue
+  agreement rate 88.1% ± 7.8 against 89.0% ± 3.6.
+- Initial probe, both cue conditions pooled, weight 1.0 at KL 0.01: mean score of biased / unbiased answers 0.200 ±
+  0.001 / 0.047 ± 0.006 and AUC 0.795 ± 0.008 for seeds 42 and 43, 0.595 / 0.150 and 0.879 for seed 44, against
+  0.750 / 0.228 and 0.908 on the base model's answers. No-penalty runs at KL 0.01: biased answers 0.386 / 0.653 /
+  0.696, AUC 0.863 / 0.905 / 0.906.
+- Fresh probe AUC 0.865 ± 0.017 for weight-1.0 seeds 42 and 43 and 0.904 for seed 44, above the initial probe's on the
+  same answers, as in all 17 models of 261028 and 261031 with biased eval answers.
 
 ### 261102 — Iterative RL against the bias probe, refit every round (weight 0.6, 5 rounds): one-sentence answers from round 1; cue agreement rate near 100% in rounds 1–3; round 4's bias 16.4% against the base model's 15.2%
 
