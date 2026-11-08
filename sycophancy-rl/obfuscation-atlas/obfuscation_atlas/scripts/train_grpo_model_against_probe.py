@@ -699,7 +699,7 @@ def run_rl(cfg: GRPOObfuscationConfig):
     trainer.set_detector(obfuscation_loss_fns, probe_training_dataset, mean_decision_threshold, mean_positive_score)  # type: ignore
     if not cfg.training.only_eval_from_other_run:
         trainer.train()
-        final_adapter_path = save_path / "checkpoints" / "final" / "lora"
+        final_adapter_path = save_path / "checkpoints" / "final"
     else:
         print("Skipping RL training, only evaluating from other run")
         trainer.state.model.shared_base_model.base_model.enable_adapter_layers()  # type: ignore
