@@ -1,0 +1,22 @@
+{
+  "run_dir": "/workspace/results/run_results/261107_no_cue_ceiling_kl_0_01/smoke_nocue_kl_s42_y33vzdj3",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.2553397210623984e-08,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.3925187587738037,
+      "recomputed_with_floor": 0.39251876151079407,
+      "abs_difference": 2.7369903565777065e-09,
+      "recomputed_without_floor": 0.39251876151079407
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.2936062216758728,
+      "recomputed_with_floor": 0.2936062091224756,
+      "abs_difference": 1.2553397210623984e-08,
+      "recomputed_without_floor": 0.2936062091224756
+    }
+  ]
+}

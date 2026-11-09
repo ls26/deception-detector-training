@@ -1,0 +1,904 @@
+{
+  "run_dir": "/workspace/results/run_results/261107_no_cue_ceiling_kl_0_01/nocue_kl_s43_91h69pgs",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 128,
+  "max_abs_difference": 3.395137487816058e-08,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.4044828414916992,
+      "recomputed_with_floor": 0.4044828552855508,
+      "abs_difference": 1.379385156097257e-08,
+      "recomputed_without_floor": 0.4044828552855508
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.4008220434188843,
+      "recomputed_with_floor": 0.4008220657187668,
+      "abs_difference": 2.2299882496135126e-08,
+      "recomputed_without_floor": 0.4008220657187668
+    },
+    {
+      "file_step": 2,
+      "wandb_advantage_abs_mean": 0.33801352977752686,
+      "recomputed_with_floor": 0.3380135095450218,
+      "abs_difference": 2.023250506022478e-08,
+      "recomputed_without_floor": 0.3380135095450218
+    },
+    {
+      "file_step": 3,
+      "wandb_advantage_abs_mean": 0.39414969086647034,
+      "recomputed_with_floor": 0.3941496890068354,
+      "abs_difference": 1.8596349460331396e-09,
+      "recomputed_without_floor": 0.3941496890068354
+    },
+    {
+      "file_step": 4,
+      "wandb_advantage_abs_mean": 0.2869061529636383,
+      "recomputed_with_floor": 0.28690613787998376,
+      "abs_difference": 1.5083654547609626e-08,
+      "recomputed_without_floor": 0.28690613787998376
+    },
+    {
+      "file_step": 5,
+      "wandb_advantage_abs_mean": 0.23355373740196228,
+      "recomputed_with_floor": 0.23355372483785802,
+      "abs_difference": 1.256410425698462e-08,
+      "recomputed_without_floor": 0.23355372483785802
+    },
+    {
+      "file_step": 6,
+      "wandb_advantage_abs_mean": 0.24538786709308624,
+      "recomputed_with_floor": 0.24538785807456417,
+      "abs_difference": 9.018522068027224e-09,
+      "recomputed_without_floor": 0.2538887440536035
+    },
+    {
+      "file_step": 7,
+      "wandb_advantage_abs_mean": 0.2792229652404785,
+      "recomputed_with_floor": 0.2792229544190236,
+      "abs_difference": 1.0821454898835015e-08,
+      "recomputed_without_floor": 0.2792229544190236
+    },
+    {
+      "file_step": 8,
+      "wandb_advantage_abs_mean": 0.2750723958015442,
+      "recomputed_with_floor": 0.27507239614969764,
+      "abs_difference": 3.4815345051342206e-10,
+      "recomputed_without_floor": 0.27507239614969764
+    },
+    {
+      "file_step": 9,
+      "wandb_advantage_abs_mean": 0.24424853920936584,
+      "recomputed_with_floor": 0.24424853515789752,
+      "abs_difference": 4.051468327492813e-09,
+      "recomputed_without_floor": 0.24424853515789752
+    },
+    {
+      "file_step": 10,
+      "wandb_advantage_abs_mean": 0.21329805254936218,
+      "recomputed_with_floor": 0.21329805277483355,
+      "abs_difference": 2.2547136380168809e-10,
+      "recomputed_without_floor": 0.21329805277483355
+    },
+    {
+      "file_step": 11,
+      "wandb_advantage_abs_mean": 0.2896876335144043,
+      "recomputed_with_floor": 0.28968765569359667,
+      "abs_difference": 2.2179192371574175e-08,
+      "recomputed_without_floor": 0.28968765569359667
+    },
+    {
+      "file_step": 12,
+      "wandb_advantage_abs_mean": 0.26162177324295044,
+      "recomputed_with_floor": 0.2616217623859044,
+      "abs_difference": 1.085704603998039e-08,
+      "recomputed_without_floor": 0.2616217623859044
+    },
+    {
+      "file_step": 13,
+      "wandb_advantage_abs_mean": 0.26069343090057373,
+      "recomputed_with_floor": 0.2606934299269541,
+      "abs_difference": 9.736196293630428e-10,
+      "recomputed_without_floor": 0.2606934299269541
+    },
+    {
+      "file_step": 14,
+      "wandb_advantage_abs_mean": 0.2571375370025635,
+      "recomputed_with_floor": 0.2571375030511886,
+      "abs_difference": 3.395137487816058e-08,
+      "recomputed_without_floor": 0.2571375030511886
+    },
+    {
+      "file_step": 15,
+      "wandb_advantage_abs_mean": 0.26507386565208435,
+      "recomputed_with_floor": 0.2650738487963728,
+      "abs_difference": 1.6855711548746655e-08,
+      "recomputed_without_floor": 0.2650738487963728
+    },
+    {
+      "file_step": 16,
+      "wandb_advantage_abs_mean": 0.2794528007507324,
+      "recomputed_with_floor": 0.27945281501911634,
+      "abs_difference": 1.4268383918825123e-08,
+      "recomputed_without_floor": 0.27945281501911634
+    },
+    {
+      "file_step": 17,
+      "wandb_advantage_abs_mean": 0.29453229904174805,
+      "recomputed_with_floor": 0.2945322929753509,
+      "abs_difference": 6.0663971623853286e-09,
+      "recomputed_without_floor": 0.2945322929753509
+    },
+    {
+      "file_step": 18,
+      "wandb_advantage_abs_mean": 0.22618511319160461,
+      "recomputed_with_floor": 0.2261851248731441,
+      "abs_difference": 1.1681539485719483e-08,
+      "recomputed_without_floor": 0.2261851248731441
+    },
+    {
+      "file_step": 19,
+      "wandb_advantage_abs_mean": 0.2636871635913849,
+      "recomputed_with_floor": 0.2636871691554464,
+      "abs_difference": 5.564061489327088e-09,
+      "recomputed_without_floor": 0.2721880551344857
+    },
+    {
+      "file_step": 20,
+      "wandb_advantage_abs_mean": 0.256337434053421,
+      "recomputed_with_floor": 0.25633743933310893,
+      "abs_difference": 5.279687909087727e-09,
+      "recomputed_without_floor": 0.25633743933310893
+    },
+    {
+      "file_step": 21,
+      "wandb_advantage_abs_mean": 0.2172144651412964,
+      "recomputed_with_floor": 0.21721446196335825,
+      "abs_difference": 3.177938134868441e-09,
+      "recomputed_without_floor": 0.21721446196335825
+    },
+    {
+      "file_step": 22,
+      "wandb_advantage_abs_mean": 0.18419794738292694,
+      "recomputed_with_floor": 0.1841979466682605,
+      "abs_difference": 7.146664371404654e-10,
+      "recomputed_without_floor": 0.1841979466682605
+    },
+    {
+      "file_step": 23,
+      "wandb_advantage_abs_mean": 0.17486929893493652,
+      "recomputed_with_floor": 0.17486929852885072,
+      "abs_difference": 4.0608580387235804e-10,
+      "recomputed_without_floor": 0.17486929852885072
+    },
+    {
+      "file_step": 24,
+      "wandb_advantage_abs_mean": 0.19443053007125854,
+      "recomputed_with_floor": 0.19443053873666574,
+      "abs_difference": 8.665407197350206e-09,
+      "recomputed_without_floor": 0.19443053873666574
+    },
+    {
+      "file_step": 25,
+      "wandb_advantage_abs_mean": 0.24677440524101257,
+      "recomputed_with_floor": 0.2467743936358377,
+      "abs_difference": 1.1605174876638813e-08,
+      "recomputed_without_floor": 0.2467743936358377
+    },
+    {
+      "file_step": 26,
+      "wandb_advantage_abs_mean": 0.17453321814537048,
+      "recomputed_with_floor": 0.17453320474604633,
+      "abs_difference": 1.3399324150231706e-08,
+      "recomputed_without_floor": 0.17453320474604633
+    },
+    {
+      "file_step": 27,
+      "wandb_advantage_abs_mean": 0.1835038661956787,
+      "recomputed_with_floor": 0.1835038676558321,
+      "abs_difference": 1.4601533870894912e-09,
+      "recomputed_without_floor": 0.1835038676558321
+    },
+    {
+      "file_step": 28,
+      "wandb_advantage_abs_mean": 0.19316886365413666,
+      "recomputed_with_floor": 0.19316885802342007,
+      "abs_difference": 5.6307165874347476e-09,
+      "recomputed_without_floor": 0.19316885802342007
+    },
+    {
+      "file_step": 29,
+      "wandb_advantage_abs_mean": 0.22834983468055725,
+      "recomputed_with_floor": 0.22834983620050758,
+      "abs_difference": 1.5199503322627095e-09,
+      "recomputed_without_floor": 0.22834983620050758
+    },
+    {
+      "file_step": 30,
+      "wandb_advantage_abs_mean": 0.24873468279838562,
+      "recomputed_with_floor": 0.24873469028759385,
+      "abs_difference": 7.489208225797128e-09,
+      "recomputed_without_floor": 0.24873469028759385
+    },
+    {
+      "file_step": 31,
+      "wandb_advantage_abs_mean": 0.25252485275268555,
+      "recomputed_with_floor": 0.2525248706098814,
+      "abs_difference": 1.7857195833137496e-08,
+      "recomputed_without_floor": 0.2525248706098814
+    },
+    {
+      "file_step": 32,
+      "wandb_advantage_abs_mean": 0.2658422291278839,
+      "recomputed_with_floor": 0.26584223553043124,
+      "abs_difference": 6.402547325645713e-09,
+      "recomputed_without_floor": 0.26584223553043124
+    },
+    {
+      "file_step": 33,
+      "wandb_advantage_abs_mean": 0.21628965437412262,
+      "recomputed_with_floor": 0.21628964776297163,
+      "abs_difference": 6.6111509877675445e-09,
+      "recomputed_without_floor": 0.22479053374201094
+    },
+    {
+      "file_step": 34,
+      "wandb_advantage_abs_mean": 0.2571353614330292,
+      "recomputed_with_floor": 0.2571353588108344,
+      "abs_difference": 2.6221947946325486e-09,
+      "recomputed_without_floor": 0.2571353588108344
+    },
+    {
+      "file_step": 35,
+      "wandb_advantage_abs_mean": 0.18615825474262238,
+      "recomputed_with_floor": 0.18615824332001665,
+      "abs_difference": 1.1422605722399837e-08,
+      "recomputed_without_floor": 0.18615824332001665
+    },
+    {
+      "file_step": 36,
+      "wandb_advantage_abs_mean": 0.20950786769390106,
+      "recomputed_with_floor": 0.20950787245254607,
+      "abs_difference": 4.758645005820128e-09,
+      "recomputed_without_floor": 0.20950787245254607
+    },
+    {
+      "file_step": 37,
+      "wandb_advantage_abs_mean": 0.18948215246200562,
+      "recomputed_with_floor": 0.18948216535533519,
+      "abs_difference": 1.289332957066236e-08,
+      "recomputed_without_floor": 0.18948216535533519
+    },
+    {
+      "file_step": 38,
+      "wandb_advantage_abs_mean": 0.3168519139289856,
+      "recomputed_with_floor": 0.31685189342398706,
+      "abs_difference": 2.0504998532455687e-08,
+      "recomputed_without_floor": 0.31685189342398706
+    },
+    {
+      "file_step": 39,
+      "wandb_advantage_abs_mean": 0.2931441366672516,
+      "recomputed_with_floor": 0.2931441349504942,
+      "abs_difference": 1.716757402903113e-09,
+      "recomputed_without_floor": 0.2931441349504942
+    },
+    {
+      "file_step": 40,
+      "wandb_advantage_abs_mean": 0.2058025598526001,
+      "recomputed_with_floor": 0.20580255808745848,
+      "abs_difference": 1.7651416162056677e-09,
+      "recomputed_without_floor": 0.21430344406649782
+    },
+    {
+      "file_step": 41,
+      "wandb_advantage_abs_mean": 0.22767701745033264,
+      "recomputed_with_floor": 0.22767701899757714,
+      "abs_difference": 1.5472444991893042e-09,
+      "recomputed_without_floor": 0.22767701899757714
+    },
+    {
+      "file_step": 42,
+      "wandb_advantage_abs_mean": 0.21249808371067047,
+      "recomputed_with_floor": 0.2124980934224747,
+      "abs_difference": 9.711804221934628e-09,
+      "recomputed_without_floor": 0.2124980934224747
+    },
+    {
+      "file_step": 43,
+      "wandb_advantage_abs_mean": 0.19615882635116577,
+      "recomputed_with_floor": 0.19615883054797495,
+      "abs_difference": 4.196809177958727e-09,
+      "recomputed_without_floor": 0.19615883054797495
+    },
+    {
+      "file_step": 44,
+      "wandb_advantage_abs_mean": 0.1835038661956787,
+      "recomputed_with_floor": 0.18350386765583218,
+      "abs_difference": 1.460153470356218e-09,
+      "recomputed_without_floor": 0.18350386765583218
+    },
+    {
+      "file_step": 45,
+      "wandb_advantage_abs_mean": 0.1856943815946579,
+      "recomputed_with_floor": 0.1856943777187756,
+      "abs_difference": 3.8758823095452755e-09,
+      "recomputed_without_floor": 0.1856943777187756
+    },
+    {
+      "file_step": 46,
+      "wandb_advantage_abs_mean": 0.14128683507442474,
+      "recomputed_with_floor": 0.14128682885085578,
+      "abs_difference": 6.223568965735282e-09,
+      "recomputed_without_floor": 0.14128682885085578
+    },
+    {
+      "file_step": 47,
+      "wandb_advantage_abs_mean": 0.15474174916744232,
+      "recomputed_with_floor": 0.1547417510953574,
+      "abs_difference": 1.927915077581943e-09,
+      "recomputed_without_floor": 0.1547417510953574
+    },
+    {
+      "file_step": 48,
+      "wandb_advantage_abs_mean": 0.18002843856811523,
+      "recomputed_with_floor": 0.18002843484033665,
+      "abs_difference": 3.727778585815855e-09,
+      "recomputed_without_floor": 0.18002843484033665
+    },
+    {
+      "file_step": 49,
+      "wandb_advantage_abs_mean": 0.09595334529876709,
+      "recomputed_with_floor": 0.09595334020971348,
+      "abs_difference": 5.0890536090753e-09,
+      "recomputed_without_floor": 0.09595334020971348
+    },
+    {
+      "file_step": 50,
+      "wandb_advantage_abs_mean": 0.18500006198883057,
+      "recomputed_with_floor": 0.18500005026097355,
+      "abs_difference": 1.1727857018861698e-08,
+      "recomputed_without_floor": 0.18500005026097355
+    },
+    {
+      "file_step": 51,
+      "wandb_advantage_abs_mean": 0.2016730010509491,
+      "recomputed_with_floor": 0.20167301420086323,
+      "abs_difference": 1.3149914129817475e-08,
+      "recomputed_without_floor": 0.20167301420086323
+    },
+    {
+      "file_step": 52,
+      "wandb_advantage_abs_mean": 0.18200768530368805,
+      "recomputed_with_floor": 0.18200768505069073,
+      "abs_difference": 2.529973175402489e-10,
+      "recomputed_without_floor": 0.18200768505069073
+    },
+    {
+      "file_step": 53,
+      "wandb_advantage_abs_mean": 0.14553897082805634,
+      "recomputed_with_floor": 0.14553897897940377,
+      "abs_difference": 8.151347430374045e-09,
+      "recomputed_without_floor": 0.14553897897940377
+    },
+    {
+      "file_step": 54,
+      "wandb_advantage_abs_mean": 0.12873560190200806,
+      "recomputed_with_floor": 0.1287356020582893,
+      "abs_difference": 1.5628123795075055e-10,
+      "recomputed_without_floor": 0.1287356020582893
+    },
+    {
+      "file_step": 55,
+      "wandb_advantage_abs_mean": 0.1495591253042221,
+      "recomputed_with_floor": 0.14955912426750487,
+      "abs_difference": 1.036717239832896e-09,
+      "recomputed_without_floor": 0.14955912426750487
+    },
+    {
+      "file_step": 56,
+      "wandb_advantage_abs_mean": 0.10342782735824585,
+      "recomputed_with_floor": 0.1034278205143579,
+      "abs_difference": 6.843887956353711e-09,
+      "recomputed_without_floor": 0.1034278205143579
+    },
+    {
+      "file_step": 57,
+      "wandb_advantage_abs_mean": 0.2122659981250763,
+      "recomputed_with_floor": 0.21226598421630685,
+      "abs_difference": 1.3908769441739466e-08,
+      "recomputed_without_floor": 0.21226598421630685
+    },
+    {
+      "file_step": 58,
+      "wandb_advantage_abs_mean": 0.09744738042354584,
+      "recomputed_with_floor": 0.09744737857450068,
+      "abs_difference": 1.8490451531016916e-09,
+      "recomputed_without_floor": 0.09744737857450068
+    },
+    {
+      "file_step": 59,
+      "wandb_advantage_abs_mean": 0.14507485926151276,
+      "recomputed_with_floor": 0.14507486493278904,
+      "abs_difference": 5.6712762819266516e-09,
+      "recomputed_without_floor": 0.14507486493278904
+    },
+    {
+      "file_step": 60,
+      "wandb_advantage_abs_mean": 0.13115787506103516,
+      "recomputed_with_floor": 0.13115786851630598,
+      "abs_difference": 6.544729175272934e-09,
+      "recomputed_without_floor": 0.13115786851630598
+    },
+    {
+      "file_step": 61,
+      "wandb_advantage_abs_mean": 0.11401865631341934,
+      "recomputed_with_floor": 0.11401864628944738,
+      "abs_difference": 1.0023971958039724e-08,
+      "recomputed_without_floor": 0.11401864628944738
+    },
+    {
+      "file_step": 62,
+      "wandb_advantage_abs_mean": 0.12401922792196274,
+      "recomputed_with_floor": 0.12401923351740568,
+      "abs_difference": 5.59544294231884e-09,
+      "recomputed_without_floor": 0.12401923351740568
+    },
+    {
+      "file_step": 63,
+      "wandb_advantage_abs_mean": 0.12873560190200806,
+      "recomputed_with_floor": 0.1287356020582893,
+      "abs_difference": 1.5628123795075055e-10,
+      "recomputed_without_floor": 0.1287356020582893
+    },
+    {
+      "file_step": 64,
+      "wandb_advantage_abs_mean": 0.08110810816287994,
+      "recomputed_with_floor": 0.08110811570000093,
+      "abs_difference": 7.537120982892276e-09,
+      "recomputed_without_floor": 0.08110811570000093
+    },
+    {
+      "file_step": 65,
+      "wandb_advantage_abs_mean": 0.1547396183013916,
+      "recomputed_with_floor": 0.1547396068550032,
+      "abs_difference": 1.144638839267742e-08,
+      "recomputed_without_floor": 0.1547396068550032
+    },
+    {
+      "file_step": 66,
+      "wandb_advantage_abs_mean": 0.10940611362457275,
+      "recomputed_with_floor": 0.10940611821386093,
+      "abs_difference": 4.589288171708006e-09,
+      "recomputed_without_floor": 0.10940611821386093
+    },
+    {
+      "file_step": 67,
+      "wandb_advantage_abs_mean": 0.17280705273151398,
+      "recomputed_with_floor": 0.1728070571750913,
+      "abs_difference": 4.44357731166356e-09,
+      "recomputed_without_floor": 0.1728070571750913
+    },
+    {
+      "file_step": 68,
+      "wandb_advantage_abs_mean": 0.13737042248249054,
+      "recomputed_with_floor": 0.137370419662331,
+      "abs_difference": 2.82015955033188e-09,
+      "recomputed_without_floor": 0.137370419662331
+    },
+    {
+      "file_step": 69,
+      "wandb_advantage_abs_mean": 0.15968799591064453,
+      "recomputed_with_floor": 0.1596879802363338,
+      "abs_difference": 1.5674310738234e-08,
+      "recomputed_without_floor": 0.1596879802363338
+    },
+    {
+      "file_step": 70,
+      "wandb_advantage_abs_mean": 0.18523001670837402,
+      "recomputed_with_floor": 0.18523001522678717,
+      "abs_difference": 1.4815868532025434e-09,
+      "recomputed_without_floor": 0.18523001522678717
+    },
+    {
+      "file_step": 71,
+      "wandb_advantage_abs_mean": 0.1130925640463829,
+      "recomputed_with_floor": 0.11309256243657209,
+      "abs_difference": 1.6098108124307231e-09,
+      "recomputed_without_floor": 0.11309256243657209
+    },
+    {
+      "file_step": 72,
+      "wandb_advantage_abs_mean": 0.0867505669593811,
+      "recomputed_with_floor": 0.08675056809375985,
+      "abs_difference": 1.1343787437168018e-09,
+      "recomputed_without_floor": 0.08675056809375985
+    },
+    {
+      "file_step": 73,
+      "wandb_advantage_abs_mean": 0.1354122757911682,
+      "recomputed_with_floor": 0.13541226725092906,
+      "abs_difference": 8.540239154752882e-09,
+      "recomputed_without_floor": 0.13541226725092906
+    },
+    {
+      "file_step": 74,
+      "wandb_advantage_abs_mean": 0.15324556827545166,
+      "recomputed_with_floor": 0.153245568490216,
+      "abs_difference": 2.1476434519662746e-10,
+      "recomputed_without_floor": 0.153245568490216
+    },
+    {
+      "file_step": 75,
+      "wandb_advantage_abs_mean": 0.03347848355770111,
+      "recomputed_with_floor": 0.03347848510135837,
+      "abs_difference": 1.5436572575744378e-09,
+      "recomputed_without_floor": 0.03347848510135837
+    },
+    {
+      "file_step": 76,
+      "wandb_advantage_abs_mean": 0.16164827346801758,
+      "recomputed_with_floor": 0.1616482768880899,
+      "abs_difference": 3.4200723086907914e-09,
+      "recomputed_without_floor": 0.1616482768880899
+    },
+    {
+      "file_step": 77,
+      "wandb_advantage_abs_mean": 0.1272394210100174,
+      "recomputed_with_floor": 0.1272394194531479,
+      "abs_difference": 1.5568694944345651e-09,
+      "recomputed_without_floor": 0.1272394194531479
+    },
+    {
+      "file_step": 78,
+      "wandb_advantage_abs_mean": 0.08180219680070877,
+      "recomputed_with_floor": 0.08180219471242929,
+      "abs_difference": 2.0882794798948723e-09,
+      "recomputed_without_floor": 0.08180219471242929
+    },
+    {
+      "file_step": 79,
+      "wandb_advantage_abs_mean": 0.2120339721441269,
+      "recomputed_with_floor": 0.2120339793758599,
+      "abs_difference": 7.231733017976083e-09,
+      "recomputed_without_floor": 0.2120339793758599
+    },
+    {
+      "file_step": 80,
+      "wandb_advantage_abs_mean": 0.05878841131925583,
+      "recomputed_with_floor": 0.05878841088564395,
+      "abs_difference": 4.336118755721152e-10,
+      "recomputed_without_floor": 0.05878841088564395
+    },
+    {
+      "file_step": 81,
+      "wandb_advantage_abs_mean": 0.11136427521705627,
+      "recomputed_with_floor": 0.1113642706252629,
+      "abs_difference": 4.591793376085285e-09,
+      "recomputed_without_floor": 0.1113642706252629
+    },
+    {
+      "file_step": 82,
+      "wandb_advantage_abs_mean": 0.09422504901885986,
+      "recomputed_with_floor": 0.09422504839840427,
+      "abs_difference": 6.204555896838215e-10,
+      "recomputed_without_floor": 0.09422504839840427
+    },
+    {
+      "file_step": 83,
+      "wandb_advantage_abs_mean": 0.12471545487642288,
+      "recomputed_with_floor": 0.12471545677018822,
+      "abs_difference": 1.8937653389894393e-09,
+      "recomputed_without_floor": 0.12471545677018822
+    },
+    {
+      "file_step": 84,
+      "wandb_advantage_abs_mean": 0.11309255659580231,
+      "recomputed_with_floor": 0.1130925624365721,
+      "abs_difference": 5.840769798370893e-09,
+      "recomputed_without_floor": 0.1130925624365721
+    },
+    {
+      "file_step": 85,
+      "wandb_advantage_abs_mean": 0.13183307647705078,
+      "recomputed_with_floor": 0.1318330773863579,
+      "abs_difference": 9.093071295929178e-10,
+      "recomputed_without_floor": 0.14033396336539725
+    },
+    {
+      "file_step": 86,
+      "wandb_advantage_abs_mean": 0.10342781990766525,
+      "recomputed_with_floor": 0.10342782051435791,
+      "abs_difference": 6.066926544479045e-10,
+      "recomputed_without_floor": 0.10342782051435791
+    },
+    {
+      "file_step": 87,
+      "wandb_advantage_abs_mean": 0.05626230686903,
+      "recomputed_with_floor": 0.05626230396233009,
+      "abs_difference": 2.906699908544752e-09,
+      "recomputed_without_floor": 0.05626230396233009
+    },
+    {
+      "file_step": 88,
+      "wandb_advantage_abs_mean": 0.1021636426448822,
+      "recomputed_with_floor": 0.10216364274966344,
+      "abs_difference": 1.0478123924073657e-10,
+      "recomputed_without_floor": 0.10216364274966344
+    },
+    {
+      "file_step": 89,
+      "wandb_advantage_abs_mean": 0.10020549595355988,
+      "recomputed_with_floor": 0.10020549033826148,
+      "abs_difference": 5.615298392935841e-09,
+      "recomputed_without_floor": 0.10020549033826148
+    },
+    {
+      "file_step": 90,
+      "wandb_advantage_abs_mean": 0.10239575803279877,
+      "recomputed_with_floor": 0.10239575195583123,
+      "abs_difference": 6.0769675402916334e-09,
+      "recomputed_without_floor": 0.10239575195583123
+    },
+    {
+      "file_step": 91,
+      "wandb_advantage_abs_mean": 0.07512767612934113,
+      "recomputed_with_floor": 0.07512767376014372,
+      "abs_difference": 2.3691974077033606e-09,
+      "recomputed_without_floor": 0.07512767376014372
+    },
+    {
+      "file_step": 92,
+      "wandb_advantage_abs_mean": 0.10538596659898758,
+      "recomputed_with_floor": 0.10538597292575985,
+      "abs_difference": 6.326772272746695e-09,
+      "recomputed_without_floor": 0.10538597292575985
+    },
+    {
+      "file_step": 93,
+      "wandb_advantage_abs_mean": 0.09123483300209045,
+      "recomputed_with_floor": 0.09123482742847566,
+      "abs_difference": 5.573614791920534e-09,
+      "recomputed_without_floor": 0.09123482742847566
+    },
+    {
+      "file_step": 94,
+      "wandb_advantage_abs_mean": 0.07858201116323471,
+      "recomputed_with_floor": 0.07858200877668706,
+      "abs_difference": 2.386547653943083e-09,
+      "recomputed_without_floor": 0.07858200877668706
+    },
+    {
+      "file_step": 95,
+      "wandb_advantage_abs_mean": 0.13886471092700958,
+      "recomputed_with_floor": 0.13886470647249194,
+      "abs_difference": 4.454517643637246e-09,
+      "recomputed_without_floor": 0.13886470647249194
+    },
+    {
+      "file_step": 96,
+      "wandb_advantage_abs_mean": 0.10986808687448502,
+      "recomputed_with_floor": 0.10986808802012149,
+      "abs_difference": 1.14563647457544e-09,
+      "recomputed_without_floor": 0.10986808802012149
+    },
+    {
+      "file_step": 97,
+      "wandb_advantage_abs_mean": 0.08974079042673111,
+      "recomputed_with_floor": 0.08974078906368846,
+      "abs_difference": 1.3630426509703142e-09,
+      "recomputed_without_floor": 0.08974078906368846
+    },
+    {
+      "file_step": 98,
+      "wandb_advantage_abs_mean": 0.169355109333992,
+      "recomputed_with_floor": 0.16935511484427587,
+      "abs_difference": 5.510283868082055e-09,
+      "recomputed_without_floor": 0.16935511484427587
+    },
+    {
+      "file_step": 99,
+      "wandb_advantage_abs_mean": 0.057756341993808746,
+      "recomputed_with_floor": 0.057756342327117294,
+      "abs_difference": 3.3330854742885663e-10,
+      "recomputed_without_floor": 0.057756342327117294
+    },
+    {
+      "file_step": 100,
+      "wandb_advantage_abs_mean": 0.12172523885965347,
+      "recomputed_with_floor": 0.12172523580025962,
+      "abs_difference": 3.059393849369485e-09,
+      "recomputed_without_floor": 0.12172523580025962
+    },
+    {
+      "file_step": 101,
+      "wandb_advantage_abs_mean": 0.1526319831609726,
+      "recomputed_with_floor": 0.15263197752919,
+      "abs_difference": 5.631782595827417e-09,
+      "recomputed_without_floor": 0.15263197752919
+    },
+    {
+      "file_step": 102,
+      "wandb_advantage_abs_mean": 0.1324220448732376,
+      "recomputed_with_floor": 0.13242204628100043,
+      "abs_difference": 1.4077628229802741e-09,
+      "recomputed_without_floor": 0.13242204628100043
+    },
+    {
+      "file_step": 103,
+      "wandb_advantage_abs_mean": 0.11159852147102356,
+      "recomputed_with_floor": 0.11159852407178487,
+      "abs_difference": 2.6007613146417086e-09,
+      "recomputed_without_floor": 0.11159852407178487
+    },
+    {
+      "file_step": 104,
+      "wandb_advantage_abs_mean": 0.08007604628801346,
+      "recomputed_with_floor": 0.08007604714147426,
+      "abs_difference": 8.534608020305257e-10,
+      "recomputed_without_floor": 0.08007604714147426
+    },
+    {
+      "file_step": 105,
+      "wandb_advantage_abs_mean": 0.08628884702920914,
+      "recomputed_with_floor": 0.08628884673287303,
+      "abs_difference": 2.963361084296068e-10,
+      "recomputed_without_floor": 0.08628884673287303
+    },
+    {
+      "file_step": 106,
+      "wandb_advantage_abs_mean": 0.10884030163288116,
+      "recomputed_with_floor": 0.10884030794230319,
+      "abs_difference": 6.309422026506972e-09,
+      "recomputed_without_floor": 0.10884030794230319
+    },
+    {
+      "file_step": 107,
+      "wandb_advantage_abs_mean": 0.11355453729629517,
+      "recomputed_with_floor": 0.11355453224283264,
+      "abs_difference": 5.053462523441077e-09,
+      "recomputed_without_floor": 0.11355453224283264
+    },
+    {
+      "file_step": 108,
+      "wandb_advantage_abs_mean": 0.12172523885965347,
+      "recomputed_with_floor": 0.12172523580025961,
+      "abs_difference": 3.059393863247273e-09,
+      "recomputed_without_floor": 0.12172523580025961
+    },
+    {
+      "file_step": 109,
+      "wandb_advantage_abs_mean": 0.1302296370267868,
+      "recomputed_with_floor": 0.13022964042307653,
+      "abs_difference": 3.396289721679935e-09,
+      "recomputed_without_floor": 0.13022964042307653
+    },
+    {
+      "file_step": 110,
+      "wandb_advantage_abs_mean": 0.10113167762756348,
+      "recomputed_with_floor": 0.10113167855685765,
+      "abs_difference": 9.292941693939127e-10,
+      "recomputed_without_floor": 0.10113167855685765
+    },
+    {
+      "file_step": 111,
+      "wandb_advantage_abs_mean": 0.11976708471775055,
+      "recomputed_with_floor": 0.11976708338885765,
+      "abs_difference": 1.3288928985000226e-09,
+      "recomputed_without_floor": 0.11976708338885765
+    },
+    {
+      "file_step": 112,
+      "wandb_advantage_abs_mean": 0.07811789959669113,
+      "recomputed_with_floor": 0.07811789473007232,
+      "abs_difference": 4.8666188162682644e-09,
+      "recomputed_without_floor": 0.07811789473007232
+    },
+    {
+      "file_step": 113,
+      "wandb_advantage_abs_mean": 0.09422504901885986,
+      "recomputed_with_floor": 0.09422504839840427,
+      "abs_difference": 6.204555896838215e-10,
+      "recomputed_without_floor": 0.09422504839840427
+    },
+    {
+      "file_step": 114,
+      "wandb_advantage_abs_mean": 0.1465689092874527,
+      "recomputed_with_floor": 0.14656890329757627,
+      "abs_difference": 5.9898764281918204e-09,
+      "recomputed_without_floor": 0.14656890329757627
+    },
+    {
+      "file_step": 115,
+      "wandb_advantage_abs_mean": 0.10386385023593903,
+      "recomputed_with_floor": 0.10386385188881005,
+      "abs_difference": 1.652871020607627e-09,
+      "recomputed_without_floor": 0.10386385188881005
+    },
+    {
+      "file_step": 116,
+      "wandb_advantage_abs_mean": 0.0796140730381012,
+      "recomputed_with_floor": 0.07961407733521371,
+      "abs_difference": 4.297112513040879e-09,
+      "recomputed_without_floor": 0.07961407733521371
+    },
+    {
+      "file_step": 117,
+      "wandb_advantage_abs_mean": 0.08523765206336975,
+      "recomputed_with_floor": 0.0852376595865962,
+      "abs_difference": 7.523226444594577e-09,
+      "recomputed_without_floor": 0.0937385455656355
+    },
+    {
+      "file_step": 118,
+      "wandb_advantage_abs_mean": 0.062472712248563766,
+      "recomputed_with_floor": 0.06247271086800092,
+      "abs_difference": 1.380562844599531e-09,
+      "recomputed_without_floor": 0.06247271086800092
+    },
+    {
+      "file_step": 119,
+      "wandb_advantage_abs_mean": 0.08778263628482819,
+      "recomputed_with_floor": 0.08778263665228649,
+      "abs_difference": 3.6745829989914824e-10,
+      "recomputed_without_floor": 0.08778263665228649
+    },
+    {
+      "file_step": 120,
+      "wandb_advantage_abs_mean": 0.1408226191997528,
+      "recomputed_with_floor": 0.1408226104385202,
+      "abs_difference": 8.761232600518198e-09,
+      "recomputed_without_floor": 0.1408226104385202
+    },
+    {
+      "file_step": 121,
+      "wandb_advantage_abs_mean": 0.1242513433098793,
+      "recomputed_with_floor": 0.12425134272357348,
+      "abs_difference": 5.863058233357421e-10,
+      "recomputed_without_floor": 0.12425134272357348
+    },
+    {
+      "file_step": 122,
+      "wandb_advantage_abs_mean": 0.08778264373540878,
+      "recomputed_with_floor": 0.0877826366522865,
+      "abs_difference": 7.083122283146892e-09,
+      "recomputed_without_floor": 0.0877826366522865
+    },
+    {
+      "file_step": 123,
+      "wandb_advantage_abs_mean": 0.09077071398496628,
+      "recomputed_with_floor": 0.09077071338186093,
+      "abs_difference": 6.031053434440992e-10,
+      "recomputed_without_floor": 0.09077071338186093
+    },
+    {
+      "file_step": 124,
+      "wandb_advantage_abs_mean": 0.116080641746521,
+      "recomputed_with_floor": 0.11608063916614653,
+      "abs_difference": 2.5803744696517583e-09,
+      "recomputed_without_floor": 0.11608063916614653
+    },
+    {
+      "file_step": 125,
+      "wandb_advantage_abs_mean": 0.08479242026805878,
+      "recomputed_with_floor": 0.0847924156823579,
+      "abs_difference": 4.585700874581988e-09,
+      "recomputed_without_floor": 0.0847924156823579
+    },
+    {
+      "file_step": 126,
+      "wandb_advantage_abs_mean": 0.12149311602115631,
+      "recomputed_with_floor": 0.1214931265940918,
+      "abs_difference": 1.057293548545335e-08,
+      "recomputed_without_floor": 0.1214931265940918
+    },
+    {
+      "file_step": 127,
+      "wandb_advantage_abs_mean": 0.10538382828235626,
+      "recomputed_with_floor": 0.10538382868540568,
+      "abs_difference": 4.030494132889473e-10,
+      "recomputed_without_floor": 0.10538382868540568
+    }
+  ]
+}
