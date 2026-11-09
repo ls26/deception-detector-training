@@ -235,7 +235,7 @@ def training_curve(run_dir: Path) -> list[dict]:
             "probe_only_groups": probe_only_group_share(rows),
         }
         if "probe_score" in rows[0]:  # runs with the bias probe; earlier runs' records have no probe score
-            point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["parsed_answer"] == r["cue_letter"]])
+            point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["cue_letter"] is not None and r["parsed_answer"] == r["cue_letter"]])
         curve.append(point)
     return curve
 

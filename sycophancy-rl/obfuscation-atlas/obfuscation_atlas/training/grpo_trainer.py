@@ -1166,7 +1166,11 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         # token, as without the bias probe) and penalizes only answers that name the cued option.
         read_token_index, names_cued_option = None, None
         if self.obfuscation_config.task_args.bias_probe_at_answer:
-            names_cued_option = response_wise_reward_metrics["rewards_metrics/followed_cue"]  # type: ignore
+            # A training batch served without a cue (task_args.train_cue off) has no cued option to name.
+            if cue_infos is not None and not self.obfuscation_config.task_args.train_cue:
+                names_cued_option = [False] * len(response_strings)
+            else:
+                names_cued_option = response_wise_reward_metrics["rewards_metrics/followed_cue"]  # type: ignore
             parse_failed = response_wise_reward_metrics["rewards_metrics/parse_failed"]  # type: ignore
             completions = [r.removesuffix(self.tokenizer.eot_token) for r in response_strings]
             read_token_index = [
