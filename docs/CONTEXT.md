@@ -107,7 +107,8 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 261028_own_answer_probes/   # A bias probe refit on each of 12 RL models' own answers and activations (no penalty, weights 0.3–1.0), scored next to the initial probe; 20 eval questions side by side
 │   ├── 261031_probe_penalty_weights_1_5_2_0/  # 261027's setup at penalty weights 1.5 and 2.0, seeds 42–44 each, on one pod; a fresh probe (refit on the model's own answers) for each of the six models
 │   ├── 261102_iterative_probe_retraining/  # 261027's weight-0.6 seed-42 setup as five iterative RL rounds, the bias probe refit at the start of each round on a growing probe set; round, probe and training-dynamics tables
-│   └── 261103_kl_0_01/             # 261027's weight-1.0 and no-penalty setups at KL 0.01 instead of 0.001, seeds 42–44 each, one condition per pod; a fresh probe for each weight-1.0 model
+│   ├── 261103_kl_0_01/             # 261027's weight-1.0 and no-penalty setups at KL 0.01 instead of 0.001, seeds 42–44 each, one condition per pod; a fresh probe for each weight-1.0 model
+│   └── 261104_iterative_kl_0_01/   # Iterative RL at KL 0.01 and weight 1.0: rounds 2–5 continuing 261103's seeds 42 and 43
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the training code of the sycophancy RL runs
 │   └── sycophancy_setup/        # Permanent setup of the CoT noisy-label runs with the bias-probe penalty: data copies, eval, tables, run wrappers, run-config templates (see its README)
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs

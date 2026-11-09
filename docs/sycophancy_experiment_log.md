@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261104 | [`261104_iterative_kl_0_01`](../sycophancy_experiments/261104_iterative_kl_0_01/) | 261102's rounds at KL 0.01 and weight 1.0, continuing 261103's seeds 42 and 43. Training-mix bias 22.6 / 13.5 / 7.6 / 6.3 / 4.6% (base 15.1%); training answers 177–211 tokens. |
 | 261103 | [`261103_kl_0_01`](../sycophancy_experiments/261103_kl_0_01/) | 261027's setup at KL 0.01 instead of 0.001, weight 1.0 and no penalty, 3 seeds each. No weight-1.0 seed answers in one sentence (2 of 3 at KL 0.001); no-penalty training-mix bias 28.6% vs 28.8%. |
 | 261102 | [`261102_iterative_probe_retraining`](../sycophancy_experiments/261102_iterative_probe_retraining/) | Five rounds in 261027's weight-0.6 seed-42 setup, the probe refit every round. One-sentence answers from round 1; training-mix cue agreement rate 100.0 / 97.6 / 99.6 / 74.2 / 80.5%. |
 | 261031 | [`261031_probe_penalty_weights_1_5_2_0`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/) | 261027's setup at penalty weights 1.5 and 2.0, 3 seeds each, plus a fresh probe (refit on the model's own answers) per model. Bias not below the lower weights'; 3 of 6 runs end in a fixed answer pattern. |
@@ -141,6 +142,40 @@ been demonstrated.
 ---
 
 ## Experiments
+
+### 261104 — Iterative RL against the bias probe at KL 0.01 and weight 1.0, two seeds: training-mix bias 22.6% in round 1, 4.6% in round 5; each round's probe lost AUC during round 1 in both seeds, not consistently after
+
+[`sycophancy_experiments/261104_iterative_kl_0_01/`](../sycophancy_experiments/261104_iterative_kl_0_01/)
+
+**Setup:**
+- 261102's iterative rounds at KL 0.01 and penalty weight 1.0 (the SD floor, Decision 10). Round 1 is 261103's
+  weight-1.0 run of seed 42 or 43; rounds 2–5 keep training its LoRA, each round against a probe refit at the start of
+  the round through the previous round's model. Rounds 2–5 split each step's 64 questions into 16 micro-batches of 4
+  instead of 8 of 8.
+- Round R's probe set, as in 261102: the initial probe's 1512 base-model answers plus the own answers of rounds 1 … R−1,
+  the same number per group from each source (100–378); 1512 to 4748 answers in seed 42 and to 4984 in seed 43. In
+  seed 42, round 3's and round 4's answers gave 87 and 54 per group, under the floor of 100, once the earlier rounds'
+  unused answers ran out.
+- Compared with the base model and the no-cue ceiling (261020's noisy-label runs without the cue, KL 0.001). One
+  sampled answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (rounds 1–5, mean ± SD over seeds 42 and 43):
+- Training-mix bias 22.6 ± 3.4 / 13.5 ± 1.2 / 7.6 ± 1.7 / 6.3 ± 0.8 / 4.6 ± 1.8% (base 15.1%, no-cue ceiling
+  18.1% ± 2.7); training-mix cue agreement rate 82.7 ± 1.9 / 73.1 ± 1.3 / 66.0 ± 1.4 / 64.6 ± 0.5 / 62.2 ± 2.3% (base
+  71.1%, no-cue ceiling 76.5% ± 4.0). Training-mix bias was above the round before's once per seed: 6.9% against 6.4%
+  in seed 42's round 4, 5.9% against 5.7% in seed 43's round 5.
+- True accuracy with the cue at the correct answer 93.8 ± 0.1 / 87.9 ± 0.6 / 82.6 ± 0.3 / 81.1 ± 1.3 / 79.4 ± 1.3%
+  (base 84.3%), with the cue at the wrong answer 38.1 ± 7.1 / 55.4 ± 2.9 / 66.5 ± 3.5 / 67.7 ± 3.5 / 72.3 ± 3.9% (base
+  50.9%), with no cue 75.1–76.7% in every round (base 75.5%).
+- Answer length in training (steps 60–127) 177–205 tokens in seed 42 and 184–211 in seed 43; no final-eval answer was
+  cut off at the length limit. Training groups with mixed task rewards per step (steps 60–127): 14.6 ± 1.2 / 9.7 ± 0.5
+  / 4.0 ± 0.7 / 2.6 ± 0.2 / 1.2 ± 0.1 of 64.
+- Round R's probe AUC on its own test set (round R−1's final-eval answers; round 1: 261010's base-model answers) and
+  on round R's final-eval answers. Seed 42: 0.873 → 0.790, 0.840 → 0.865, 0.896 → 0.884, 0.862 → 0.822,
+  0.781 → 0.813. Seed 43: 0.873 → 0.801, 0.857 → 0.830, 0.836 → 0.866, 0.807 → 0.887, 0.879 → 0.738. From round 3's
+  final eval on, these AUCs rest on 34–85 biased answers (standard error 0.026–0.045).
+- Deception 53.7 / 57.4 / 54.8 / 53.3 / 54.8% in seed 42 and 53.8 / 57.0 / 45.6 / 67.5 / 61.6% in seed 43 (base
+  56.8%). P(Yes) after biased answers was above the base model's 63.6% in every round but one per seed.
 
 ### 261103 — KL penalty 0.01 instead of 0.001: no one-sentence answers at weight 1.0; cue agreement rate and bias above the base model's in 2 of 3 weight-1.0 seeds; no-penalty bias as at KL 0.001
 
