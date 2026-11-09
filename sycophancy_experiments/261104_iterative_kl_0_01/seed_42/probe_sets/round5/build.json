@@ -1,0 +1,160 @@
+{
+  "round": 5,
+  "sources": {
+    "original": {
+      "pool": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 1037,
+        "no bias / cue_gold": 2739,
+        "no bias / cue_dist": 642
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round1": {
+      "pool": {
+        "bias / cue_gold": 385,
+        "bias / cue_dist": 1041,
+        "no bias / cue_gold": 2797,
+        "no bias / cue_dist": 534
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round2": {
+      "pool": {
+        "bias / cue_gold": 290,
+        "bias / cue_dist": 465,
+        "no bias / cue_gold": 2863,
+        "no bias / cue_dist": 582
+      },
+      "per_group": 290,
+      "own_rows": {
+        "bias / cue_gold": 290,
+        "bias / cue_dist": 290,
+        "no bias / cue_gold": 290,
+        "no bias / cue_dist": 290
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round3": {
+      "pool": {
+        "bias / cue_gold": 80,
+        "bias / cue_dist": 133,
+        "no bias / cue_gold": 2920,
+        "no bias / cue_dist": 590
+      },
+      "per_group": 87,
+      "own_rows": {
+        "bias / cue_gold": 80,
+        "bias / cue_dist": 87,
+        "no bias / cue_gold": 87,
+        "no bias / cue_dist": 87
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {
+          "round1": 7
+        },
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round4": {
+      "pool": {
+        "bias / cue_gold": 54,
+        "bias / cue_dist": 118,
+        "no bias / cue_gold": 2967,
+        "no bias / cue_dist": 593
+      },
+      "per_group": 54,
+      "own_rows": {
+        "bias / cue_gold": 54,
+        "bias / cue_dist": 54,
+        "no bias / cue_gold": 54,
+        "no bias / cue_dist": 54
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    }
+  },
+  "own_pool_filters": {
+    "round1": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1114,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 1978,
+        "no_usual_answer": 566,
+        "unfinished_or_unparsed": 1
+      }
+    },
+    "round2": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1158,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 2754,
+        "no_usual_answer": 331,
+        "unfinished_or_unparsed": 17
+      }
+    },
+    "round3": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1176,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 3372,
+        "no_usual_answer": 200,
+        "unfinished_or_unparsed": 7
+      }
+    },
+    "round4": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1195,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 3473,
+        "no_usual_answer": 95,
+        "unfinished_or_unparsed": 2
+      }
+    }
+  },
+  "train_rows": 4748,
+  "train_biased": 2374,
+  "test_answers": "/workspace/sycophancy_experiments/261104_iterative_kl_0_01/seed_42/evals/s42_round4 (round 4's final-eval answers)",
+  "test_biased": 73,
+  "test_unbiased": 451,
+  "test_one_class": false
+}

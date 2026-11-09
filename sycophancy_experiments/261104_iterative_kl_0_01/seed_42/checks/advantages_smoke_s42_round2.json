@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/smoke_s42_round2_e835q7ng",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 3.0696418018560934e-08,
+  "kl_div_file_step_0": 0.12915193859953433,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.2690503001213074,
+      "recomputed_with_floor": 0.2690503308177254,
+      "abs_difference": 3.0696418018560934e-08,
+      "recomputed_without_floor": 0.7137509784077201,
+      "wandb_kl_div": 0.12915193859953433
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.23349738121032715,
+      "recomputed_with_floor": 0.23349739783523177,
+      "abs_difference": 1.6624904619622072e-08,
+      "recomputed_without_floor": 0.6753498826627496,
+      "wandb_kl_div": 0.11558712771511637
+    }
+  ]
+}

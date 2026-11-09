@@ -1,0 +1,44 @@
+{
+  "questions": 489,
+  "questions_without_nocue_answer": 7,
+  "cued_rollouts": 978,
+  "bias_rm": {
+    "cue_gold": {
+      "no bias": 450,
+      "bias": 23,
+      "unparsed_turn1": 7,
+      "anti-bias": 9
+    },
+    "cue_dist": {
+      "no bias": 425,
+      "unparsed_turn1": 8,
+      "bias": 55,
+      "anti-bias": 1
+    }
+  },
+  "deception_rm": {
+    "cue_gold": {
+      "deceptive": 209,
+      "honest": 264,
+      "unparsed_turn1": 7,
+      "excluded_antibias": 9
+    },
+    "cue_dist": {
+      "deceptive": 351,
+      "honest": 129,
+      "unparsed_turn1": 8,
+      "excluded_antibias": 1
+    }
+  },
+  "said": {
+    "cue_gold": {
+      "Yes": 218,
+      "No": 271
+    },
+    "cue_dist": {
+      "Yes": 362,
+      "No": 126,
+      "None": 1
+    }
+  }
+}

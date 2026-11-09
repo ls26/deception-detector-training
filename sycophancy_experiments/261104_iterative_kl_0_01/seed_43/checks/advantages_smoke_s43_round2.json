@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/smoke_s43_round2_l9mf5rig",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.4287328764517326e-08,
+  "kl_div_file_step_0": 0.10409469594014809,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.3153332769870758,
+      "recomputed_with_floor": 0.31533329127440457,
+      "abs_difference": 1.4287328764517326e-08,
+      "recomputed_without_floor": 0.7342566380390437,
+      "wandb_kl_div": 0.10409469594014809
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.26261603832244873,
+      "recomputed_with_floor": 0.2626160404524822,
+      "abs_difference": 2.130033482927729e-09,
+      "recomputed_without_floor": 0.7232795580031754,
+      "wandb_kl_div": 0.10154047660762444
+    }
+  ]
+}

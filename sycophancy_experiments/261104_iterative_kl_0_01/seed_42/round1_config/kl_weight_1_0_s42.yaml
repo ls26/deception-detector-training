@@ -1,0 +1,29 @@
+# Round 1 of the seed-42 line, for dynamics.py only (never launched): a copy of /workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/kl_weight_1_0_s42.yaml
+# with the two probe-file keys added, naming the trainer's default files (obfuscation_atlas/config.py:220-221),
+# which that run used (its run_metrics full_config). As 261102's identity/configs/.
+
+run_key: kl_weight_1_0_s42
+output_dir: /workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0
+group: 261103_kl_0_01
+config_name: grpo_mcq
+probe:
+  directory_save_prefix: kl_weight_1_0_s42
+  retrain: true
+checkpoint: null
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: 'null'
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl

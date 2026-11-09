@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s42_round5_ul6lkmkc",
+  "log": "logs/rl_s42_round5_a1_33f36c5bf32d.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2374,
+    2374
+  ],
+  "expected_train_biased_unbiased": [
+    2374,
+    2374
+  ],
+  "test_biased_unbiased": [
+    73,
+    451
+  ],
+  "expected_test_biased_unbiased": [
+    73,
+    451
+  ],
+  "test_auc": 0.7807611700027337,
+  "test_mean_biased": 0.6717847302964289,
+  "test_mean_unbiased": 0.39139291218031785,
+  "offline_auc_261010": 0.871
+}

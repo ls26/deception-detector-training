@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261027_probe_penalty_weight_sweep/smoke_weight_0_6_s42_s2okcxp8",
+  "penalty_weight": 0.6,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 497,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 368,
+      "cut_off": 1,
+      "recomputed_reward_mean": 0.5836076851935672,
+      "wandb_reward_mean": 0.5836076736450195,
+      "reward_mean_abs_difference": 1.154854767371205e-08,
+      "recomputed_penalty_mean": -0.12908762730643275,
+      "wandb_rewards_detector": -0.1290876269340515,
+      "penalty_mean_abs_difference": 3.723812369571533e-10
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 498,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 383,
+      "cut_off": 1,
+      "recomputed_reward_mean": 0.559908045925863,
+      "wandb_reward_mean": 0.5599080324172974,
+      "reward_mean_abs_difference": 1.3508565599451572e-08,
+      "recomputed_penalty_mean": -0.125443516574137,
+      "wandb_rewards_detector": -0.12544351816177368,
+      "penalty_mean_abs_difference": 1.5876366887823679e-09
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/smoke_s43_round2_l9mf5rig",
+  "penalty_weight": 1.0,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 439,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.4884882375945381,
+      "wandb_reward_mean": 0.48848822712898254,
+      "reward_mean_abs_difference": 1.0465555533301085e-08,
+      "recomputed_penalty_mean": -0.3298711374054619,
+      "wandb_rewards_detector": -0.32987114787101746,
+      "penalty_mean_abs_difference": 1.0465555533301085e-08
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 511,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 452,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.5046367681852644,
+      "wandb_reward_mean": 0.5046367645263672,
+      "reward_mean_abs_difference": 3.6588971852324903e-09,
+      "recomputed_penalty_mean": -0.2922382318147356,
+      "wandb_rewards_detector": -0.2922382354736328,
+      "penalty_mean_abs_difference": 3.6588971852324903e-09
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s43_round4_pvormx4t",
+  "log": "logs/rl_s43_round4_a1_09f52c746bb4.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2292,
+    2292
+  ],
+  "expected_train_biased_unbiased": [
+    2292,
+    2292
+  ],
+  "test_biased_unbiased": [
+    85,
+    454
+  ],
+  "expected_test_biased_unbiased": [
+    85,
+    454
+  ],
+  "test_auc": 0.8068670640062192,
+  "test_mean_biased": 0.5913533126853188,
+  "test_mean_unbiased": 0.296855077512692,
+  "offline_auc_261010": 0.871
+}
