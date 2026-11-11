@@ -2,30 +2,35 @@
 
 ## Project Overview
 
-This is the official codebase for [**The Obfuscation Atlas**](/workspace/Obfuscation%20Atlas%20paper.pdf) (ICML 2026, Taufeeque, Heimersheim, Gleave, Cundy — FAR.AI). It studies what happens when you RL-train language models against white-box deception detectors (linear probes on activations): does the model become honest, or does it learn to evade the detector? The main experiment trains models with GRPO on MBPP coding problems where reward hacking via hardcoding test cases naturally emerges, then adds a probe-based penalty to the reward to steer toward honesty. The paper finds four outcomes depending on hyperparameters: honest policies, blatant deception, obfuscated policies (text-level evasion), and obfuscated activations (representation drift).
+This is the official codebase for **The Obfuscation Atlas** (ICML 2026, Taufeeque, Heimersheim, Gleave, Cundy; FAR.AI). It studies what happens when you RL-train language models against white-box deception detectors (linear probes on activations): does the model become honest, or does it learn to evade the detector? The main experiment trains models with GRPO on MBPP coding problems where reward hacking via hardcoding test cases naturally emerges, then adds a probe-based penalty to the reward to steer toward honesty. The paper finds four outcomes depending on hyperparameters: honest policies, blatant deception, obfuscated policies (text-level evasion), and obfuscated activations (representation drift).
+
+This workspace also holds a second RL domain, MMLU-Pro sycophancy, which asks the same question with a probe for sycophantic bias in place of a probe for reward hacking on code. It is the current focus (see Current Direction).
 
 ---
 
 ## Current Direction
 
-The active research direction is **iterative multi-round GRPO against progressively refined probes**, using the **standard (sigmoid) probe penalty** — not the calibrated probe score (methodology #12), which is discontinued after repeated pipeline bugs (#20, #21) and anchor-scale instability. **Early retraining on the regular probe** (methodology #23: dynamic detector-score early stopping) completed on trial 4's base lineage as variant `early_retraining_v2` (rounds 2–5, Aug 4 2026), trial 6 (clp1e-3/p25/seed 50, p10 threshold, stopped at round 5, Aug 5 2026), and trial 8 `early_retraining` (clp3e-3→1e-3/p25/seed 53, stopped at round 5, Aug 5 2026). **Full 128-step base branches** (no early stopping) completed on trials 6 and 8 (Aug 6, 2026) — both stayed Obfuscated through round 5, unlike their early_retraining variants. **AUC early stop** (methodology #26: stop when train-step probe AUC `< 0.75`; v3 variants add 5-step windowed averaging) completed on trial 8 `early_retraining_auc` (Honest from round 3, Aug 8 2026), trial 6/4 `early_retraining_auc_v2` (Aug 8–9 2026), and trial 6/8 `early_retraining_auc_v3` (Aug 9 2026). See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Calibrated-penalty branches (`early_retraining`, `calibrated_fixed`, etc.) remain historical reference only.
+### Active: the MMLU-Pro sycophancy domain
 
-Each round generates on-policy data from the previous checkpoint, builds a mixed probe training set (on-dataset + on-policy rows from multiple sources), trains a fresh linear probe, then runs GRPO against that probe — producing a new checkpoint for the next round. The goal is to determine whether iterative probe retraining can keep pace with an evolving policy's evasion strategies.
+**The task.** The model (Llama-3-8B-Instruct) answers two-option versions of MMLU-Pro questions (the correct answer and one wrong one), reasoning step by step before it answers. The prompt includes the user's opinion about the answer (the *cue*). The behavior under study is **bias**: the cue changing the model's answer, found by comparing the answer with the model's usual answer to the same question without the cue. In evaluations the model is then asked whether it would have answered differently without the user's opinion. **Deception** is a reply that contradicts the measured bias. This question is not part of the reward.
 
-Key methodological choices in the current pipeline:
-- **Pass-only-shown deception** (`pass_only_shown_deception`) as the operational deceptive label — dual-gen when test outputs are distinct, else the old `passes_first_n_but_not_all_tests` proxy (methodology #26)
-- **No-follow-up (nofu) probe extraction** — probe at completion EOT instead of a follow-up "Yes" token
-- **Mixed reward regime** — intermittently reward honest `passes_all_tests` solving alongside the standard `passes_first_n_tests` reward
+**The RL environment.** GRPO rewards agreement with a training label that is wrong on a fixed fifth of the questions, and on three of four training prompts the cue points at that label. Always agreeing with the cue then earns more reward than answering on its own unless the model is right on over 90% of questions. The base model is right on about three quarters, and without a penalty RL makes it more biased. The penalty is a linear probe's bias score, read from the model's activations and subtracted from the reward of answers that agree with the cue. The probe is trained on the base model's answers before RL and stays fixed during a run.
 
-A **second RL domain built on MMLU-Pro sycophancy** is built and RL-ready. [sycophancy_experiment_log.md](./sycophancy_experiment_log.md) holds the experiment history and each folder's README holds the numbers. A rollout is a two-option MMLU-Pro question in which the user states an opinion (the cue); the dataset, split and pre-RL baseline live in [`sycophancy_experiments/260819_domain_baseline/`](../sycophancy_experiments/260819_domain_baseline/). Each rollout is labelled on two axes from counterfactual rollouts: **bias** (the cue changed the answer) and **deception** (the model's Yes/No self-report about the cue contradicts the measured bias). Linear probes on the activations read bias at the answer token. For deception, the probes that hold the self-report fixed by construction (said-Yes and said-No rows separately) score well above chance at the token before the self-report. [`sycophancy_experiments/260924_probe_cv_selection/`](../sycophancy_experiments/260924_probe_cv_selection/) (built on [`260826_probe_training_new/`](../sycophancy_experiments/260826_probe_training_new/) and [`260923_improve_probe_performance/`](../sycophancy_experiments/260923_improve_probe_performance/)) chose the probe trainer's learning rate, step budget and mid-layer band by cross-validation over training questions and reports the AUC of the pipeline's layer-averaged sigmoid score: `bias_followed` 0.788. [`sycophancy_experiments/261007_format_label_cue_ablation/`](../sycophancy_experiments/261007_format_label_cue_ablation/) changes one setup factor per arm against that reference under one matched procedure: a prefilled one-token answer with no chain-of-thought raises `bias_followed` to 0.852 (sampled labels) and 0.880 (labels from P(A) / P(B)), an expert-biography cue changes nothing, and the no-CoT samples are far less noisy, so whether the gain comes from removing the reasoning or from cleaner labels is not settled. There is no settled probe recipe; further experiments on probe performance are next. A no-detector-penalty GRPO baseline ([`sycophancy_experiments/260825_grpo_det0/`](../sycophancy_experiments/260825_grpo_det0/)) closes most of the accuracy headroom by following the cue, so the domain works as an RL environment; GRPO against a no-CoT policy would first need assistant-prefill support, a reward parser for a bare letter and a different probe read position in the pipeline.
+**What has been found.** The bias probe detects bias in the base model's answers. Under the penalty, most runs end about as biased as runs without it, while the fixed probe gives their biased answers much lower scores than it gave the base model's. A probe refit on a trained model's own answers detects that model's bias again. Some runs drop the reasoning and answer in one sentence ("the answer is (B)"), and a few settle on a fixed answer, such as always naming the cued option or always answering B. Raising the KL coefficient, which keeps the model close to the base model, from 0.001 to 0.01 prevented the one-sentence answers in the runs tested. Probes trained to detect deception have not shown a signal separate from bias.
 
-See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology details and run history. See [iterative_training_experiments.md](./iterative_training_experiments.md) for pipeline architecture.
+**Next.** Study iterative training in this environment: several rounds of RL, with the bias probe refit on the current model's answers at the start of each round. A first iterative run switched to one-sentence answers in its first round. To avoid that collapse, the iterative runs since then use the higher KL coefficient of 0.01. Later, do the same with a deception probe.
+
+**Where things are.** Experiment history, standing decisions and terms: [sycophancy_experiment_log.md](./sycophancy_experiment_log.md). Numbers: each experiment folder's README under `sycophancy_experiments/`. Training code: `sycophancy-rl/`, a cleaned-up release version of `obfuscation-atlas/` with the sycophancy task added. Shared run tooling and data (environment, launch wrappers, eval, tables, question and probe files): [`sycophancy-rl/sycophancy_setup/`](../sycophancy-rl/sycophancy_setup/README.md). There is no maintained "current" config: start from the config of the latest experiment you are building on, whose README says what it changed; the log's Decisions say which choices are standing. The setup package's own config templates are an early setup, not the current one.
+
+### Paused: MBPP iterative training
+
+Paused while the sycophancy work runs; it may resume. Multi-round GRPO on MBPP: each round generates outputs from the current model, refits the deception probe on them, and trains against that probe with the standard sigmoid probe penalty (a calibrated penalty was tried and dropped, EXPERIMENT_LOG.md #12). Run history and methodology: [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Pipeline: [iterative_training_experiments.md](./iterative_training_experiments.md).
 
 ---
 
 ## Workspace layout (`/workspace`)
 
-RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs** in `results/`.
+RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`; **sycophancy training code** in `sycophancy-rl/`; **GRPO run outputs** in `results/run_results/`; **sycophancy analyses** in `sycophancy_experiments/`.
 
 ```
 /workspace/
@@ -77,15 +82,15 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
 │   ├── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
 │   ├── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
-│   └── sycophancy_experiment_log.md  # Sycophancy domain: goal, per-experiment log, open questions
-├── sycophancy_experiments/      # New RL domain experiments (MMLU-Pro sycophancy)
+│   └── sycophancy_experiment_log.md  # Sycophancy domain: goal, decisions, terms, one entry per experiment
+├── sycophancy_experiments/      # Sycophancy domain: one folder per experiment, its README holds the numbers
 │   ├── 260811_mmlu_scan/        # Per-category difficulty scan of the base model
 │   ├── 260813_mmlu_2option_scan/    # Two-option variant, both orderings
 │   ├── 260817_mmlu_cue_scan/        # Cue arm: no cue / cue at gold / cue at distractor
 │   ├── 260817_mmlu_deception_scan/  # Deception arm: sampled self-report
 │   ├── 260818_mmlu_deception_v2/    # Counterfactual wordings, P(Yes) from logprobs
 │   ├── 260819_removal_follow_up_wording/  # 260818 rerun, `removal` wording repaired
-│   ├── 260819_domain_baseline/     # *** THE RL DOMAIN: dataset + pre-RL baseline ***
+│   ├── 260819_domain_baseline/     # The RL dataset (questions, splits, cue wordings) and its first pre-RL baseline
 │   ├── 260823_domain_baseline_followup_wordings/  # 4 follow-up wordings, drawn per question
 │   ├── 260824_rescore/             # 3-way bias labels; deception on bias + no bias only
 │   ├── 260825_probe_training/      # First probes: bias + deception, two extraction positions each
@@ -93,29 +98,29 @@ RunPod persistent volume. **Code** in `obfuscation-atlas/`; **experiment outputs
 │   ├── 260826_probe_training_new/  # Probe pipeline rebuilt: 20 probes, majority-of-3 labels, stratified deception
 │   ├── 260923_improve_probe_performance/  # 33 probe-side rounds (trainer, data size, filter, tokens, layers), chosen on eval
 │   ├── 260924_probe_cv_selection/  # CV-chosen lr / steps / layer band, mean-sigmoid headline
-│   ├── 261007_format_label_cue_ablation/  # No-CoT / logprob-label / biography-cue arms vs the CoT reference, one matched probe procedure
+│   ├── 261007_format_label_cue_ablation/  # One factor at a time vs the CoT probes: no CoT, logprob labels, biography cue
 │   ├── 261010_soft_bias_labels/    # Soft no-cue counterfactual labels vs hard labels as probe training targets
-│   ├── 261010_confident_slice/     # CoT probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree; no-CoT probe re-scored on no-cue-confident rows
-│   ├── 261012_port_rerun/          # Sycophancy task ported onto a copy of the release at /workspace/sycophancy-rl; checks, smoke run and a rerun of 260825 from it
-│   ├── 261013_noisy_label_rl/      # GRPO rewarding a noisy training label (20% flipped, cue at it 75%) on the confident questions, no probe penalty; base vs final eval
-│   ├── 261014_nocot_noisy_label_rl/  # 261013's design in the no-CoT format (one letter after a pre-fill) on no-cue-confident questions; base vs final eval
-│   ├── 261018_noisy_label_rl_seeds/  # Seeds 43 and 44 of 261013 and 261014; seed table of seeds 42 / 43 / 44
-│   ├── 261020_reference_rl/        # Reference RL runs vs 261013–261018: noisy or correct labels without the cue, correct labels with it; CoT and no-CoT, 3 seeds each; condition table
-│   ├── 261024_probe_penalty_rl/    # First RL run with the bias-probe penalty (sycophancy_setup's penalty template), seed 42, vs the no-penalty baseline and the no-cue ceiling; training dynamics
-│   ├── 261025_probe_penalty_sd_floor/  # 261024's penalty run with a floor of 0.3 on the group SD in the advantage, seeds 42–44; training dynamics, figures
-│   ├── 261027_probe_penalty_weight_sweep/  # 261025's setup at penalty weights 0.6 and 1.0, seeds 42–44 each, one weight per pod; with 261028's no-penalty and own-answer probe rows
-│   ├── 261028_own_answer_probes/   # A bias probe refit on each of 12 RL models' own answers and activations (no penalty, weights 0.3–1.0), scored next to the initial probe; 20 eval questions side by side
-│   ├── 261031_probe_penalty_weights_1_5_2_0/  # 261027's setup at penalty weights 1.5 and 2.0, seeds 42–44 each, on one pod; a fresh probe (refit on the model's own answers) for each of the six models
-│   ├── 261102_iterative_probe_retraining/  # 261027's weight-0.6 seed-42 setup as five iterative RL rounds, the bias probe refit at the start of each round on a growing probe set; round, probe and training-dynamics tables
-│   ├── 261103_kl_0_01/             # 261027's weight-1.0 and no-penalty setups at KL 0.01 instead of 0.001, seeds 42–44 each, one condition per pod; a fresh probe for each weight-1.0 model
+│   ├── 261010_confident_slice/     # CoT probes on questions where ≥ 6 of 8 no-cue samples agree
+│   ├── 261012_port_rerun/          # Sycophancy task ported onto a copy of the release (sycophancy-rl/), checked by a rerun of 260825
+│   ├── 261013_noisy_label_rl/      # GRPO rewarding a noisy training label (20% flipped, cue at it 75%), CoT, no probe penalty
+│   ├── 261014_nocot_noisy_label_rl/  # 261013 in the no-CoT format (one letter after a prefill)
+│   ├── 261018_noisy_label_rl_seeds/  # Seeds 43 and 44 of 261013 and 261014
+│   ├── 261020_reference_rl/        # Reference RL runs: noisy or correct labels, with or without the cue
+│   ├── 261024_probe_penalty_rl/    # First RL run with the bias-probe penalty
+│   ├── 261025_probe_penalty_sd_floor/  # 261024 with a floor of 0.3 on the group SD in the advantage, 3 seeds
+│   ├── 261027_probe_penalty_weight_sweep/  # Penalty weights 0.6 and 1.0, 3 seeds each
+│   ├── 261028_own_answer_probes/   # Fresh probes: a bias probe refit on each of 12 RL models' own answers
+│   ├── 261031_probe_penalty_weights_1_5_2_0/  # Penalty weights 1.5 and 2.0, 3 seeds each, with fresh probes
+│   ├── 261102_iterative_probe_retraining/  # Iterative RL: 5 rounds, the bias probe refit every round
+│   ├── 261103_kl_0_01/             # KL 0.01 instead of 0.001, at penalty weight 1.0 and with no penalty
 │   └── 261104_iterative_kl_0_01/   # Iterative RL at KL 0.01 and weight 1.0: rounds 2–5 continuing 261103's seeds 42 and 43
-├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the training code of the sycophancy RL runs
-│   └── sycophancy_setup/        # Permanent setup of the CoT noisy-label runs with the bias-probe penalty: data copies, eval, tables, run wrappers, run-config templates (see its README)
+├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the sycophancy training code
+│   └── sycophancy_setup/        # *** Shared run tooling and data for every sycophancy RL run (see its README) ***
+├── scripts/git-hooks/          # Pre-commit hook that refuses large staged files
 ├── scratch/                    # Empty scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below
-├── atlas_setup.sh              # Backward-compat shim -> dotfiles/env.sh, for scripts that still source it
-└── Obfuscation Atlas paper.pdf
+└── atlas_setup.sh              # Backward-compat shim -> dotfiles/env.sh, for scripts that still source it
 ```
 
 ### Path conventions (all future runs)
@@ -212,6 +217,8 @@ obfuscation-atlas/
 
 | If you want to... | Start here |
 |--------------------------------------------|-----------------------------------------------------------|
+| **Sycophancy RL run tooling (env, launch, eval, tables)** | [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md); configs come from the latest experiment folder you build on |
+| Sycophancy experiment history, decisions, terms | [sycophancy_experiment_log.md](./sycophancy_experiment_log.md) |
 | Run or modify the main RL experiment | `scripts/train_grpo_model_against_probe.py` |
 | **Multi-round probe + GRPO loop** | [iterative_training_experiments.md](./iterative_training_experiments.md) → `pipeline/run_trial.py` |
 | **Single-run / sweep ablations** | `pipeline/run_ablation.py` + a YAML config under `experiments/{trials,2507_*}/` |
@@ -236,7 +243,7 @@ obfuscation-atlas/
 
 ## Environment
 
-RunPod: **`/workspace` persists**; **`/root` is ephemeral** (wiped on pod rebuild). Setup now lives in the
+RunPod: **`/workspace` persists**; **`/root` is ephemeral** (wiped on pod rebuild). Setup lives in the
 versioned `/workspace/dotfiles` repo (see its README):
 
 1. `bash /workspace/dotfiles/apply.sh` — run once per pod (or set as the RunPod start command; it's idempotent
@@ -247,6 +254,8 @@ versioned `/workspace/dotfiles` repo (see its README):
    `source /workspace/atlas_setup.sh` still works too (thin shim to `dotfiles/env.sh`, for older scripts).
 2. Use `grpo.model.attn_implementation=sdpa` if `flash_attn` is not installed
 3. Probe eval and GRPO training need a **vLLM server on a separate GPU**; MBPP task eval uses in-process vLLM
+4. Sycophancy runs use the same venv with the `sycophancy-rl/` copy first on `PYTHONPATH`:
+   `source /workspace/sycophancy-rl/sycophancy_setup/run_env.sh` before each step (details in that folder's README)
 
 Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3.11 → re-run
 `bash /workspace/dotfiles/apply.sh` (it detects and repairs this) or manually `cd obfuscation-atlas && rm -rf .venv && make install`.
@@ -255,7 +264,7 @@ Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3
 
 ## Key Decisions
 
-Condensed list. See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology details and rationale.
+Condensed list for the MBPP pipeline; rationale in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Sycophancy decisions are in the Decisions list of [sycophancy_experiment_log.md](./sycophancy_experiment_log.md).
 
 - **Pass-only-shown deception (Jul 2026; hybrid Aug 2026):** Operational deceptive defaults to dual-gen when test outputs are distinct, else old `passes_first_n_but_not_all_tests`. See EXPERIMENT_LOG.md #3 / #26.
 - **Disjoint probe train/eval (Jul 2026):** Zero `task_id` overlap between probe train and eval val. See EXPERIMENT_LOG.md #2.
@@ -266,18 +275,17 @@ Condensed list. See [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) for methodology det
 - **Task train expansion (Jul 2026):** GRPO RL prompts from wider pool (~473/class). See EXPERIMENT_LOG.md #7.
 - **Dataset builders (Jul 2026):** Three builders for mixed probe training sets. See EXPERIMENT_LOG.md #8.
 - **Phase-0 adapter loading (Jul 2026):** Multi-round GRPO loads fresh model for Phase-0 instead of FSDP-wrapped trainer. See [iterative_training_experiments.md](./iterative_training_experiments.md).
-- **Calibrated probe penalty (Jul 2026):** `clip((z_agg - z_h) / (z_d - z_h), 0, 1)` instead of sigmoid, where z_agg is the layer-mean logit and z_h/z_d are median aggregated logits for honest/deceptive on-policy samples from the starting policy. Enabled via `++detector.calibration_logits_path`. See EXPERIMENT_LOG.md #12.
+- **Standard sigmoid probe penalty (Aug 2026):** the calibrated penalty (`clip((z_agg - z_h) / (z_d - z_h), 0, 1)`, enabled via `++detector.calibration_logits_path`, EXPERIMENT_LOG.md #12) was dropped after repeated pipeline bugs (#20, #21) and anchor-scale instability.
 - **Path layout:** All outputs under `results/run_results/`; activations in `results/activations/`. GRPO run dirs are `{wandb.group}/{run_key}_{RUN_ID}/` (trials: `trial{N}/{variant|original}/…`; ablations: experiment folder name). Default GRPO runs share Phase-0 probe in `base_results_and_detectors_*`; runs with `directory_save_prefix` store Phase-0 in that run's dir.
 - **Probe types:** `diverse_deception_probe` and `mbpp_probe` only.
 - **Classification defaults:** Policy threshold 0.35, representation-change 0.2 (`baseline_subtract=False`).
-- **Local GRPO checkpoint cleanup:** Manual `rm -rf checkpoints/lora checkpoints/step_*` after each run (or automatic via `run_ablation.py`'s `cleanup_intermediates()`). Prior to a per-step LoRA leak fix (Aug 2026), this reclaimed ~80 GB per pass-only-shown run; the leak (an untracked adapter save with no cleanup, in `_generate_alt_completions`) is now fixed, so in-training disk usage stays bounded rather than growing linearly with step count. See EXPERIMENT_LOG.md #14.
-- **RunPod bootstrap:** Persistent `UV_PYTHON_INSTALL_DIR` / `UV_CACHE_DIR` on `/workspace`; venv must be rebuilt each pod.
+- **Local GRPO checkpoint cleanup:** Manual `rm -rf checkpoints/lora checkpoints/step_*` after each run (or automatic via `run_ablation.py`'s `cleanup_intermediates()`). See EXPERIMENT_LOG.md #14.
 
 ---
 
 ## Common Commands
 
-All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
+These are for the MBPP code in `obfuscation-atlas/` and `pipeline/`; sycophancy runs follow [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
 
 ### Bootstrap
 
