@@ -119,8 +119,9 @@ sycophancy_experiments/**/labels.jsonl
 sycophancy_experiments/**/arms*/**/none_answers.json
 # Dry-run and fixture leftovers (261007's gens/*_dry*/ and arms_dry*/, and any later *_dry*/ folder).
 sycophancy_experiments/**/*_dry*/
-# Console dumps saved beside the logs (261012+); the step's JSON record stays tracked.
+# Console dumps saved beside the logs (261012+; .out from unattended queue steps, 261107+); the step's JSON record stays tracked.
 sycophancy_experiments/**/logs/*.txt
+sycophancy_experiments/**/logs/*.out
 # Dry-run folders named dry/ (261010+).
 sycophancy_experiments/**/dry/
 sycophancy_experiments/**/tests_fixture/
@@ -129,6 +130,8 @@ sycophancy_experiments/**/KICKOFF.md
 sycophancy_experiments/**/HANDOFF*.md
 sycophancy_experiments/**/kickoff_prompt.txt
 sycophancy_experiments/**/frozen_files.txt
+sycophancy_experiments/**/fixable_code.txt
+sycophancy_experiments/**/unattended.yaml
 sycophancy_experiments/**/watchdog.sh
 sycophancy_experiments/**/dry_run/
 # Stand-in run folders of links into /workspace/results/ that point an eval at another probe (261028+).
