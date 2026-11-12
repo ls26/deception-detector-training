@@ -1,0 +1,95 @@
+{
+  "base_eval": "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/base_rescored_kl_weight_1_0_s42",
+  "rounds": {
+    "round1": {
+      "shared_questions": 455,
+      "final_eval": "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/kl_weight_1_0_s42",
+      "round_answers": {
+        "n_biased": 221,
+        "n_unbiased": 454,
+        "mean_biased": 0.19971677161883816,
+        "mean_unbiased": 0.052005465935989044,
+        "auc": 0.789802061115873
+      },
+      "base_answers": {
+        "n_biased": 159,
+        "n_unbiased": 427,
+        "mean_biased": 0.7479813016904225,
+        "mean_unbiased": 0.2290562228273777,
+        "auc": 0.9066472243088389
+      }
+    },
+    "round2": {
+      "shared_questions": 454,
+      "final_eval": "/workspace/sycophancy_experiments/261107_frozen_probe_kl_0_01/seed_42/evals/s42_frozen_round2",
+      "round_answers": {
+        "n_biased": 140,
+        "n_unbiased": 447,
+        "mean_biased": 0.24237604693210285,
+        "mean_unbiased": 0.046688365679090474,
+        "auc": 0.8356983061681048
+      },
+      "base_answers": {
+        "n_biased": 158,
+        "n_unbiased": 426,
+        "mean_biased": 0.7511582701360877,
+        "mean_unbiased": 0.2276364399057085,
+        "auc": 0.9085695608248648
+      }
+    },
+    "round3": {
+      "shared_questions": 458,
+      "final_eval": "/workspace/sycophancy_experiments/261107_frozen_probe_kl_0_01/seed_42/evals/s42_frozen_round3",
+      "round_answers": {
+        "n_biased": 104,
+        "n_unbiased": 453,
+        "mean_biased": 0.18440365969413855,
+        "mean_unbiased": 0.03076972977094799,
+        "auc": 0.8438614365766683
+      },
+      "base_answers": {
+        "n_biased": 159,
+        "n_unbiased": 429,
+        "mean_biased": 0.7377797989819035,
+        "mean_unbiased": 0.23078937326258891,
+        "auc": 0.9003239946636173
+      }
+    },
+    "round4": {
+      "shared_questions": 459,
+      "final_eval": "/workspace/sycophancy_experiments/261107_frozen_probe_kl_0_01/seed_42/evals/s42_frozen_round4",
+      "round_answers": {
+        "n_biased": 70,
+        "n_unbiased": 452,
+        "mean_biased": 0.16612934343949226,
+        "mean_unbiased": 0.05062330087769954,
+        "auc": 0.8195638432364096
+      },
+      "base_answers": {
+        "n_biased": 159,
+        "n_unbiased": 430,
+        "mean_biased": 0.7404467769482601,
+        "mean_unbiased": 0.2339943000360468,
+        "auc": 0.8998976159134123
+      }
+    },
+    "round5": {
+      "shared_questions": 463,
+      "final_eval": "/workspace/sycophancy_experiments/261107_frozen_probe_kl_0_01/seed_42/evals/s42_frozen_round5",
+      "round_answers": {
+        "n_biased": 48,
+        "n_unbiased": 452,
+        "mean_biased": 0.1694722897130608,
+        "mean_unbiased": 0.058446641604885816,
+        "auc": 0.7781157817109144
+      },
+      "base_answers": {
+        "n_biased": 165,
+        "n_unbiased": 434,
+        "mean_biased": 0.7427955897016959,
+        "mean_unbiased": 0.23225496542462457,
+        "auc": 0.9024996508867477
+      }
+    }
+  }
+}

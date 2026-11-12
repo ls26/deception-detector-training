@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/smoke_s42_frozen_round2_45f2so6j",
+  "penalty_weight": 1.0,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 439,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.7782509987363255,
+      "wandb_reward_mean": 0.7782509922981262,
+      "reward_mean_abs_difference": 6.438199307012837e-09,
+      "recomputed_penalty_mean": -0.06745212626367447,
+      "wandb_rewards_detector": -0.06745212525129318,
+      "penalty_mean_abs_difference": 1.0123812899109907e-09
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 414,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.7819351999838773,
+      "wandb_reward_mean": 0.7819352149963379,
+      "reward_mean_abs_difference": 1.5012460607977118e-08,
+      "recomputed_penalty_mean": -0.06572105001612272,
+      "wandb_rewards_detector": -0.0657210499048233,
+      "penalty_mean_abs_difference": 1.1129941412946209e-10
+    }
+  ]
+}

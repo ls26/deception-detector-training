@@ -1,0 +1,58 @@
+{
+  "PASS": true,
+  "wandb_run_id": "nwl72ltg",
+  "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/smoke_s43_frozen_round2_nwl72ltg",
+  "n_files": 2,
+  "seed": 43,
+  "cue_gold_prob": 0.75,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_train_step": 1,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 397,
+        "rewards_metrics/true_correct": 376,
+        "rewards_metrics/followed_cue": 435,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 41
+      },
+      "wandb_counts": {
+        "rewards/task_success": 397,
+        "rewards_metrics/true_correct": 376,
+        "rewards_metrics/followed_cue": 435,
+        "rewards_metrics/parse_failed": 1,
+        "cue_gold_prompts": 41
+      },
+      "PASS": true
+    },
+    {
+      "file_step": 1,
+      "wandb_train_step": 2,
+      "fields_matching": 64,
+      "prompts_matching": 64,
+      "cue_draws_matching": 64,
+      "parsed_matching": 512,
+      "reward_matching": 512,
+      "recomputed_counts": {
+        "rewards/task_success": 383,
+        "rewards_metrics/true_correct": 397,
+        "rewards_metrics/followed_cue": 435,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 44
+      },
+      "wandb_counts": {
+        "rewards/task_success": 383,
+        "rewards_metrics/true_correct": 397,
+        "rewards_metrics/followed_cue": 435,
+        "rewards_metrics/parse_failed": 0,
+        "cue_gold_prompts": 44
+      },
+      "PASS": true
+    }
+  ]
+}

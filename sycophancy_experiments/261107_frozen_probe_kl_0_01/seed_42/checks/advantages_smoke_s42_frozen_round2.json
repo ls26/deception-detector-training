@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/smoke_s42_frozen_round2_45f2so6j",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.3819312277840723e-08,
+  "kl_div_file_step_0": 0.1724494054215029,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.1767265498638153,
+      "recomputed_with_floor": 0.1767265533479247,
+      "abs_difference": 3.4841093898840825e-09,
+      "recomputed_without_floor": 0.6892164315633388,
+      "wandb_kl_div": 0.1724494054215029
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.22274062037467957,
+      "recomputed_with_floor": 0.22274063419399184,
+      "abs_difference": 1.3819312277840723e-08,
+      "recomputed_without_floor": 0.6463876880154958,
+      "wandb_kl_div": 0.12031501790625043
+    }
+  ]
+}

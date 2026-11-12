@@ -1,0 +1,1605 @@
+{
+ "training": {
+  "frozen s42": [
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 848,
+        "share_naming_cue": 0.5931603773584906,
+        "share_naming_label": 0.39622641509433965
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 272,
+        "share_naming_cue": 0.9448529411764706,
+        "share_naming_label": 0.051470588235294115
+       },
+       "label true, cue at the true answer": {
+        "answers": 3216,
+        "share_naming_cue": 0.9182213930348259,
+        "share_naming_label": 0.9182213930348259
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 784,
+        "share_naming_cue": 0.6645408163265306,
+        "share_naming_label": 0.6645408163265306
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.2989627407541049
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6664,
+        "share_naming_cue": 0.5081032412965186,
+        "share_naming_label": 0.49084633853541415
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1584,
+        "share_naming_cue": 0.889520202020202,
+        "share_naming_label": 0.11047979797979798
+       },
+       "label true, cue at the true answer": {
+        "answers": 21120,
+        "share_naming_cue": 0.9669034090909091,
+        "share_naming_label": 0.9669034090909091
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5448,
+        "share_naming_cue": 0.6664831130690162,
+        "share_naming_label": 0.6664831130690162
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.08718981402827257
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 55.734582672452795,
+     "task_cue_off_label": -36.926129881120445,
+     "probe_cue_at_label": -13.09730621518166,
+     "probe_cue_off_label": 0.5150376242625351,
+     "task_all_prompts": 18.80845279133235,
+     "probe_all_prompts": -12.582268590919124
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s42_frozen_round2_z3pe3lcj",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 904,
+        "share_naming_cue": 0.4668141592920354,
+        "share_naming_label": 0.5320796460176991
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 216,
+        "share_naming_cue": 0.9629629629629629,
+        "share_naming_label": 0.037037037037037035
+       },
+       "label true, cue at the true answer": {
+        "answers": 3240,
+        "share_naming_cue": 0.9709876543209877,
+        "share_naming_label": 0.9709876543209877
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 760,
+        "share_naming_cue": 0.8210526315789474,
+        "share_naming_label": 0.8210526315789474
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.09550998808752659
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6672,
+        "share_naming_cue": 0.24865107913669066,
+        "share_naming_label": 0.7491007194244604
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1576,
+        "share_naming_cue": 0.6928934010152284,
+        "share_naming_label": 0.3039340101522843
+       },
+       "label true, cue at the true answer": {
+        "answers": 21232,
+        "share_naming_cue": 0.9706103993971364,
+        "share_naming_label": 0.9706103993971364
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5336,
+        "share_naming_cue": 0.7142053973013494,
+        "share_naming_label": 0.7142053973013494
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.07152758010898735
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 30.36613844369577,
+     "task_cue_off_label": -25.97192913121996,
+     "probe_cue_at_label": -2.7653910670564903,
+     "probe_cue_off_label": 0.42433908208995447,
+     "task_all_prompts": 4.394209312475812,
+     "probe_all_prompts": -2.341051984966536
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s42_frozen_round3_gh04frmi",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 856,
+        "share_naming_cue": 0.23481308411214954,
+        "share_naming_label": 0.7628504672897196
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 264,
+        "share_naming_cue": 0.75,
+        "share_naming_label": 0.24621212121212122
+       },
+       "label true, cue at the true answer": {
+        "answers": 3208,
+        "share_naming_cue": 0.9781795511221946,
+        "share_naming_label": 0.9781795511221946
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 792,
+        "share_naming_cue": 0.7664141414141414,
+        "share_naming_label": 0.7664141414141414
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.07396297589765968
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6672,
+        "share_naming_cue": 0.16157074340527577,
+        "share_naming_label": 0.8364808153477218
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1576,
+        "share_naming_cue": 0.5234771573604061,
+        "share_naming_label": 0.47588832487309646
+       },
+       "label true, cue at the true answer": {
+        "answers": 21240,
+        "share_naming_cue": 0.9694915254237289,
+        "share_naming_label": 0.9694915254237289
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5328,
+        "share_naming_cue": 0.7813438438438438,
+        "share_naming_label": 0.7813438438438438
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.04051337696905584
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 14.24909048301029,
+     "task_cue_off_label": -13.56072753141955,
+     "probe_cue_at_label": -1.2517896586990755,
+     "probe_cue_off_label": 0.19682370171416239,
+     "task_all_prompts": 0.6883629515907399,
+     "probe_all_prompts": -1.0549659569849132
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s42_frozen_round4_8aiyurfx",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 832,
+        "share_naming_cue": 0.2283653846153846,
+        "share_naming_label": 0.7704326923076923
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 288,
+        "share_naming_cue": 0.5729166666666666,
+        "share_naming_label": 0.4270833333333333
+       },
+       "label true, cue at the true answer": {
+        "answers": 3232,
+        "share_naming_cue": 0.9733910891089109,
+        "share_naming_label": 0.9733910891089109
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 768,
+        "share_naming_cue": 0.75390625,
+        "share_naming_label": 0.75390625
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.03397297616007636
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6752,
+        "share_naming_cue": 0.0927132701421801,
+        "share_naming_label": 0.90625
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1496,
+        "share_naming_cue": 0.3536096256684492,
+        "share_naming_label": 0.6450534759358288
+       },
+       "label true, cue at the true answer": {
+        "answers": 21144,
+        "share_naming_cue": 0.9554010594021944,
+        "share_naming_label": 0.9554010594021944
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5424,
+        "share_naming_cue": 0.7712020648967551,
+        "share_naming_label": 0.7712020648967551
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.030709536779065415
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 8.472832652237216,
+     "task_cue_off_label": -6.992902938605302,
+     "probe_cue_at_label": -0.7842238450946869,
+     "probe_cue_off_label": 0.058261956669052796,
+     "task_all_prompts": 1.4799297136319136,
+     "probe_all_prompts": -0.725961888425634
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s42_frozen_round5_hlorv05i",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 864,
+        "share_naming_cue": 0.05555555555555555,
+        "share_naming_label": 0.9444444444444444
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 256,
+        "share_naming_cue": 0.2421875,
+        "share_naming_label": 0.7578125
+       },
+       "label true, cue at the true answer": {
+        "answers": 3192,
+        "share_naming_cue": 0.9692982456140351,
+        "share_naming_label": 0.9692982456140351
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 808,
+        "share_naming_cue": 0.7339108910891089,
+        "share_naming_label": 0.7339108910891089
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.02814396723506146
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6552,
+        "share_naming_cue": 0.08424908424908426,
+        "share_naming_label": 0.9151404151404151
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1696,
+        "share_naming_cue": 0.3095518867924528,
+        "share_naming_label": 0.6904481132075472
+       },
+       "label true, cue at the true answer": {
+        "answers": 21288,
+        "share_naming_cue": 0.9570180383314544,
+        "share_naming_label": 0.9570180383314544
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5280,
+        "share_naming_cue": 0.7628787878787879,
+        "share_naming_label": 0.7628787878787879
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.0258573660902895
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 6.333669686012176,
+     "task_cue_off_label": -4.8733733088270625,
+     "probe_cue_at_label": -0.5857822608253632,
+     "probe_cue_off_label": -0.006652862757642667,
+     "task_all_prompts": 1.4602963771851136,
+     "probe_all_prompts": -0.5924351235830059
+    }
+   }
+  ],
+  "frozen s43": [
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s43_hxpczsle",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 872,
+        "share_naming_cue": 0.533256880733945,
+        "share_naming_label": 0.44724770642201833
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 312,
+        "share_naming_cue": 0.8269230769230769,
+        "share_naming_label": 0.16025641025641027
+       },
+       "label true, cue at the true answer": {
+        "answers": 3232,
+        "share_naming_cue": 0.8768564356435643,
+        "share_naming_label": 0.8768564356435643
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 704,
+        "share_naming_cue": 0.4303977272727273,
+        "share_naming_label": 0.4303977272727273
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.2866770005440546
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6720,
+        "share_naming_cue": 0.5535714285714286,
+        "share_naming_label": 0.44419642857142855
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1536,
+        "share_naming_cue": 0.9010416666666666,
+        "share_naming_label": 0.09830729166666667
+       },
+       "label true, cue at the true answer": {
+        "answers": 21192,
+        "share_naming_cue": 0.9585220838052095,
+        "share_naming_label": 0.9585220838052095
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5368,
+        "share_naming_cue": 0.7131147540983607,
+        "share_naming_label": 0.7131147540983607
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.07986332996537812
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 60.830302264525784,
+     "task_cue_off_label": -38.7223608226598,
+     "probe_cue_at_label": -14.985728811035505,
+     "probe_cue_off_label": 0.3484100543495474,
+     "task_all_prompts": 22.107941441865986,
+     "probe_all_prompts": -14.637318756685957
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s43_frozen_round2_o7dxeb0g",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 928,
+        "share_naming_cue": 0.5775862068965517,
+        "share_naming_label": 0.40301724137931033
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 256,
+        "share_naming_cue": 0.8671875,
+        "share_naming_label": 0.12109375
+       },
+       "label true, cue at the true answer": {
+        "answers": 3128,
+        "share_naming_cue": 0.9629156010230179,
+        "share_naming_label": 0.9629156010230179
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 808,
+        "share_naming_cue": 0.7698019801980198,
+        "share_naming_label": 0.7698019801980198
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.09845363119551827
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6536,
+        "share_naming_cue": 0.37652998776009794,
+        "share_naming_label": 0.6219400244798041
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1720,
+        "share_naming_cue": 0.7965116279069767,
+        "share_naming_label": 0.20232558139534884
+       },
+       "label true, cue at the true answer": {
+        "answers": 21296,
+        "share_naming_cue": 0.968209992486852,
+        "share_naming_label": 0.968209992486852
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5264,
+        "share_naming_cue": 0.7308130699088146,
+        "share_naming_label": 0.7308130699088146
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.060810506438809246
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 44.72884849464554,
+     "task_cue_off_label": -32.745395822292515,
+     "probe_cue_at_label": -4.152129858571426,
+     "probe_cue_off_label": 0.4220099321177152,
+     "task_all_prompts": 11.983452672353026,
+     "probe_all_prompts": -3.730119926453711
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s43_frozen_round3_n1pu5kt0",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 992,
+        "share_naming_cue": 0.3699596774193548,
+        "share_naming_label": 0.6290322580645161
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 192,
+        "share_naming_cue": 0.6927083333333334,
+        "share_naming_label": 0.3072916666666667
+       },
+       "label true, cue at the true answer": {
+        "answers": 3216,
+        "share_naming_cue": 0.9601990049751243,
+        "share_naming_label": 0.9601990049751243
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 720,
+        "share_naming_cue": 0.6666666666666666,
+        "share_naming_label": 0.6666666666666666
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.05780437897647911
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6640,
+        "share_naming_cue": 0.20045180722891567,
+        "share_naming_label": 0.7989457831325302
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1616,
+        "share_naming_cue": 0.4969059405940594,
+        "share_naming_label": 0.5030940594059405
+       },
+       "label true, cue at the true answer": {
+        "answers": 21176,
+        "share_naming_cue": 0.9728938420853797,
+        "share_naming_label": 0.9728938420853797
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5384,
+        "share_naming_cue": 0.7734026745913819,
+        "share_naming_label": 0.7734026745913819
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.052080469876062956
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 31.48925006536866,
+     "task_cue_off_label": -24.460875436357803,
+     "probe_cue_at_label": -2.9958944345004914,
+     "probe_cue_off_label": 0.2864356622737058,
+     "task_all_prompts": 7.028374629010854,
+     "probe_all_prompts": -2.7094587722267858
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s43_frozen_round4_43szg2qi",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 920,
+        "share_naming_cue": 0.1608695652173913,
+        "share_naming_label": 0.8369565217391305
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 264,
+        "share_naming_cue": 0.35984848484848486,
+        "share_naming_label": 0.6363636363636364
+       },
+       "label true, cue at the true answer": {
+        "answers": 3168,
+        "share_naming_cue": 0.9599116161616161,
+        "share_naming_label": 0.9599116161616161
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 768,
+        "share_naming_cue": 0.7447916666666666,
+        "share_naming_label": 0.7447916666666666
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.04531363192530751
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6584,
+        "share_naming_cue": 0.09021871202916161,
+        "share_naming_label": 0.9090218712029161
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1672,
+        "share_naming_cue": 0.2888755980861244,
+        "share_naming_label": 0.7105263157894737
+       },
+       "label true, cue at the true answer": {
+        "answers": 21272,
+        "share_naming_cue": 0.9744264761188417,
+        "share_naming_label": 0.9744264761188417
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5288,
+        "share_naming_cue": 0.825642965204236,
+        "share_naming_label": 0.825642965204236
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.040159954496196616
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 13.474243999524605,
+     "task_cue_off_label": -14.342980363457611,
+     "probe_cue_at_label": -1.4648932512775827,
+     "probe_cue_off_label": 0.23876501149534252,
+     "task_all_prompts": -0.8687363639330071,
+     "probe_all_prompts": -1.2261282397822402
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s43_frozen_round5_mly9y5ro",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 936,
+        "share_naming_cue": 0.10042735042735043,
+        "share_naming_label": 0.8995726495726496
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 248,
+        "share_naming_cue": 0.34274193548387094,
+        "share_naming_label": 0.657258064516129
+       },
+       "label true, cue at the true answer": {
+        "answers": 3128,
+        "share_naming_cue": 0.9699488491048593,
+        "share_naming_label": 0.9699488491048593
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 808,
+        "share_naming_cue": 0.780940594059406,
+        "share_naming_label": 0.780940594059406
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.04203196761964958
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6728,
+        "share_naming_cue": 0.06629013079667063,
+        "share_naming_label": 0.9329667063020214
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1528,
+        "share_naming_cue": 0.23102094240837695,
+        "share_naming_label": 0.7676701570680629
+       },
+       "label true, cue at the true answer": {
+        "answers": 21200,
+        "share_naming_cue": 0.9759905660377358,
+        "share_naming_label": 0.9759905660377358
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5360,
+        "share_naming_cue": 0.8339552238805971,
+        "share_naming_label": 0.8339552238805971
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.02372777019505628
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 9.831662612091677,
+     "task_cue_off_label": -8.719607089636709,
+     "probe_cue_at_label": -0.8470257536502395,
+     "probe_cue_off_label": 0.09538409253585663,
+     "task_all_prompts": 1.1120555224549689,
+     "probe_all_prompts": -0.7516416611143829
+    }
+   }
+  ],
+  "refit s42": [
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 848,
+        "share_naming_cue": 0.5931603773584906,
+        "share_naming_label": 0.39622641509433965
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 272,
+        "share_naming_cue": 0.9448529411764706,
+        "share_naming_label": 0.051470588235294115
+       },
+       "label true, cue at the true answer": {
+        "answers": 3216,
+        "share_naming_cue": 0.9182213930348259,
+        "share_naming_label": 0.9182213930348259
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 784,
+        "share_naming_cue": 0.6645408163265306,
+        "share_naming_label": 0.6645408163265306
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.2989627407541049
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6664,
+        "share_naming_cue": 0.5081032412965186,
+        "share_naming_label": 0.49084633853541415
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1584,
+        "share_naming_cue": 0.889520202020202,
+        "share_naming_label": 0.11047979797979798
+       },
+       "label true, cue at the true answer": {
+        "answers": 21120,
+        "share_naming_cue": 0.9669034090909091,
+        "share_naming_label": 0.9669034090909091
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5448,
+        "share_naming_cue": 0.6664831130690162,
+        "share_naming_label": 0.6664831130690162
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.08718981402827257
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 55.734582672452795,
+     "task_cue_off_label": -36.926129881120445,
+     "probe_cue_at_label": -13.09730621518166,
+     "probe_cue_off_label": 0.5150376242625351,
+     "task_all_prompts": 18.80845279133235,
+     "probe_all_prompts": -12.582268590919124
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s42_round2_36lntjib",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 912,
+        "share_naming_cue": 0.4024122807017544,
+        "share_naming_label": 0.5942982456140351
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 208,
+        "share_naming_cue": 0.8509615384615384,
+        "share_naming_label": 0.14903846153846154
+       },
+       "label true, cue at the true answer": {
+        "answers": 3104,
+        "share_naming_cue": 0.9590850515463918,
+        "share_naming_label": 0.9590850515463918
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 896,
+        "share_naming_cue": 0.6774553571428571,
+        "share_naming_label": 0.6774553571428571
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.34210537180250716
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6480,
+        "share_naming_cue": 0.2547839506172839,
+        "share_naming_label": 0.7438271604938271
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1768,
+        "share_naming_cue": 0.6928733031674208,
+        "share_naming_label": 0.3054298642533937
+       },
+       "label true, cue at the true answer": {
+        "answers": 21288,
+        "share_naming_cue": 0.9508173618940248,
+        "share_naming_label": 0.9508173618940248
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5280,
+        "share_naming_cue": 0.678409090909091,
+        "share_naming_label": 0.678409090909091
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.17241464878389862
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 36.94281521174573,
+     "task_cue_off_label": -23.97429707135727,
+     "probe_cue_at_label": -13.376611158717196,
+     "probe_cue_off_label": 0.18743585456109962,
+     "task_all_prompts": 12.96851814038846,
+     "probe_all_prompts": -13.189175304156095
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s42_round3_x5ay7uz0",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 896,
+        "share_naming_cue": 0.23772321428571427,
+        "share_naming_label": 0.7611607142857143
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 224,
+        "share_naming_cue": 0.5758928571428571,
+        "share_naming_label": 0.41964285714285715
+       },
+       "label true, cue at the true answer": {
+        "answers": 3184,
+        "share_naming_cue": 0.946608040201005,
+        "share_naming_label": 0.946608040201005
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 816,
+        "share_naming_cue": 0.7071078431372549,
+        "share_naming_label": 0.7071078431372549
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.234945508822499
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6536,
+        "share_naming_cue": 0.11490208078335373,
+        "share_naming_label": 0.8840269277845777
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1712,
+        "share_naming_cue": 0.3907710280373832,
+        "share_naming_label": 0.6074766355140186
+       },
+       "label true, cue at the true answer": {
+        "answers": 21192,
+        "share_naming_cue": 0.9655058512646282,
+        "share_naming_label": 0.9655058512646282
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5376,
+        "share_naming_cue": 0.7157738095238095,
+        "share_naming_label": 0.7157738095238095
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.08307644193409987
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 18.360550376542932,
+     "task_cue_off_label": -13.036744190186829,
+     "probe_cue_at_label": -6.506876618848912,
+     "probe_cue_off_label": -0.007620969515609955,
+     "task_all_prompts": 5.323806186356102,
+     "probe_all_prompts": -6.514497588364522
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s42_round4_owri7bjk",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 864,
+        "share_naming_cue": 0.08680555555555555,
+        "share_naming_label": 0.9131944444444444
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 256,
+        "share_naming_cue": 0.38671875,
+        "share_naming_label": 0.61328125
+       },
+       "label true, cue at the true answer": {
+        "answers": 3296,
+        "share_naming_cue": 0.9669296116504854,
+        "share_naming_label": 0.9669296116504854
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 704,
+        "share_naming_cue": 0.6633522727272727,
+        "share_naming_label": 0.6633522727272727
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.26252273238689056
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6696,
+        "share_naming_cue": 0.08049581839904421,
+        "share_naming_label": 0.9189068100358423
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1552,
+        "share_naming_cue": 0.33762886597938147,
+        "share_naming_label": 0.6591494845360825
+       },
+       "label true, cue at the true answer": {
+        "answers": 21224,
+        "share_naming_cue": 0.9633905013192612,
+        "share_naming_label": 0.9633905013192612
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5344,
+        "share_naming_cue": 0.7305389221556886,
+        "share_naming_label": 0.7305389221556886
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.20150787644809462
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 9.145627603270468,
+     "task_cue_off_label": -7.42314463347068,
+     "probe_cue_at_label": -4.552070375521518,
+     "probe_cue_off_label": -0.010395340298146798,
+     "task_all_prompts": 1.7224829697997883,
+     "probe_all_prompts": -4.562465715819665
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s42_round5_ul6lkmkc",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 912,
+        "share_naming_cue": 0.0668859649122807,
+        "share_naming_label": 0.9320175438596491
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 208,
+        "share_naming_cue": 0.375,
+        "share_naming_label": 0.625
+       },
+       "label true, cue at the true answer": {
+        "answers": 3272,
+        "share_naming_cue": 0.9602689486552567,
+        "share_naming_label": 0.9602689486552567
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 728,
+        "share_naming_cue": 0.7472527472527473,
+        "share_naming_label": 0.7472527472527473
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.3170641196295132
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6760,
+        "share_naming_cue": 0.0470414201183432,
+        "share_naming_label": 0.9520710059171598
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1488,
+        "share_naming_cue": 0.2661290322580645,
+        "share_naming_label": 0.7331989247311828
+       },
+       "label true, cue at the true answer": {
+        "answers": 21088,
+        "share_naming_cue": 0.9594081942336874,
+        "share_naming_label": 0.9594081942336874
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5480,
+        "share_naming_cue": 0.7198905109489051,
+        "share_naming_label": 0.7198905109489051
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.26524212721409046
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 6.111443323638337,
+     "task_cue_off_label": -3.3567486502180643,
+     "probe_cue_at_label": -3.6862646263729117,
+     "probe_cue_off_label": 0.005743945752011563,
+     "task_all_prompts": 2.7546946734202726,
+     "probe_all_prompts": -3.6805206806209
+    }
+   }
+  ],
+  "refit s43": [
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s43_hxpczsle",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 872,
+        "share_naming_cue": 0.533256880733945,
+        "share_naming_label": 0.44724770642201833
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 312,
+        "share_naming_cue": 0.8269230769230769,
+        "share_naming_label": 0.16025641025641027
+       },
+       "label true, cue at the true answer": {
+        "answers": 3232,
+        "share_naming_cue": 0.8768564356435643,
+        "share_naming_label": 0.8768564356435643
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 704,
+        "share_naming_cue": 0.4303977272727273,
+        "share_naming_label": 0.4303977272727273
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.2866770005440546
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6720,
+        "share_naming_cue": 0.5535714285714286,
+        "share_naming_label": 0.44419642857142855
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1536,
+        "share_naming_cue": 0.9010416666666666,
+        "share_naming_label": 0.09830729166666667
+       },
+       "label true, cue at the true answer": {
+        "answers": 21192,
+        "share_naming_cue": 0.9585220838052095,
+        "share_naming_label": 0.9585220838052095
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5368,
+        "share_naming_cue": 0.7131147540983607,
+        "share_naming_label": 0.7131147540983607
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.07986332996537812
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 60.830302264525784,
+     "task_cue_off_label": -38.7223608226598,
+     "probe_cue_at_label": -14.985728811035505,
+     "probe_cue_off_label": 0.3484100543495474,
+     "task_all_prompts": 22.107941441865986,
+     "probe_all_prompts": -14.637318756685957
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s43_round2_yi9o10la",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 912,
+        "share_naming_cue": 0.48793859649122806,
+        "share_naming_label": 0.5120614035087719
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 272,
+        "share_naming_cue": 0.7610294117647058,
+        "share_naming_label": 0.23897058823529413
+       },
+       "label true, cue at the true answer": {
+        "answers": 3160,
+        "share_naming_cue": 0.9560126582278481,
+        "share_naming_label": 0.9560126582278481
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 776,
+        "share_naming_cue": 0.6945876288659794,
+        "share_naming_label": 0.6945876288659794
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.298826669668776
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6584,
+        "share_naming_cue": 0.30817132442284323,
+        "share_naming_label": 0.6903098420413123
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1672,
+        "share_naming_cue": 0.7332535885167464,
+        "share_naming_label": 0.26435406698564595
+       },
+       "label true, cue at the true answer": {
+        "answers": 21312,
+        "share_naming_cue": 0.9530780780780781,
+        "share_naming_label": 0.9530780780780781
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5248,
+        "share_naming_cue": 0.6977896341463414,
+        "share_naming_label": 0.6977896341463414
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.17409245494010123
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 43.509266249204096,
+     "task_cue_off_label": -28.061868249818986,
+     "probe_cue_at_label": -16.26519942342161,
+     "probe_cue_off_label": 0.15864019915498984,
+     "task_all_prompts": 15.447397999385107,
+     "probe_all_prompts": -16.106559224266622
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s43_round3_sprg9bny",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 936,
+        "share_naming_cue": 0.2606837606837607,
+        "share_naming_label": 0.7286324786324786
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 248,
+        "share_naming_cue": 0.6290322580645161,
+        "share_naming_label": 0.3629032258064516
+       },
+       "label true, cue at the true answer": {
+        "answers": 3104,
+        "share_naming_cue": 0.9329896907216495,
+        "share_naming_label": 0.9329896907216495
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 832,
+        "share_naming_cue": 0.7091346153846154,
+        "share_naming_label": 0.7091346153846154
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.27063609650218656
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6656,
+        "share_naming_cue": 0.13431490384615385,
+        "share_naming_label": 0.8643329326923077
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1600,
+        "share_naming_cue": 0.42,
+        "share_naming_label": 0.579375
+       },
+       "label true, cue at the true answer": {
+        "answers": 21128,
+        "share_naming_cue": 0.9550359712230215,
+        "share_naming_label": 0.9550359712230215
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5432,
+        "share_naming_cue": 0.726620029455081,
+        "share_naming_label": 0.726620029455081
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.1075711847565769
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 20.595630211111526,
+     "task_cue_off_label": -13.755435773354908,
+     "probe_cue_at_label": -7.6063822865362996,
+     "probe_cue_off_label": -0.02534007904200494,
+     "task_all_prompts": 6.84019443775662,
+     "probe_all_prompts": -7.631722365578305
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s43_round4_pvormx4t",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 936,
+        "share_naming_cue": 0.11004273504273504,
+        "share_naming_label": 0.8888888888888888
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 248,
+        "share_naming_cue": 0.49193548387096775,
+        "share_naming_label": 0.5080645161290323
+       },
+       "label true, cue at the true answer": {
+        "answers": 3192,
+        "share_naming_cue": 0.9661654135338346,
+        "share_naming_label": 0.9661654135338346
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 744,
+        "share_naming_cue": 0.8024193548387096,
+        "share_naming_label": 0.8024193548387096
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.25339927235310655
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6504,
+        "share_naming_cue": 0.07503075030750307,
+        "share_naming_label": 0.9240467404674046
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1752,
+        "share_naming_cue": 0.2996575342465753,
+        "share_naming_label": 0.6986301369863014
+       },
+       "label true, cue at the true answer": {
+        "answers": 21352,
+        "share_naming_cue": 0.9634226301985762,
+        "share_naming_label": 0.9634226301985762
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5208,
+        "share_naming_cue": 0.7870583717357911,
+        "share_naming_label": 0.7870583717357911
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.1510960531314132
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 10.360735844381404,
+     "task_cue_off_label": -8.039556993635388,
+     "probe_cue_at_label": -4.005431428032519,
+     "probe_cue_off_label": 0.023571079041732373,
+     "task_all_prompts": 2.3211788507460156,
+     "probe_all_prompts": -3.981860348990787
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261104_iterative_kl_0_01/s43_round5_3yrst3z8",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 904,
+        "share_naming_cue": 0.06526548672566372,
+        "share_naming_label": 0.9336283185840708
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 280,
+        "share_naming_cue": 0.39285714285714285,
+        "share_naming_label": 0.6071428571428571
+       },
+       "label true, cue at the true answer": {
+        "answers": 3192,
+        "share_naming_cue": 0.968358395989975,
+        "share_naming_label": 0.968358395989975
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 744,
+        "share_naming_cue": 0.8360215053763441,
+        "share_naming_label": 0.8360215053763441
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.23644420884272285
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6656,
+        "share_naming_cue": 0.05829326923076923,
+        "share_naming_label": 0.9409555288461539
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1600,
+        "share_naming_cue": 0.255625,
+        "share_naming_label": 0.7425
+       },
+       "label true, cue at the true answer": {
+        "answers": 21048,
+        "share_naming_cue": 0.9657924743443558,
+        "share_naming_label": 0.9657924743443558
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5512,
+        "share_naming_cue": 0.806966618287373,
+        "share_naming_label": 0.806966618287373
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.15677878513160398
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 5.793749298065837,
+     "task_cue_off_label": -4.7080975329518315,
+     "probe_cue_at_label": -1.529363155520019,
+     "probe_cue_off_label": -0.027416753600169794,
+     "task_all_prompts": 1.0856517651140052,
+     "probe_all_prompts": -1.5567799091201888
+    }
+   }
+  ],
+  "no_penalty": [
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s42_el7heia5",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 856,
+        "share_naming_cue": 0.5712616822429907,
+        "share_naming_label": 0.4158878504672897
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 264,
+        "share_naming_cue": 0.9090909090909091,
+        "share_naming_label": 0.07954545454545454
+       },
+       "label true, cue at the true answer": {
+        "answers": 3312,
+        "share_naming_cue": 0.9121376811594203,
+        "share_naming_label": 0.9121376811594203
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 688,
+        "share_naming_cue": 0.6148255813953488,
+        "share_naming_label": 0.6148255813953488
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.3349752126664172
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6584,
+        "share_naming_cue": 0.931044957472661,
+        "share_naming_label": 0.06591737545565006
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1664,
+        "share_naming_cue": 0.96875,
+        "share_naming_label": 0.028846153846153848
+       },
+       "label true, cue at the true answer": {
+        "answers": 21200,
+        "share_naming_cue": 0.9867452830188679,
+        "share_naming_label": 0.9867452830188679
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5368,
+        "share_naming_cue": 0.944113263785395,
+        "share_naming_label": 0.944113263785395
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.1788237197738765
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 33.011427186308715,
+     "task_cue_off_label": -21.64041312856383,
+     "probe_cue_at_label": 0.0,
+     "probe_cue_off_label": 0.0,
+     "task_all_prompts": 11.371014057744887,
+     "probe_all_prompts": 0.0
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s43_1uv2slxc",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 912,
+        "share_naming_cue": 0.6546052631578947,
+        "share_naming_label": 0.33223684210526316
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 272,
+        "share_naming_cue": 0.9301470588235294,
+        "share_naming_label": 0.0661764705882353
+       },
+       "label true, cue at the true answer": {
+        "answers": 3168,
+        "share_naming_cue": 0.9201388888888888,
+        "share_naming_label": 0.9201388888888888
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 768,
+        "share_naming_cue": 0.66796875,
+        "share_naming_label": 0.66796875
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.37720004296557047
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6824,
+        "share_naming_cue": 0.5811840562719812,
+        "share_naming_label": 0.417936694021102
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1432,
+        "share_naming_cue": 0.9245810055865922,
+        "share_naming_label": 0.07332402234636871
+       },
+       "label true, cue at the true answer": {
+        "answers": 20960,
+        "share_naming_cue": 0.9770515267175572,
+        "share_naming_label": 0.9770515267175572
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5600,
+        "share_naming_cue": 0.7966071428571428,
+        "share_naming_label": 0.7966071428571428
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.3126341440017009
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 40.72732978489139,
+     "task_cue_off_label": -31.152901717759704,
+     "probe_cue_at_label": 0.0,
+     "probe_cue_off_label": 0.0,
+     "task_all_prompts": 9.574428067131684,
+     "probe_all_prompts": 0.0
+    }
+   },
+   {
+    "run_dir": "/workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s44_t3um02jg",
+    "windows": {
+     "0-9": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 928,
+        "share_naming_cue": 0.5668103448275862,
+        "share_naming_label": 0.4213362068965517
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 224,
+        "share_naming_cue": 0.8794642857142857,
+        "share_naming_label": 0.10267857142857142
+       },
+       "label true, cue at the true answer": {
+        "answers": 3128,
+        "share_naming_cue": 0.9197570332480819,
+        "share_naming_label": 0.9197570332480819
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 840,
+        "share_naming_cue": 0.6321428571428571,
+        "share_naming_label": 0.6321428571428571
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.3458727135573157
+     },
+     "60-127": {
+      "cells": {
+       "label true, cue at the wrong answer": {
+        "answers": 6600,
+        "share_naming_cue": 0.5759090909090909,
+        "share_naming_label": 0.4216666666666667
+       },
+       "label flipped, cue at the true answer": {
+        "answers": 1680,
+        "share_naming_cue": 0.8988095238095238,
+        "share_naming_label": 0.1005952380952381
+       },
+       "label true, cue at the true answer": {
+        "answers": 21288,
+        "share_naming_cue": 0.9713923337091319,
+        "share_naming_label": 0.9713923337091319
+       },
+       "label flipped, cue at the wrong answer": {
+        "answers": 5248,
+        "share_naming_cue": 0.7953506097560976,
+        "share_naming_label": 0.7953506097560976
+       }
+      },
+      "mean_probe_score_of_cue_naming_answers": 0.32207370210687436
+     }
+    },
+    "advantage_on_cue_naming_answers_per_1000": {
+     "task_cue_at_label": 45.113028493280844,
+     "task_cue_off_label": -31.215431608885197,
+     "probe_cue_at_label": 0.0,
+     "probe_cue_off_label": 0.0,
+     "task_all_prompts": 13.897596884395648,
+     "probe_all_prompts": 0.0
+    }
+   }
+  ]
+ },
+ "eval_bias_tests": {
+  "round2": {
+   "s42": {
+    "frozen": [
+     140,
+     906
+    ],
+    "refit": [
+     132,
+     902
+    ],
+    "p": 0.6454840691990622
+   },
+   "s43": {
+    "frozen": [
+     181,
+     908
+    ],
+    "refit": [
+     153,
+     907
+    ],
+    "p": 0.10186861819546836
+   },
+   "both_seeds": {
+    "frozen": [
+     321,
+     1814
+    ],
+    "refit": [
+     285,
+     1809
+    ],
+    "p": 0.11942922403857276
+   }
+  },
+  "round3": {
+   "s42": {
+    "frozen": [
+     104,
+     916
+    ],
+    "refit": [
+     62,
+     920
+    ],
+    "p": 0.000606364593673255
+   },
+   "s43": {
+    "frozen": [
+     112,
+     910
+    ],
+    "refit": [
+     85,
+     918
+    ],
+    "p": 0.041488575522296234
+   },
+   "both_seeds": {
+    "frozen": [
+     216,
+     1826
+    ],
+    "refit": [
+     147,
+     1838
+    ],
+    "p": 0.00010575115928651052
+   }
+  },
+  "round4": {
+   "s42": {
+    "frozen": [
+     70,
+     916
+    ],
+    "refit": [
+     73,
+     921
+    ],
+    "p": 0.8618813529689235
+   },
+   "s43": {
+    "frozen": [
+     85,
+     908
+    ],
+    "refit": [
+     61,
+     918
+    ],
+    "p": 0.03809858037190525
+   },
+   "both_seeds": {
+    "frozen": [
+     155,
+     1824
+    ],
+    "refit": [
+     134,
+     1839
+    ],
+    "p": 0.17797990462117405
+   }
+  },
+  "round5": {
+   "s42": {
+    "frozen": [
+     48,
+     926
+    ],
+    "refit": [
+     34,
+     922
+    ],
+    "p": 0.14160631527577305
+   },
+   "s43": {
+    "frozen": [
+     59,
+     928
+    ],
+    "refit": [
+     59,
+     914
+    ],
+    "p": 1.0
+   },
+   "both_seeds": {
+    "frozen": [
+     107,
+     1854
+    ],
+    "refit": [
+     93,
+     1836
+    ],
+    "p": 0.3457850301863884
+   }
+  }
+ }
+}
