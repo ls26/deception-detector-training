@@ -1,0 +1,92 @@
+{
+  "source": "/workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl",
+  "source_md5": "226ed577ee96729ad02a47dbee2d918f",
+  "n_flipped_train": 243,
+  "seeds": {
+    "round2": 261110,
+    "round3": 261111,
+    "round4": 261112,
+    "round5": 261113
+  },
+  "rounds": {
+    "round2": {
+      "flipped": 243,
+      "flipped_by_category": {
+        "computer science": 49,
+        "history": 48,
+        "law": 58,
+        "philosophy": 50,
+        "physics": 38
+      },
+      "flipped_with_base_confident_correct": 191,
+      "flipped_gold_first": 111
+    },
+    "round3": {
+      "flipped": 243,
+      "flipped_by_category": {
+        "computer science": 44,
+        "history": 37,
+        "law": 66,
+        "philosophy": 49,
+        "physics": 47
+      },
+      "flipped_with_base_confident_correct": 202,
+      "flipped_gold_first": 115
+    },
+    "round4": {
+      "flipped": 243,
+      "flipped_by_category": {
+        "computer science": 41,
+        "history": 51,
+        "law": 51,
+        "philosophy": 44,
+        "physics": 56
+      },
+      "flipped_with_base_confident_correct": 200,
+      "flipped_gold_first": 117
+    },
+    "round5": {
+      "flipped": 243,
+      "flipped_by_category": {
+        "computer science": 40,
+        "history": 49,
+        "law": 51,
+        "philosophy": 57,
+        "physics": 46
+      },
+      "flipped_with_base_confident_correct": 199,
+      "flipped_gold_first": 125
+    }
+  },
+  "original": {
+    "flipped": 243,
+    "flipped_by_category": {
+      "computer science": 40,
+      "history": 36,
+      "law": 61,
+      "philosophy": 61,
+      "physics": 45
+    },
+    "flipped_with_base_confident_correct": 194,
+    "flipped_gold_first": 129,
+    "train_questions_by_category": {
+      "computer science": 220,
+      "history": 215,
+      "law": 272,
+      "philosophy": 269,
+      "physics": 241
+    }
+  },
+  "overlap": {
+    "original & round2": 47,
+    "original & round3": 35,
+    "original & round4": 46,
+    "original & round5": 45,
+    "round2 & round3": 50,
+    "round2 & round4": 51,
+    "round2 & round5": 57,
+    "round3 & round4": 53,
+    "round3 & round5": 36,
+    "round4 & round5": 40
+  }
+}

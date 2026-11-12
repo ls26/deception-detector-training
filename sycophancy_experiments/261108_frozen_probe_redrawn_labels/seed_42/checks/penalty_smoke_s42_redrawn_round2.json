@@ -1,0 +1,23 @@
+{
+  "run_config": "/workspace/sycophancy_experiments/261108_frozen_probe_redrawn_labels/seed_42/smoke_s42_redrawn_round2.yaml",
+  "records": "/workspace/results/run_results/261108_frozen_probe_redrawn_labels/smoke_s42_redrawn_round2_j3pdriry/checkpoints/responses/step_0.jsonl",
+  "adapter": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu/checkpoints/final",
+  "answers": {
+    "step_0": 512,
+    "with_probe_score": 511
+  },
+  "penalty_probe": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+  "other_probe": "/workspace/results/run_results/261108_frozen_probe_redrawn_labels/smoke_s42_redrawn_round2_j3pdriry/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+  "penalty_probe_vs_saved": {
+    "max_abs": 0.02595314383506775,
+    "median_abs": 0.000750858336687088,
+    "mean_abs": 0.0022434490993871845,
+    "over_0_02": 1
+  },
+  "other_probe_vs_saved": {
+    "max_abs": 0.283314049243927,
+    "median_abs": 0.009407566860318184,
+    "mean_abs": 0.02248258372464508,
+    "over_0_02": 158
+  }
+}

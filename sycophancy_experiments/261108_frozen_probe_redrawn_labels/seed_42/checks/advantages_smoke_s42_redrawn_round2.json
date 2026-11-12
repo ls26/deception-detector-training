@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261108_frozen_probe_redrawn_labels/smoke_s42_redrawn_round2_j3pdriry",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 7.300685639366478e-09,
+  "kl_div_file_step_0": 0.12659335031639785,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.20049211382865906,
+      "recomputed_with_floor": 0.20049211315504645,
+      "abs_difference": 6.736126101358764e-10,
+      "recomputed_without_floor": 0.6229305979604521,
+      "wandb_kl_div": 0.12659335031639785
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.17685091495513916,
+      "recomputed_with_floor": 0.17685090765445352,
+      "abs_difference": 7.300685639366478e-09,
+      "recomputed_without_floor": 0.6767739166447254,
+      "wandb_kl_div": 0.12707729078829288
+    }
+  ]
+}

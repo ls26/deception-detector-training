@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261108_frozen_probe_redrawn_labels/smoke_s43_redrawn_round2_1qko0rzt",
+  "penalty_weight": 1.0,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 511,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 444,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.7356415695557814,
+      "wandb_reward_mean": 0.7356415390968323,
+      "reward_mean_abs_difference": 3.0458949140665936e-08,
+      "recomputed_penalty_mean": -0.07099905544421858,
+      "wandb_rewards_detector": -0.07099905610084534,
+      "penalty_mean_abs_difference": 6.566267529706238e-10
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 419,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.6547156734573036,
+      "wandb_reward_mean": 0.6547156572341919,
+      "reward_mean_abs_difference": 1.6223111742874607e-08,
+      "recomputed_penalty_mean": -0.06208120154269636,
+      "wandb_rewards_detector": -0.06208120286464691,
+      "penalty_mean_abs_difference": 1.3219505490269512e-09
+    }
+  ]
+}

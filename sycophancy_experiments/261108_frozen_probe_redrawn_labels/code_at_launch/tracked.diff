@@ -1,0 +1,46 @@
+diff --git a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
+index 73ddb7c..f7f4f25 100644
+--- a/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
++++ b/sycophancy-rl/obfuscation-atlas/obfuscation_atlas/training/grpo_trainer.py
+@@ -1166,7 +1166,11 @@ class GRPOObfuscationTrainer(GRPOTrainer):
+         # token, as without the bias probe) and penalizes only answers that name the cued option.
+         read_token_index, names_cued_option = None, None
+         if self.obfuscation_config.task_args.bias_probe_at_answer:
+-            names_cued_option = response_wise_reward_metrics["rewards_metrics/followed_cue"]  # type: ignore
++            # A training batch served without a cue (task_args.train_cue off) has no cued option to name.
++            if cue_infos is not None and not self.obfuscation_config.task_args.train_cue:
++                names_cued_option = [False] * len(response_strings)
++            else:
++                names_cued_option = response_wise_reward_metrics["rewards_metrics/followed_cue"]  # type: ignore
+             parse_failed = response_wise_reward_metrics["rewards_metrics/parse_failed"]  # type: ignore
+             completions = [r.removesuffix(self.tokenizer.eot_token) for r in response_strings]
+             read_token_index = [
+diff --git a/sycophancy-rl/sycophancy_setup/README.md b/sycophancy-rl/sycophancy_setup/README.md
+index e016a4e..3211e53 100644
+--- a/sycophancy-rl/sycophancy_setup/README.md
++++ b/sycophancy-rl/sycophancy_setup/README.md
+@@ -12,6 +12,11 @@ scripts of 261013, 261018 and 261020, which stay unchanged in their folders. Its
+ [`261024_probe_penalty_rl`](../../sycophancy_experiments/261024_probe_penalty_rl/); the checks below ran before it, with
+ the trainer only in its probe-only mode.
+ 
++**The two run-config templates are 261024's setup, not the current one.** Later experiments use this package's
++tooling and data but copy their config from the latest experiment they build on; each experiment README says what
++it changed. Standing choices made since (such as the SD floor) are in the Decisions of
++[`docs/sycophancy_experiment_log.md`](../../docs/sycophancy_experiment_log.md).
++
+ ## The setup
+ 
+ **The task.** Each prompt is a two-option MMLU-Pro question (law, philosophy, computer science, physics, history).
+diff --git a/sycophancy-rl/sycophancy_setup/compare.py b/sycophancy-rl/sycophancy_setup/compare.py
+index fb43030..aa4d6f2 100644
+--- a/sycophancy-rl/sycophancy_setup/compare.py
++++ b/sycophancy-rl/sycophancy_setup/compare.py
+@@ -235,7 +235,7 @@ def training_curve(run_dir: Path) -> list[dict]:
+             "probe_only_groups": probe_only_group_share(rows),
+         }
+         if "probe_score" in rows[0]:  # runs with the bias probe; earlier runs' records have no probe score
+-            point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["parsed_answer"] == r["cue_letter"]])
++            point["probe_score_penalized"] = mean([r["probe_score"] for r in rows if r["cue_letter"] is not None and r["parsed_answer"] == r["cue_letter"]])
+         curve.append(point)
+     return curve
+ 
