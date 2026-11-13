@@ -1,0 +1,33 @@
+# Round 2 of the seed-43 line: written by `rounds.py seed_43 config 2` from ../round_template.yaml.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43 s43_refit_round2 <attempt>
+
+run_key: s43_refit_round2
+output_dir: /workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43
+group: 261109_refit_probe_redrawn_labels
+config_name: grpo_mcq
+probe:
+  directory_save_prefix: s43_refit_round2
+  retrain: true
+checkpoint: /workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s43_hxpczsle/checkpoints/final
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: 'null'
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 43
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy_experiments/261108_frozen_probe_redrawn_labels/labels/round2/labels.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43/probe_sets/round2/train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43/probe_sets/round2/test.jsonl
+  data.probe_dataset.max_train_examples: 6048
+  ++grpo.model.kl_reference_from_base: true

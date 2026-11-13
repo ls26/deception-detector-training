@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/smoke_s43_refit_round2_10ljh8nk",
+  "penalty_weight": 1.0,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 451,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.403448637081965,
+      "wandb_reward_mean": 0.4034486413002014,
+      "reward_mean_abs_difference": 4.218236426822841e-09,
+      "recomputed_penalty_mean": -0.387566987918035,
+      "wandb_rewards_detector": -0.3875669836997986,
+      "penalty_mean_abs_difference": 4.218236426822841e-09
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 402,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.42797508555486274,
+      "wandb_reward_mean": 0.427975058555603,
+      "reward_mean_abs_difference": 2.6999259716831148e-08,
+      "recomputed_penalty_mean": -0.31421241444513726,
+      "wandb_rewards_detector": -0.3142124116420746,
+      "penalty_mean_abs_difference": 2.803062670864165e-09
+    }
+  ]
+}

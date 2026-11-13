@@ -1,0 +1,34 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/smoke_s42_refit_round2_g2igkbp0",
+  "penalty_weight": 1.0,
+  "steps": [
+    {
+      "file_step": 0,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 369,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.4169475309021209,
+      "wandb_reward_mean": 0.41694754362106323,
+      "reward_mean_abs_difference": 1.2718942343781237e-08,
+      "recomputed_penalty_mean": -0.2842243440978791,
+      "wandb_rewards_detector": -0.28422433137893677,
+      "penalty_mean_abs_difference": 1.2718942343781237e-08
+    },
+    {
+      "file_step": 1,
+      "answers": 512,
+      "parsed": 512,
+      "probe_score_present_iff_parsed_mismatches": 0,
+      "naming_cued_option": 408,
+      "cut_off": 0,
+      "recomputed_reward_mean": 0.44400192981538567,
+      "wandb_reward_mean": 0.4440019130706787,
+      "reward_mean_abs_difference": 1.6744706954341382e-08,
+      "recomputed_penalty_mean": -0.32943557018461433,
+      "wandb_rewards_detector": -0.3294355869293213,
+      "penalty_mean_abs_difference": 1.6744706954341382e-08
+    }
+  ]
+}

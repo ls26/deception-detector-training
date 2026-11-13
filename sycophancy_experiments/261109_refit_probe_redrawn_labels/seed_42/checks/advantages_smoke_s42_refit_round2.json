@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/smoke_s42_refit_round2_g2igkbp0",
+  "advantage_std_floor": 0.3,
+  "steps_compared": 2,
+  "max_abs_difference": 1.1282272338597465e-08,
+  "kl_div_file_step_0": 0.1214893649739679,
+  "per_step": [
+    {
+      "file_step": 0,
+      "wandb_advantage_abs_mean": 0.18840768933296204,
+      "recomputed_with_floor": 0.18840767842714126,
+      "abs_difference": 1.0905820774231856e-08,
+      "recomputed_without_floor": 0.6063425825155697,
+      "wandb_kl_div": 0.1214893649739679
+    },
+    {
+      "file_step": 1,
+      "wandb_advantage_abs_mean": 0.2485160380601883,
+      "recomputed_with_floor": 0.24851604934246063,
+      "abs_difference": 1.1282272338597465e-08,
+      "recomputed_without_floor": 0.6811594375757606,
+      "wandb_kl_div": 0.11812259172438644
+    }
+  ]
+}

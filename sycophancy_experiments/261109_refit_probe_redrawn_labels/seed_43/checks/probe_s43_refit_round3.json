@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/s43_refit_round3_3y73jsb0",
+  "log": "logs/rl_s43_refit_round3_a1_c43a39434be5.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2042,
+    2042
+  ],
+  "expected_train_biased_unbiased": [
+    2042,
+    2042
+  ],
+  "test_biased_unbiased": [
+    127,
+    445
+  ],
+  "expected_test_biased_unbiased": [
+    127,
+    445
+  ],
+  "test_auc": 0.8820490135362293,
+  "test_mean_biased": 0.5884024195087062,
+  "test_mean_unbiased": 0.2108892322255016,
+  "offline_auc_261010": 0.871
+}

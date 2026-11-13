@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/s42_refit_round5_0pizoqn5",
+  "log": "logs/rl_s42_refit_round5_a1_da70f8166885.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2982,
+    2982
+  ],
+  "expected_train_biased_unbiased": [
+    2982,
+    2982
+  ],
+  "test_biased_unbiased": [
+    94,
+    440
+  ],
+  "expected_test_biased_unbiased": [
+    94,
+    440
+  ],
+  "test_auc": 0.874468085106383,
+  "test_mean_biased": 0.6950917816324595,
+  "test_mean_unbiased": 0.27692645837351765,
+  "offline_auc_261010": 0.871
+}

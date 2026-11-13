@@ -1,0 +1,65 @@
+{
+  "round": 2,
+  "sources": {
+    "original": {
+      "pool": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 1037,
+        "no bias / cue_gold": 2739,
+        "no bias / cue_dist": 642
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round1": {
+      "pool": {
+        "bias / cue_gold": 453,
+        "bias / cue_dist": 1425,
+        "no bias / cue_gold": 2727,
+        "no bias / cue_dist": 563
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    }
+  },
+  "own_pool_filters": {
+    "round1": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1100,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 1469,
+        "no_usual_answer": 663,
+        "unfinished_or_unparsed": 2
+      }
+    }
+  },
+  "train_rows": 3024,
+  "train_biased": 1512,
+  "test_answers": "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/kl_weight_1_0_s43 (round 1's final-eval answers)",
+  "test_biased": 274,
+  "test_unbiased": 451,
+  "test_one_class": false
+}
