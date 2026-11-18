@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261109_refit_probe_redrawn_labels/s43_refit_round3_3y73jsb0",
+  "run_id": "3y73jsb0",
+  "run_folders_printed": [
+    "/workspace/results/run_results/261109_refit_probe_redrawn_labels/s43_refit_round3_3y73jsb0"
+  ],
+  "checkpoint_lines": [
+    "Checkpoint: /workspace/results/run_results/261109_refit_probe_redrawn_labels/s43_refit_round2_y7md4l5v/checkpoints/final"
+  ],
+  "adapter_lines": [
+    "Phase-0: loading fresh model with adapter from /workspace/results/run_results/261109_refit_probe_redrawn_labels/s43_refit_round2_y7md4l5v/checkpoints/final"
+  ],
+  "frozen_probe_lines": [],
+  "train_biased_unbiased_printed": [
+    [
+      2042,
+      2042
+    ]
+  ],
+  "expected_train_biased_unbiased": [
+    2042,
+    2042
+  ],
+  "wandb_kl_div_step_1": 0.1356159989227308
+}

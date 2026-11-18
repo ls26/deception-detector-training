@@ -1,0 +1,56 @@
+{
+  "build 2": {
+    "train_identical": true,
+    "test_identical": true,
+    "build_json_equal_except_test_answers": true,
+    "test_answers": [
+      "<scratch>/seed_43/evals/kl_weight_1_0_s43 (round 1's final-eval answers)",
+      "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/kl_weight_1_0_s43 (round 1's final-eval answers)"
+    ]
+  },
+  "build 3": {
+    "train_identical": true,
+    "test_identical": true,
+    "build_json_equal_except_test_answers": true,
+    "test_answers": [
+      "<scratch>/seed_43/evals/s43_refit_round2 (round 2's final-eval answers)",
+      "/workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43/evals/s43_refit_round2 (round 2's final-eval answers)"
+    ]
+  },
+  "build 4": {
+    "train_identical": true,
+    "test_identical": true,
+    "build_json_equal_except_test_answers": true,
+    "test_answers": [
+      "<scratch>/seed_43/evals/s43_refit_round3 (round 3's final-eval answers)",
+      "/workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43/evals/s43_refit_round3 (round 3's final-eval answers)"
+    ]
+  },
+  "build 5": {
+    "train_identical": true,
+    "test_identical": true,
+    "build_json_equal_except_test_answers": true,
+    "test_answers": [
+      "<scratch>/seed_43/evals/s43_refit_round4 (round 4's final-eval answers)",
+      "/workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43/evals/s43_refit_round4 (round 4's final-eval answers)"
+    ]
+  },
+  "config 2": {
+    "differing_top_keys": [
+      "output_dir",
+      "overrides"
+    ],
+    "differing_override_keys": [
+      "data.probe_dataset.bias_probe_eval_jsonl",
+      "data.probe_dataset.bias_probe_train_jsonl"
+    ],
+    "output_dir": [
+      "<scratch>/seed_43",
+      "/workspace/sycophancy_experiments/261109_refit_probe_redrawn_labels/seed_43"
+    ],
+    "smoke_yaml_written": false
+  },
+  "table 5": {
+    "probe_table_json_equal_except_test_answers": true
+  }
+}

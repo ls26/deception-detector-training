@@ -1,0 +1,28 @@
+{
+  "run_dir": "/workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_frozen_round4_8izvfzin",
+  "run_id": "8izvfzin",
+  "run_folders_printed": [
+    "/workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_frozen_round4_8izvfzin"
+  ],
+  "checkpoint_lines": [
+    "Checkpoint: /workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_frozen_round3_wujxknr7/checkpoints/final"
+  ],
+  "adapter_lines": [
+    "Phase-0: loading fresh model with adapter from /workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_frozen_round3_wujxknr7/checkpoints/final"
+  ],
+  "frozen_probe_lines": [
+    "Phase-0 override: replacing detector with frozen probe weights from /workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_round1_w4ijrti9/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation",
+    "Filtered layers (from frozen probe weights dir): [13, 14, 15, 16]"
+  ],
+  "train_biased_unbiased_printed": [
+    [
+      756,
+      756
+    ]
+  ],
+  "expected_train_biased_unbiased": [
+    756,
+    756
+  ],
+  "wandb_kl_div_step_1": 0.09320462020696141
+}

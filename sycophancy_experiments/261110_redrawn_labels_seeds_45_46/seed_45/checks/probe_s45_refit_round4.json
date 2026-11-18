@@ -1,0 +1,38 @@
+{
+  "run_dir": "/workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s45_refit_round4_1uzgg6xi",
+  "log": "logs/rl_s45_refit_round4_a1_da70f8166885.log",
+  "saved_layers": {
+    "initial_detector.base_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "fresh_detector.final_model.on_dataset": [
+      13,
+      14,
+      15,
+      16
+    ]
+  },
+  "train_biased_unbiased": [
+    2172,
+    2172
+  ],
+  "expected_train_biased_unbiased": [
+    2172,
+    2172
+  ],
+  "test_biased_unbiased": [
+    80,
+    449
+  ],
+  "expected_test_biased_unbiased": [
+    80,
+    449
+  ],
+  "test_auc": 0.8937917594654788,
+  "test_mean_biased": 0.6483438586583361,
+  "test_mean_unbiased": 0.21360127158712816,
+  "offline_auc_261010": 0.871
+}

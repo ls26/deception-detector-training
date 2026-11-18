@@ -1,0 +1,48 @@
+# Template of frozen round R's run config (R >= 2), filled in by `frozen_rounds.py <line> config R`
+# (-> <line>/s<seed>_frozen_roundR.yaml). 261108's round_template.yaml (261107's, round 1's probe frozen, with the
+# training labels redrawn every round: round R trains on 261108's question file for that round,
+# data.task_dataset.mmlu_questions_jsonl = 261108_frozen_probe_redrawn_labels/labels/roundR/labels.jsonl) with this
+# folder's group. Round settings:
+#   checkpoint                                 round R-1's final adapter (round 1: <line>/s<seed>_round1.yaml's run;
+#                                              rounds 3-5: the frozen round R-1's), which keeps training
+#   detector.frozen_probe_weights_dir          round 1's probe; the trainer swaps it in after its own start-of-run fit
+#   data.task_dataset.mmlu_questions_jsonl     round R's question file (its own set of 243 flipped training questions)
+#   data.probe_dataset.bias_probe_*_jsonl      round 1's probe files (the trainer's defaults, config.py:220-221): the
+#                                              trainer's start-of-run fit (not used for the penalty) and its end-of-run
+#                                              refit read them; max_train_examples left at the default 5000, as round 1
+#   ++grpo.model.kl_reference_from_base        true: KL to the base model in every round
+# and run_key, output_dir (the line's folder), probe.directory_save_prefix, training.seed (the line's seed) and
+# training.max_steps (128).
+
+run_key: FILL_IN
+output_dir: FILL_IN   # the line's folder; the launcher writes run_metrics_<run_key>.json here
+group: 261110_redrawn_labels_seeds_45_46   # W&B group and /workspace/results/run_results/<group>/
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: FILL_IN
+  retrain: true                    # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: FILL_IN
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"   # quoted: the launcher passes str(value) to Hydra
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: FILL_IN
+  training.max_steps: FILL_IN
+  data.task_dataset.mmlu_questions_jsonl: FILL_IN
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl
+  detector.frozen_probe_weights_dir: FILL_IN
+  ++grpo.model.kl_reference_from_base: true

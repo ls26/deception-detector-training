@@ -1,0 +1,127 @@
+{
+  "round": 4,
+  "sources": {
+    "original": {
+      "pool": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 1037,
+        "no bias / cue_gold": 2739,
+        "no bias / cue_dist": 642
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round1": {
+      "pool": {
+        "bias / cue_gold": 449,
+        "bias / cue_dist": 1561,
+        "no bias / cue_gold": 2716,
+        "no bias / cue_dist": 523
+      },
+      "per_group": 378,
+      "own_rows": {
+        "bias / cue_gold": 378,
+        "bias / cue_dist": 378,
+        "no bias / cue_gold": 378,
+        "no bias / cue_dist": 378
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round2": {
+      "pool": {
+        "bias / cue_gold": 301,
+        "bias / cue_dist": 735,
+        "no bias / cue_gold": 2840,
+        "no bias / cue_dist": 467
+      },
+      "per_group": 301,
+      "own_rows": {
+        "bias / cue_gold": 301,
+        "bias / cue_dist": 301,
+        "no bias / cue_gold": 301,
+        "no bias / cue_dist": 301
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    },
+    "round3": {
+      "pool": {
+        "bias / cue_gold": 319,
+        "bias / cue_dist": 642,
+        "no bias / cue_gold": 2926,
+        "no bias / cue_dist": 521
+      },
+      "per_group": 319,
+      "own_rows": {
+        "bias / cue_gold": 319,
+        "bias / cue_dist": 319,
+        "no bias / cue_gold": 319,
+        "no bias / cue_dist": 319
+      },
+      "topped_up_from": {
+        "bias / cue_gold": {},
+        "bias / cue_dist": {},
+        "no bias / cue_gold": {},
+        "no bias / cue_dist": {}
+      }
+    }
+  },
+  "own_pool_filters": {
+    "round1": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1086,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 1271,
+        "no_usual_answer": 760,
+        "unfinished_or_unparsed": 22
+      }
+    },
+    "round2": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1112,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 2375,
+        "no_usual_answer": 574,
+        "unfinished_or_unparsed": 10
+      }
+    },
+    "round3": {
+      "questions": 1217,
+      "questions_with_usual_answer": 1154,
+      "cued_answers": 7302,
+      "filtered": {
+        "does_not_name_cued_option": 2538,
+        "no_usual_answer": 349,
+        "unfinished_or_unparsed": 7
+      }
+    }
+  },
+  "train_rows": 5504,
+  "train_biased": 2752,
+  "test_answers": "/workspace/sycophancy_experiments/261110_redrawn_labels_seeds_45_46/seed_46/evals/s46_refit_round3 (round 3's final-eval answers)",
+  "test_biased": 143,
+  "test_unbiased": 457,
+  "test_one_class": false
+}

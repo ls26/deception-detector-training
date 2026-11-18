@@ -1,0 +1,35 @@
+# Round 1 of the seed-45 line: 261103's weight-1.0 KL-0.01 config (261103_kl_0_01/weight_1_0/kl_weight_1_0_s42.yaml) from
+# the base model, with this line's seed, names and folder, the original question file, and the two probe files written
+# out (they equal the trainer's defaults, obfuscation_atlas/config.py:220-221; checks.py reads them from the config).
+# 8 answers per micro-batch x 8 accumulation steps (the task's default), as 261103.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261110_redrawn_labels_seeds_45_46/seed_45 s45_round1 <attempt>
+
+run_key: s45_round1
+output_dir: /workspace/sycophancy_experiments/261110_redrawn_labels_seeds_45_46/seed_45   # the line's folder (absolute); the launcher writes run_metrics_<run_key>.json there
+group: 261110_redrawn_labels_seeds_45_46   # W&B group and /workspace/results/run_results/<group>/
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: s45_round1
+  retrain: true                    # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"   # quoted: the launcher passes str(value) to Hydra
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 45
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl

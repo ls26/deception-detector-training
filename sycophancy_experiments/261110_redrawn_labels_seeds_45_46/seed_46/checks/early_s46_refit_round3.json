@@ -1,0 +1,25 @@
+{
+  "run_dir": "/workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s46_refit_round3_aolh6pr3",
+  "run_id": "aolh6pr3",
+  "run_folders_printed": [
+    "/workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s46_refit_round3_aolh6pr3"
+  ],
+  "checkpoint_lines": [
+    "Checkpoint: /workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s46_refit_round2_otuwa1st/checkpoints/final"
+  ],
+  "adapter_lines": [
+    "Phase-0: loading fresh model with adapter from /workspace/results/run_results/261110_redrawn_labels_seeds_45_46/s46_refit_round2_otuwa1st/checkpoints/final"
+  ],
+  "frozen_probe_lines": [],
+  "train_biased_unbiased_printed": [
+    [
+      2114,
+      2114
+    ]
+  ],
+  "expected_train_biased_unbiased": [
+    2114,
+    2114
+  ],
+  "wandb_kl_div_step_1": 0.17597669136011973
+}
