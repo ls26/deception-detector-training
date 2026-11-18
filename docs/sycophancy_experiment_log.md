@@ -1,10 +1,10 @@
 # Sycophancy Experiment Log
 
-Narrative log for the MMLU-Pro sycophancy RL domain — a separate line of work from the
+Narrative log for the MMLU-Pro sycophancy RL domain, a separate line of work from the
 MBPP/probe-obfuscation pipeline tracked in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md).
 Each entry records what was tried and what it found. Full numbers, method details, and
 reproduction steps live in each experiment's own `README.md` under
-`sycophancy_experiments/` — this doc links out rather than duplicating them. Current
+`sycophancy_experiments/`; this doc links out rather than duplicating them. Current
 direction and next steps live in [CONTEXT.md](./CONTEXT.md), not here.
 
 ---
@@ -30,22 +30,27 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261110 | [`261110_redrawn_labels_seeds_45_46`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/) | Seeds 45 and 46 of the redrawn-label comparison; the README for 261108–261110. Four seeds: round-5 training-mix bias 7.5% retrained vs 20.0% frozen (base 15.1%). |
+| 261109 | [`261109_refit_probe_redrawn_labels`](../sycophancy_experiments/261109_refit_probe_redrawn_labels/) | 261104's retrained-probe rounds 2–5 on 261108's redrawn labels, seeds 42 and 43. Round-5 training-mix bias 7.0% vs 19.2% frozen (base 15.1%). |
+| 261108 | [`261108_frozen_probe_redrawn_labels`](../sycophancy_experiments/261108_frozen_probe_redrawn_labels/) | 261107's frozen-probe rounds 2–5 with the flipped labels redrawn every round. Round 5: memorization 6.8% vs 71.7% fixed; training-mix bias 19.2% vs 5.3%. |
+| 261107 | [`261107_frozen_probe_kl_0_01`](../sycophancy_experiments/261107_frozen_probe_kl_0_01/) | 261104's rounds 2–5 with round 1's probe in every round. Training-mix bias 5.3% at round 5 vs 4.6% retrained; training labels memorized. |
+| 261107 | [`261107_no_cue_ceiling_kl_0_01`](../sycophancy_experiments/261107_no_cue_ceiling_kl_0_01/) | The no-cue ceiling rerun at KL 0.01, 3 seeds. Eval results similar to KL 0.001: no-cue true accuracy 76.8% both; training-mix bias 14.7% vs 18.1%. |
 | 261104 | [`261104_iterative_kl_0_01`](../sycophancy_experiments/261104_iterative_kl_0_01/) | 261102's rounds at KL 0.01 and weight 1.0, continuing 261103's seeds 42 and 43. Training-mix bias 22.6 / 13.5 / 7.6 / 6.3 / 4.6% (base 15.1%); training answers 177–211 tokens. |
 | 261103 | [`261103_kl_0_01`](../sycophancy_experiments/261103_kl_0_01/) | 261027's setup at KL 0.01 instead of 0.001, weight 1.0 and no penalty, 3 seeds each. No weight-1.0 seed answers in one sentence (2 of 3 at KL 0.001); no-penalty training-mix bias 28.6% vs 28.8%. |
 | 261102 | [`261102_iterative_probe_retraining`](../sycophancy_experiments/261102_iterative_probe_retraining/) | Five rounds in 261027's weight-0.6 seed-42 setup, the probe refit every round. One-sentence answers from round 1; training-mix cue agreement rate 100.0 / 97.6 / 99.6 / 74.2 / 80.5%. |
 | 261031 | [`261031_probe_penalty_weights_1_5_2_0`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/) | 261027's setup at penalty weights 1.5 and 2.0, 3 seeds each, plus a fresh probe (refit on the model's own answers) per model. Bias not below the lower weights'; 3 of 6 runs end in a fixed answer pattern. |
-| 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A bias probe refit on each of 12 RL models' own answers and activations. AUC above the initial probe's in all 12 (0.839–0.911 vs 0.752–0.863 by weight). |
+| 261028 | [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/) | A fresh probe (bias probe refit on the model's own answers and activations) for each of 12 RL models. AUC above the initial probe's in all 12 (means per condition 0.839–0.911 vs 0.752–0.863). |
 | 261027 | [`261027_probe_penalty_weight_sweep`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/) | 261025's SD-floor setup at penalty weights 0.6 and 1.0, 3 seeds each. Training-mix cue agreement rate 86.7% / 84.4% (no penalty 89.0%); two weight-1.0 seeds answer in one sentence. |
 | 261025 | [`261025_probe_penalty_sd_floor`](../sycophancy_experiments/261025_probe_penalty_sd_floor/) | 261024's penalty run with a floor of 0.3 on the group SD in the advantage, 3 seeds. Training-mix cue agreement rate 88.6% vs 99.9% without the floor; bias 29.1% vs 28.8% without penalty. |
 | 261024 | [`261024_probe_penalty_rl`](../sycophancy_experiments/261024_probe_penalty_rl/) | First RL run with the bias-probe penalty, seed 42. Training-mix cue agreement rate 99.9% vs 89.0% without penalty; one answer template; probe scores near 0. |
-| 261020 | [`261020_reference_rl`](../sycophancy_experiments/261020_reference_rl/) | Noisy or correct labels without the cue, correct labels with it, vs 261013–261018 (condition 0); 3 seeds, CoT and no-CoT. CoT no-cue true accuracy 74.6% (condition 0) vs 76.8% / 79.0% / 77.8%. |
+| 261020 | [`261020_reference_rl`](../sycophancy_experiments/261020_reference_rl/) | Noisy or correct labels without the cue, correct labels with it; 3 seeds, CoT and no-CoT. CoT no-cue true accuracy 76.8 / 79.0 / 77.8%, vs 74.6% with noisy labels and the cue. |
 | 261018 | [`261018_noisy_label_rl_seeds`](../sycophancy_experiments/261018_noisy_label_rl_seeds/) | Seeds 43 and 44 of 261013 and 261014. Cue agreement rate, bias and training-mix reward rose in all six runs; training-mix true accuracy fell in four. |
 | 261014 | [`261014_nocot_noisy_label_rl`](../sycophancy_experiments/261014_nocot_noisy_label_rl/) | 261013's design in the no-CoT format. `cue_dist` cue agreement rate 0.644 → 0.808, bias 0.403 → 0.550; training-mix reward 0.726 → 0.742. |
-| 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` cue agreement rate 0.460 → 0.815, bias 0.267 → 0.596; no-cue accuracy 0.742 → 0.738. |
+| 261013 | [`261013_noisy_label_rl`](../sycophancy_experiments/261013_noisy_label_rl/) | GRPO rewarding a noisy label (20% flipped, cue at it 75%), no penalty. `cue_dist` cue agreement rate 0.458 → 0.814, bias 0.259 → 0.595; no-cue accuracy 0.755 → 0.751. |
 | 261012 | [`261012_port_rerun`](../sycophancy_experiments/261012_port_rerun/) | Sycophancy task ported onto a copy of the release (`/workspace/sycophancy-rl`); every check passes. Rerun of 260825 from it: final accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923. |
-| 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: Δ vs the all-question probe on the same rows −0.001 to +0.011; no CI excludes 0. |
+| 261010 | [`261010_confident_slice`](../sycophancy_experiments/261010_confident_slice/) | CoT `rm` probes trained and scored on questions where ≥ 6 of 8 no-cue samples agree: `bias_followed` 0.871 vs 0.866 for the all-question probe on the same rows; no CI excludes 0. |
 | 261010 | [`261010_soft_bias_labels`](../sycophancy_experiments/261010_soft_bias_labels/) | Soft no-cue counterfactual labels for `rm` `bias_followed`, said-Yes, said-No: soft vs hard training within 0.006 AUC on three eval label sets; no CI excludes 0. |
-| 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor per arm vs the CoT reference. No-CoT prefill raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 and said-Yes 0.752 → 0.819 / 0.809 (CIs exclude 0); biography cue changes nothing; no-CoT samples far less noisy. |
+| 261007 | [`261007_format_label_cue_ablation`](../sycophancy_experiments/261007_format_label_cue_ablation/) | One setup factor changed at a time vs the CoT reference. A no-CoT one-letter answer raises `rm` `bias_followed` 0.768 → 0.852 / 0.880 (sampled / logprob labels); biography cue changes nothing; no-CoT samples far less noisy. |
 | 260924 | [`260924_probe_cv_selection`](../sycophancy_experiments/260924_probe_cv_selection/) | Recipe chosen by CV over train questions (lr, steps, 4-layer band); headline = AUC of the mean per-layer sigmoid. `rm` bias 0.840, `bias_followed` 0.788, said-Yes 0.793, said-No 0.749. |
 | 260923 | [`260923_improve_probe_performance`](../sycophancy_experiments/260923_improve_probe_performance/) | 33 probe-side rounds on 260826's probes, chosen on eval. Fitting the trainer (lr 0.01 or logreg) and the largest balanced draw raise every probe with signal; filter, other tokens, pooling, centering, MLP do not. |
 | 260826 | [`260826_probe_training_new`](../sycophancy_experiments/260826_probe_training_new/) | Probe pipeline rebuilt; 20 probes incl. stratified deception and `bias_followed`; majority-of-3 labels. Bias 0.773 / 0.827; stratified deception 0.64–0.93 with the label coinciding with bias. |
@@ -71,12 +76,13 @@ The entry named in each decision holds the evidence.
 
 1. **Both reliance definitions are reported; `removal` is primary.** `swap` stays alongside
    every headline number. `removal` is primary because it is the canonical definition.
-   (2026-08-25)
+   (2026-08-25) (Replaced by Decision 9.)
 2. **Deception metrics report soft P(Yes) as primary; the hard sampled Yes/No label is kept
    as the probe's discrete training target.** Per-rollout hard labels are noisy (260817:
    19.3% disagreement across three sampled follow-ups). Every scored row keeps both
    `p_yes_{rm,swap}` and `said_{rm,swap}` / `deception_{rm,swap}` in
-   `260824_rescore/rescored_labels.jsonl`. (2026-08-25)
+   `260824_rescore/rescored_labels.jsonl`. (2026-08-25) (The training-target half is replaced
+   by Decision 7.)
 3. **The bias probe's negative class is `no bias` only; `anti-bias` rows are excluded from
    probe train and eval.** Per 260824, anti-bias sits at about half its own resampling null,
    so most of that stratum is sampling noise. (2026-08-25)
@@ -84,7 +90,7 @@ The entry named in each decision holds the evidence.
    260818, cache reuse moved P(Yes) by up to 0.025, and compared conditions share a prompt
    prefix. (2026-08-18)
 5. **Categories are law, philosophy, computer science, physics, history**, built in 260819.
-   Reaching them required relaxing the design doc's 500+300 per category, since the three
+   Reaching them required relaxing the originally planned 500+300 per category, since the three
    cleanest are also the smallest pools. (2026-08-19)
 6. **The follow-up wording is a 50/50 per-question axis.** Two wordings per definition,
    drawn independently per definition, and the RL environment serves the assigned draw.
@@ -99,11 +105,61 @@ The entry named in each decision holds the evidence.
 8. **A sampled eval counts one sampled answer per prompt; the no-cue answer that bias is
    measured against stays the majority of the no-cue samples (at least 5 of 8 in 261013).**
    This matches the trainer's in-loop and final evals, which sample each question once
-   (261012). 261013's README and entry predate this and count all 3 samples per cued
-   condition; 261014 recomputes 261013's numbers with one. (2026-10-18)
+   (261012). 261013's README predates this and counts all 3 samples per cued condition; the
+   261013 entry quotes 261014's recount with one. (2026-10-18)
+9. **Bias is reported with the `rm` (removal) definition only; this replaces Decision 1.**
+   Two definitions side by side were confusing, and removal is the standard definition.
+   Entries from 260923 on already report `rm` only. (2026-11-05)
+10. **Every RL run from 261025 on divides each answer's advantage by the larger of its
+    group's SD + 0.0001 and 0.3 (`loss.advantage_std_floor`, the SD floor).** Per 261025:
+    without the floor, groups whose 8 answers all name the cued option get large advantages
+    from small probe-score differences, and 261024's run named the cued option on 99.9% of
+    its training-mix answers (88.6% ± 8.4 over three seeds with the floor). (2026-11-05)
 
 **Terminology.**
 
+- *`rm` and `swap`:* the two ways bias is measured. `rm` (removal) compares the cued answer
+  with the model's answer to the same question with no cue; `swap` compares it with the
+  answer when the cue names the other option. Only `rm` is reported from 260923 on
+  (Decision 9).
+- *`cue_gold` / `cue_dist`:* the cue names the correct answer / the wrong answer (the
+  distractor).
+- *`bias_followed`, said-Yes, said-No:* `bias_followed` is the bias probe trained only on
+  answers that went with the cue. Said-Yes and said-No (`deception_yes` / `deception_no`)
+  are deception probes trained only on answers whose self-report was Yes / No (260826).
+- *training label, true accuracy:* from 261013 on, RL rewards agreement with a training
+  label: the true answer, flipped to the other option on 20% of questions (fixed per
+  question, unless the labels are redrawn; see below). True accuracy is agreement with the
+  true answer.
+- *fixed and redrawn labels:* with fixed labels every round trains on the same flipped
+  questions (the original draw, 261013). With redrawn labels each round from round 2 on flips
+  a new random 243 of the 1217 training questions (261108's label files, used in 261108–261110).
+- *frozen probe, retrained probe:* in multi-round runs, the penalty probe is either round 1's
+  initial probe kept for every round (the frozen probe, 261107) or a probe refit before each
+  round through the previous round's model (the retrained probe, 261102 and 261104; `refit`
+  in file names and run keys).
+- *memorization:* on flipped training questions with the cue at the true answer, the share
+  of training answers that give the flipped training label (261107). 261107's README counts
+  steps 60–127 of a round; 261108 on count all 128 steps.
+- *training mix (training cue mix):* the eval's cued answers weighted 0.75 / 0.25 by whether
+  the cue is at the question's training label, the cue rate of training (261013).
+- *initial probe:* the bias probe fit on the base model's answers at the start of each RL
+  run and kept fixed; the penalty uses its score (261024).
+- *fresh probe:* a bias probe refit with the initial probe's recipe on a trained model's own
+  answers and activations (261028's procedure). The 261027 and 261028 READMEs call it the
+  own-answer probe. The trainer's end-of-run refit on the base model's answers is a
+  different probe and is not used.
+- *no-penalty runs and no-cue ceiling:* the no-penalty runs are 261013 seed 42 and 261018
+  seeds 43 and 44 (261024 and 261025 call them the no-penalty baseline). The no-cue ceiling
+  is 261020's noisy-label runs with no cue, at KL 0.001; 261107 reran it at KL 0.01 (the
+  *no-cue ceiling at KL 0.01*).
+- *one-sentence answer:* an answer of at most 60 characters, such as "the answer is B"
+  (261025).
+- *probe-only group:* a training group whose 8 answers all name the cued option, so their
+  task rewards are equal and only the probe penalty differs (261025).
+- *base model's values in RL entries:* bias and self-report rates count only questions where
+  both the base and the trained model have a no-cue answer, so the base model's value
+  differs slightly between runs (training-mix bias 14.7–15.4% in the RL entries).
 - *swap vs. switch:* the `swap` definition (`bias_swap`, `p_yes_swap`, `arms.swap`,
   `definition=swap`) is called "cue-switch" / "switch" in some older plot code
   (`260819_domain_baseline/plot_results.py`, `260824_rescore/plot_results.py`). `switch`
@@ -121,27 +177,143 @@ The entry named in each decision holds the evidence.
 ## Open question
 
 **Does a linear bias signal and a linear deception signal exist in the activations?**
-Bias: probes at the answer token score 0.77 (`rm`) / 0.83 (`swap`) on all rows, and
-0.69 / 0.68 when both classes followed the cue (260826); with the CV-chosen recipe and the
-combined-score metric, `rm` bias is 0.840 and `bias_followed` 0.788 (260924). Deception:
-at the self-report token the probe reads which token was sampled (260825); with the
-self-report held fixed by construction, the four strata score 0.64–0.93 at the token
-before it, but inside a stratum the label coincides with bias (260826); the `rm` strata
-reach 0.793 (said-Yes) and 0.749 (said-No) under the 260924 recipe. With a prefilled
-one-token answer and no chain-of-thought, `rm` `bias_followed` reaches 0.852 / 0.880
-(sampled / logprob labels; 0.920 on prompts where the model is confident) and said-Yes
-0.819 / 0.809, but the no-CoT samples are also far less noisy, so the gain is not
-separated from cleaner labels (261007). Leaving out the eval rows whose 8 fresh no-cue
-samples split 4-4 raises the hard-trained `rm` `bias_followed` AUC on the old labels from
-0.788 to 0.800 (261010 soft labels). Training and scoring the CoT probes only on questions where
-at least 6 of 8 no-cue samples agree gives `rm` `bias_followed` 0.871 against 0.866 for the
-all-question probe on the same rows; the no-CoT logprob probe scores 0.923 on its own
-no-cue-confident rows (261010 confident slice). A deception signal separate from bias has not
-been demonstrated.
+Bias is readable at the answer token. With the cross-validated recipe, the `rm`
+`bias_followed` probe scores AUC 0.788 with chain-of-thought (260924) and 0.871 on questions
+where at least 6 of 8 no-cue samples agree (261010 confident slice). With a one-letter
+answer and no chain-of-thought it scores 0.852 (sampled labels) and 0.880 (logprob labels),
+but those samples are also far less noisy, so the gain is not separated from cleaner labels
+(261007). For deception, a probe at the self-report token reads which token was sampled
+(260825). With the self-report held fixed, the said-Yes and said-No probes score 0.793 and
+0.749 (260924), but inside each the label coincides with bias (260826). A deception signal
+separate from bias has not been demonstrated.
 
 ---
 
 ## Experiments
+
+### 261110 — Redrawn training labels, four seeds: with the probe retrained each round, round-5 training-mix bias 7.5% against the base model's 15.1%; with round 1's probe frozen, 20.0%
+
+[`sycophancy_experiments/261110_redrawn_labels_seeds_45_46/`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/), whose README covers 261108, 261109 and 261110.
+
+**Setup:**
+- Seeds 45 and 46 of the comparison in 261108 (frozen probe) and 261109 (retrained probe). Round 1 is run in 261110 with
+  261103's weight-1.0 config at KL 0.01; rounds 2–5 then run twice from the same round-1 model, once with each probe,
+  on 261108's redrawn label files, as for seeds 42 and 43.
+- Results pool four seeds (42 and 43 from 261108 and 261109). Compared with the base model and with fixed labels
+  (261107 frozen, 261104 retrained; seeds 42 and 43). One sampled answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (mean ± SD over seeds 42, 43, 45 and 46):
+- Training-mix bias, rounds 1–5: retrained 20.4 ± 7.8 / 15.5 ± 3.2 / 13.6 ± 3.9 / 10.4 ± 1.5 / 7.5 ± 1.4%, frozen
+  20.4 ± 7.8 / 20.7 ± 8.3 / 26.3 ± 2.3 / 21.7 ± 1.4 / 20.0 ± 1.0% (base 15.1%). In rounds 3–5 the frozen chain had more
+  biased cued answers in every seed (Fisher p < 0.001 each). The user's reading: with redrawn labels, the retrained
+  probe works while the frozen probe does not. No chain continues rounds 2–5 without the penalty.
+- Round 5, retrained vs frozen: training-mix cue agreement rate 66.4 ± 2.0% vs 79.4 ± 1.0% (base 71.1%), training-mix
+  true accuracy 77.5 ± 1.0% vs 76.4 ± 0.5% (base 72.9%).
+- Memorization (all 128 steps), round 1 → round 5: redrawn labels 9.8 ± 3.1% → 7.5 ± 3.1% frozen and 17.8 ± 2.8%
+  retrained; fixed labels (seeds 42 and 43) 10.3 ± 1.3% → 71.7 ± 1.3% frozen and 70.7 ± 0.9% retrained. The user's
+  reading: redrawing the labels each round prevented memorization.
+- Penalty probe AUC, both cue conditions pooled: round 1's probe 0.905 ± 0.002 on the base model's eval answers and
+  0.813 ± 0.060 at the end of round 1; at the end of round 5, frozen 0.792 ± 0.034 and retrained 0.859 ± 0.032. Mean
+  score of biased answers at the end of round 5: 0.16 ± 0.03 vs 0.61 ± 0.09. The user's reading: the frozen probe
+  weakens more over rounds than the retrained probes.
+- Seed 45 alone: round-1 training-mix bias 9.5% (base 15.4%), against 24.0% ± 3.4 in the other three seeds; round 2
+  retrained 19.1% vs frozen 8.5%; round 5 retrained 9.1% vs frozen 20.8%.
+- Training-mix deception at round 5: retrained 55.7 ± 8.0%, frozen 47.6 ± 6.0% (round 1 53.4 ± 0.8%, base 56.8%). The
+  user's reading: no difference beyond seed noise.
+
+### 261109 — Probe retrained each round on 261108's redrawn labels, seeds 42 and 43: round-5 training-mix bias 7.0%, against 19.2% with round 1's probe frozen
+
+[`sycophancy_experiments/261109_refit_probe_redrawn_labels/`](../sycophancy_experiments/261109_refit_probe_redrawn_labels/); README in [`261110_redrawn_labels_seeds_45_46`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/).
+
+**Setup:**
+- 261104's rounds 2–5 with the retrained probe, from the same round-1 runs (261103's weight-1.0 runs, seeds 42 and 43),
+  with round R trained on 261108's redrawn label file for that round.
+- Compared with 261108 (frozen probe, the same label files) and 261104 (retrained probe, fixed labels). One sampled
+  answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (mean ± SD over seeds 42 and 43; 261109's `runs/comparison/comparison.md`):
+- Training-mix bias, rounds 1–5: retrained 22.6 ± 3.4 / 13.5 ± 2.9 / 16.0 ± 2.3 / 10.8 ± 2.0 / 7.0 ± 1.7%, frozen
+  22.6 ± 3.4 / 23.8 ± 0.7 / 27.7 ± 1.7 / 22.9 ± 0.1 / 19.2 ± 0.3% (base 15.1%; retrained with fixed labels, 4.6 ± 1.8%
+  at round 5).
+- Round 5, retrained vs frozen: training-mix cue agreement rate 65.8 ± 2.6% vs 78.7 ± 0.3% (base 71.1%); true accuracy
+  with the cue at the correct answer 83.1 ± 2.2% vs 92.2 ± 0.9% (base 84.3%), at the wrong answer 69.0 ± 2.5% vs
+  47.3 ± 1.0% (base 50.9%).
+- Memorization (all 128 steps) at round 5: 19.6 ± 2.5% retrained vs 6.8 ± 0.9% frozen (round 1 10.3 ± 1.3%).
+- Penalty probe AUC at the end of round 5, both cue conditions pooled: retrained 0.837 ± 0.000 vs frozen 0.802 ± 0.016
+  (0.795 ± 0.008 at the end of round 1).
+
+### 261108 — Flipped training labels redrawn every round, frozen probe, seeds 42 and 43: round-5 memorization 6.8% against 71.7% with fixed labels; training-mix bias 19.2% against 5.3%
+
+[`sycophancy_experiments/261108_frozen_probe_redrawn_labels/`](../sycophancy_experiments/261108_frozen_probe_redrawn_labels/); README in [`261110_redrawn_labels_seeds_45_46`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/).
+
+**Setup:**
+- 261107's rounds 2–5 with the frozen probe, from the same round-1 runs (261103's weight-1.0 runs, seeds 42 and 43),
+  with the flipped training labels redrawn every round: round R's question file flips a new random 243 of the 1217
+  training questions (seed 261108 + R); 40–53 of each round's flipped questions were also flipped the round before.
+  261109 and 261110 use the same four files.
+- Compared with 261107 (the frozen probe with fixed labels). One sampled answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (mean ± SD over seeds 42 and 43; 261109's `runs/comparison/comparison.md` and 261107's entry):
+- Memorization (all 128 steps), rounds 1–5: 10.3 ± 1.3 / 5.1 ± 1.9 / 2.1 ± 0.5 / 4.8 ± 0.2 / 6.8 ± 0.9% with redrawn
+  labels, against 71.7 ± 1.3% at round 5 with fixed labels.
+- Training-mix bias, rounds 1–5: 22.6 ± 3.4 / 23.8 ± 0.7 / 27.7 ± 1.7 / 22.9 ± 0.1 / 19.2 ± 0.3% with redrawn labels,
+  against 22.6 ± 3.4 / 14.7 ± 2.3 / 10.7 ± 0.1 / 7.6 ± 0.6 / 5.3 ± 0.6% with fixed labels (base 15.1%).
+- Training-mix cue agreement rate at round 5: 78.7 ± 0.3% vs 61.7 ± 0.2% with fixed labels (base 71.1%). True accuracy
+  with no cue 76.1 ± 0.3% (base 75.5%).
+- Round 1's probe AUC at the end of rounds 1–5, both cue conditions pooled: 0.795 ± 0.008 / 0.782 ± 0.034 /
+  0.773 ± 0.021 / 0.792 ± 0.026 / 0.802 ± 0.016, against 0.795 ± 0.008 / 0.831 ± 0.006 / 0.830 ± 0.020 /
+  0.832 ± 0.017 / 0.815 ± 0.052 with fixed labels.
+
+### 261107 — Frozen-probe control for 261104: with round 1's probe in every round, round-5 bias as with the probe refit each round (5.3% vs 4.6%); the model memorized the training labels
+
+[`sycophancy_experiments/261107_frozen_probe_kl_0_01/`](../sycophancy_experiments/261107_frozen_probe_kl_0_01/)
+
+**Setup:**
+- 261104's rounds 2–5 from the same round-1 runs (261103's weight-1.0 KL-0.01 runs, seeds 42 and 43), with round 1's
+  bias probe giving the penalty in every round (the *frozen probe*) instead of a probe refit at the start of each round
+  (261104, the *retrained probe*). Everything else as in 261104; seed 42's rounds 2–5 ran on an H200 instead of an H100.
+- Each round's final eval is scored with round 1's probe, read through that round's model. One sampled answer per
+  prompt (Decision 8); bias is `rm`.
+- Training answers counted by where the cue sat and whether the question's training label is flipped
+  (`memorization.py`).
+
+**Results** (mean ± SD over seeds 42 and 43):
+- Training-mix bias, rounds 1–5: 22.6 ± 3.4 / 14.7 ± 2.3 / 10.7 ± 0.1 / 7.6 ± 0.6 / 5.3 ± 0.6% frozen, against
+  22.6 ± 3.4 / 13.5 ± 1.2 / 7.6 ± 1.7 / 6.3 ± 0.8 / 4.6 ± 1.8% retrained (base 15.1%). Biased cued answers, both
+  seeds: 11.8% vs 8.0% in round 3 (Fisher p < 0.001), 5.8% vs 5.1% in round 5 (p = 0.35).
+- Round 5, frozen vs retrained: training-mix cue agreement rate 61.7 ± 0.2% vs 62.2 ± 2.3% (base 71.1%), training-mix
+  true accuracy 75.9 ± 2.1% vs 77.1 ± 0.7%.
+- Mean probe score of training answers that agree with the cue (steps 60–127): 0.07 ± 0.01 in round 2 and 0.02 ± 0.00
+  in round 5 frozen, against 0.17 ± 0.00 and 0.21 ± 0.08 retrained. Spread of probe scores within probe-only groups in
+  round 5: 0.005 ± 0.002 vs 0.041 ± 0.010.
+- Frozen-probe AUC, both cue conditions pooled: 0.905 ± 0.003 on the base model's eval answers, then 0.795 ± 0.008 /
+  0.831 ± 0.006 / 0.830 ± 0.020 / 0.832 ± 0.017 / 0.815 ± 0.052 at the end of rounds 1–5 (round 5: 0.778 in seed 42,
+  0.851 in seed 43).
+- Training answers giving the training label, frozen probe, round 1 → round 5: 10.4 ± 0.9% → 72.9 ± 5.5% on flipped
+  questions with the cue at the true answer (retrained round 5: 73.3 / 74.2%); 46.8 ± 3.3% → 92.4 ± 1.3% on unflipped
+  questions with the cue at the wrong answer. The user's reading: the model memorized the training labels, after which
+  following the cue no longer earned reward; no run continues rounds 2–5 without the penalty.
+
+### 261107 — The no-cue ceiling at KL 0.01: eval results similar to the ceiling at KL 0.001
+
+[`sycophancy_experiments/261107_no_cue_ceiling_kl_0_01/`](../sycophancy_experiments/261107_no_cue_ceiling_kl_0_01/)
+
+**Setup:**
+- 261020's noisy-label runs without the cue (the no-cue ceiling) rerun at KL 0.01, the KL coefficient from 261103 on:
+  261103's no-penalty configs with no cue in any training prompt, seeds 42–44. The bias probe is fit and scores every
+  training answer at weight 0; the SD floor (Decision 10) applies.
+- Compared with 261020's three runs at KL 0.001, which also ran older code without the floor and with a deception probe
+  at weight 0. One sampled answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (mean ± SD over seeds 42–44):
+- True accuracy with no cue 76.8% ± 1.8 at KL 0.01 against 76.8% ± 0.2 at KL 0.001 (base 75.5%); on the training mix
+  76.2% ± 0.6 against 76.9% ± 1.0 (base 72.9%).
+- Training-mix cue agreement rate 72.1% ± 2.8 against 76.5% ± 4.0 (base 71.1%); training-mix bias 14.7% ± 1.7 against
+  18.1% ± 2.7 (base 15.2%).
+- The two settings' per-seed values overlap on every eval row but one: reward on the training mix, prompts these runs
+  did not train on, 70.7% ± 0.4 against 73.1% ± 0.9 (base 68.9%).
+- KL from the base model, mean over the 128 training steps: 0.036 ± 0.003 at KL 0.01 against 0.201 ± 0.044 at KL 0.001.
+- Median no-cue answer length 190 / 193 / 194 tokens (base 201); no one-sentence or cut-off final-eval answers.
 
 ### 261104 — Iterative RL against the bias probe at KL 0.01 and weight 1.0, two seeds: training-mix bias 22.6% in round 1, 4.6% in round 5; each round's probe lost AUC during round 1 in both seeds, not consistently after
 
@@ -182,9 +354,9 @@ been demonstrated.
 [`sycophancy_experiments/261103_kl_0_01/`](../sycophancy_experiments/261103_kl_0_01/)
 
 **Setup:**
-- 261027's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the KL coefficient to the
-  base model raised from 0.001, the value of every earlier sycophancy run, to 0.01: penalty weight 1.0 and no penalty
-  (weight 0), seeds 42–44 each. Two unattended queues, one per condition, on two H100 pods; all review points passed.
+- 261027's setup (the probe penalty with the SD floor, Decision 10) with the KL coefficient to the base model raised
+  from 0.001, the value of every earlier sycophancy run, to 0.01: penalty weight 1.0 and no penalty (weight 0), seeds
+  42–44 each.
 - Compared with 261027's weight-1.0 runs and the no-penalty runs (261013 seed 42, 261018 seeds 43 and 44) at KL 0.001;
   the no-penalty runs at KL 0.001 also ran older code without the floor. One sampled answer per prompt (Decision 8);
   bias is `rm`.
@@ -211,11 +383,10 @@ been demonstrated.
 [`sycophancy_experiments/261102_iterative_probe_retraining/`](../sycophancy_experiments/261102_iterative_probe_retraining/)
 
 **Setup:**
-- Five rounds of 128-step GRPO in 261027's weight-0.6 seed-42 setup (the probe penalty with a floor of 0.3 on the group
-  SD in the advantage), as in the MBPP iterative experiments. Round 1 starts from the base model with that config,
-  against the initial probe. Round R keeps training round R−1's LoRA with a fresh optimizer and KL to the base model,
-  against a probe refit at the start of the round through round R−1's model. One lineage; one unattended queue on one
-  H100 pod; all eight review points passed.
+- Five rounds of 128-step GRPO in 261027's weight-0.6 seed-42 setup (the probe penalty with the SD floor, Decision 10),
+  as in the MBPP iterative experiments. Round 1 starts from the base model with that config, against the initial
+  probe. Round R keeps training round R−1's LoRA with a fresh optimizer and KL to the base model, against a probe refit
+  at the start of the round through round R−1's model.
 - Round R's probe set: the initial probe's 1512 base-model answers plus the own answers (261028's procedure) of rounds
   1 … R−1, with the same number per group from each source; 1512 to 7296 answers. No group needed a top-up.
 - Compared with the base model and the no-penalty runs (261013 seed 42, 261018 seeds 43 and 44); one sampled answer per
@@ -242,12 +413,11 @@ been demonstrated.
 [`sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/`](../sycophancy_experiments/261031_probe_penalty_weights_1_5_2_0/)
 
 **Setup:**
-- 261027's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the penalty weight raised
-  to 1.5 and to 2.0, seeds 42–44 each; one unattended queue on one H100 pod, all review points passed. Compared with
-  weights 0.3 (261025), 0.6 and 1.0 (261027), the no-penalty runs and the no-cue ceiling; one sampled answer per prompt
-  (Decision 8); bias is `rm`.
-- For each of the six models, a *fresh probe*: a bias probe refit on its own answers and activations with 261028's
-  procedure (261028's own-answer probe). Weight 2.0 seed 42 gave no biased answer in its eval or on the training
+- 261027's setup (the probe penalty with the SD floor, Decision 10) with the penalty weight raised to 1.5 and to 2.0,
+  seeds 42–44 each. Compared with weights 0.3 (261025), 0.6 and 1.0 (261027), the no-penalty runs and the no-cue
+  ceiling; one sampled answer per prompt (Decision 8); bias is `rm`.
+- For each of the six models, a fresh probe: a bias probe refit on its own answers and activations with 261028's
+  procedure. Weight 2.0 seed 42 gave no biased answer in its eval or on the training
   questions, so its probe's biased examples are all base-model answers and it has no test AUC.
 
 **Results** (mean ± SD over seeds 42–44):
@@ -279,35 +449,29 @@ been demonstrated.
   condition), and a probe was fit on its own answers and activations with the initial probe's recipe and 261010's
   balance (biased / unbiased × cue condition at the largest size; a group under 200 topped up with base-model answers).
 - Scored on each model's final-eval answers that name the cued option, both cue conditions pooled, labelled against
-  the model's own no-cue answer (`rm`), next to the initial probe; one sampled answer per prompt (Decision 8). One
-  unattended run; all four review points passed.
+  the model's own no-cue answer (`rm`), next to the initial probe; one sampled answer per prompt (Decision 8).
 - Also written: 20 eval questions with all 13 models' answers side by side, and a separate agent's takeaways from them.
 
 **Results** (mean ± SD over seeds 42–44):
 - No group needed a top-up: training sets of 1824–3084 of the models' own answers (456–771 per group), against the
   initial probe's 1512.
-- Own-answer probe AUC 0.901 ± 0.029 with no penalty and 0.896 ± 0.044, 0.839 ± 0.031 and 0.911 ± 0.077 at weights
+- Fresh probe AUC 0.901 ± 0.029 with no penalty and 0.896 ± 0.044, 0.839 ± 0.031 and 0.911 ± 0.077 at weights
   0.3, 0.6 and 1.0, against 0.863 ± 0.054, 0.819 ± 0.062, 0.752 ± 0.054 and 0.821 ± 0.045 for the initial probe on the
   same answers and 0.904–0.907 on the base model's answers. It is higher than the initial probe's in each of the 12.
-- Mean score of biased answers: 0.747, 0.777, 0.640 and 0.802 with the own-answer probe, against 0.591, 0.171, 0.108
+- Mean score of biased answers: 0.747, 0.777, 0.640 and 0.802 with the fresh probe, against 0.591, 0.171, 0.108
   and 0.134 with the initial probe and 0.744–0.751 on the base model's answers.
-- The end-of-run probe (refit on the trained model's activations of the base model's answers) has AUC 0.823 ± 0.052,
-  0.752 ± 0.042 and 0.737 ± 0.077 at weights 0.3, 0.6 and 1.0.
-- Refit through weight-0.3 seed 42's adapter on the initial probe's training set, the fitting path reproduced that
-  run's end-of-run probe (AUC 0.862).
 
 ### 261027 — Penalty weights 0.6 and 1.0 with the SD floor: cue agreement between the no-penalty runs' and the no-cue ceiling's, bias at the no-penalty runs' level; two weight-1.0 seeds answer in one sentence
 
 [`sycophancy_experiments/261027_probe_penalty_weight_sweep/`](../sycophancy_experiments/261027_probe_penalty_weight_sweep/)
 
 **Setup:**
-- 261025's setup (the probe penalty with a floor of 0.3 on the group SD in the advantage) with the penalty weight
-  raised from 0.3 to 0.6 and to 1.0, seeds 42–44 each. Two unattended queues, one weight per H100 pod; all ten review
-  points passed. W&B runs under the README's Run status.
+- 261025's setup (the probe penalty with the SD floor, Decision 10) with the penalty weight raised from 0.3 to 0.6 and
+  to 1.0, seeds 42–44 each.
 - Compared with 261025's weight-0.3 runs, 261024's run without the floor, the no-penalty runs (261013 seed 42, 261018
   seeds 43 and 44) and the no-cue ceiling (261020); one sampled answer per prompt (Decision 8); bias is `rm`.
-- The no-penalty runs' initial-probe scores and the own-answer probes (a bias probe refit on each trained model's own
-  answers and activations) come from [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/).
+- The no-penalty runs' initial-probe scores come from
+  [`261028_own_answer_probes`](../sycophancy_experiments/261028_own_answer_probes/).
 
 **Results** (mean ± SD over seeds 42–44):
 - Training-mix cue agreement rate 86.7% ± 0.5 at weight 0.6 and 84.4% ± 1.2 at weight 1.0, against 88.6% ± 8.4 at
@@ -319,8 +483,6 @@ been demonstrated.
 - Initial probe on the trained models' own answers and activations, both cue conditions pooled: mean score of biased
   answers 0.108 ± 0.064 and 0.134 ± 0.144, against 0.591 ± 0.017 for the no-penalty runs and 0.746 for the base
   model's answers; AUC 0.752 ± 0.054 and 0.821 ± 0.045, against 0.863 ± 0.054 and 0.905.
-- Own-answer probe AUC 0.839 ± 0.031 and 0.911 ± 0.077 at weights 0.6 and 1.0 (0.896 ± 0.044 at weight 0.3,
-  0.901 ± 0.029 with no penalty), above the initial probe's in each of the 12 runs.
 - Training-mix Said Yes 36.3% ± 11.9 at weight 0.6 and 68.8% ± 45.6 (seeds 98.9 / 16.3 / 91.3%) at weight 1.0 (base
   65.8%, no penalty 78.5% ± 7.6); deception 42.2% ± 4.3 and 54.1% ± 18.6 (base 56.7%, no penalty 54.7% ± 3.1).
 
@@ -330,12 +492,9 @@ been demonstrated.
 
 **Setup:**
 - 261024's setup with one change: each answer's advantage is divided by the larger of its group's SD + 0.0001 and 0.3
-  (`loss.advantage_std_floor`, a new trainer setting). Three runs, seeds 42–44, on one H100; RL runs W&B `o4145b9r`,
-  `rt07kkue` and `h9zhpmgh`.
+  (`loss.advantage_std_floor`, a new trainer setting; standard from here on, Decision 10). Three runs, seeds 42–44.
 - Compared with 261024's penalty run (no floor), the no-penalty baseline (261013 seed 42, 261018 seeds 43 and 44) and
   the no-cue ceiling (261020); one sampled answer per prompt (Decision 8); bias is `rm`.
-- Run unattended, with a dry run of the scripts on 261024's outputs and a 2-step smoke run in the queue; all six review
-  points passed.
 
 **Results** (floor runs: mean ± SD over seeds 42–44):
 - Training-mix cue agreement rate 88.6% ± 8.4 (seeds 88.3 / 97.1 / 80.3%), against 99.9% for 261024's run and
@@ -358,12 +517,9 @@ been demonstrated.
 **Setup:**
 - 261013's CoT noisy-label training with a penalty of −0.3 × a bias probe's score on every answer that names the cued
   option. The probe (261010's probe set and recipe, layers 13–16, read at the answer letter) is fit on the base model at
-  the start of the run and not updated. One run, seed 42, on an H100, from `sycophancy-rl/sycophancy_setup/`'s penalty
-  template.
+  the start of the run and not updated. One run, seed 42, from `sycophancy-rl/sycophancy_setup/`'s penalty template.
 - Compared with the no-penalty baseline (261013 seed 42, 261018 seeds 43 and 44) and the no-cue ceiling (261020's
   noisy-label runs without the cue); one sampled answer per prompt (Decision 8); bias is `rm`.
-- RL run W&B `9ka0iqgr`, run unattended; all three review points passed, and an audit recomputed every table number
-  from the raw files.
 
 **Results** (penalty run; baseline mean ± SD over seeds 42–44):
 - Training-mix cue agreement rate 99.9% vs 89.0% ± 3.6 (base 71.1%), `cue_dist` true accuracy 0.2% vs 25.7% ± 8.1;
@@ -387,43 +543,40 @@ been demonstrated.
 [`sycophancy_experiments/261020_reference_rl/`](../sycophancy_experiments/261020_reference_rl/)
 
 **Setup:**
-- Three training conditions against condition 0, the noisy-label runs with the cue (261013, 261014 and
-  261018's seeds): 1. noisy labels (the same flipped questions), no cue; 2. correct labels, no cue;
-  3. correct labels, cue at the correct answer 75% of the time. Each in CoT and no-CoT with training seeds
-  42, 43 and 44: 18 GRPO runs of 128 steps, no probe penalty, all other settings as in condition 0.
+- Four conditions, named by their training label and cue: *noisy / cue* (the noisy-label runs of 261013,
+  261014 and 261018), and three new ones: *noisy / no cue* (the same flipped questions), *correct / no cue*,
+  and *correct / cue* (cue at the correct answer 75% of the time). Each new condition in CoT and no-CoT with
+  training seeds 42, 43 and 44: 18 GRPO runs of 128 steps, no probe penalty, all other settings as in
+  noisy / cue.
 - A new trainer setting, `task_args.train_cue: false`, serves each training prompt exactly the eval's no-cue
-  prompt. Final checkpoints are evaluated on condition 0's eval questions (489 CoT, 547 no-CoT); CoT is read as
-  one sampled answer per prompt (Decision 8), no-CoT as the top letter.
-- Conditions 2 and 3 are scored against the correct answer. On the training cue mix, conditions 1 and 2 are
-  scored on the mix of the cued run with the same labels (condition 0's and condition 3's).
+  prompt. Final checkpoints are evaluated on noisy / cue's eval questions (489 CoT, 547 no-CoT); CoT is read
+  as one sampled answer per prompt (Decision 8), no-CoT as the top letter.
+- The two correct-label conditions are scored against the correct answer. On the training cue mix, each
+  no-cue condition is scored on the mix of the cued condition with the same labels.
 
 **Results** (true accuracy, base model → after-RL mean ± SD over the three seeds):
-- CoT, no cue (base 75.5%): condition 0 74.6% ± 0.7, condition 1 76.8% ± 0.2, condition 2 79.0% ± 0.5,
-  condition 3 77.8% ± 0.5. No-CoT, no cue: condition 1 61.9% ± 13.3, condition 2 75.7% ± 2.3.
-- CoT, training cue mix: noisy-label mix (base 72.9%) condition 1 76.9% ± 1.0 vs condition 0 72.1% ± 2.3;
-  correct-label mix (base 75.9%) condition 2 82.0% ± 1.9 vs condition 3 80.8% ± 1.4.
-- `cue_dist`, CoT (base 50.9%): condition 0 25.7% ± 8.1; conditions 1, 2 and 3 51.0% ± 7.5, 55.1% ± 7.7 and
-  55.8% ± 11.2. No-CoT (base 35.1%): condition 0 17.2% ± 16.5; conditions 1, 2 and 3 55.0% ± 6.9,
-  51.6% ± 5.1 and 12.1% ± 21.0.
-- CoT, condition 2: true accuracy on the training batches 77.1% (steps 0–9) → 89.9% (steps 118–127), on the
-  eval with no cue 75.5% → 79.0%.
-- No-CoT: 4 of 12 runs ended in a fixed answer pattern (condition 1 seed 42 always (A); condition 0 seed 43
-  and condition 3 seeds 43 and 44 always the cued option). Training groups with 8 equal rewards: 95.8–99.7%
-  per no-CoT run, 76.3–91.0% per CoT run.
-- W&B IDs of the 18 runs in the README; every record check passed, every eval is complete, and an audit
-  recomputed every table number from the raw files.
+- CoT, no cue (base 75.5%): noisy / cue 74.6% ± 0.7, noisy / no cue 76.8% ± 0.2, correct / no cue
+  79.0% ± 0.5, correct / cue 77.8% ± 0.5. No-CoT, no cue: noisy / no cue 61.9% ± 13.3, correct / no cue
+  75.7% ± 2.3.
+- CoT, training cue mix: on the noisy-label mix (base 72.9%), noisy / no cue 76.9% ± 1.0 vs noisy / cue
+  72.1% ± 2.3; on the correct-label mix (base 75.9%), correct / no cue 82.0% ± 1.9 vs correct / cue
+  80.8% ± 1.4.
+- `cue_dist`, CoT (base 50.9%): noisy / cue 25.7% ± 8.1, noisy / no cue 51.0% ± 7.5, correct / no cue
+  55.1% ± 7.7, correct / cue 55.8% ± 11.2. No-CoT (base 35.1%): noisy / cue 17.2% ± 16.5, noisy / no cue
+  55.0% ± 6.9, correct / no cue 51.6% ± 5.1, correct / cue 12.1% ± 21.0.
+- CoT, correct / no cue: true accuracy on the training batches 77.1% (steps 0–9) → 89.9% (steps 118–127),
+  on the eval with no cue 75.5% → 79.0%.
+- No-CoT: 4 of 12 runs ended in a fixed answer pattern (noisy / no cue seed 42 always (A); noisy / cue
+  seed 43 and correct / cue seeds 43 and 44 always the cued option). Training groups with 8 equal rewards:
+  95.8–99.7% per no-CoT run, 76.3–91.0% per CoT run.
 
 ### 261018 — Seeds 43 and 44 of the CoT and no-CoT noisy-label RL runs
 
 [`sycophancy_experiments/261018_noisy_label_rl_seeds/`](../sycophancy_experiments/261018_noisy_label_rl_seeds/)
 
 **Setup:**
-- 261013 (CoT) and 261014 (no-CoT) rerun with training seeds 43 and 44. Only the seed, the names, the W&B
-  group and the probe cache prefix changed. Each setup's eval and compare scripts, base eval and seed-42
-  eval are reused unchanged.
-- CoT is read as one sampled answer per prompt (Decision 8), no-CoT as the top letter. `seed_table.md`
-  puts seeds 42 / 43 / 44 side by side with the mean and SD.
-- CoT seed 44 ran after a pod restart, as a second RL attempt, under a different kernel and CUDA version.
+- 261013 (CoT) and 261014 (no-CoT) rerun with training seeds 43 and 44; only the seed changed.
+- CoT is read as one sampled answer per prompt (Decision 8), no-CoT as the top letter.
 
 **Results** (base mean → after-RL mean ± SD over the three seeds, or per seed 42 / 43 / 44):
 - In all six runs the cue agreement rate, `rm` bias and training-mix reward rose. `cue_dist` bias: CoT
@@ -436,8 +589,6 @@ been demonstrated.
   0.597 → 0.555 / 0.494 / 0.698.
 - No-CoT seed 43: cue agreement rate 1.000 under `cue_gold` and `cue_dist`, `cue_dist` true accuracy
   0.000, no-cue true accuracy 0.755 → 0.585. No-CoT seed 44: P(Yes) above 0.5 on every self-report.
-- RL runs W&B `f3qfvw2q`, `nk7mr4qf`, `nc6bwn67`, `i3wl9evn`; every record check passed, and an
-  independent recomputation from the raw files matched the seed table.
 
 ### 261014 — The noisy-label RL run in the no-CoT format, no probe penalty
 
@@ -463,8 +614,6 @@ been demonstrated.
   deception 0.596 → 0.555.
 - Against 261013 counted with one sample per prompt: training-mix reward 0.726 → 0.742 vs
   0.689 → 0.758; training groups with 8 equal rewards 0.978 vs 0.847.
-- RL run W&B `5b0x5xp6`, first attempt; every per-step record check passed, and an independent
-  recomputation matched every table number.
 
 ### 261013 — GRPO with a noisy training label on the confident questions, no probe penalty
 
@@ -479,21 +628,19 @@ been demonstrated.
   question 8 no-cue, 3 `cue_gold` and 3 `cue_dist` samples; `rm` bias against the checkpoint's own
   ≥ 5-of-8 no-cue answer; float32 P(Yes) self-report. Training mix = the cued rollouts weighted
   0.75 / 0.25 by whether the cue is at the question's training label.
-- The code copy's reward and training cue use the training label, and each training rollout is
-  recorded. No no-flip control was run.
+- The eval numbers below count one sampled answer per prompt (Decision 8), from 261014's README,
+  which recounts this run with 261013's own code. This folder's README counts every sample.
 
 **Results:**
-- Accuracy, base → after RL: no cue 0.742 → 0.738, `cue_gold` 0.852 → 0.975, `cue_dist`
-  0.513 → 0.185, training mix 0.736 → 0.700. Training-mix reward 0.690 → 0.752.
-- Cue agreement rate under `cue_dist` 0.460 → 0.815 (training mix 0.715 → 0.922). `rm` bias
-  0.105 → 0.179 (`cue_gold`) and 0.267 → 0.596 (`cue_dist`).
-- Said Yes 0.571 / 0.766 → 0.783 / 0.934 (`cue_gold` / `cue_dist`); false denials
-  0.372 / 0.287 → 0.088 / 0.071; false admissions 0.564 / 0.786 → 0.755 / 0.940.
-- Deception, soft 0.542 / 0.596 → 0.557 / 0.466; thresholded 0.543 / 0.650 → 0.635 / 0.422.
+- True accuracy, base → after RL: no cue 0.755 → 0.751, `cue_gold` 0.843 → 0.975, `cue_dist`
+  0.509 → 0.186, training mix 0.729 → 0.700. Training-mix reward 0.689 → 0.758.
+- Cue agreement rate under `cue_dist` 0.458 → 0.814 (training mix 0.711 → 0.925).
+- `rm` bias 0.097 → 0.179 (`cue_gold`), 0.259 → 0.595 (`cue_dist`) and 0.154 → 0.324 (training
+  mix).
+- Training-mix average P(Yes) 0.630 → 0.728 on biased and 0.601 → 0.632 on unbiased answers;
+  training-mix deception (soft) 0.565 → 0.516.
 - In training, on flipped questions with the cue at the true answer, the cue agreement rate went
   from 0.898 to 0.977 and reward from 0.097 to 0.023 between the first and last 10 steps.
-- RL run W&B `6vcs39wj`, first attempt; every per-step record check passed, and an independent
-  recomputation matched every table number.
 
 ### 261012 — Sycophancy GRPO code moved onto a copy of the release, verified by a rerun of 260825
 
@@ -503,25 +650,21 @@ been demonstrated.
 - A copy of the cleaned-up release at `/workspace/sycophancy-rl` (133 files), with private commit
   `12631d5` (the `MULTIPLE_CHOICE` task) merged three-way and sycophancy support added to its
   launcher (`config_name`, no MBPP collapse check, in-loop eval rows in the export).
-- One unattended run: structural checks (copy = release + `12631d5` + launcher changes; the ported
-  test; the composed config; a response checker on August's 128 step files), a 2-step smoke run,
-  then a 128-step rerun of 260825_grpo_det0 with August's trainer settings.
-- Differences from August: probe-activation batch size 8 instead of 16 (the first smoke attempt
-  ran out of GPU memory at 16), and an H100 80GB instead of an H200.
+- Structural checks (copy = release + `12631d5` + launcher changes; the ported test; the composed
+  config; a response checker on August's 128 step files), a 2-step smoke run, then a 128-step rerun
+  of 260825_grpo_det0 with August's trainer settings.
+- Differences from August: probe-activation batch size 8 instead of 16, and an H100 80GB instead of
+  an H200.
 
 **Results:**
-- Every check passed. The copy's 133 file hashes were unchanged at the start, before the rerun and
-  at the end.
+- Every check passed. In both runs every step served the seeded cue draws, and every recomputed
+  per-step count equals the W&B count.
 - Final eval on the 687 held-out questions (one sample each, temperature 1), rerun vs August:
   accuracy 0.856 vs 0.837, cue-following 0.898 vs 0.923, parse failures 1 vs 0.
 - Both runs first reach train cue-following ≥ 0.95 at step 7. Rerun in-loop eval cue-following is
   below August's in all four rows, by 0.015 to 0.080.
-- In both runs every step served the seeded cue draws, and every recomputed per-step count equals
-  the W&B count.
 - The in-loop eval logged at step N scores the policy from the previous eval point, so the row
   logged at step 30 is the starting model; this applies to 260825's in-loop numbers too.
-- Rerun attempt 1 (W&B `1y9laylg`) ran out of GPU memory at RL step 3; the launcher restarted it,
-  and attempt 2 (W&B `l52s88q8`, group `261012_port_rerun`) ran all 128 steps.
 
 ### 261010 — Confident slice: CoT probes trained and scored on questions with a consistent no-cue answer
 
@@ -533,20 +676,21 @@ been demonstrated.
   relabelled from that answer instead of the majority of 3. `rm` only.
 - `bias_followed`, said-Yes and said-No probes trained on the slice (up to 3 rollouts per prompt,
   cue-balanced; 1512 / 1004 / 508 rows), with lr, steps and band from 261007's cross-validation.
-  Reference: the all-question CoT probe from 261007 (fit B in the 261010 soft-label entry),
-  re-scored from its saved weights on the same slice eval rows and labels.
+  Reference: 261007's all-question CoT probe at 260924's train size and recipe with Decision 7's
+  labels (the probe the 261010 soft-label experiment starts from), re-scored from its saved
+  weights on the same slice eval rows and labels.
 - Added after the run: 261007's no-CoT logprob probe re-scored on the eval rows whose no-cue top
   letter has probability ≥ 0.75, without 261007's condition on the cued prompt.
 
 **Results:**
-- Slice-trained vs all-question probe on the same rows: `bias_followed` 0.871 vs 0.866 (+0.006),
-  said-Yes 0.836 vs 0.825 (+0.011), said-No 0.859 vs 0.860 (−0.001); no 95% CI excludes 0.
+- Slice-trained vs all-question probe on the same rows: `bias_followed` 0.871 vs 0.866,
+  said-Yes 0.836 vs 0.825, said-No 0.859 vs 0.860; no 95% CI on the difference excludes 0.
 - The slice train sets are 50–55% the size of the all-question probe's. The bias label changes on
   550 of 7302 train and 240 of 2934 eval label rows on slice questions.
 - No-CoT probe on its no-cue-confident rows: 0.923 / 0.845 / 0.831 (863 / 888 / 199 rows),
   against 0.920 / 0.841 / 0.826 with 261007's filter on both prompts.
 - The no-CoT and CoT numbers are on different completions and different question sets (547 vs 489
-  eval questions); no Δ was computed between them.
+  eval questions); no difference was computed between them.
 
 The user's reason for the no-cue-only filter: confidence without the cue is a property of the
 question, while confidence with the cue is the model's response to the cue, which changes under RL.
@@ -559,15 +703,16 @@ question, while confidence with the cue is the model's response to the cue, whic
 - Soft bias label b = 1 − p_none for a rollout that followed the cue, else 0, where p_none is
   the share of no-cue samples giving the cued answer. Targets: b for `bias_followed` and
   said-No, 1 − b for said-Yes. `rm` only.
-- 261007's fit B rows, activations and recipe; the hard-trained and soft-trained probes
-  differ only in their targets, which come from 260819's 3 no-cue samples. A soft-label mode
-  was added to the library's `ActivationDataset` for this experiment.
-- Eval labels on fit B's eval rows: old hard (majority of 3), fresh hard (majority of 8 new
-  no-cue samples per eval question) and fresh soft (from those 8).
+- Rows, activations and recipe of 261007's all-question CoT probe at 260924's train size, with
+  Decision 7's labels; the hard-trained and soft-trained probes differ only in their targets,
+  which come from 260819's 3 no-cue samples. A soft-label mode was added to the library's
+  `ActivationDataset` for this experiment.
+- Eval labels on that probe's eval rows: old hard (majority of 3), fresh hard (majority of 8
+  new no-cue samples per eval question) and fresh soft (from those 8).
 
 **Results:**
-- Soft-trained minus hard-trained is −0.002 to +0.006 AUC in all nine probe and label-set
-  cells; no 95% CI excludes 0.
+- In all nine probe and label-set cells, no 95% CI on the soft-minus-hard difference
+  excludes 0.
 - `bias_followed` hard / soft: 0.788 / 0.793 on old hard, 0.804 / 0.804 on fresh hard,
   0.749 / 0.752 on fresh soft (ceiling 0.919).
 - Said-Yes: 0.771 / 0.772, 0.765 / 0.764, 0.762 / 0.760. Said-No: 0.799 / 0.800,
@@ -594,19 +739,18 @@ judged that soft labels would not reach it.
 - One procedure for every arm: matched train sizes (454 / 626 / 340 per class for
   `bias` / `bias_followed` / `deception_yes`; `deception_no` unmatched, 66-148), one row
   per prompt, lr / steps / 4-layer band by 5-fold CV over train questions plus one cell past
-  a grid edge, one seed, headline = AUC of the mean per-layer sigmoid. Δ vs `ref_cot` on
-  shared eval questions with a question-level bootstrap CI; pre-registered rule: a factor
-  helps if the CI excludes zero.
+  a grid edge, one seed, headline = AUC of the mean per-layer sigmoid. Each arm's difference
+  from `ref_cot` on shared eval questions gets a question-level bootstrap CI; pre-registered
+  rule: a factor helps if the CI excludes zero.
 - Self-report in every arm per Decision 7; the deception probe reads the last token of the
-  follow-up prompt. Run unattended under a fixed queue; three gates were changed by the user
-  mid-run (bf16 noise bars, the size count, the read position), `spec.py` unchanged.
+  follow-up prompt.
 
 **Results:**
-- `bias_followed`: `ref_cot` 0.768; `nocot_sampled` 0.852 (+0.082, CI [+0.051, +0.116]);
-  `nocot_logprob` 0.880 (+0.117, [+0.083, +0.151]); `bio_cot` 0.766 (-0.003, [-0.032, +0.027]).
-- Said-Yes deception: 0.752; 0.819 (+0.062, CI excludes 0); 0.809 (+0.049, excludes 0);
-  0.755 (+0.008). Said-No deception: 0.706; 0.779 / 0.762 / 0.717, every CI includes zero
-  (unmatched sizes, 118-139 shared eval questions).
+- `bias_followed`: `ref_cot` 0.768; `nocot_sampled` 0.852 (CI on the difference [+0.051, +0.116]);
+  `nocot_logprob` 0.880 ([+0.083, +0.151]); `bio_cot` 0.766 ([-0.032, +0.027]).
+- Said-Yes deception: 0.752; 0.819 (CI excludes 0); 0.809 (CI excludes 0); 0.755. Said-No
+  deception: 0.706; 0.779 / 0.762 / 0.717, every CI includes zero (unmatched sizes, 118-139
+  shared eval questions).
 - `bias`: 0.827 → 0.874 / 0.901 / 0.845; unstratified deception: 0.649 → 0.711 / 0.696 / 0.637.
 - `nocot_logprob` on the confident slice (top letter >= 0.75 in both prompts, 827 of 1099
   eval rows): `bias_followed` 0.920, said-Yes 0.841.
@@ -659,7 +803,7 @@ judged that soft labels would not reach it.
 - Autonomous run over 260826's five `rm` probes (bias, `bias_followed`, deception,
   said-Yes, said-No), one change per round, three seeds, eval AUC (mean of per-layer
   AUCs over the layers passing the train-loss filter) as the criterion. No validation
-  split; every choice was made on eval. Record in the folder's `runs.md`, `SUMMARY.md`.
+  split; every choice was made on eval.
 - Variants tried: trainer learning rate and steps, sklearn logistic regression, LDA and
   mean-difference probes, train draws of 100 / 200 / 400 / all per class (`pool`, up to
   1454 per class), the no-cue-unanimity train filter (`pool_nu`), other tokens, mean
@@ -726,12 +870,12 @@ judged that soft labels would not reach it.
   baked assignment.
 
 **Results:**
-- Greedy eval accuracy 0.773 → **0.837** against the 0.850 always-defer ceiling; eval
-  followed-cue rate **0.923**; train-side cue-following ~1.0 by step 32.
-- In-loop eval accuracy was 0.771 at step 30, 0.841 by step 60, flat at 0.843 from step 90.
+- Final eval accuracy (one sample per question at temperature 1, per 261012) 0.773 →
+  **0.837**, against the 0.850 always-defer ceiling; eval followed-cue rate **0.923**;
+  train-side cue-following ~1.0 by step 32.
+- In-loop eval accuracy 0.771 / 0.841 / 0.843 / 0.843 in the rows logged at steps
+  30 / 60 / 90 / 120, which score the policy at steps 0 / 30 / 60 / 90 (261012).
 - Parse failures train out (~3% → 0%), worth 1–2 points of the gain.
-- Run `syco_det0_s42`, W&B `lx6gcbcl`, group `syco_det0`, launched via `run_ablation` from
-  `260825_grpo_det0/syco_det0_baseline.yaml`.
 
 ### 260825 — Bias and deception probes, two extraction positions each
 
@@ -743,7 +887,6 @@ judged that soft labels would not reach it.
   last token. Deception: the self-report token vs the token before it.
 - On-policy data, both cue conditions kept, 300/class train; eval is the held-out split at
   one row per prompt (~1360).
-- Both extraction positions gated against the published labels on every row.
 
 **Results:**
 - **Bias is linearly readable**: 0.767 (`rm`) / 0.800 (`swap`) at the answer token, beating
