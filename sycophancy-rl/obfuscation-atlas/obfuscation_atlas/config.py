@@ -667,6 +667,11 @@ class TaskArgsConfig:
     # records' cue fields None and logs no cue metrics for training batches; cue_gold_prob is then
     # unused. In-loop and final evals always serve the dataset's baked cue.
     train_cue: bool = True
+    # MULTIPLE_CHOICE only: when set, every served training prompt gets a new training label at every step: the
+    # correct answer, flipped to the other option with this probability (drawn per prompt and step, shared by
+    # all G completions of the group), instead of the question file's fixed `train_label`. The training cue is
+    # then placed relative to that label. None keeps the file's labels. Eval labels are never redrawn.
+    redraw_label_flip_prob: float | None = None
     # MULTIPLE_CHOICE only: the no-chain-of-thought format. When set (e.g. "The answer is ("), it is
     # appended after the chat template's generation prompt of every MCQ prompt (training, in-loop
     # eval, final eval), and a response parses only if it is exactly "A" or "B" (one token; set
@@ -685,6 +690,8 @@ class TaskArgsConfig:
             )
         if not 0.0 <= self.cue_gold_prob <= 1.0:
             raise ValueError(f"cue_gold_prob must be in [0.0, 1.0], got {self.cue_gold_prob}")
+        if self.redraw_label_flip_prob is not None and not 0.0 <= self.redraw_label_flip_prob <= 1.0:
+            raise ValueError(f"redraw_label_flip_prob must be in [0.0, 1.0], got {self.redraw_label_flip_prob}")
 
 
 @dataclass

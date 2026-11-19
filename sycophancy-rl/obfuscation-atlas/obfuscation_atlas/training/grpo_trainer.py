@@ -922,7 +922,12 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             # Deterministic regex scoring: identical on every process, no broadcast needed.
             reward_infos = reward_infos if reward_infos is not None else self.reward_infos
             gold_letters = [reward_infos[i]["answer"] for i in prompt_indices]  # type: ignore
-            label_letters = [reward_infos[i]["train_label"] for i in prompt_indices]  # type: ignore
+            # Training batches score against the label drawn with the prompt (cue_infos); eval against the file's.
+            label_letters = (
+                [cue_infos[i]["train_label"] for i in prompt_indices]
+                if cue_infos is not None
+                else [reward_infos[i]["train_label"] for i in prompt_indices]  # type: ignore
+            )
             if cue_infos is not None:
                 # Training batch; with the training cue off no cue was served, so no cue metrics.
                 cue_letters = (
@@ -985,20 +990,30 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         over CUE_TEMPLATES) with a step-seeded RNG, so a rerun with the same seed
         serves identical prompts and all G completions of a group share the draw.
         With task_args.train_cue off, every prompt is the no-cue prompt and its cue is None.
+        With task_args.redraw_label_flip_prob set, each served prompt's training label is drawn again per
+        (prompt, step) from its own step-seeded RNG: the correct answer, flipped to the other option with that
+        probability. Otherwise it is the question file's train_label. The cue is placed relative to it.
         Eval always uses the dataset's baked assignment (see compute_sequence_reward).
         """
         task_args = self.obfuscation_config.task_args
         prompt_indices, _ = self._get_inputs_for_step(step)
         # RNG offset disjoint from the mixed-reward RNG (seed + step + 1_000_000).
         rng = np.random.default_rng(self.obfuscation_config.training.seed + step + 2_000_000)
+        # The label redraw has its own RNG (offset 3_000_000), so the cue draws above are unchanged by it.
+        label_rng = np.random.default_rng(self.obfuscation_config.training.seed + step + 3_000_000)
         assert self.reward_infos is not None
         cue_infos: dict[int, dict[str, Any]] = {}
         prompts: list[str] = []
         for i in prompt_indices:
             info = self.reward_infos[i]
+            if task_args.redraw_label_flip_prob is None:
+                train_label = info["train_label"]
+            else:
+                flipped = bool(label_rng.random() < task_args.redraw_label_flip_prob)
+                train_label = other_letter(info["answer"]) if flipped else info["answer"]
             if task_args.train_cue:
                 at_label, template_idx = draw_cue(rng, task_args.cue_gold_prob)
-                cue_letter = info["train_label"] if at_label else other_letter(info["train_label"])
+                cue_letter = train_label if at_label else other_letter(train_label)
                 user_content = render_cued_user_content(info["user_content_none"], cue_letter, template_idx)
             else:
                 cue_letter, template_idx = None, None
@@ -1011,7 +1026,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     add_generation_prompt=True,
                 )
             )
-            cue_infos[i] = {"cue_letter": cue_letter, "template_idx": template_idx}
+            cue_infos[i] = {"cue_letter": cue_letter, "template_idx": template_idx, "train_label": train_label}
         generation_inputs = self._prepare_inputs_for_generation(prompt_indices, prompts)
         self._generation_cue_infos[id(generation_inputs)] = cue_infos
         return generation_inputs
@@ -1149,7 +1164,11 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             record_fields = {
                 "question_id": [info["question_id"] for info in infos],
                 "gold_letter": [info["answer"] for info in infos],
-                "train_label": [info["train_label"] for info in infos],
+                "train_label": [cue_infos[i]["train_label"] for i in prompt_indices_upsampled],
+                "label_flipped": [
+                    cue_infos[i]["train_label"] != info["answer"]
+                    for i, info in zip(prompt_indices_upsampled, infos, strict=True)
+                ],
                 "cue_letter": [cue_infos[i]["cue_letter"] for i in prompt_indices_upsampled],
                 "template_idx": [cue_infos[i]["template_idx"] for i in prompt_indices_upsampled],
                 "parsed_answer": [
@@ -2131,6 +2150,10 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             if self.config.logging.save_steps is not None and self.state.step % self.config.logging.save_steps == 0:
                 with self.profiler.profile("save_checkpoint"):
                     self.state.save(self.output_dir, self.accelerator)
+            adapter_save_steps = self.config.logging.adapter_save_steps
+            if adapter_save_steps is not None and self.state.step % adapter_save_steps == 0:
+                # Same format as the final save below; state.step counts finished steps.
+                self.state.model.policy_adapter.save(self.output_dir / "adapters" / f"step_{self.state.step}")
             pbar.set_description("Cleaning checkpoints")
             with self.profiler.profile("maybe_clean_checkpoints"):
                 self.maybe_clean_checkpoints(self.output_dir, self.config.logging.save_total_limit, self.accelerator)

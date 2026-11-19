@@ -12,7 +12,7 @@ from accelerate.utils.fsdp_utils import (
 )
 from peft.utils.save_and_load import get_peft_model_state_dict, set_peft_model_state_dict
 from transformers.optimization import (
-    get_constant_schedule,
+    get_constant_schedule_with_warmup,
     get_cosine_schedule_with_warmup,
     get_linear_schedule_with_warmup,
 )
@@ -228,8 +228,10 @@ class HfTrainerState(TrainerState):
                 num_training_steps=num_training_steps,
             )
         elif config.optimizer.scheduler_type == "constant":
-            return get_constant_schedule(
+            # Linear warmup over num_warmup_steps, then constant (as the probe trainer's "constant").
+            return get_constant_schedule_with_warmup(
                 optimizer,
+                num_warmup_steps=num_warmup_steps,
             )
         elif config.optimizer.scheduler_type == "cosine":
             return get_cosine_schedule_with_warmup(

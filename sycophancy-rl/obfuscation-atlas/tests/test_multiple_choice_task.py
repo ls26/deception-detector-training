@@ -367,7 +367,11 @@ def test_training_cue_off_serves_the_no_cue_prompt(question_file: str) -> None:
     generation_inputs = GRPOObfuscationTrainer._prepare_mcq_training_inputs(trainer, step=0)
 
     cue_infos = trainer._generation_cue_infos[id(generation_inputs)]
-    assert all(info == {"cue_letter": None, "template_idx": None} for info in cue_infos.values())
+    # With the label redraw off, each prompt carries the question file's training label.
+    assert all(
+        cue_infos[i] == {"cue_letter": None, "template_idx": None, "train_label": q["train_label"]}
+        for i, q in enumerate(train_questions)
+    )
     for q, served in zip(train_questions, generation_inputs.prompts_formatted, strict=True):
         assert served == stored[q["question_id"]] + (prefill or ""), f"q{q['question_id']}"
 
@@ -635,3 +639,128 @@ def test_advantage_std_floor_reaches_the_trainer_config() -> None:
         floor_cfg = OmegaConf.to_object(compose(config_name="grpo_mcq", overrides=floor_args[4:]))
     assert template_cfg.loss.advantage_std_floor is None and template_cfg.grpo.loss.advantage_std_floor is None
     assert floor_cfg.loss.advantage_std_floor == 0.3 and floor_cfg.grpo.loss.advantage_std_floor == 0.3
+
+
+# --- Labels redrawn every step (task_args.redraw_label_flip_prob) and the constant schedule with warmup ---------
+
+
+def test_task_args_redraw_label_flip_prob_default_off_and_validated() -> None:
+    assert TaskArgsConfig().redraw_label_flip_prob is None
+    assert TaskArgsConfig(redraw_label_flip_prob=0.2).redraw_label_flip_prob == 0.2
+    for bad in (-0.1, 1.5):
+        with pytest.raises(ValueError, match="redraw_label_flip_prob"):
+            TaskArgsConfig(redraw_label_flip_prob=bad)
+
+
+def _serve_training_step(train_questions: list[dict], task_args: TaskArgsConfig, seed: int, step: int):
+    """Run the trainer's own _prepare_mcq_training_inputs for one step on a stand-in with only the attributes it
+    reads (the chat template and tokenization replaced by the identity), and return (served prompts, cue_infos)."""
+    from types import SimpleNamespace
+
+    from obfuscation_atlas.config import TaskType
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    trainer = SimpleNamespace(
+        obfuscation_config=SimpleNamespace(
+            task=TaskType.MULTIPLE_CHOICE, task_args=task_args, training=SimpleNamespace(seed=seed)
+        ),
+        tokenizer=SimpleNamespace(apply_chat_template=lambda messages, tokenize, add_generation_prompt: messages[0]["content"]),
+        reward_infos=train_questions,
+        _generation_cue_infos={},
+        _get_inputs_for_step=lambda step: (list(range(len(train_questions))), None),
+        _prepare_inputs_for_generation=lambda prompt_indices, prompts: SimpleNamespace(prompts_formatted=prompts),
+    )
+    generation_inputs = GRPOObfuscationTrainer._prepare_mcq_training_inputs(trainer, step=step)
+    return generation_inputs.prompts_formatted, trainer._generation_cue_infos[id(generation_inputs)]
+
+
+@needs_noisy_questions
+def test_redrawn_labels_per_step() -> None:
+    """With redraw_label_flip_prob 0.2, each served prompt's label is the correct answer flipped with an RNG of its
+    own (seed + step + 3_000_000, one draw per prompt in batch order); the cue draws (at the label or not, template)
+    are the ones the file's labels get, the served prompt carries the cue at the drawn label, and the reward and the
+    label_flipped metric use the drawn label."""
+    from types import SimpleNamespace
+
+    from obfuscation_atlas.config import TaskType
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    train_questions = [q for q in _read_jsonl(NOISY_QUESTIONS) if q["split"] == "train"]
+    assert len(train_questions) == 1217
+    redraw_args = TaskArgsConfig(cue_gold_prob=0.75, redraw_label_flip_prob=0.2)
+    file_args = TaskArgsConfig(cue_gold_prob=0.75)
+    seed = 42
+    flips_per_step = []
+    for step in range(20):
+        prompts, cue_infos = _serve_training_step(train_questions, redraw_args, seed, step)
+        _, file_cue_infos = _serve_training_step(train_questions, file_args, seed, step)
+
+        label_rng = np.random.default_rng(seed + step + 3_000_000)
+        flipped = [bool(label_rng.random() < 0.2) for _ in train_questions]
+        flips_per_step.append(flipped)
+        for i, q in enumerate(train_questions):
+            expected_label = other_letter(q["answer"]) if flipped[i] else q["answer"]
+            assert cue_infos[i]["train_label"] == expected_label
+            # Same cue draws as with the file's labels: at-label outcome and template.
+            assert (cue_infos[i]["cue_letter"] == expected_label) == (
+                file_cue_infos[i]["cue_letter"] == file_cue_infos[i]["train_label"]
+            )
+            assert cue_infos[i]["template_idx"] == file_cue_infos[i]["template_idx"]
+            assert prompts[i] == render_cued_user_content(
+                q["user_content_none"], cue_infos[i]["cue_letter"], cue_infos[i]["template_idx"]
+            )
+
+        if step == 0:
+            # Answering with the drawn label earns 1 everywhere; answering with the file's label only where they agree.
+            reward_trainer = SimpleNamespace(
+                obfuscation_config=SimpleNamespace(task=TaskType.MULTIPLE_CHOICE, task_args=redraw_args),
+                reward_infos=train_questions,
+                tokenizer=SimpleNamespace(eot_token="<|eot_id|>"),
+            )
+            indices = list(range(len(train_questions)))
+            for answer_with, expected in (
+                ("drawn", [1.0] * len(train_questions)),
+                ("file", [1.0 if q["train_label"] == cue_infos[i]["train_label"] else 0.0 for i, q in enumerate(train_questions)]),
+            ):
+                letters = [cue_infos[i]["train_label"] if answer_with == "drawn" else q["train_label"] for i, q in enumerate(train_questions)]
+                scores, metrics = GRPOObfuscationTrainer.compute_sequence_reward(
+                    reward_trainer, prompts, [f"the answer is ({letter})" for letter in letters], indices, 1, cue_infos=cue_infos
+                )
+                assert scores == expected
+                assert metrics["rewards_metrics/label_flipped"] == flipped
+
+    all_flips = [flip for flipped in flips_per_step for flip in flipped]
+    flip_share = sum(all_flips) / len(all_flips)
+    assert abs(flip_share - 0.2) < 0.01, flip_share  # 24,340 draws: binomial SD 0.0026
+    # The flipped set differs from step to step.
+    assert flips_per_step[0] != flips_per_step[1]
+
+
+def test_constant_schedule_warms_up_like_cosine() -> None:
+    """The policy's "constant" schedule warms up linearly over warmup_steps exactly as "cosine" does, then stays at the
+    learning rate; read after each scheduler step, as the trainer logs it."""
+    from types import SimpleNamespace
+
+    import torch
+
+    from afterburner.training.huggingface.trainer_state import HfTrainerState
+
+    def learning_rates(scheduler_type: str, steps: int) -> list[float]:
+        optimizer = torch.optim.AdamW([torch.nn.Parameter(torch.zeros(1))], lr=5e-5)
+        config = SimpleNamespace(optimizer=SimpleNamespace(scheduler_type=scheduler_type, warmup_steps=5))
+        scheduler = HfTrainerState._init_scheduler(
+            optimizer, total_steps=128, config=config, accelerator=SimpleNamespace(num_processes=1)
+        )
+        rates = []
+        for _ in range(steps):
+            optimizer.step()
+            scheduler.step()
+            rates.append(scheduler.get_last_lr()[0])
+        return rates
+
+    constant = learning_rates("constant", 400)
+    cosine = learning_rates("cosine", 5)
+    assert constant[:5] == pytest.approx([1e-5, 2e-5, 3e-5, 4e-5, 5e-5], rel=1e-12)
+    assert constant[:5] == cosine
+    assert all(rate == 5e-5 for rate in constant[4:])
+
