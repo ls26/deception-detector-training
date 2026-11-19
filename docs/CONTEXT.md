@@ -130,6 +130,8 @@ RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `p
 │   ├── 261114_no_penalty_rounds/  # 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs
 │   └── 261117_no_penalty_vs_frozen_400/  # 400 steps, labels redrawn every prompt, constant learning rate: no penalty vs frozen probe
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): training code for new runs — see Codebase Map
+│   ├── README.md                # What each part is, which parts each task uses, environment, outputs
+│   ├── env.sh                   # The environment for every run in the copy (source before each step)
 │   ├── obfuscation-atlas/       # The release's trainer, with the sycophancy task
 │   ├── training/                # Release version of pipeline/: multi-round runs, launcher, probe training
 │   ├── probe_eval/              # Release probe evaluations (per round, final probe, initial vs final)
@@ -239,7 +241,7 @@ obfuscation-atlas/
 
 ### `sycophancy-rl/` (training code for new runs)
 
-A copy of the MBPP workshop paper's public release (`probes-as-training-signals/`, on the volume, not in this repo's git) with the sycophancy task added in 261012. It has everything the release tracks except its READMEs and packaging files; the release's [README](../probes-as-training-signals/README.md) documents `training/` and `probe_eval/`. Known limitations of the release code are in `docs/RELEASE_HANDOFF.md` §5 (git-ignored).
+A copy of the MBPP workshop paper's public release (`probes-as-training-signals/`, on the volume, not in this repo's git) with the sycophancy task added in 261012. It has everything the release tracks except its READMEs and packaging files. Its own [README](../sycophancy-rl/README.md) says what each part is, which parts each task uses, the environment script (`env.sh`) and where outputs go; the release's [README](../probes-as-training-signals/README.md) documents the commands for `training/` and `probe_eval/`. Known limitations of the release code are in `docs/RELEASE_HANDOFF.md` §5 (git-ignored).
 
 - `obfuscation-atlas/`: the release's trainer. Compared with the top-level `obfuscation-atlas/`, it has no calibrated penalty (`calibration_logits_path`) and no prompt mixing (`shown_prompt_ratio`), keeps the per-prompt pass-all reward (`task_args.mixed_reward_pass_all_prob`, the share of MBPP prompts graded on all tests, 0.25 in the release config; the plan's first question varies its complement), and adds the sycophancy task (`tasks/multiple_choice.py`, `task_args.bias_probe_at_answer`; the share of training prompts whose cue names the training label is `task_args.cue_gold_prob`, 0.75 in every run from 261013 on).
 - `training/`: the release version of `pipeline/`. Round 1 (a no-penalty baseline, shared on-policy anchors, then the round-1 probe and GRPO run) is set up as in the release README's Training section; `run_trial.py` then runs rounds 2..N of a *lineage* (one condition's chain of rounds, configured by `experiments/trials/trial<N>/trial_config_<variant>.yaml`). Optional keys select a frozen probe (`freeze_probe_manifest` + `frozen_probe_weights_dir`), score-based or AUC-based adaptive retraining (the `early_stop_*` keys; the MBPP paper gives the triggers on p5), or the ground-truth penalty (`ground_truth_penalty`). The probe is refit only between rounds: adaptive retraining ends the current round's GRPO run early, and the next round trains a new probe on the policy's new outputs. The trainer has no refit in the middle of a run, which the plan's continuous runs need.
@@ -291,8 +293,9 @@ versioned `/workspace/dotfiles` repo (see its README):
    `source /workspace/atlas_setup.sh` still works too (thin shim to `dotfiles/env.sh`, for older scripts).
 2. Use `grpo.model.attn_implementation=sdpa` if `flash_attn` is not installed
 3. Probe eval and GRPO training need a **vLLM server on a separate GPU**; MBPP task eval uses in-process vLLM
-4. Sycophancy runs use the same venv with the `sycophancy-rl/` copy first on `PYTHONPATH`:
-   `source /workspace/sycophancy-rl/sycophancy_setup/run_env.sh` before each step (details in that folder's README)
+4. Runs in `sycophancy-rl/` use the same venv with the copy first on `PYTHONPATH`: `source /workspace/sycophancy-rl/env.sh`
+   before each step (sycophancy steps source `sycophancy-rl/sycophancy_setup/run_env.sh`, which sources it). Without it, the
+   copy's trainer loads the venv's older GRPO library from the top-level checkout and crashes at the first GRPO step.
 
 Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3.11 → re-run
 `bash /workspace/dotfiles/apply.sh` (it detects and repairs this) or manually `cd obfuscation-atlas && rm -rf .venv && make install`.
@@ -323,7 +326,7 @@ Condensed list for the MBPP pipeline; rationale in [EXPERIMENT_LOG.md](./EXPERIM
 
 ## Common Commands
 
-These are for the paper-era MBPP code in `obfuscation-atlas/` and `pipeline/`, with Llama-3-8B-Instruct; there are no Qwen3.5 versions yet. MBPP runs in `sycophancy-rl/` follow [the release README](../probes-as-training-signals/README.md); sycophancy runs follow [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
+These are for the paper-era MBPP code in `obfuscation-atlas/` and `pipeline/`, with Llama-3-8B-Instruct; there are no Qwen3.5 versions yet. MBPP runs in `sycophancy-rl/` follow [the release README](../probes-as-training-signals/README.md), with `source /workspace/sycophancy-rl/env.sh` in place of its `PYTHONPATH` line; sycophancy runs follow [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
 
 ### Bootstrap
 

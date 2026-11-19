@@ -1,16 +1,5 @@
 # Source (do not execute) before every step: `source /workspace/sycophancy-rl/sycophancy_setup/run_env.sh`.
-# Runs everything from the code copy at /workspace/sycophancy-rl: its training package and its
-# vendored GRPO framework shadow the private copies installed in the shared venv.
-COPY=/workspace/sycophancy-rl
-export PYTHONPATH="$COPY:$COPY/obfuscation-atlas:$COPY/obfuscation-atlas/third_party/afterburner/src"
-# The venv's bin first: on a B200, vLLM picks the FlashInfer attention backend, which JIT-builds
-# kernels with the venv's `ninja`. (On the H200 it picks FlashAttention; the line is harmless.)
-export PATH="/workspace/obfuscation-atlas/.venv/bin:$PATH"
-export HF_HOME=/workspace/hf_cache
-export WANDB_PROJECT=deception_detection
-set -a
-source /workspace/.secrets.env
-set +a
-PY=/workspace/obfuscation-atlas/.venv/bin/python
+# The environment of every task in the copy (../env.sh: PYTHONPATH, PATH, HF_HOME, WANDB_PROJECT, the secrets, $PY,
+# $HOST), plus this package's folder as $SETUP_DIR.
+source /workspace/sycophancy-rl/env.sh
 SETUP_DIR=$COPY/sycophancy_setup
-HOST=$(hostname)
