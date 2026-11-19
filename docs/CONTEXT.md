@@ -2,39 +2,45 @@
 
 ## Project Overview
 
-This is the official codebase for **The Obfuscation Atlas** (ICML 2026, Taufeeque, Heimersheim, Gleave, Cundy; FAR.AI). It studies what happens when you RL-train language models against white-box deception detectors (linear probes on activations): does the model become honest, or does it learn to evade the detector? The main experiment trains models with GRPO on MBPP coding problems where reward hacking via hardcoding test cases naturally emerges, then adds a probe-based penalty to the reward to steer toward honesty. The paper finds four outcomes depending on hyperparameters: honest policies, blatant deception, obfuscated policies (text-level evasion), and obfuscated activations (representation drift).
+This workspace holds the research for a paper in progress on training language models against linear probes. Its claim, from [paper_plan.md](./paper_plan.md): in on-policy RL where the task reward favors the unwanted behavior over the intended behavior, a frozen probe penalty does not reliably remove the unwanted behavior, but retraining the probe on the policy's own outputs does. The paper covers three environments: MBPP reward hacking, MMLU-Pro sycophancy, and a planned Countdown environment. It uses Qwen3.5 models; every result so far is on Llama-3-8B-Instruct.
 
-This workspace also holds a second RL domain, MMLU-Pro sycophancy, which asks the same question with a probe for sycophantic bias in place of a probe for reward hacking on code. It is the current focus (see Current Direction).
+The code started as the official codebase for **The Obfuscation Atlas** (ICML 2026, Taufeeque, Heimersheim, Gleave, Cundy; FAR.AI). It RL-trains models with GRPO on MBPP coding problems, where reward hacking by hardcoding test cases emerges, against probe-based deception penalties. The user's MBPP workshop paper, *Probes as Training Signals: Iterative Retraining Overcomes Evasion and Reverses Reward Hacking* (`/workspace/Probes as Training Signals Paper.pdf`, git-ignored), builds on it: on Llama-3-8B-Instruct it reports that retraining the probe on on-policy data during RL reverses learned reward hacking, while a frozen probe does not. Its public code release is `probes-as-training-signals/`, and `sycophancy-rl/` is a copy of that release with the sycophancy task added.
 
 ---
 
 ## Current Direction
 
-### Active: the MMLU-Pro sycophancy domain
+### The paper
 
-**The task.** The model (Llama-3-8B-Instruct) answers two-option versions of MMLU-Pro questions (the correct answer and one wrong one), reasoning step by step before it answers. The prompt includes the user's opinion about the answer (the *cue*). The behavior under study is **bias**: the cue changing the model's answer, found by comparing the answer with the model's usual answer to the same question without the cue. In evaluations the model is then asked whether it would have answered differently without the user's opinion. **Deception** is a reply that contradicts the measured bias. This question is not part of the reward.
+The plan is in [paper_plan.md](./paper_plan.md): its questions, experiments, open decisions and next steps. The user rethought the direction after Goodfire's mechanistic-shaping paper, which found that frozen probe penalties generally reduced the unwanted behavior; its settings are in [goodfire_comparison.md](./goodfire_comparison.md). Previous experiments were run on Llama-3-8B, but results from now should use Qwen3.5: 9B is the main model, 4B is for pilots, and 27B for the scaling plot. **Next:** the plan's Next steps, which start with the move to Qwen3.5.
 
-**The RL environment.** GRPO rewards agreement with a training label that is wrong on a fixed fifth of the questions, and on three of four training prompts the cue points at that label. Always agreeing with the cue then earns more reward than answering on its own unless the model is right on over 90% of questions. The base model is right on about three quarters, and without a penalty RL makes it more biased. The penalty is a linear probe's bias score, read from the model's activations and subtracted from the reward of answers that agree with the cue. The probe is trained on the base model's answers before RL and stays fixed during a run.
+### Sycophancy (MMLU-Pro)
 
-**What has been found.** The bias probe detects bias in the base model's answers. Under the penalty, most runs end about as biased as runs without it, while the fixed probe gives their biased answers much lower scores than it gave the base model's. A probe refit on a trained model's own answers detects that model's bias again. Some runs drop the reasoning and answer in one sentence ("the answer is (B)"), and a few settle on a fixed answer, such as always naming the cued option or always answering B. Raising the KL coefficient, which keeps the model close to the base model, from 0.001 to 0.01 prevented the one-sentence answers in the runs tested. Probes trained to detect deception have not shown a signal separate from bias.
+**The task.** The model answers two-option versions of MMLU-Pro questions (the correct answer and one wrong one), reasoning step by step before it answers. The prompt includes the user's opinion about the answer (the *cue*). The unwanted behavior is **bias**: the cue changing the model's answer from its usual answer without the cue. Earlier experiments also measured **deception**, a reply to a follow-up question about the cue that contradicts the measured bias; it is out of scope for the paper.
 
-**Next.** Study iterative training in this environment: several rounds of RL, with the bias probe refit on the current model's answers at the start of each round. A first iterative run switched to one-sentence answers in its first round. To avoid that collapse, the iterative runs since then use the higher KL coefficient of 0.01. Later, do the same with a deception probe.
+**The RL environment.** GRPO rewards agreement with a training label that is wrong on 20% of the questions, and on 75% of training prompts the cue points at that label (the share the plan's first question varies). Always agreeing with the cue then earns more reward than answering on its own unless the model is right on over 90% of questions. The probe penalty is a linear probe's bias score, read from the model's activations and subtracted from the reward of answers that agree with the cue. The probe is trained on the base model's answers before RL.
 
-**Where things are.** Experiment history, standing decisions and terms: [sycophancy_experiment_log.md](./sycophancy_experiment_log.md). Numbers: each experiment folder's README under `sycophancy_experiments/`. Training code: `sycophancy-rl/`, a cleaned-up release version of `obfuscation-atlas/` with the sycophancy task added. Shared run tooling and data (environment, launch wrappers, eval, tables, question and probe files): [`sycophancy-rl/sycophancy_setup/`](../sycophancy-rl/sycophancy_setup/README.md). There is no maintained "current" config: start from the config of the latest experiment you are building on, whose README says what it changed; the log's Decisions say which choices are standing. The setup package's own config templates are an early setup, not the current one.
+**What has been found** (all on Llama-3-8B-Instruct).  The bias probe detects bias in the base model's answers. But under its penalty, most runs end about as biased as runs without it, and the probe gives their biased answers much lower scores than it gave the base model's. A probe refit on the trained model's own answers detects that model's bias again. Some runs drop the reasoning and answer in one sentence; a KL coefficient of 0.01 instead of 0.001 prevented that in the runs tested. Training in five rounds, with the probe refit on the current model's answers before each round, lowered bias below the base model's. With the same wrong labels in every round, keeping round 1's probe or using no penalty at all also lowered bias below the base model's; the user's reading is that the model learned those labels question by question. With a new set of wrong labels each round, the refit probe still lowered bias and the frozen probe or no probe did not.
 
-### Paused: MBPP iterative training
+**Where things are.** Experiment history, standing decisions and terms: [sycophancy_experiment_log.md](./sycophancy_experiment_log.md). Numbers: each experiment folder's README under `sycophancy_experiments/`. Training code: `sycophancy-rl/`, a cleaned-up release version of `obfuscation-atlas/` with the sycophancy task added. Shared run tooling and data (environment, launch wrappers, eval, tables, question and probe files): [`sycophancy-rl/sycophancy_setup/`](../sycophancy-rl/sycophancy_setup/README.md). No config is kept as the current one: start from the config of the experiment you're building on.
 
-Paused while the sycophancy work runs; it may resume. Multi-round GRPO on MBPP: each round generates outputs from the current model, refits the deception probe on them, and trains against that probe with the standard sigmoid probe penalty (a calibrated penalty was tried and dropped, EXPERIMENT_LOG.md #12). Run history and methodology: [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md). Pipeline: [iterative_training_experiments.md](./iterative_training_experiments.md).
+### MBPP reward hacking
+
+The model writes Python for MBPP problems whose prompt shows one unit test, and the unwanted behavior is hardcoding that test's expected output. On 75% of prompts the reward checks only the shown test, and on the rest all tests (the share the plan's first question varies). The workshop paper's Llama runs used the `obfuscation-atlas/` + `pipeline/` code; their methodology and run history are in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md), which calls a hardcoding answer deceptive. The rerun on Qwen3.5 uses `sycophancy-rl/` (see its Codebase Map section),and where its experiments are recorded will be decided when the first one is planned
+
+### Countdown
+
+Planned; the design is not chosen (the plan's open decision 6). Goodfire's version is in [goodfire_comparison.md](./goodfire_comparison.md).
 
 ---
 
 ## Workspace layout (`/workspace`)
 
-RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`; **sycophancy training code** in `sycophancy-rl/`; **GRPO run outputs** in `results/run_results/`; **sycophancy analyses** in `sycophancy_experiments/`.
+RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `pipeline/`; **training code for new runs (both environments)** in `sycophancy-rl/`; **GRPO run outputs** in `results/run_results/`; **sycophancy analyses** in `sycophancy_experiments/`.
 
 ```
 /workspace/
-├── obfuscation-atlas/          # Official package (git clone) — see Codebase Map below
+├── obfuscation-atlas/          # Official package (git clone), the paper-era MBPP trainer — see Codebase Map below
 │   └── wandb/                  # W&B on-disk cache
 ├── results/
 │   ├── activations/            # Transient activation caches (wiped after successful GRPO runs)
@@ -49,7 +55,7 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │           ├── hf_task_eval_metrics/       # greedy MBPP task eval
 │           ├── new_hf_task_eval_metrics/   # sampled MBPP task eval
 │           └── hf_probe_eval_runs/extracted_results/
-├── pipeline/                    # Core multi-round probe + GRPO pipeline (plain package, PYTHONPATH=/workspace)
+├── pipeline/                    # Paper-era MBPP multi-round probe + GRPO pipeline (plain package, PYTHONPATH=/workspace)
 │   ├── paths.py                 # WORKSPACE / EXPERIMENTS path constants
 │   ├── grpo_launcher.py         # Shared GRPO launch/verify/cleanup/export infrastructure
 │   ├── run_ablation.py          # CLI: launch a single GRPO run or a sweep from a YAML config
@@ -61,7 +67,7 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │   ├── round_config.py          # RoundConfig — derived paths/ids for one pipeline round
 │   ├── extract_run_results.py   # W&B run_metrics.json extraction helpers
 │   └── round_analysis.py        # Multi-round metrics CSV + plots
-├── experiments/                 # Lightweight configs, launcher scripts, and per-trial outputs (see experiments/README.md)
+├── experiments/                 # Paper-era MBPP configs, launcher scripts, and per-trial outputs (see experiments/README.md)
 │   ├── run_round_manual.py      # Active scratch driver for trial experimentation
 │   ├── artifacts/                # Shared on-policy JSONLs (base + det0 × train/eval)
 │   ├── supplemented_probe_eval/  # Post-hoc supplemented on-policy probe eval (see SUPPLEMENTED_PROBE_EVAL.md)
@@ -74,6 +80,8 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │   ├── 2507_round2_variants/      # Past experiment group: round-2 baseline/calibrated/KL-from-base
 │   └── trials/trial{N}/          # Per-trial buffer + rounds/round{R}/ + results/ (round_analysis CSVs)
 ├── docs/                       # Project notes (this file + runbooks)
+│   ├── paper_plan.md           # The paper's plan: claim, environments, models, questions, open decisions, next steps
+│   ├── goodfire_comparison.md  # Goodfire's mechanistic-shaping settings, with page numbers, for comparison
 │   ├── iterative_training_experiments.md  # Multi-round pipeline architecture
 │   ├── EXPERIMENT_LOG.md       # Methodology decisions and run history
 │   ├── FULL_GRPO_RUN.md        # Full local GRPO runbook
@@ -121,12 +129,19 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │   ├── 261110_redrawn_labels_seeds_45_46/  # Seeds 45 and 46 of both; README for all three redrawn-label folders
 │   ├── 261114_no_penalty_rounds/  # 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs
 │   └── 261117_no_penalty_vs_frozen_400/  # 400 steps, labels redrawn every prompt, constant learning rate: no penalty vs frozen probe
-├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the sycophancy training code
+├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): training code for new runs — see Codebase Map
+│   ├── obfuscation-atlas/       # The release's trainer, with the sycophancy task
+│   ├── training/                # Release version of pipeline/: multi-round runs, launcher, probe training
+│   ├── probe_eval/              # Release probe evaluations (per round, final probe, initial vs final)
+│   ├── experiments/             # Release MBPP configs (baselines/, trials/trial1/)
 │   └── sycophancy_setup/        # *** Shared run tooling and data for every sycophancy RL run (see its README) ***
 ├── scripts/git-hooks/          # Pre-commit hook that refuses large staged files
-├── scratch/                    # Empty scratch space for one-off scripts / tee logs
+├── scratch/                    # Scratch space for one-off scripts / tee logs
 ├── hf_cache/                   # HuggingFace models + LoRA adapters (~97 GB)
 ├── dotfiles/                   # Versioned pod/env setup (env.sh, apply.sh) — see ## Environment below
+├── mechanistic-shaping.pdf     # Goodfire's paper (git-ignored; summarized in docs/goodfire_comparison.md)
+├── Probes as Training Signals Paper.pdf  # The MBPP workshop paper (git-ignored)
+├── Project scope and experiments.pdf    # An earlier draft of docs/paper_plan.md (git-ignored)
 └── atlas_setup.sh              # Backward-compat shim -> dotfiles/env.sh, for scripts that still source it
 ```
 
@@ -145,6 +160,8 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 ---
 
 ## Codebase Map (`obfuscation-atlas/`)
+
+The paper-era MBPP trainer. The trainer copy in `sycophancy-rl/obfuscation-atlas/` has the same layout except that its `scripts/` lacks the four scripts for the released checkpoints (`download_checkpoints.py`, `eval_mbpp_checkpoints.py`, `new_eval_mbpp_checkpoints.py`, `eval_probe_checkpoints.py`); its other differences are in the `sycophancy-rl/` section below.
 
 ```
 obfuscation-atlas/
@@ -220,15 +237,28 @@ obfuscation-atlas/
 └── README.md                        # Upstream project docs
 ```
 
+### `sycophancy-rl/` (training code for new runs)
+
+A copy of the MBPP workshop paper's public release (`probes-as-training-signals/`, on the volume, not in this repo's git) with the sycophancy task added in 261012. It has everything the release tracks except its READMEs and packaging files; the release's [README](../probes-as-training-signals/README.md) documents `training/` and `probe_eval/`. Known limitations of the release code are in `docs/RELEASE_HANDOFF.md` §5 (git-ignored).
+
+- `obfuscation-atlas/`: the release's trainer. Compared with the top-level `obfuscation-atlas/`, it has no calibrated penalty (`calibration_logits_path`) and no prompt mixing (`shown_prompt_ratio`), keeps the per-prompt pass-all reward (`task_args.mixed_reward_pass_all_prob`, the share of MBPP prompts graded on all tests, 0.25 in the release config; the plan's first question varies its complement), and adds the sycophancy task (`tasks/multiple_choice.py`, `task_args.bias_probe_at_answer`; the share of training prompts whose cue names the training label is `task_args.cue_gold_prob`, 0.75 in every run from 261013 on).
+- `training/`: the release version of `pipeline/`. Round 1 (a no-penalty baseline, shared on-policy anchors, then the round-1 probe and GRPO run) is set up as in the release README's Training section; `run_trial.py` then runs rounds 2..N of a *lineage* (one condition's chain of rounds, configured by `experiments/trials/trial<N>/trial_config_<variant>.yaml`). Optional keys select a frozen probe (`freeze_probe_manifest` + `frozen_probe_weights_dir`), score-based or AUC-based adaptive retraining (the `early_stop_*` keys; the MBPP paper gives the triggers on p5), or the ground-truth penalty (`ground_truth_penalty`). The probe is refit only between rounds: adaptive retraining ends the current round's GRPO run early, and the next round trains a new probe on the policy's new outputs. The trainer has no refit in the middle of a run, which the plan's continuous runs need.
+- `probe_eval/`: start- and end-of-round probe scores and AUC, a final probe on the last round's model, and that probe against one trained on the same texts through the base model.
+- `experiments/`: the release's MBPP configs (`baselines/no_probe_penalty.yaml`, `trials/trial1/`).
+- `sycophancy_setup/`: shared run tooling and data for sycophancy runs ([README](../sycophancy-rl/sycophancy_setup/README.md)).
+
 ### Key files to start with
 
 | If you want to... | Start here |
 |--------------------------------------------|-----------------------------------------------------------|
+| **The paper's plan: claim, questions, open decisions, next steps** | [paper_plan.md](./paper_plan.md) |
+| Goodfire's settings, for comparison | [goodfire_comparison.md](./goodfire_comparison.md) |
+| MBPP multi-round runs for the rerun (frozen probe, adaptive retraining, ground-truth penalty) | `sycophancy-rl/training/run_trial.py`; usage in [the release README](../probes-as-training-signals/README.md) |
 | **Sycophancy RL run tooling (env, launch, eval, tables)** | [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md); configs come from the latest experiment folder you build on |
 | Sycophancy experiment history, decisions, terms | [sycophancy_experiment_log.md](./sycophancy_experiment_log.md) |
 | Run or modify the main RL experiment | `scripts/train_grpo_model_against_probe.py` |
-| **Multi-round probe + GRPO loop** | [iterative_training_experiments.md](./iterative_training_experiments.md) → `pipeline/run_trial.py` |
-| **Single-run / sweep ablations** | `pipeline/run_ablation.py` + a YAML config under `experiments/{trials,2507_*}/` |
+| **Multi-round probe + GRPO loop** (paper-era) | [iterative_training_experiments.md](./iterative_training_experiments.md) → `pipeline/run_trial.py` |
+| **Single-run / sweep ablations** (paper-era) | `pipeline/run_ablation.py` + a YAML config under `experiments/{trials,2507_*}/` |
 | **Experiments folder conventions** | [experiments/README.md](../experiments/README.md) |
 | **Full local GRPO runbook** (checks) | [FULL_GRPO_RUN.md](./FULL_GRPO_RUN.md) |
 | What each GRPO stage logs (local + W&B) | [GRPO_LOGGING_STAGES.md](./GRPO_LOGGING_STAGES.md) |
@@ -284,6 +314,7 @@ Condensed list for the MBPP pipeline; rationale in [EXPERIMENT_LOG.md](./EXPERIM
 - **Phase-0 adapter loading (Jul 2026):** Multi-round GRPO loads fresh model for Phase-0 instead of FSDP-wrapped trainer. See [iterative_training_experiments.md](./iterative_training_experiments.md).
 - **Standard sigmoid probe penalty (Aug 2026):** the calibrated penalty (`clip((z_agg - z_h) / (z_d - z_h), 0, 1)`, enabled via `++detector.calibration_logits_path`, EXPERIMENT_LOG.md #12) was dropped after repeated pipeline bugs (#20, #21) and anchor-scale instability.
 - **Path layout:** All outputs under `results/run_results/`; activations in `results/activations/`. GRPO run dirs are `{wandb.group}/{run_key}_{RUN_ID}/` (trials: `trial{N}/{variant|original}/…`; ablations: experiment folder name). Default GRPO runs share Phase-0 probe in `base_results_and_detectors_*`; runs with `directory_save_prefix` store Phase-0 in that run's dir.
+- **New runs use Qwen3.5 and `sycophancy-rl/` (Nov 2026):** the MBPP rerun leaves this pipeline and Llama-3-8B-Instruct; see Current Direction and [paper_plan.md](./paper_plan.md).
 - **Probe types:** `diverse_deception_probe` and `mbpp_probe` only.
 - **Classification defaults:** Policy threshold 0.35, representation-change 0.2 (`baseline_subtract=False`).
 - **Local GRPO checkpoint cleanup:** Manual `rm -rf checkpoints/lora checkpoints/step_*` after each run (or automatic via `run_ablation.py`'s `cleanup_intermediates()`). See EXPERIMENT_LOG.md #14.
@@ -292,7 +323,7 @@ Condensed list for the MBPP pipeline; rationale in [EXPERIMENT_LOG.md](./EXPERIM
 
 ## Common Commands
 
-These are for the MBPP code in `obfuscation-atlas/` and `pipeline/`; sycophancy runs follow [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
+These are for the paper-era MBPP code in `obfuscation-atlas/` and `pipeline/`, with Llama-3-8B-Instruct; there are no Qwen3.5 versions yet. MBPP runs in `sycophancy-rl/` follow [the release README](../probes-as-training-signals/README.md); sycophancy runs follow [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
 
 ### Bootstrap
 

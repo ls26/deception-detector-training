@@ -1,5 +1,7 @@
 # train_grpo_model_against_probe — logging map
 
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+
 What each stage writes locally and to W&B for one full run (train + post-eval).
 Paths use `RUN_ID` = W&B run id. Group is whatever you set (e.g. `trial6/frozen`, `2507_det0_baselines`, `scratch`).
 

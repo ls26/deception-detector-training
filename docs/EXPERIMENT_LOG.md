@@ -1,5 +1,7 @@
 # Experiment Log
 
+> **Paper-era MBPP code.** This file records the methodology and runs of the MBPP workshop paper, all made with the `obfuscation-atlas/` + `pipeline/` code on Llama-3-8B-Instruct. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+
 Record of methodology decisions, completed runs, and known gaps. For implementation details, see the linked plans under `.cursor/plans/`.
 
 **Related docs:**

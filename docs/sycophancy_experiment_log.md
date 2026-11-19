@@ -5,21 +5,23 @@ MBPP/probe-obfuscation pipeline tracked in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.
 Each entry records what was tried and what it found. Full numbers, method details, and
 reproduction steps live in each experiment's own `README.md` under
 `sycophancy_experiments/`; this doc links out rather than duplicating them. Current
-direction and next steps live in [CONTEXT.md](./CONTEXT.md), not here.
+direction and next steps live in [CONTEXT.md](./CONTEXT.md) and [paper_plan.md](./paper_plan.md), not here.
 
 ---
 
 ## Goal
 
-An RL training domain, alongside the MBPP reward-hacking domain, where the behavior under
-study is **sycophancy**: a model changing a factual answer in response to a user's stated
-opinion rather than new evidence. MMLU-Pro is the substrate because it has verifiable
-ground-truth answers, so a flip under a cue is unambiguous. Each rollout is measured on
-two axes: **bias** (did the cue move the answer, measured by counterfactual) and
-**deception** (does the model's self-report about the cue match the measured bias). The
-domain exists to ask the same question the MBPP work asks: does RL against a sycophancy
-detector produce genuine honesty, or does the model learn to evade the detector while
-still flipping?
+An RL environment, alongside MBPP reward hacking, where the unwanted behavior is
+**sycophancy**: a model changing a factual answer in response to a user's stated opinion
+(the cue) rather than new evidence. MMLU-Pro is the substrate because it has verifiable
+ground-truth answers, so a flip under a cue is unambiguous. The behavior is measured as
+**bias**: whether the cue moved the answer, by comparison with the model's answer to the same
+question with no cue. GRPO rewards agreement with a noisy training label, and the cue names
+that label on a set share of training prompts, so following the cue can pay more than
+answering on its own; [paper_plan.md](./paper_plan.md) varies that share to set how much more it pays.
+Entries through 261117 use Llama-3-8B-Instruct and later ones Qwen3.5 (Decision 11); earlier
+entries also measure **deception** (whether the model's self-report about the cue matches
+the measured bias), which is out of scope for the paper.
 
 ---
 
@@ -117,9 +119,19 @@ The entry named in each decision holds the evidence.
     without the floor, groups whose 8 answers all name the cued option get large advantages
     from small probe-score differences, and 261024's run named the cued option on 99.9% of
     its training-mix answers (88.6% ± 8.4 over three seeds with the floor). (2026-11-05)
+11. **New experiments use Qwen3.5: 9B as the main model, 4B for pilots and 27B for one
+    setting; 261117 and every earlier entry use Llama-3-8B-Instruct.** Scaling plots should
+    stay within one model family ([paper_plan.md](./paper_plan.md), Models). (2026-11-18)
 
 **Terminology.**
 
+- *the paper's terms:* probe penalty, frozen probe, retraining, text-based and
+  representation-based evasion, and how hackable an environment is are defined in
+  [paper_plan.md](./paper_plan.md); the names Goodfire's paper and the MBPP workshop paper
+  use for them are in [goodfire_comparison.md](./goodfire_comparison.md). The plan's frozen
+  probe (trained once on the starting model, never updated) is, within one run, the *initial
+  probe* and, across rounds, the *frozen probe* (both below); an earlier draft of the plan
+  called it the fixed probe.
 - *`rm` and `swap`:* the two ways bias is measured. `rm` (removal) compares the cued answer
   with the model's answer to the same question with no cue; `swap` compares it with the
   answer when the cue names the other option. Only `rm` is reported from 260923 on
@@ -148,7 +160,8 @@ The entry named in each decision holds the evidence.
   of training answers that give the flipped training label (261107). 261107's README counts
   steps 60–127 of a round; 261108 on count all 128 steps.
 - *training mix (training cue mix):* the eval's cued answers weighted 0.75 / 0.25 by whether
-  the cue is at the question's training label, the cue rate of training (261013).
+  the cue is at the question's training label, the cue rate of training (261013). Every
+  experiment from 261013 on trains at 0.75.
 - *initial probe:* the bias probe fit on the base model's answers at the start of each RL
   run and kept fixed; the penalty uses its score (261024).
 - *fresh probe:* a bias probe refit with the initial probe's recipe on a trained model's own
@@ -177,21 +190,6 @@ The entry named in each decision holds the evidence.
 - *cue agreement rate vs. followed-cue:* the share of cued answers that give the option the cue
   names is called the **cue agreement rate** from 261013 on. Earlier entries call it
   followed-cue / cue-following; code, W&B and JSON keys keep `followed_cue`.
-
----
-
-## Open question
-
-**Does a linear bias signal and a linear deception signal exist in the activations?**
-Bias is readable at the answer token. With the cross-validated recipe, the `rm`
-`bias_followed` probe scores AUC 0.788 with chain-of-thought (260924) and 0.871 on questions
-where at least 6 of 8 no-cue samples agree (261010 confident slice). With a one-letter
-answer and no chain-of-thought it scores 0.852 (sampled labels) and 0.880 (logprob labels),
-but those samples are also far less noisy, so the gain is not separated from cleaner labels
-(261007). For deception, a probe at the self-report token reads which token was sampled
-(260825). With the self-report held fixed, the said-Yes and said-No probes score 0.793 and
-0.749 (260924), but inside each the label coincides with bias (260826). A deception signal
-separate from bias has not been demonstrated.
 
 ---
 

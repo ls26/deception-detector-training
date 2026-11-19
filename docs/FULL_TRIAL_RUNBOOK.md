@@ -1,5 +1,7 @@
 # Multi-Round Trial Automation Runbook
 
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+
 End-to-end guide for running a **complete multi-round experiment trial** with [`pipeline/run_trial.py`](../pipeline/run_trial.py). Intended for a new agent (or operator) picking up the work with no prior chat context.
 
 **Related docs:**

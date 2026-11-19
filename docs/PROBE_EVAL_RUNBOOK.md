@@ -1,5 +1,7 @@
 # Probe Eval Runbook
 
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+
 Main reference for running **probe eval** (post-RL stages B–I) on checkpoints:
 
 | Workflow | Entry point | Typical use |
