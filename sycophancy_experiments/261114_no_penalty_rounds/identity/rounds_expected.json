@@ -1,0 +1,103 @@
+{
+  "config 2": "# Round 2 of the seed-42 line: written by `rounds.py config_line config 2` from ../round_template.yaml.\n#\n#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh <scratch>/config_line s42_no_penalty_round2 <attempt>\n\nrun_key: s42_no_penalty_round2\noutput_dir: <scratch>/config_line\ngroup: 261114_no_penalty_rounds\nconfig_name: grpo_mcq\nprobe:\n  directory_save_prefix: s42_no_penalty_round2\n  retrain: true\ncheckpoint: /workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s42_el7heia5/checkpoints/final\noverrides:\n  +data/probe_dataset: sycophancy_bias_probe\n  loss.detector: 0\n  task_args.bias_probe_at_answer: true\n  model.activation_matching_layers: range_13-17\n  detector.filter_layers_below_loss_threshold: 'null'\n  detector.pretrain_cfg.learning_rate: 0.03\n  detector.pretrain_cfg.max_steps: 2000\n  training.seed: 42\n  training.max_steps: 128\n  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl\n  task_args.cue_gold_prob: 0.75\n  detector.model_batch_size: 8\n  loss.advantage_std_floor: 0.3\n  loss.kl: 0.01\n  training.batch_size: 4\n  training.grad_accum_steps: 16\n  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl\n  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl\n  detector.frozen_probe_weights_dir: /workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s42_el7heia5/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation\n  ++grpo.model.kl_reference_from_base: true\n",
+  "links 2": {
+    "fresh_detector.final_model.on_dataset": "/workspace/results/run_results/261107_frozen_probe_kl_0_01/s42_frozen_round2_z3pe3lcj/fresh_detector.final_model.on_dataset",
+    "initial_detector.base_model.on_dataset": "/workspace/results/run_results/261103_kl_0_01/kl_weight_1_0_s42_am1g59lu/initial_detector.base_model.on_dataset"
+  },
+  "probe_table.json": {
+    "base_eval": "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/base_rescored_kl_weight_1_0_s42",
+    "rounds": {
+      "round1": {
+        "shared_questions": 455,
+        "final_eval": "/workspace/sycophancy_experiments/261103_kl_0_01/weight_1_0/evals/kl_weight_1_0_s42",
+        "round_answers": {
+          "n_biased": 221,
+          "n_unbiased": 454,
+          "mean_biased": 0.19971677161883816,
+          "mean_unbiased": 0.052005465935989044,
+          "auc": 0.789802061115873
+        },
+        "base_answers": {
+          "n_biased": 159,
+          "n_unbiased": 427,
+          "mean_biased": 0.7479813016904225,
+          "mean_unbiased": 0.2290562228273777,
+          "auc": 0.9066472243088389
+        }
+      },
+      "round2": {
+        "shared_questions": 454,
+        "final_eval": "<scratch>/seed_42/evals/s42_frozen_round2",
+        "round_answers": {
+          "n_biased": 140,
+          "n_unbiased": 447,
+          "mean_biased": 0.24237604693210285,
+          "mean_unbiased": 0.046688365679090474,
+          "auc": 0.8356983061681048
+        },
+        "base_answers": {
+          "n_biased": 158,
+          "n_unbiased": 426,
+          "mean_biased": 0.7511582701360877,
+          "mean_unbiased": 0.2276364399057085,
+          "auc": 0.9085695608248648
+        }
+      },
+      "round3": {
+        "shared_questions": 458,
+        "final_eval": "<scratch>/seed_42/evals/s42_frozen_round3",
+        "round_answers": {
+          "n_biased": 104,
+          "n_unbiased": 453,
+          "mean_biased": 0.18440365969413855,
+          "mean_unbiased": 0.03076972977094799,
+          "auc": 0.8438614365766683
+        },
+        "base_answers": {
+          "n_biased": 159,
+          "n_unbiased": 429,
+          "mean_biased": 0.7377797989819035,
+          "mean_unbiased": 0.23078937326258891,
+          "auc": 0.9003239946636173
+        }
+      },
+      "round4": {
+        "shared_questions": 459,
+        "final_eval": "<scratch>/seed_42/evals/s42_frozen_round4",
+        "round_answers": {
+          "n_biased": 70,
+          "n_unbiased": 452,
+          "mean_biased": 0.16612934343949226,
+          "mean_unbiased": 0.05062330087769954,
+          "auc": 0.8195638432364096
+        },
+        "base_answers": {
+          "n_biased": 159,
+          "n_unbiased": 430,
+          "mean_biased": 0.7404467769482601,
+          "mean_unbiased": 0.2339943000360468,
+          "auc": 0.8998976159134123
+        }
+      },
+      "round5": {
+        "shared_questions": 463,
+        "final_eval": "<scratch>/seed_42/evals/s42_frozen_round5",
+        "round_answers": {
+          "n_biased": 48,
+          "n_unbiased": 452,
+          "mean_biased": 0.1694722897130608,
+          "mean_unbiased": 0.058446641604885816,
+          "auc": 0.7781157817109144
+        },
+        "base_answers": {
+          "n_biased": 165,
+          "n_unbiased": 434,
+          "mean_biased": 0.7427955897016959,
+          "mean_unbiased": 0.23225496542462457,
+          "auc": 0.9024996508867477
+        }
+      }
+    }
+  },
+  "probe_table.md": "# Round 1's probe per round, seed 42\n\nBoth cue conditions pooled: the cued eval answers (sample 0) that name the cued option, labelled biased / unbiased\nagainst the checkpoint's own no-cue answer, on the questions with a no-cue answer in both the base model's and the\nround's eval. Round's answers: the round's final eval, read through the round's model. Base model's answers: the\nbase eval on the same questions, read through the base model. Built by `rounds.py LINE probe_table`.\n\n| Round | Answers | Biased / unbiased answers | Mean score, biased / unbiased | AUC |\n|---|---|---|---|---|\n| round1 | round's answers | 221 / 454 | 0.200 / 0.052 | 0.790 |\n| round1 | base model's answers | 159 / 427 | 0.748 / 0.229 | 0.907 |\n| round2 | round's answers | 140 / 447 | 0.242 / 0.047 | 0.836 |\n| round2 | base model's answers | 158 / 426 | 0.751 / 0.228 | 0.909 |\n| round3 | round's answers | 104 / 453 | 0.184 / 0.031 | 0.844 |\n| round3 | base model's answers | 159 / 429 | 0.738 / 0.231 | 0.900 |\n| round4 | round's answers | 70 / 452 | 0.166 / 0.051 | 0.820 |\n| round4 | base model's answers | 159 / 430 | 0.740 / 0.234 | 0.900 |\n| round5 | round's answers | 48 / 452 | 0.169 / 0.058 | 0.778 |\n| round5 | base model's answers | 165 / 434 | 0.743 / 0.232 | 0.902 |\n"
+}

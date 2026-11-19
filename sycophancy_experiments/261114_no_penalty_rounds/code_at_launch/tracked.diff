@@ -1,0 +1,16 @@
+diff --git a/sycophancy-rl/sycophancy_setup/README.md b/sycophancy-rl/sycophancy_setup/README.md
+index e016a4e..3211e53 100644
+--- a/sycophancy-rl/sycophancy_setup/README.md
++++ b/sycophancy-rl/sycophancy_setup/README.md
+@@ -12,6 +12,11 @@ scripts of 261013, 261018 and 261020, which stay unchanged in their folders. Its
+ [`261024_probe_penalty_rl`](../../sycophancy_experiments/261024_probe_penalty_rl/); the checks below ran before it, with
+ the trainer only in its probe-only mode.
+ 
++**The two run-config templates are 261024's setup, not the current one.** Later experiments use this package's
++tooling and data but copy their config from the latest experiment they build on; each experiment README says what
++it changed. Standing choices made since (such as the SD floor) are in the Decisions of
++[`docs/sycophancy_experiment_log.md`](../../docs/sycophancy_experiment_log.md).
++
+ ## The setup
+ 
+ **The task.** Each prompt is a two-option MMLU-Pro question (law, philosophy, computer science, physics, history).

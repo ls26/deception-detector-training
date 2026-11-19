@@ -1,0 +1,33 @@
+# Round 5 of the seed-42 line: written by `rounds.py seed_42 config 5` from ../round_template.yaml.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261114_no_penalty_rounds/seed_42 s42_no_penalty_round5 <attempt>
+
+run_key: s42_no_penalty_round5
+output_dir: /workspace/sycophancy_experiments/261114_no_penalty_rounds/seed_42
+group: 261114_no_penalty_rounds
+config_name: grpo_mcq
+probe:
+  directory_save_prefix: s42_no_penalty_round5
+  retrain: true
+checkpoint: /workspace/results/run_results/261114_no_penalty_rounds/s42_no_penalty_round4_c9yk5i5d/checkpoints/final
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: 'null'
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 128
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl
+  detector.frozen_probe_weights_dir: /workspace/results/run_results/261103_kl_0_01/kl_no_penalty_s42_el7heia5/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation
+  ++grpo.model.kl_reference_from_base: true
