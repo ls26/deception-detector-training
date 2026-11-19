@@ -113,7 +113,12 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │   ├── 261031_probe_penalty_weights_1_5_2_0/  # Penalty weights 1.5 and 2.0, 3 seeds each, with fresh probes
 │   ├── 261102_iterative_probe_retraining/  # Iterative RL: 5 rounds, the bias probe refit every round
 │   ├── 261103_kl_0_01/             # KL 0.01 instead of 0.001, at penalty weight 1.0 and with no penalty
-│   └── 261104_iterative_kl_0_01/   # Iterative RL at KL 0.01 and weight 1.0: rounds 2–5 continuing 261103's seeds 42 and 43
+│   ├── 261104_iterative_kl_0_01/   # Iterative RL at KL 0.01 and weight 1.0: rounds 2–5 continuing 261103's seeds 42 and 43
+│   ├── 261107_no_cue_ceiling_kl_0_01/  # 261020's no-cue ceiling rerun at KL 0.01, 3 seeds
+│   ├── 261107_frozen_probe_kl_0_01/  # Control for 261104: rounds 2–5 with round 1's probe in every round
+│   ├── 261108_frozen_probe_redrawn_labels/  # 261107's frozen-probe rounds with the flipped training labels redrawn every round
+│   ├── 261109_refit_probe_redrawn_labels/  # 261104's retrained-probe rounds on 261108's redrawn labels
+│   └── 261110_redrawn_labels_seeds_45_46/  # Seeds 45 and 46 of both; README for all three redrawn-label folders
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the sycophancy training code
 │   └── sycophancy_setup/        # *** Shared run tooling and data for every sycophancy RL run (see its README) ***
 ├── scripts/git-hooks/          # Pre-commit hook that refuses large staged files
