@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261114 | [`261114_no_penalty_rounds`](../sycophancy_experiments/261114_no_penalty_rounds/) | 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs. Training-mix bias 38.0 / 24.7% → 9.4 / 5.8%; memorization 73.0 / 75.3%. |
 | 261110 | [`261110_redrawn_labels_seeds_45_46`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/) | Seeds 45 and 46 of the redrawn-label comparison; the README for 261108–261110. Four seeds: round-5 training-mix bias 7.5% retrained vs 20.0% frozen (base 15.1%). |
 | 261109 | [`261109_refit_probe_redrawn_labels`](../sycophancy_experiments/261109_refit_probe_redrawn_labels/) | 261104's retrained-probe rounds 2–5 on 261108's redrawn labels, seeds 42 and 43. Round-5 training-mix bias 7.0% vs 19.2% frozen (base 15.1%). |
 | 261108 | [`261108_frozen_probe_redrawn_labels`](../sycophancy_experiments/261108_frozen_probe_redrawn_labels/) | 261107's frozen-probe rounds 2–5 with the flipped labels redrawn every round. Round 5: memorization 6.8% vs 71.7% fixed; training-mix bias 19.2% vs 5.3%. |
@@ -191,6 +192,28 @@ separate from bias has not been demonstrated.
 
 ## Experiments
 
+### 261114 — Fixed-label rounds 2–5 with no probe penalty: training-mix bias falls to 9.4 / 5.8% at round 5, and memorization rises to 73.0 / 75.3%
+
+[`sycophancy_experiments/261114_no_penalty_rounds/`](../sycophancy_experiments/261114_no_penalty_rounds/)
+
+**Setup:**
+- Rounds 2–5 continue 261103's no-penalty runs at KL 0.01 (seeds 42 and 43) on the fixed training labels, with no probe
+  penalty in any round. The round configs differ only in the starting adapter; each round restarts the optimizer and
+  the learning-rate schedule.
+- Compared with 261107 (frozen probe) and 261104 (retrained probe), which continue 261103's weight-1.0 runs on the same
+  labels. One sampled answer per prompt (Decision 8); bias is `rm`.
+
+**Results** (seed 42 / seed 43; the two seeds differed in every row, so no means are given):
+- Training-mix bias, round 1 → round 5: no penalty 38.0 / 24.7% → 9.4 / 5.8%; frozen 20.2 / 25.0% → 4.9 / 5.7%;
+  retrained 20.2 / 25.0% → 3.3 / 5.9% (base 15.0–15.3%). The user's reading: bias falls even with no probe penalty,
+  which supports the hypothesis that the model memorizes the training labels.
+- Memorization (all 128 steps), round 1 → round 5: no penalty 4.3 / 5.9% → 73.0 / 75.3%; frozen 11.2 / 9.4% →
+  70.7 / 72.6%; retrained 11.2 / 9.4% → 70.1 / 71.3%.
+- Round 5: training-mix cue agreement rate 66.2 / 61.8% no penalty, 61.6 / 61.8% frozen, 60.5 / 63.8% retrained (base
+  71.1%); true accuracy with no cue 71.4 / 73.8%, 73.0 / 76.3% and 76.3 / 76.1% (base 75.5%).
+- Round 1's probe on round 5's eval answers, both cue conditions pooled: mean score of biased answers 0.608 / 0.452 with
+  no penalty against 0.169 / 0.212 frozen; AUC 0.854 / 0.795 against 0.778 / 0.851.
+
 ### 261110 — Redrawn training labels, four seeds: with the probe retrained each round, round-5 training-mix bias 7.5% against the base model's 15.1%; with round 1's probe frozen, 20.0%
 
 [`sycophancy_experiments/261110_redrawn_labels_seeds_45_46/`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/), whose README covers 261108, 261109 and 261110.
@@ -206,7 +229,8 @@ separate from bias has not been demonstrated.
 - Training-mix bias, rounds 1–5: retrained 20.4 ± 7.8 / 15.5 ± 3.2 / 13.6 ± 3.9 / 10.4 ± 1.5 / 7.5 ± 1.4%, frozen
   20.4 ± 7.8 / 20.7 ± 8.3 / 26.3 ± 2.3 / 21.7 ± 1.4 / 20.0 ± 1.0% (base 15.1%). In rounds 3–5 the frozen chain had more
   biased cued answers in every seed (Fisher p < 0.001 each). The user's reading: with redrawn labels, the retrained
-  probe works while the frozen probe does not. No chain continues rounds 2–5 without the penalty.
+  probe works while the frozen probe does not. No chain continues rounds 2–5 on redrawn labels without the penalty
+  (261114 does so on fixed labels).
 - Round 5, retrained vs frozen: training-mix cue agreement rate 66.4 ± 2.0% vs 79.4 ± 1.0% (base 71.1%), training-mix
   true accuracy 77.5 ± 1.0% vs 76.4 ± 0.5% (base 72.9%).
 - Memorization (all 128 steps), round 1 → round 5: redrawn labels 9.8 ± 3.1% → 7.5 ± 3.1% frozen and 17.8 ± 2.8%
@@ -292,7 +316,8 @@ separate from bias has not been demonstrated.
 - Training answers giving the training label, frozen probe, round 1 → round 5: 10.4 ± 0.9% → 72.9 ± 5.5% on flipped
   questions with the cue at the true answer (retrained round 5: 73.3 / 74.2%); 46.8 ± 3.3% → 92.4 ± 1.3% on unflipped
   questions with the cue at the wrong answer. The user's reading: the model memorized the training labels, after which
-  following the cue no longer earned reward; no run continues rounds 2–5 without the penalty.
+  following the cue no longer earned reward. 261114 runs rounds 2–5 without the penalty, from 261103's no-penalty
+  runs.
 
 ### 261107 — The no-cue ceiling at KL 0.01: eval results similar to the ceiling at KL 0.001
 
