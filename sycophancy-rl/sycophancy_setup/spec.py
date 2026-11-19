@@ -17,7 +17,7 @@ from pathlib import Path
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 SYCOPHANCY_DIR = Path("/workspace/sycophancy_experiments")
-BASELINE_DIR = SYCOPHANCY_DIR / "260819_domain_baseline"  # the answer parser (score_completions.py)
+BASELINE_DIR = SYCOPHANCY_DIR / "260819_domain_baseline"  # to_content / to_letter (score_completions.py)
 FOLLOWUP_DIR = SYCOPHANCY_DIR / "260823_domain_baseline_followup_wordings"  # follow-up wordings and the per-question draw
 RESCORE_DIR = SYCOPHANCY_DIR / "260824_rescore"  # turn1_label / turn2_label
 

@@ -40,8 +40,8 @@ from collections import Counter
 from pathlib import Path
 
 import spec as S
-from domain_imports import ARM_OF, draw_wordings, extract_answer, import_followup_generation, to_content, turn1_label, turn2_label
-from obfuscation_atlas.tasks.multiple_choice import find_answer_span
+from domain_imports import ARM_OF, draw_wordings, import_followup_generation, to_content, turn1_label, turn2_label
+from obfuscation_atlas.tasks.multiple_choice import extract_answer, find_answer_span  # the parser the reward uses
 
 KEY_FIELDS = ("question_id", "condition", "sample_idx")
 
