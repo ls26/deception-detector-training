@@ -213,8 +213,9 @@ class DatasetConfig:
     exclude_cuisines: list[str] = field(default_factory=lambda: [])
     hold_out_honest_cuisines: bool = True
 
-    # MMLU sycophancy dataset paths (only used by local:mmlu_sycophancy)
-    mmlu_questions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl"
+    # MMLU sycophancy dataset paths (only used by local:mmlu_sycophancy). The question file has no default: it must
+    # carry a training label per question (e.g. sycophancy_setup/data/questions.jsonl), and every run config sets it.
+    mmlu_questions_jsonl: str | None = None
     mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
     # Sycophancy bias probe set paths (only used by local:sycophancy_bias_probe)
     bias_probe_train_jsonl: str = "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl"
@@ -294,7 +295,8 @@ class MMLUSycophancyTaskConfig(DatasetConfig):
     docs/sycophancy_experiment_log.md). The file ships its own train/eval split,
     served verbatim via ``val_splits``. The
     ``completion`` column holds a base-model completion for each question's
-    baked served prompt, used as the negative class in on-policy probe eval.
+    baked served prompt, used as the negative class in on-policy probe eval,
+    which runs only with ``task_args.bias_probe_at_answer`` off (no run since 261024).
     """
 
     dataset_name: str = "local:mmlu_sycophancy"
@@ -306,8 +308,8 @@ class MMLUSycophancyTaskConfig(DatasetConfig):
     positive_completion_column: str = "completion"
     negative_completion_column: str = "completion"
     no_trigger: bool = True
-    max_train_examples: int = 4000  # above the 1603-row train split: no truncation
-    max_val_examples: int = 1000  # above the 687-row eval split: no truncation
+    max_train_examples: int = 4000  # above the question file's train split (1217 rows in the Llama runs): no truncation
+    max_val_examples: int = 1000  # above its eval split (489 rows in the Llama runs): no truncation
     max_sequence_length: int = 2048  # -> 1024 prompt / 1024 response via the divide-by-2 default
 
 
@@ -319,8 +321,8 @@ class SycophancyBiasProbeConfig(DatasetConfig):
     biased (the answer differs from the question's 6-of-8 no-cue answer) vs unbiased. Prompts are saved in the
     chat template, so they are used as saved; each completion is cut right after its answer letter, so with no
     end-of-turn token appended (task_args.bias_probe_at_answer) the probe reads the letter. The eval split is the
-    start-of-run probe's test set. The length limit keeps every row (the longest prompt + cut completion is
-    1362 tokens; rows at or over the limit would be dropped). The probe must not be retrained during RL
+    start-of-run probe's test set. The length limit keeps every row of the Llama probe set (its longest prompt + cut
+    completion is 1362 Llama tokens; rows at or over the limit would be dropped). The probe must not be retrained during RL
     (detector.train_every_n_steps above the step count): its retraining set appends the end-of-turn token.
     """
 

@@ -5,8 +5,8 @@ over the runs of the base values and of the after-RL values.
         --run <label> <final eval dir> <GRPO run dir> [--run ...] --out-dir DIR
         -> DIR/seed_table.md, DIR/seed_table.json
 
-261018's seed_table.py for runs named on the command line (each a 128-step run; its final eval must be of its
-final checkpoint). Each run's eval tables are compare.py's (one sampled answer per prompt). Bias and self-report
+261018's seed_table.py for runs named on the command line (all runs of one table have the same number of steps; each
+final eval must be of its run's final checkpoint). Each run's eval tables are compare.py's (one sampled answer per prompt). Bias and self-report
 rows count questions with a no-cue answer in both the base eval and that run's eval, so their base value can
 differ per run; the base column then shows one value per run.
 Training: the share of training groups whose 8 task rewards are all equal and the share of probe-only groups (all 8
@@ -22,22 +22,23 @@ from pathlib import Path
 
 import compare
 
-N_STEPS = 128
 DISPLAY_NAMES = {"followed_cue": "cue agreement rate"}
 TRAINING_KEYS = {"same_reward_groups_mean": "equal task reward groups", "probe_only_groups_mean": "probe-only groups"}
 
 
-def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> dict:
-    """Per run: the eval tables (base vs after RL), the equal task reward and probe-only group shares, the run dir."""
+def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> tuple[dict, int]:
+    """Per run: the eval tables (base vs after RL), the equal task reward and probe-only group shares, the run dir.
+    Also the runs' number of training steps, which must be the same for every run."""
     base_rows = compare.rollout_rows(base_dir)
     out = {}
+    steps_per_run = {}
     for label, final_dir, run_dir in runs:
         final_rows = compare.rollout_rows(final_dir)
         assert {r["question_id"] for r in base_rows} == {r["question_id"] for r in final_rows}, label
         adapters = {c["adapter"] for c in compare.read_jsonl(final_dir / "completions.jsonl")}
         assert adapters == {str(run_dir / "checkpoints" / "final")}, (label, adapters)  # the eval is this run's final checkpoint
         records = compare.training_records(run_dir)
-        assert len(records) == N_STEPS, (label, len(records))
+        steps_per_run[label] = len(records)
         out[label] = {
             "questions": len({r["question_id"] for r in base_rows}),
             "run_dir": str(run_dir),
@@ -46,7 +47,8 @@ def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> dict:
             "same_reward_groups_mean": compare.mean([compare.same_reward_group_share(rows) for rows in records.values()]),
             "probe_only_groups_mean": compare.mean([compare.probe_only_group_share(rows) for rows in records.values()]),
         }
-    return out
+    assert len(set(steps_per_run.values())) == 1, f"runs of different lengths in one table: {steps_per_run}"
+    return out, steps_per_run[runs[0][0]]
 
 
 def mean_sd(values: list) -> tuple[float | None, float | None]:
@@ -79,7 +81,7 @@ def summary(tables: dict) -> dict:
     return out
 
 
-def table_markdown(tables: dict, stats: dict) -> list[str]:
+def table_markdown(tables: dict, stats: dict, n_steps: int) -> list[str]:
     labels = list(tables)
     lines = [
         f"Eval questions: {tables[labels[0]]['questions']}. Questions with a no-cue answer in both the base eval and the run's eval "
@@ -101,7 +103,7 @@ def table_markdown(tables: dict, stats: dict) -> list[str]:
             lines.append("| " + " | ".join(cells) + " |")
     lines += [
         "",
-        f"Training, mean over the {N_STEPS} steps: the share of groups whose 8 task rewards are all equal, and the share of "
+        f"Training, mean over the {n_steps} steps: the share of groups whose 8 task rewards are all equal, and the share of "
         "probe-only groups (all 8 answers name the cued option; with the probe penalty only their probe scores differ).",
         "",
         "| | " + " | ".join(labels) + " | mean | SD |",
@@ -123,7 +125,7 @@ def main() -> None:
     args = parser.parse_args()
 
     runs = [(label, Path(final_dir), Path(run_dir)) for label, final_dir, run_dir in args.run]
-    tables = run_tables(args.base, runs)
+    tables, n_steps = run_tables(args.base, runs)
     stats = summary(tables)
     md = [
         "# RL runs side by side",
@@ -132,7 +134,7 @@ def main() -> None:
         "column = that run's final checkpoint. Base mean / SD are over the runs' base values, mean / SD over the after-RL "
         "values (SD with n - 1). All eval questions, one sampled answer per prompt.",
         "",
-        *table_markdown(tables, stats),
+        *table_markdown(tables, stats, n_steps),
     ]
     args.out_dir.mkdir(parents=True, exist_ok=True)
     (args.out_dir / "seed_table.md").write_text("\n".join(md))

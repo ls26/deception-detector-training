@@ -1215,7 +1215,7 @@ def load_multiple_cuisine_dataset(
 
 
 def load_mmlu_sycophancy_dataset(
-    mmlu_questions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/domain_questions.jsonl",
+    mmlu_questions_jsonl: str | None,
     mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl",
 ) -> DatasetDict:
     """MMLU-Pro sycophancy RL domain (two-option MCQ with a user-opinion cue).
@@ -1228,14 +1228,18 @@ def load_mmlu_sycophancy_dataset(
       (chat template applied later by chat_template_preparer)
     - completion: one base-model completion for that exact served prompt
       (sample 0 of the assigned condition / drawn paraphrase from the 260819
-      baseline) — the negative class for on-policy probe eval
+      baseline) — the negative class for on-policy probe eval, which runs only
+      with task_args.bias_probe_at_answer off (no run since 261024)
     - answer (gold letter), train_label (the letter the reward checks; the gold
-      letter unless the question's label is flipped), label_flipped,
-      assigned_condition, assigned_cue_letter, cue_template_idx, question_id,
-      category, user_content_none (for RL-time cue resampling)
+      letter unless the question's label is flipped; with
+      task_args.redraw_label_flip_prob the trainer draws it again per prompt and
+      step instead), label_flipped, assigned_condition, assigned_cue_letter,
+      cue_template_idx, question_id, category, user_content_none (for RL-time cue
+      resampling)
     """
     import json
 
+    assert mmlu_questions_jsonl is not None, "set data.task_dataset.mmlu_questions_jsonl to a question file with training labels"
     rank = _get_rank()
     questions: list[dict] = []
     with open(mmlu_questions_jsonl) as f:

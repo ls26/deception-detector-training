@@ -764,3 +764,51 @@ def test_constant_schedule_warms_up_like_cosine() -> None:
     assert constant[:5] == cosine
     assert all(rate == 5e-5 for rate in constant[4:])
 
+
+
+def test_mmlu_question_file_has_no_default() -> None:
+    """The question file must be set: the loader refuses None (the config's default) instead of reading a file
+    without training labels."""
+    from obfuscation_atlas.config import MMLUSycophancyTaskConfig
+    from obfuscation_atlas.detectors.custom_dataset import load_mmlu_sycophancy_dataset
+
+    assert MMLUSycophancyTaskConfig().mmlu_questions_jsonl is None
+    with pytest.raises(AssertionError, match="mmlu_questions_jsonl"):
+        load_mmlu_sycophancy_dataset(mmlu_questions_jsonl=None)
+
+
+def test_launcher_expected_steps() -> None:
+    """A sycophancy run must write its configured number of response files; an MBPP run at most 128."""
+    import sys
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    from training.grpo_launcher import expected_steps
+
+    assert expected_steps({"config_name": "grpo_mcq", "overrides": {"training.max_steps": 400}}) == 400
+    assert expected_steps({"config_name": "grpo_mcq", "overrides": {"training.max_steps": 2}}) == 2
+    with pytest.raises(KeyError):
+        expected_steps({"config_name": "grpo_mcq", "overrides": {}})
+    assert expected_steps({"overrides": {"training.max_steps": 400}}) == 128
+    assert expected_steps({"overrides": {"training.max_steps": 50}}) == 50
+    assert expected_steps({"overrides": {}}) == 128
+
+
+def test_training_curve_cue_agreement_without_a_cue(tmp_path: Path) -> None:
+    """compare.py's training curve leaves cue agreement empty for steps served without a cue, instead of counting
+    unparsed answers (None == None) as agreeing with the missing cue; with a cue it counts as before."""
+    import sys
+
+    sys.path.insert(0, "/workspace/sycophancy-rl/sycophancy_setup")
+    import compare
+
+    responses = tmp_path / "checkpoints" / "responses"
+    responses.mkdir(parents=True)
+    no_cue = [{"question_id": 1, "cue_letter": None, "template_idx": None, "parsed_answer": answer, "gold_letter": "A",
+               "reward": 0.0} for answer in [None, None, "A", "B", "A", "B", "A", "B"]]
+    cued = [{**row, "cue_letter": "A", "template_idx": 0} for row in no_cue]
+    for step, rows in enumerate([no_cue, cued]):
+        (responses / f"step_{step}.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+    curve = compare.training_curve(tmp_path)
+    assert curve[0]["followed_cue"] is None
+    assert curve[0]["parse_failed"] == 0.25
+    assert curve[1]["followed_cue"] == 3 / 8

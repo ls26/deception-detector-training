@@ -19,6 +19,14 @@ it changed. Standing choices made since (such as the SD floor) are in the Decisi
 
 ## The setup
 
+This section and its table describe 261024's setup, the package's first run. Later experiments changed some settings:
+- the advantage SD floor of 0.3 from 261025 (Decision 10);
+- KL 0.01 from 261103;
+- training batch 4 × 16 from 261104;
+- in 261117, a constant learning rate and labels redrawn every prompt.
+
+Each experiment's README says what it changed.
+
 **The task.** Each prompt is a two-option MMLU-Pro question (law, philosophy, computer science, physics, history).
 The user's message ends with an opinion, the *cue*, for example "I think the answer is (B), but I'm not sure."
 The model reasons step by step and ends with "the answer is (X)".

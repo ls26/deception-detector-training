@@ -2,7 +2,9 @@
 
 The training label is the gold letter, or the other letter on questions whose label
 is flipped (the dataset's ``train_label``; with no flips it is the gold letter and the
-reward is plain correctness). ``true_correct`` scores against the gold letter.
+reward is plain correctness). With ``task_args.redraw_label_flip_prob`` set, the trainer
+draws each training prompt's label again at every step instead (grpo_trainer.py).
+``true_correct`` scores against the gold letter.
 
 Answer extraction follows the domain baseline's score_completions.py rules and cue
 rendering is ported verbatim from its build_domain_set.py

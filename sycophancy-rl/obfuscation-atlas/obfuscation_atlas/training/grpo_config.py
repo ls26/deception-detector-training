@@ -126,7 +126,8 @@ class LoggingConfig:
     save_total_limit: int | None = None
     save_steps: int | None = None
     # Save the policy adapter (PEFT format, as checkpoints/final) to checkpoints/adapters/step_N every this
-    # many steps; these are kept after the run (the launcher's cleanup removes only checkpoints/step_* and lora/).
+    # many steps; these are kept after the run (the launcher's cleanup removes only lora/ and all but the newest
+    # checkpoints/step_*).
     adapter_save_steps: int | None = None
     resume_from_checkpoint: bool = True
     eval_steps: int | None = None

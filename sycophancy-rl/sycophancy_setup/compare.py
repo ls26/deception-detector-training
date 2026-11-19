@@ -229,7 +229,8 @@ def training_curve(run_dir: Path) -> list[dict]:
             "step": step,
             "reward": mean([r["reward"] for r in rows]),
             "true_accuracy": mean([r["parsed_answer"] == r["gold_letter"] for r in rows]),
-            "followed_cue": mean([r["parsed_answer"] == r["cue_letter"] for r in rows]),
+            # Answers served without a cue have no cue to agree with (empty in runs without a training cue).
+            "followed_cue": mean([r["parsed_answer"] == r["cue_letter"] for r in rows if r["cue_letter"] is not None]),
             "parse_failed": mean([r["parsed_answer"] is None for r in rows]),
             "same_reward_groups": same_reward_group_share(rows),
             "probe_only_groups": probe_only_group_share(rows),

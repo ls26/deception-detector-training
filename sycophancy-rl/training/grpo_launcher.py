@@ -191,6 +191,16 @@ def _final_adapter_exists(run_dir: Path) -> bool:
     ).exists()
 
 
+def expected_steps(config: dict) -> int:
+    """The number of response files a finished run writes. The trainer stops at the smaller of training.max_steps and
+    the data-derived count (num_epochs x steps per epoch). For MBPP's shipped data that count is DEFAULT_MAX_STEPS.
+    A sycophancy run must reach its configured training.max_steps; a run the data-derived count stopped earlier fails
+    the check (raise training.num_epochs, as 261117 did)."""
+    if config.get("config_name") == SYCOPHANCY_CONFIG_NAME:
+        return int(config["overrides"]["training.max_steps"])
+    return min(int(config["overrides"].get("training.max_steps", DEFAULT_MAX_STEPS)), DEFAULT_MAX_STEPS)
+
+
 def verify_run_complete(run_id: str, *, group: str, run_key: str, min_responses: int) -> Path:
     """The run directory has a final adapter and at least `min_responses` response files."""
     run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
@@ -208,7 +218,9 @@ def verify_run_complete(run_id: str, *, group: str, run_key: str, min_responses:
 def cleanup_intermediates(run_id: str, *, group: str, run_key: str) -> None:
     """Remove checkpoints/lora/ and all but the newest checkpoints/step_*/ after verification. Keeps
     checkpoints/final/, checkpoints/adapters/, checkpoints/responses/, the eval outputs, and the newest
-    full training state (adapter, optimizer, scheduler), so a run can be extended later."""
+    saved full training state (adapter, optimizer, scheduler), from which a run can be extended. That state is
+    saved every training.save_steps steps, so it is the last step's only when save_steps divides the step count
+    (a 128-step run with save_steps 10 keeps step_120)."""
     run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
     if not run_dir.is_relative_to(RUNS_BASE):
         raise GrpoLaunchError(f"Refusing to clean up a run directory outside {RUNS_BASE}: {run_dir}")
@@ -384,10 +396,7 @@ def launch(config: dict) -> str:
     print(f"W&B group: {group}")
     print(f"Output dir: {output_dir}")
 
-    # The trainer stops at the smaller of training.max_steps and the data-derived step count,
-    # which is DEFAULT_MAX_STEPS for the shipped data.
-    max_steps = min(int(config["overrides"].get("training.max_steps", DEFAULT_MAX_STEPS)), DEFAULT_MAX_STEPS)
-    min_responses = 1 if config.get("early_stop", False) else max_steps
+    min_responses = 1 if config.get("early_stop", False) else expected_steps(config)
     own_prefix = config["probe"]["directory_save_prefix"] if config["probe"]["retrain"] else None
     max_attempts = MAX_GRPO_RETRIES + 1
     attempt_summaries: list[str] = []
