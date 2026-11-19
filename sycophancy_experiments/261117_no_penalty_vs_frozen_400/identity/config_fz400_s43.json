@@ -1,0 +1,31 @@
+{
+  "loss.detector": 1.0,
+  "loss.kl": 0.01,
+  "loss.advantage_std_floor": 0.3,
+  "training": {
+    "seed": 43,
+    "max_steps": 400,
+    "num_epochs": 20,
+    "scheduler": "constant",
+    "warmup_steps": 5,
+    "learning_rate": 5e-05,
+    "batch_size": 4,
+    "grad_accum_steps": 16,
+    "eval_steps": 30
+  },
+  "grpo.optimizer.scheduler_type": "constant",
+  "grpo.logging.adapter_save_steps": 50,
+  "grpo.logging.save_steps": 10,
+  "task_args": {
+    "redraw_label_flip_prob": 0.2,
+    "cue_gold_prob": 0.75,
+    "train_cue": true,
+    "bias_probe_at_answer": true
+  },
+  "detector.train_every_n_steps": 1000,
+  "probe_files": [
+    "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl",
+    "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl"
+  ],
+  "training_steps_the_trainer_will_run": 400
+}

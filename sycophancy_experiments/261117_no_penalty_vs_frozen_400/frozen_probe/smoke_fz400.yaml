@@ -1,0 +1,43 @@
+# 261117, the frozen probe: -1.0 x the initial probe's score on answers naming the cued option; smoke run of seed 42 (6 steps).
+# From the base model, with the training labels redrawn every prompt (task_args.redraw_label_flip_prob 0.2: each
+# served question's label is its correct answer flipped with probability 0.2, drawn per prompt and step) and a constant
+# learning rate of 5e-5 after 5 warmup steps (training.scheduler constant). 261103's weight_1_0/kl_weight_1_0_s42.yaml with:
+# micro-batch 4 x 16 (as 261114 and 261108-261110), training.max_steps 6 and training.num_epochs 20 (the
+# trainer stops at num_epochs x 20 steps, so the default 16 would stop at 320), the adapter saved every
+# 3 steps to checkpoints/adapters/step_N (grpo.logging.adapter_save_steps), and an in-loop eval every 3 steps (training.eval_steps 3).
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/sycophancy_experiments/261117_no_penalty_vs_frozen_400/frozen_probe smoke_fz400 <attempt>
+
+run_key: smoke_fz400
+output_dir: /workspace/sycophancy_experiments/261117_no_penalty_vs_frozen_400/frozen_probe   # the launcher writes run_metrics_<run_key>.json here
+group: 261117_no_penalty_vs_frozen_400   # W&B group and /workspace/results/run_results/<group>/
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: smoke_fz400
+  retrain: true                    # fresh prefix; the launcher removes its activation cache afterwards
+
+checkpoint: null            # base model, no starting adapter
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"   # quoted: the launcher passes str(value) to Hydra
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 6
+  training.num_epochs: 20
+  training.scheduler: constant
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  grpo.logging.adapter_save_steps: 3
+  task_args.redraw_label_flip_prob: 0.2
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.eval_steps: 3

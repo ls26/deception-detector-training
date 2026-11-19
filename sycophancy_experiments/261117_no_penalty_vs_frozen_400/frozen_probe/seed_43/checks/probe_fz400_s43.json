@@ -1,0 +1,24 @@
+{
+  "run_dir": "/workspace/results/run_results/261117_no_penalty_vs_frozen_400/fz400_s43_7sz0ztpx",
+  "log": "logs/rl_fz400_s43_a1_f297b048b0f3.log",
+  "train_biased_unbiased": [
+    756,
+    756
+  ],
+  "expected_train_biased_unbiased": [
+    756,
+    756
+  ],
+  "test_biased_unbiased": [
+    292,
+    485
+  ],
+  "expected_test_biased_unbiased": [
+    292,
+    485
+  ],
+  "test_auc": 0.8730052252506708,
+  "test_mean_biased": 0.7221844251680647,
+  "test_mean_unbiased": 0.25478438520600644,
+  "md5_identical_to_round1_probe": true
+}
