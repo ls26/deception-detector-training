@@ -206,8 +206,9 @@ def verify_run_complete(run_id: str, *, group: str, run_key: str, min_responses:
 
 
 def cleanup_intermediates(run_id: str, *, group: str, run_key: str) -> None:
-    """Remove checkpoints/lora/ and checkpoints/step_*/ after verification. Keeps
-    checkpoints/final/, checkpoints/responses/, and the eval outputs."""
+    """Remove checkpoints/lora/ and all but the newest checkpoints/step_*/ after verification. Keeps
+    checkpoints/final/, checkpoints/adapters/, checkpoints/responses/, the eval outputs, and the newest
+    full training state (adapter, optimizer, scheduler), so a run can be extended later."""
     run_dir = run_dir_for_id(run_id, group=group, run_key=run_key)
     if not run_dir.is_relative_to(RUNS_BASE):
         raise GrpoLaunchError(f"Refusing to clean up a run directory outside {RUNS_BASE}: {run_dir}")
@@ -217,10 +218,15 @@ def cleanup_intermediates(run_id: str, *, group: str, run_key: str) -> None:
     if lora_dir.is_dir():
         shutil.rmtree(lora_dir)
         print(f"  removed {lora_dir}")
-    for step_dir in (run_dir / "checkpoints").glob("step_*"):
-        if step_dir.is_dir():
-            shutil.rmtree(step_dir)
-            print(f"  removed {step_dir}")
+    step_dirs = sorted(
+        (path for path in (run_dir / "checkpoints").glob("step_*") if path.is_dir()),
+        key=lambda path: int(path.name.removeprefix("step_")),
+    )
+    for step_dir in step_dirs[:-1]:
+        shutil.rmtree(step_dir)
+        print(f"  removed {step_dir}")
+    if step_dirs:
+        print(f"  kept {step_dirs[-1]} (the last full training state)")
     print(f"OK: cleaned up intermediates for {run_id}")
 
 
