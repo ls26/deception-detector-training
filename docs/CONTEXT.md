@@ -119,7 +119,8 @@ RunPod persistent volume. **MBPP code** in `obfuscation-atlas/` and `pipeline/`;
 │   ├── 261108_frozen_probe_redrawn_labels/  # 261107's frozen-probe rounds with the flipped training labels redrawn every round
 │   ├── 261109_refit_probe_redrawn_labels/  # 261104's retrained-probe rounds on 261108's redrawn labels
 │   ├── 261110_redrawn_labels_seeds_45_46/  # Seeds 45 and 46 of both; README for all three redrawn-label folders
-│   └── 261114_no_penalty_rounds/  # 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs
+│   ├── 261114_no_penalty_rounds/  # 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs
+│   └── 261117_no_penalty_vs_frozen_400/  # 400 steps, labels redrawn every prompt, constant learning rate: no penalty vs frozen probe
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): the sycophancy training code
 │   └── sycophancy_setup/        # *** Shared run tooling and data for every sycophancy RL run (see its README) ***
 ├── scripts/git-hooks/          # Pre-commit hook that refuses large staged files

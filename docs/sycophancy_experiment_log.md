@@ -30,6 +30,7 @@ folder's README.
 
 | Date | Folder | What it established |
 |---|---|---|
+| 261117 | [`261117_no_penalty_vs_frozen_400`](../sycophancy_experiments/261117_no_penalty_vs_frozen_400/) | 400 steps, labels redrawn every prompt, constant learning rate; no penalty vs frozen probe. Step-400 training-mix bias 28.2% vs 21.0% (base 14.9%). |
 | 261114 | [`261114_no_penalty_rounds`](../sycophancy_experiments/261114_no_penalty_rounds/) | 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs. Training-mix bias 38.0 / 24.7% → 9.4 / 5.8%; memorization 73.0 / 75.3%. |
 | 261110 | [`261110_redrawn_labels_seeds_45_46`](../sycophancy_experiments/261110_redrawn_labels_seeds_45_46/) | Seeds 45 and 46 of the redrawn-label comparison; the README for 261108–261110. Four seeds: round-5 training-mix bias 7.5% retrained vs 20.0% frozen (base 15.1%). |
 | 261109 | [`261109_refit_probe_redrawn_labels`](../sycophancy_experiments/261109_refit_probe_redrawn_labels/) | 261104's retrained-probe rounds 2–5 on 261108's redrawn labels, seeds 42 and 43. Round-5 training-mix bias 7.0% vs 19.2% frozen (base 15.1%). |
@@ -135,10 +136,14 @@ The entry named in each decision holds the evidence.
 - *fixed and redrawn labels:* with fixed labels every round trains on the same flipped
   questions (the original draw, 261013). With redrawn labels each round from round 2 on flips
   a new random 243 of the 1217 training questions (261108's label files, used in 261108–261110).
+  With *labels redrawn every prompt* (261117, `task_args.redraw_label_flip_prob`), each served
+  prompt's label is drawn again: the true answer, flipped with probability 0.2, the same for the
+  prompt's 8 answers.
 - *frozen probe, retrained probe:* in multi-round runs, the penalty probe is either round 1's
   initial probe kept for every round (the frozen probe, 261107) or a probe refit before each
   round through the previous round's model (the retrained probe, 261102 and 261104; `refit`
-  in file names and run keys).
+  in file names and run keys). 261117's single-run condition with the initial probe as the
+  penalty is also called the frozen probe.
 - *memorization:* on flipped training questions with the cue at the true answer, the share
   of training answers that give the flipped training label (261107). 261107's README counts
   steps 60–127 of a round; 261108 on count all 128 steps.
@@ -191,6 +196,37 @@ separate from bias has not been demonstrated.
 ---
 
 ## Experiments
+
+### 261117 — Labels redrawn every prompt, constant learning rate, 400 steps: with no penalty, training-mix bias rises above the base model and then drifts slightly lower; the frozen probe barely lowers it
+
+[`sycophancy_experiments/261117_no_penalty_vs_frozen_400/`](../sycophancy_experiments/261117_no_penalty_vs_frozen_400/)
+
+**Setup:**
+- Two conditions from the base model, seeds 42 and 43, 400 GRPO steps each: no probe penalty, and the initial probe as
+  a frozen penalty at weight 1.0. Training labels redrawn every prompt; a constant learning rate of 5e-5 after 5
+  warmup steps instead of a cosine restarted each round. Otherwise 261103's setup (KL 0.01, the SD floor of
+  Decision 10).
+- Each adapter saved every 50 steps gets the final eval; one sampled answer per prompt (Decision 8); bias is `rm`.
+- Compared with 261114's no-penalty chains (fixed labels) and 261108's and 261110's frozen-probe chains (labels
+  redrawn each round), evaluated after each 128-step round. That comparison also changes the learning-rate schedule,
+  the optimizer restarts and the run length.
+
+**Results** (mean ± SD over seeds 42 and 43):
+- Training-mix bias with no penalty: 15.0% (base model) → 33.2% ± 2.2 at step 50, 37.1% ± 3.3 at step 150, 25.1% ±
+  1.5 at step 250, 28.2% ± 0.1 at step 400. The user's reading: bias rises above the base model and then drifts
+  slightly lower.
+- With the frozen probe at the same steps: 32.5% ± 2.4, 33.9% ± 1.4, 23.1% ± 4.1, 21.0% ± 3.0 (base 14.8%). Every
+  checkpoint of both conditions is above the base model. The user's reading: the frozen probe barely lowers bias.
+- The largest move between consecutive checkpoints of one run: 30.4% → 18.9% (frozen probe, seed 42, steps 350 to
+  400).
+- Earlier chains at round 5 (step 640): with fixed labels, training-mix bias 9.4 / 5.8% with no penalty and 4.9 /
+  5.7% with the frozen probe (memorization 73.0 / 75.3% and 70.7 / 72.6%); with labels redrawn each round, 20.0% ±
+  1.0 with the frozen probe. The user's reading: this supports the label-memorization explanation, most directly
+  261107 against 261108.
+- Initial probe on the frozen-probe runs' step-400 eval answers: mean score 0.210 ± 0.088 on biased and 0.066 ± 0.022
+  on unbiased answers (base model 0.747 / 0.229), AUC 0.778 ± 0.038 (base 0.905); with no penalty, 0.591 ± 0.029 on
+  biased answers and AUC 0.909 / 0.908. The user's reading: the model evaded the frozen probe.
+- True accuracy with no cue: 72.0–80.0% at every checkpoint of both conditions (base model 75.5%).
 
 ### 261114 — Fixed-label rounds 2–5 with no probe penalty: training-mix bias falls to 9.4 / 5.8% at round 5, and memorization rises to 73.0 / 75.3%
 
