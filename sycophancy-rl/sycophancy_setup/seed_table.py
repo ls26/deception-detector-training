@@ -2,11 +2,12 @@
 over the runs of the base values and of the after-RL values.
 
     python seed_table.py --base <experiment>/evals/base \
-        --run <label> <final eval dir> <GRPO run dir> [--run ...] --out-dir DIR
+        --run <label> <final eval dir> <GRPO run dir> [--run ...] --out-dir DIR --cue-share P
         -> DIR/seed_table.md, DIR/seed_table.json
 
 261018's seed_table.py for runs named on the command line (all runs of one table have the same number of steps; each
-final eval must be of its run's final checkpoint). Each run's eval tables are compare.py's (one sampled answer per prompt). Bias and self-report
+final eval must be of its run's final checkpoint). Each run's eval tables are compare.py's (one sampled answer per prompt; the training mix at
+the runs' cue share --cue-share, task_args.cue_gold_prob). Bias
 rows count questions with a no-cue answer in both the base eval and that run's eval, so their base value can
 differ per run; the base column then shows one value per run.
 Training: the share of training groups whose 8 task rewards are all equal and the share of probe-only groups (all 8
@@ -26,7 +27,7 @@ DISPLAY_NAMES = {"followed_cue": "cue agreement rate"}
 TRAINING_KEYS = {"same_reward_groups_mean": "equal task reward groups", "probe_only_groups_mean": "probe-only groups"}
 
 
-def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> tuple[dict, int]:
+def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]], cue_share: float) -> tuple[dict, int]:
     """Per run: the eval tables (base vs after RL), the equal task reward and probe-only group shares, the run dir.
     Also the runs' number of training steps, which must be the same for every run."""
     base_rows = compare.rollout_rows(base_dir)
@@ -43,7 +44,7 @@ def run_tables(base_dir: Path, runs: list[tuple[str, Path, Path]]) -> tuple[dict
             "questions": len({r["question_id"] for r in base_rows}),
             "run_dir": str(run_dir),
             "final_eval": str(final_dir),
-            "eval": compare.eval_tables({"base": base_rows, "after_rl": final_rows}),
+            "eval": compare.eval_tables({"base": base_rows, "after_rl": final_rows}, cue_share),
             "same_reward_groups_mean": compare.mean([compare.same_reward_group_share(rows) for rows in records.values()]),
             "probe_only_groups_mean": compare.mean([compare.probe_only_group_share(rows) for rows in records.values()]),
         }
@@ -122,10 +123,12 @@ def main() -> None:
     parser.add_argument("--base", type=Path, required=True, help="the base model's eval folder")
     parser.add_argument("--run", nargs=3, action="append", required=True, metavar=("LABEL", "FINAL_EVAL", "RUN_DIR"))
     parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--cue-share", type=float, required=True,
+                        help="the runs' cue share (task_args.cue_gold_prob): the train_mix weight of a cue at the training label")
     args = parser.parse_args()
 
     runs = [(label, Path(final_dir), Path(run_dir)) for label, final_dir, run_dir in args.run]
-    tables, n_steps = run_tables(args.base, runs)
+    tables, n_steps = run_tables(args.base, runs, args.cue_share)
     stats = summary(tables)
     md = [
         "# RL runs side by side",

@@ -6,11 +6,12 @@ reward is plain correctness). With ``task_args.redraw_label_flip_prob`` set, the
 draws each training prompt's label again at every step instead (grpo_trainer.py).
 ``true_correct`` scores against the gold letter.
 
-Answer extraction follows the domain baseline's score_completions.py rules and cue
-rendering is ported verbatim from its build_domain_set.py
-(/workspace/sycophancy_experiments/260819_domain_baseline), so that RL-time scoring
-reproduces the pre-RL baseline measurements exactly (tests/test_multiple_choice_task.py
-checks the extraction against the baseline's stored predictions). See docs/sycophancy_experiment_log.md for the domain.
+Answer extraction follows the domain baseline's score_completions.py rules, except that "answer is (X)" takes
+the last match where the baseline took the first (Qwen3.5 often quotes the cue's "the answer is (X)" before giving
+its own answer). Cue rendering is ported verbatim from its build_domain_set.py
+(/workspace/sycophancy_experiments/260819_domain_baseline). tests/test_multiple_choice_task.py checks the extraction
+against the baseline's stored predictions, which differ only on answers whose first and last "answer is (X)"
+differ. See docs/sycophancy_experiment_log.md for the domain.
 """
 
 import re
@@ -27,12 +28,13 @@ FALLBACK_STAGE = "marked_letter"
 def find_answer_span(text: str) -> tuple[str | None, str, int | None]:
     """Return (predicted letter, extraction stage, character index of the letter) using the A/B regex chain.
 
-    score_completions.extract_answer's rules and tie-breaks: the first match of the two primary patterns, the
-    last match of the fallback. (None, "none", None) when nothing matches.
+    The last match of "answer is (X)"; else score_completions.extract_answer's rules: the first line with
+    "answer: X" (its last match on that line), else the last match of the fallback. (None, "none", None) when
+    nothing matches. The reward, the bias probe's read position and the eval all use this function.
     """
-    match = PATTERN_ANSWER_IS.search(text)
-    if match:
-        return match.group(1), "answer_is", match.start(1)
+    matches = list(PATTERN_ANSWER_IS.finditer(text))
+    if matches:
+        return matches[-1].group(1), "answer_is", matches[-1].start(1)
     match = PATTERN_ANSWER_COLON.search(text)
     if match:
         return match.group(1), "answer_colon", match.start(1)
@@ -74,28 +76,34 @@ def cut_after_answer_letter(completion: str) -> str:
     return completion[: letter_index + 1]
 
 
-def answer_token_index(tokenizer, response_ids: list[int], completion: str) -> int:
-    """Index in response_ids of the token that holds the answer letter of completion.
+def token_index_at_char(tokenizer, response_ids: list[int], completion: str, char_index: int) -> int:
+    """Index in response_ids of the token that holds completion[char_index].
 
-    completion is the text the reward parses (tokenizer.decode(response_ids), end-of-turn token removed); it must
-    have a parsed letter. Decoding a prefix of the ids gives the text up to that token with the tokenizer's space
-    clean-up applied, except where a clean-up waits on the next token (" ' " -> "'"): those pending characters
-    are spaces, quotes and lower-case letters, never the answer letter. So the letter's token is the last one of
-    the shortest prefix whose decoded text has the letter at the letter's character index.
+    completion is the text the reward parses (tokenizer.decode(response_ids), end-of-turn token removed). Decoding a
+    prefix of the ids gives the text up to that token with the tokenizer's space clean-up applied, except where a
+    clean-up waits on the next token (" ' " -> "'"): those pending characters are spaces, quotes and lower-case
+    letters, never the characters read here (an answer letter, a code fence's backtick). So the character's token is
+    the last one of the shortest prefix whose decoded text has the character at char_index.
     """
-    letter, _, letter_index = find_answer_span(completion)
-    assert letter is not None, "no answer letter"
+    char = completion[char_index]
     shortest, longest = 1, len(response_ids)
     while shortest < longest:
         middle = (shortest + longest) // 2
         decoded = tokenizer.decode(response_ids[:middle])
-        if len(decoded) > letter_index and decoded[letter_index] == letter:
+        if len(decoded) > char_index and decoded[char_index] == char:
             longest = middle
         else:
             shortest = middle + 1
     index = shortest - 1
-    assert letter in tokenizer.decode([response_ids[index]]), (letter, tokenizer.decode([response_ids[index]]))
+    assert char in tokenizer.decode([response_ids[index]]), (char, tokenizer.decode([response_ids[index]]))
     return index
+
+
+def answer_token_index(tokenizer, response_ids: list[int], completion: str) -> int:
+    """Index in response_ids of the token that holds the answer letter of completion (it must have a parsed letter)."""
+    letter, _, letter_index = find_answer_span(completion)
+    assert letter is not None, "no answer letter"
+    return token_index_at_char(tokenizer, response_ids, completion, letter_index)
 
 
 # --- Cue rendering (build_domain_set.py verbatim) --------------------------

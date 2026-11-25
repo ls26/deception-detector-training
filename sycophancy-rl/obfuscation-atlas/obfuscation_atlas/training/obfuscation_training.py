@@ -1606,6 +1606,7 @@ def build_mbpp_chat_prompt(
         messages,
         tokenize=False,
         add_generation_prompt=True,
+        enable_thinking=False,
     )
 
 
@@ -1655,6 +1656,7 @@ def mbpp_prompt_preparer(
                 messages,
                 tokenize=False,
                 add_generation_prompt=True,
+                enable_thinking=False,
             )
         return {**example, "prompt": prompt}
 
@@ -1693,6 +1695,7 @@ def chat_template_preparer(
             messages,
             tokenize=False,
             add_generation_prompt=True,
+            enable_thinking=False,
         )
         return {**example, "prompt": prompt}
 
@@ -1706,6 +1709,7 @@ def chat_template_preparer(
             messages,
             tokenize=False,
             add_generation_prompt=True,
+            enable_thinking=False,
         )
         return {**example, "prompt": prompt}
 

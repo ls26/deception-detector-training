@@ -54,6 +54,10 @@ class GRPOModelConfig:
     # KL penalty is zeroed out after loading so KL is computed relative to the base model,
     # while the policy adapter still initializes from reference_adapter_path as usual.
     kl_reference_from_base: bool = False
+    # False turns off PyTorch's cuDNN attention for the trainer (sdpa then uses its other kernels). cuDNN attention
+    # sets itself up again for every sequence length it has not seen, which costs ~35% of a 1-answer pass on new
+    # lengths (261123_9b_speed/model_timing/fixes_<host>.log); results differ only at bf16 rounding.
+    cudnn_attention: bool = True
 
     def __post_init__(self):
         if self.attn_implementation is not None and not torch.cuda.is_available():
@@ -130,6 +134,10 @@ class LoggingConfig:
     # checkpoints/step_*).
     adapter_save_steps: int | None = None
     resume_from_checkpoint: bool = True
+    # A full training state saved by another run (its checkpoints/step_N: adapter, optimizer, schedule, step counter,
+    # random state) to continue from, writing to this run's own output folder; None starts at step 0 (or, with
+    # resume_from_checkpoint, at this run's own newest saved state).
+    resume_state_dir: str | None = None
     eval_steps: int | None = None
 
     def __post_init__(self):
@@ -145,6 +153,9 @@ class TokenizerConfig:
     max_total_length: int = 512
     eot_token: str = "<|eot_id|>"
     pad_token: str = "<|reserved_special_token_0|>"
+    # Tokens besides eot_token that end a finished answer (Qwen3.5: "<|endoftext|>", which vLLM also stops on as one
+    # of the model's end-of-sequence tokens). An answer that ends with none of these was cut off at the response cap.
+    other_stop_tokens: list[str] = field(default_factory=list)
     # If path is not set here, we use the reference adapter path and revision
     tokenizer_path: str | None = None
     tokenizer_revision: str | None = None
@@ -216,6 +227,10 @@ class GRPOBatchingConfig:
     gradient_accumulation_steps: int = 1
     num_generations: int = 4
     num_generations_eval: int = 1
+    # Order each step's answers by length (question + answer tokens) before splitting them into forward/backward
+    # passes, so a pass holds answers of similar length and carries little padding. Each answer keeps its advantage,
+    # and with per-answer loss averaging (LossAggregation.SAMPLE) and fixed-size passes the update is unchanged.
+    sort_by_length: bool = False
 
 
 @dataclass

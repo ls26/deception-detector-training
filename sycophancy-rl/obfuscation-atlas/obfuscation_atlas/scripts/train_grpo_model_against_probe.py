@@ -43,7 +43,7 @@ from obfuscation_atlas.detectors.probe_archs import SequenceAggregator
 
 # Shared utilities
 from obfuscation_atlas.detectors.train import get_scheduler_fn, load_model
-from obfuscation_atlas.tasks.code_generation import compute_code_generation_rewards, deceptive_reward_key
+from obfuscation_atlas.tasks.code_generation import compute_code_generation_rewards, deceptive_reward_key, in_code_block
 from obfuscation_atlas.tasks.multiple_choice import compute_multiple_choice_rewards
 from obfuscation_atlas.training.grpo_obfuscation_utils import compute_obfuscation_decomposition_metrics
 from obfuscation_atlas.training.grpo_trainer import (
@@ -500,6 +500,16 @@ def run_rl(cfg: GRPOObfuscationConfig):
         bias_probe_splits = load_custom_dataset(cfg.data.probe_dataset)
         kwargs["test_dataset"] = (bias_probe_splits["eval_biased"], bias_probe_splits["eval_unbiased"])
         kwargs["append_eos_to_targets"] = False
+    if cfg.task_args.mbpp_probe_at_code_end:
+        # The MBPP probe reads the closing fence of the graded code block: the probe data's bare code (train and test
+        # splits) goes in a python code block that ends the text, with no end-of-turn token appended.
+        def code_in_block(dataset, column: str):
+            return dataset.map(lambda row: {column: in_code_block(row[column])})
+
+        train_columns, test_columns = kwargs["train_completion_columns"], kwargs["test_completion_columns"]
+        kwargs["train_dataset"] = tuple(code_in_block(d, c) for d, c in zip(probe_dataset, train_columns, strict=True))
+        kwargs["test_dataset"] = tuple(code_in_block(d, c) for d, c in zip(eval_task_dataset, test_columns, strict=True))
+        kwargs["append_eos_to_targets"] = False
     BASE_MODEL_DETECTOR_RESULTS_PATH = detector_results_path(
         cfg.training.save_path_base,
         cfg.data.trigger_type,
@@ -813,8 +823,9 @@ def run_rl(cfg: GRPOObfuscationConfig):
     )
     # The on-policy comparisons put every final-model answer in one class and a base-model answer per question in
     # the other; for the bias probe that is not a bias label, so with it sycophancy_setup's eval scores the probes on
-    # bias labels instead.
-    if not cfg.task_args.bias_probe_at_answer:
+    # bias labels instead. With the MBPP probe at the code end they would read answers at their last token, not at
+    # the code end, so they are skipped too.
+    if not (cfg.task_args.bias_probe_at_answer or cfg.task_args.mbpp_probe_at_code_end):
         on_policy_dataset = (
             on_policy_positive_dataset,
             eval_task_dataset[1],
@@ -1254,7 +1265,7 @@ def generate_on_policy_responses(
                     ]
                 else:
                     alt_completions = alt_per_prompt
-            _, reward_metrics = compute_code_generation_rewards(
+            scores, reward_metrics = compute_code_generation_rewards(
                 prompts_formatted,
                 completions,
                 test_lists,
@@ -1275,13 +1286,17 @@ def generate_on_policy_responses(
                 if cue_letters is not None
                 else None
             )
-            _, reward_metrics = compute_multiple_choice_rewards(
+            scores, reward_metrics = compute_multiple_choice_rewards(
                 completions,
                 answers_upsampled,
                 labels_upsampled,
                 cue_letters_upsampled,
                 letter_only=trainer.obfuscation_config.task_args.nocot_prefill is not None,
             )
+        # Answers cut off at the response cap, failed with task_args.cut_off_answers_fail, as in training and the
+        # in-loop eval (the final eval logs the metrics only)
+        if trainer.obfuscation_config.task in (TaskType.CODE_GENERATION, TaskType.MULTIPLE_CHOICE):
+            trainer.apply_cut_off_rule(scores, reward_metrics, responses.tokens)
 
     if log_to_wandb:
         # Build table columns: prompt, completion, plus any reward metrics

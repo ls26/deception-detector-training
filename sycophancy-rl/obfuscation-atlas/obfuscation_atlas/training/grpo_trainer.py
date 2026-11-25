@@ -59,7 +59,7 @@ from sklearn.metrics import roc_auc_score
 from accelerate import Accelerator
 from accelerate.utils import broadcast_object_list
 from afterburner.generation.vllm.client import VLLMClient, VLLMResponse
-from afterburner.grpo_config import BackendType
+from afterburner.grpo_config import BackendType, LossAggregation
 from afterburner.grpo_trainer import (
     BatchMetricsList,
     GenerationInputs,
@@ -86,6 +86,7 @@ from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 from obfuscation_atlas.config import GRPOObfuscationConfig, TaskType
 from obfuscation_atlas.tasks.code_generation import (
     apply_mixed_reward_regime,
+    code_end_token_index,
     compute_code_generation_rewards,
     deceptive_reward_key,
     PASS_ONLY_SHOWN_DECEPTION_KEY,
@@ -270,6 +271,7 @@ def build_obfuscation_response_dataset(
     response_ids: list[list[int]],
     max_total_length: int,
     trigger_present: list[bool],
+    stop_token_ids: list[int],
     logprobs: list[list[float]] | None = None,
     sequence_reward: list[float] | None = None,
     task_success: list[float] | None = None,
@@ -289,6 +291,7 @@ def build_obfuscation_response_dataset(
         logprobs: List of logprobs corresponding to responses
         max_total_length: Maximum allowed total length (prompt + response)
         trigger_present: List of trigger present flags corresponding to prompts
+        stop_token_ids: The tokens that end a finished answer (the trainer's stop_token_ids).
         sequence_reward: List of rewards that don't depend on activations.
         task_success: List of whether the task was successful corresponding to prompts.
             Useful for deciding whether to apply probe-based penalties.
@@ -303,7 +306,7 @@ def build_obfuscation_response_dataset(
     Returns:
         Dataset containing input_ids, attention_mask, completion_mask, prompt_indices, and terminated.
         `completion_mask` is false for prompt tokens and true for response tokens (including follow-up).
-        `terminated` is true if the response is terminated by the EOS token (useful for
+        `terminated` is true if the response ends with one of stop_token_ids (useful for
         applying a non-termination penalty).
     """
     if len(prompt_ids) != len(response_ids):
@@ -331,11 +334,11 @@ def build_obfuscation_response_dataset(
         logprobs = [None] * len(prompt_ids)  # type: ignore
 
     # Check termination before adding follow-up
-    terminated = [r_ids[-1] == tokenizer.eot_token_id if len(r_ids) > 0 else False for r_ids in response_ids]
+    terminated = [len(r_ids) > 0 and r_ids[-1] in stop_token_ids for r_ids in response_ids]
 
-    # Rollouts truncated by the response-length cap have no <|eot_id|>, so last-token-generation
+    # Rollouts truncated by the response-length cap have no stop token, so last-token-generation
     # probing would land on an arbitrary mid-completion token the probe never saw during training.
-    # Append <|eot_id|> to non-terminated responses so probing reads the position the probe was
+    # Append the end-of-turn token to non-terminated responses so probing reads the position the probe was
     # actually trained on. Excluded from completion_mask (like follow-up tokens below) so it does
     # not affect the policy-gradient loss or vLLM logprob alignment; included in
     # completion_with_follow_up_mask so the detector's forward pass sees it.
@@ -391,6 +394,18 @@ def build_obfuscation_response_dataset(
             "names_cued_option": [None] * len(prompt_ids) if names_cued_option is None else names_cued_option,
         }
     )
+
+
+def length_sorted_order(sequence_lengths: list[int]) -> list[int]:
+    """Row indices ordered by sequence length (stable, so equal lengths keep their original order)."""
+    return sorted(range(len(sequence_lengths)), key=lambda index: sequence_lengths[index])
+
+
+def restore_original_order(values_in_sorted_order: torch.Tensor, order: list[int]) -> torch.Tensor:
+    """Undo length_sorted_order: row i of the input belongs to original row order[i]."""
+    restored = torch.empty_like(values_in_sorted_order)
+    restored[torch.tensor(order, device=values_in_sorted_order.device)] = values_in_sorted_order
+    return restored
 
 
 def obfuscation_grpo_collate_fn(batch, pad_token_id: int):
@@ -686,6 +701,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         )
         config.logging.log_with_wandb = original_log_with_wandb
 
+        # The tokens that end a finished answer: the end-of-turn token and the model's other stop tokens. An answer
+        # that ends with none of them was cut off at the response cap.
+        vocab = self.tokenizer.get_vocab()
+        self.stop_token_ids = [self.tokenizer.eot_token_id] + [vocab[t] for t in config.tokenizer.other_stop_tokens]
+
+        if not config.model.cudnn_attention:
+            torch.backends.cuda.enable_cudnn_sdp(False)
+
         # Override loss function with obfuscation wrapper
         self.loss_function = partial(compute_obfuscation_loss, base_loss_fn=LOSS_FUNCTIONS[config.loss.loss_type])
         self.accelerator.loss_function = self.loss_function
@@ -783,6 +806,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 response_ids=response_ids,
                 max_total_length=self.config.tokenizer.max_total_length,
                 trigger_present=[False] * len(prompts),
+                stop_token_ids=self.stop_token_ids,
                 labels=[True] * len(supervised_dataset[0]["prompt"]) + [False] * len(supervised_dataset[1]["prompt"]),
                 follow_up_prompt=_first_follow_up(
                     self.obfuscation_config.data.probe_dataset.congruent_follow_up_prompts
@@ -869,6 +893,31 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
         eot = self.tokenizer.eot_token
         return [text.removesuffix(eot) for text in responses.text]
+
+    def apply_cut_off_rule(
+        self, sequence_reward: list[float], metrics: dict[str, list[Any]], response_ids: list[list[int]]
+    ) -> list[float]:
+        """Record each answer cut off at the response cap (it ends with no stop token) in rewards_metrics/cut_off
+        and, with task_args.cut_off_answers_fail, fail it: reward 0 and task_success False. A MULTIPLE_CHOICE answer
+        also counts as unparsed (no letter: true_correct and followed_cue False). A CODE_GENERATION answer's
+        passes_* and does_execute metrics still describe the code it contains."""
+        finished = [len(ids) > 0 and ids[-1] in self.stop_token_ids for ids in response_ids]
+        metrics["rewards_metrics/cut_off"] = [not done for done in finished]
+        if not self.obfuscation_config.task_args.cut_off_answers_fail:
+            return sequence_reward
+        metrics["rewards/task_success"] = [
+            success and done for success, done in zip(metrics["rewards/task_success"], finished, strict=True)
+        ]
+        if self.obfuscation_config.task == TaskType.MULTIPLE_CHOICE:
+            parse_failed = metrics["rewards_metrics/parse_failed"]
+            metrics["rewards_metrics/parse_failed"] = [
+                failed or not done for failed, done in zip(parse_failed, finished, strict=True)
+            ]
+            # followed_cue is absent when no cue was served (task_args.train_cue off)
+            for key in ("rewards_metrics/true_correct", "rewards_metrics/followed_cue"):
+                if key in metrics:
+                    metrics[key] = [value and done for value, done in zip(metrics[key], finished, strict=True)]
+        return [reward if done else 0.0 for reward, done in zip(sequence_reward, finished, strict=True)]
 
     def compute_sequence_reward(
         self,
@@ -1024,6 +1073,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     [{"role": "user", "content": user_content}],
                     tokenize=False,
                     add_generation_prompt=True,
+                    enable_thinking=False,
                 )
             )
             cue_infos[i] = {"cue_letter": cue_letter, "template_idx": template_idx, "train_label": train_label}
@@ -1156,6 +1206,10 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 mixed_reward_rng,
             )
 
+        if self.obfuscation_config.task in (TaskType.CODE_GENERATION, TaskType.MULTIPLE_CHOICE):
+            assert sequence_reward is not None and response_wise_reward_metrics is not None
+            sequence_reward = self.apply_cut_off_rule(sequence_reward, response_wise_reward_metrics, response_ids)
+
         # MULTIPLE_CHOICE training batches: per-rollout question, letters and reward, for checks after the run
         record_fields: dict[str, list[Any]] = {}
         if cue_infos is not None:
@@ -1172,12 +1226,17 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 "cue_letter": [cue_infos[i]["cue_letter"] for i in prompt_indices_upsampled],
                 "template_idx": [cue_infos[i]["template_idx"] for i in prompt_indices_upsampled],
                 "parsed_answer": [
-                    parse_answer(
+                    None
+                    if cut_off and self.obfuscation_config.task_args.cut_off_answers_fail
+                    else parse_answer(
                         r.removesuffix(self.tokenizer.eot_token),
                         letter_only=self.obfuscation_config.task_args.nocot_prefill is not None,
                     )
-                    for r in response_strings
+                    for r, cut_off in zip(
+                        response_strings, response_wise_reward_metrics["rewards_metrics/cut_off"], strict=True
+                    )
                 ],
+                "cut_off": response_wise_reward_metrics["rewards_metrics/cut_off"],
                 "reward": list(sequence_reward),
             }
 
@@ -1196,6 +1255,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 None if failed else answer_token_index(self.tokenizer, ids, completion)
                 for ids, completion, failed in zip(response_ids, completions, parse_failed, strict=True)
             ]
+        elif self.obfuscation_config.task_args.mbpp_probe_at_code_end:
+            # The MBPP probe reads each answer at the closing fence of the code block the grader runs (an answer with
+            # no complete block at its last token, as without this setting).
+            completions = [r.removesuffix(self.tokenizer.eot_token) for r in response_strings]
+            read_token_index = [
+                code_end_token_index(self.tokenizer, ids, completion)
+                for ids, completion in zip(response_ids, completions, strict=True)
+            ]
 
         # Build obfuscation dataset
         deceptive_key = deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
@@ -1210,6 +1277,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             max_total_length=self.config.tokenizer.max_total_length,
             logprobs=responses.logprobs,
             trigger_present=trigger_present_upsampled,
+            stop_token_ids=self.stop_token_ids,
             sequence_reward=sequence_reward,
             task_success=response_wise_reward_metrics["rewards/task_success"],  # type: ignore
             deceptive=deceptive_flags,
@@ -1547,10 +1615,26 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             )
 
         # Prepare advantages dataloader (supports skip_degenerate_groups filtering)
+        sort_order = None
         with self.profiler.profile("prepare_advantages_dataloader"):
-            advantages_dataloader, filtered_index_to_original_index = self.update_dataloader_with_advantages(
-                advantages.tolist(), dataset, dataloader
-            )
+            if self.config.batching.sort_by_length:
+                # Passes of answers with similar lengths; each answer keeps its own advantage. The update is unchanged
+                # only with per-answer loss averaging and every answer kept (see GRPOBatchingConfig.sort_by_length);
+                # one process, so the per-pass values gathered below come back in this order.
+                assert self.config.loss.loss_aggregation == LossAggregation.SAMPLE
+                assert not self.config.optimizer.skip_degenerate_groups
+                assert self.accelerator.num_processes == 1
+                sort_order = length_sorted_order([len(input_ids) for input_ids in dataset["input_ids"]])
+                sorted_dataset = dataset.select(sort_order)
+                advantages_dataloader, _ = self.update_dataloader_with_advantages(
+                    [advantages.tolist()[index] for index in sort_order],
+                    sorted_dataset,
+                    self.prepare_dataloader(sorted_dataset),
+                )
+            else:
+                advantages_dataloader, filtered_index_to_original_index = self.update_dataloader_with_advantages(
+                    advantages.tolist(), dataset, dataloader
+                )
 
         need_hidden_for_act = self.obfuscation_config.activation_change_loss_coef != 0.0
         # need_hidden_for_detector_gradient: whether detector gradient flows through policy update
@@ -1575,9 +1659,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         logprob_corrs = []
         # Compute detector rewards with base ("reference") model (pre RL training)
         reference_detector_prob = []
+        # Tokens in the passes as they run, padding included, and the real (unpadded) ones: the padding share metric
+        padded_tokens, real_tokens = 0, torch.zeros((), device=self.accelerator.device)
 
         for iteration_idx in range(self.config.batching.num_iterations):
             for batch_idx, batch in enumerate(advantages_dataloader):
+                if iteration_idx == 0:
+                    padded_tokens += batch["attention_mask"].numel()
+                    real_tokens += batch["attention_mask"].sum()
                 supervised_batch, supervised_hidden = None, None
                 if self.supervised_iterator is not None and need_hidden_for_detector:
                     with (
@@ -1623,8 +1712,9 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                     policy_logprobs=policy_logprobs,
                     completion_mask=non_bos_completion_mask,
                 )
-                if iteration_idx == 0:
-                    # Correlation check is only valid for the first iteration
+                if iteration_idx == 0 and (old_policy_logprobs != INVALID_LOGPROB).sum() >= 2:
+                    # Correlation check is only valid for the first iteration, and needs two answer tokens: a one-token
+                    # answer (e.g. the end-of-turn token alone) has no correlation, and compute_correlation asserts on NaN
                     correlation = self.compute_correlation(policy_logprobs, old_policy_logprobs)
                     logprob_corrs.append(correlation)
 
@@ -1726,6 +1816,7 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             "response_length_min": np.min(response_lengths),
             "response_length_max": np.max(response_lengths),
             "logprob_corr_mean": np.mean(logprob_corrs) if logprob_corrs else np.nan,
+            "padding_share": 1 - real_tokens.item() / padded_tokens,
             "mean_token_entropy": scored_responses.mean_token_entropy,
             **{k: v for k, v in generation_batch_metrics.to_dict().items() if k in ("loss", "kl_loss", "kl_div")},
             **{
@@ -1789,6 +1880,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         train_deceptive_key = deceptive_reward_key(self.obfuscation_config.task_args.deceptive_definition)
         if reference_detector_prob and train_deceptive_key in response_wise_metrics:
             reference_detector_prob = torch.cat(reference_detector_prob, dim=0)
+            if sort_order is not None:  # gathered in pass order; the other per-answer values are in original order
+                reference_detector_prob = restore_original_order(reference_detector_prob, sort_order)
             obfuscation_metrics = compute_obfuscation_decomposition_metrics(
                 reference_detector_prob=reference_detector_prob,
                 policy_detector_prob=response_wise_metrics["rewards_metrics/detector_score"],
@@ -1815,10 +1908,14 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         eval_metrics: dict[str, float | int],
         generation_batch_step: int,
     ):
+        # Wall-clock seconds per profiled section this step. The timers don't wait for the GPU, so GPU time is
+        # counted in whichever section next waits for it; only whole sections that end in a wait are reliable.
+        profiling_metrics = self.profiler.get_and_reset()
+        logger.info(f"Step {generation_batch_step} timings: {profiling_metrics}")
         if self.config.logging.log_with_wandb and self.accelerator.is_main_process:
-            self.profiler.get_and_reset()
             metrics = {k: v for k, v in train_metrics.items()}  # we don't want train/ prefix for training metrics
             metrics.update({k if "eval" in k else "eval/" + k: v for k, v in eval_metrics.items()})
+            metrics.update(profiling_metrics)
             if generation_batch_step <= 1:
                 # Define step metrics for all prefixes except misalignment
                 # misalignment metrics are handled separately in _compute_misalignment_metrics_async
@@ -1870,6 +1967,8 @@ class GRPOObfuscationTrainer(GRPOTrainer):
             alt_completions=alt_completions,
             reward_infos=self.eval_reward_infos,
         )
+        if self.obfuscation_config.task in (TaskType.CODE_GENERATION, TaskType.MULTIPLE_CHOICE):
+            sequence_reward = self.apply_cut_off_rule(sequence_reward, response_wise_reward_metrics, response_ids)
 
         response_lengths = [len(r) for r in response_ids]
         response_length_at_max = [
@@ -2008,6 +2107,23 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
         return metrics
 
+    def load_saved_state(self) -> None:
+        """Load a saved full training state into self.state: the one logging.resume_state_dir names (a stopped run,
+        continued in this run's own folder), else, with logging.resume_from_checkpoint, this run's own newest one."""
+        resume_state_dir = self.config.logging.resume_state_dir
+        if resume_state_dir is not None:
+            assert not self.config.logging.resume_from_checkpoint, "resume_state_dir replaces resume_from_checkpoint"
+            assert (Path(resume_state_dir) / "state.json").exists(), f"{resume_state_dir} holds no saved state"
+            logger.info(f"Loading the saved state in {resume_state_dir}")
+            self.state.load(Path(resume_state_dir), self.accelerator)
+            return
+        checkpoint_path = self.maybe_get_checkpoint_path()
+        if checkpoint_path is not None and self.config.logging.resume_from_checkpoint:
+            logger.info(f"Loading checkpoint from {checkpoint_path}")
+            self.state.load(checkpoint_path, self.accelerator)
+        elif checkpoint_path is not None:
+            logger.warning(f"Checkpoint {checkpoint_path} found but resume_from_checkpoint is False, skipping")
+
     def train(
         self,
         hub_model_id: str | None = None,
@@ -2015,15 +2131,10 @@ class GRPOObfuscationTrainer(GRPOTrainer):
         """Main training loop with async GenerationQueue."""
         self.accelerator.validate_config()
         assert isinstance(self.tokenizer.pad_token_id, int)
-        checkpoint_path = self.maybe_get_checkpoint_path()
 
         vllm_client = VLLMClient(self.config.vllm)
         self._vllm_client = vllm_client  # Store reference for misalignment evaluation
-        if checkpoint_path is not None and self.config.logging.resume_from_checkpoint:
-            logger.info(f"Loading checkpoint from {checkpoint_path}")
-            self.state.load(checkpoint_path, self.accelerator)
-        elif checkpoint_path is not None:
-            logger.warning(f"Checkpoint {checkpoint_path} found but resume_from_checkpoint is False, skipping")
+        self.load_saved_state()
         visualize_fsdp_distribution(self.state.model, self.accelerator)
         vllm_client.wait_for_server()
         logger.info("Starting GRPO training...")

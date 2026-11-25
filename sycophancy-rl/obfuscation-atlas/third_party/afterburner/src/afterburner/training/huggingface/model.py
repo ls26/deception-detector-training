@@ -229,6 +229,9 @@ class HFModel(torch.nn.Module):
         self.config = config
         self.accelerator = accelerator
         self.local_flops = 0.0
+        # (LoRA parameter, trainable) pairs that _set_requires_grad resets; filled on its first call, cleared when
+        # adapters or parameter objects change
+        self._lora_parameter_flags: list[tuple[torch.nn.Parameter, bool]] | None = None
         if config.load_in_4bit:
             quantization_config = BitsAndBytesConfig(
                 load_in_4bit=True,
@@ -420,6 +423,7 @@ class HFModel(torch.nn.Module):
         self.update_tensor_shapes()
 
     def add_lora_adapter(self, adapter: LoRAAdapter) -> None:
+        self._lora_parameter_flags = None
         if isinstance(self.shared_base_model, PeftModel):
             self._add_lora_adapter(adapter)
         else:
@@ -473,10 +477,24 @@ class HFModel(torch.nn.Module):
         self._set_requires_grad()
 
     def _set_requires_grad(self):
-        """Freeze all non-policy parameters to prevent training."""
+        """Freeze all non-policy parameters to prevent training.
+
+        The first call sets every parameter. Later calls reset only the LoRA parameters, the only ones PEFT's
+        set_adapter changes (it makes the active adapter's LoRA layers trainable); that skips a loop over every
+        parameter name, ~4 ms per call on Qwen3.5-9B (261123_9b_speed/model_timing).
+        """
         assert isinstance(self.shared_base_model, torch.nn.Module)
-        for name, param in self.shared_base_model.named_parameters():
-            param.requires_grad = "policy" in name
+        if self._lora_parameter_flags is None:
+            for name, param in self.shared_base_model.named_parameters():
+                param.requires_grad = "policy" in name
+            self._lora_parameter_flags = [
+                (param, "policy" in name)
+                for name, param in self.shared_base_model.named_parameters()
+                if "lora_" in name
+            ]
+            return
+        for param, trainable in self._lora_parameter_flags:
+            param.requires_grad = trainable
 
     def floating_point_ops(self, inputs: dict[str, torch.Tensor], adapter_name: str) -> float:
         """Approximate flops ignoring the score head."""
@@ -484,7 +502,8 @@ class HFModel(torch.nn.Module):
         # for a model with n parameters on T tokens.
         # This gives the following factor assuming we only backpropagate through the policy adapter
         factor = 6 if adapter_name == "policy" else 2
-        return factor * self.shared_base_model.estimate_tokens(inputs) * self.num_parameters  # type: ignore
+        # The token count transformers 4's estimate_tokens gave (removed in transformers 5): input_ids.numel()
+        return factor * inputs["input_ids"].numel() * self.num_parameters
 
     @property
     def device(self):
@@ -504,6 +523,7 @@ class HFModel(torch.nn.Module):
             )
         else:
             self.shared_base_model = self.accelerator.prepare(self.shared_base_model)
+        self._lora_parameter_flags = None  # wrapping (FSDP) can replace the parameter objects
 
     @property
     def hidden_size(self) -> int:

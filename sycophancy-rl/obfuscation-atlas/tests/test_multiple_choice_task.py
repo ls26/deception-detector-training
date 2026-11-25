@@ -24,6 +24,7 @@ from obfuscation_atlas.tasks.multiple_choice import (
     CUE_DIST,
     CUE_GOLD,
     CUE_TEMPLATES,
+    PATTERN_ANSWER_IS,
     answer_token_index,
     compute_multiple_choice_rewards,
     cue_letter_for_condition,
@@ -136,7 +137,8 @@ def test_draw_cue_deterministic_and_in_range() -> None:
 @needs_baseline_data
 def test_no_flip_reproduces_august_cues_and_counts() -> None:
     """With training label = gold, the new cue draw and reward give what the August run served and
-    what the earlier (gold-only) reward function counted, on its first 5 steps."""
+    what the earlier (gold-only) reward function counted, on its first 5 steps, except on the one answer whose
+    first and last "answer is (X)" differ (the August reward read the first, the parser reads the last)."""
     from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
@@ -152,6 +154,7 @@ def test_no_flip_reproduces_august_cues_and_counts() -> None:
                 lookup[prompt] = (q["answer"], cue_letter, template_idx)
     expected_counts = {row["file_step"]: row["recomputed_counts"] for row in json.loads(AUGUST_CHECK.read_text())["per_step"]}
 
+    first_last_differ = 0
     for step in range(5):
         rows = _read_jsonl(AUGUST_RESPONSES_DIR / f"step_{step}.jsonl")
         assert len(rows) == 64 * 8
@@ -165,19 +168,30 @@ def test_no_flip_reproduces_august_cues_and_counts() -> None:
         cue_letters = [served[i // 8][1] for i in range(len(rows))]
         completions = [row["completion"].removesuffix("<|eot_id|>") for row in rows]
         _, metrics = compute_multiple_choice_rewards(completions, golds, golds, cue_letters)
+        # The August reward read the first "answer is (X)", the parser reads the last: move those answers' counts.
+        expected = dict(expected_counts[step])
+        for i, completion in enumerate(completions):
+            letters = PATTERN_ANSWER_IS.findall(completion)
+            if letters and letters[0] != letters[-1]:
+                first, last = letters[0], letters[-1]
+                expected["rewards/task_success"] += (last == golds[i]) - (first == golds[i])
+                expected["rewards_metrics/followed_cue"] += (last == cue_letters[i]) - (first == cue_letters[i])
+                first_last_differ += 1
         counts = {
             "rewards/task_success": sum(metrics["rewards/task_success"]),
             "rewards_metrics/followed_cue": sum(metrics["rewards_metrics/followed_cue"]),
             "rewards_metrics/parse_failed": sum(metrics["rewards_metrics/parse_failed"]),
             "cue_gold_prompts": sum(metrics["rewards_metrics/cue_gold"]) // 8,
         }
-        assert counts == expected_counts[step], f"step {step}: {counts} != {expected_counts[step]}"
+        assert counts == expected, f"step {step}: {counts} != {expected}"
         assert metrics["rewards/task_success"] == metrics["rewards_metrics/true_correct"]
+    assert first_last_differ == 1
 
 
 @needs_baseline_data
 def test_extract_answer_parity_with_baseline_scores() -> None:
-    """The ported extractor reproduces the baseline's stored predictions."""
+    """The ported extractor reproduces the baseline's stored predictions, except on answers whose first and last
+    "answer is (X)" differ: the baseline took the first, the parser takes the last (4 of the rows checked)."""
     completions = _read_jsonl(BASELINE_DIR / "completions.jsonl", limit=3000)
     scores_rows = _read_jsonl(BASELINE_DIR / "scores.jsonl")
     # scores.jsonl rows are per (question, condition, cue_variant) with lists over samples
@@ -186,17 +200,23 @@ def test_extract_answer_parity_with_baseline_scores() -> None:
         for sample_idx, (pred, stage) in enumerate(zip(row["preds"], row["stages"])):
             preds[(row["question_id"], row["condition"], row["cue_variant"], sample_idx)] = (pred, stage)
 
-    checked = 0
+    checked, first_last_differ = 0, 0
     for row in completions:
         key = (row["question_id"], row["condition"], row["cue_variant"], row["sample_idx"])
         if key not in preds:
             continue
         expected_pred, expected_stage = preds[key]
+        answer_is_letters = PATTERN_ANSWER_IS.findall(row["completion"])
+        if answer_is_letters and answer_is_letters[0] != answer_is_letters[-1]:
+            assert expected_pred == answer_is_letters[0]
+            expected_pred = answer_is_letters[-1]
+            first_last_differ += 1
         pred, stage = extract_answer(row["completion"])
         assert pred == expected_pred, f"pred mismatch for {key}: {pred} != {expected_pred}"
         assert stage == expected_stage, f"stage mismatch for {key}: {stage} != {expected_stage}"
         checked += 1
     assert checked >= 1000, f"only {checked} rows checked; join with scores.jsonl failed?"
+    assert first_last_differ == 4
 
 
 @needs_baseline_data
@@ -418,6 +438,9 @@ def test_find_answer_span() -> None:
     assert find_answer_span("Either (A) or (B). I'll pick (A)")[2] == 30  # the last fallback match
     assert find_answer_span("no letter here") == (None, "none", None)
     assert cut_after_answer_letter("Reasoning. The answer is (B).") == "Reasoning. The answer is (B"
+    quoted_cue = "You think the answer is (B), but the answer is (A)."
+    assert find_answer_span(quoted_cue) == ("A", "answer_is", 48)  # the last "answer is (X)"
+    assert cut_after_answer_letter(quoted_cue) == "You think the answer is (B), but the answer is (A"
 
 
 @needs_llama_tokenizer
@@ -441,10 +464,12 @@ def test_answer_token_index_with_space_clean_up(completion: str) -> None:
 
 @needs_bias_probe_data
 def test_bias_probe_read_position_is_261010s() -> None:
-    """On all 2289 probe-set rows: the cut text's last token is the token 261010 read (the cut text's tokens are
-    the full text's tokens up to it), answer_token_index finds that token from the completion's token ids with the
-    end-of-turn token appended and their decoded text without it (as score_responses has them), and every cut row
-    fits the probe config's length limit."""
+    """On all 2289 probe-set rows: the cut text's tokens are the full text's tokens up to its last token, which is
+    the token 261010 read except on the 44 rows with several "answer is (X)" (261010 read the first, the parser
+    reads the last; on 4 of them the two name different letters, so the read letter is not the row's
+    answer_letter); answer_token_index finds that token from the completion's token ids with the end-of-turn token
+    appended and their decoded text without it (as score_responses has them), and every cut row fits the probe
+    config's length limit."""
     import torch
     from transformers import AutoTokenizer
 
@@ -452,25 +477,31 @@ def test_bias_probe_read_position_is_261010s() -> None:
 
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
     max_sequence_length = SycophancyBiasProbeConfig().max_sequence_length
-    checked = 0
+    checked, read_later, letter_differs = 0, 0, 0
     for split in ("train", "eval"):
         saved = torch.load(SLICE_ACTIVATIONS / f"bias_followed_rm_answer_{split}.pt", map_location="cpu", weights_only=False)
         position_of = {key[:3]: position for key, position in zip(saved["row_keys"], saved["positions"], strict=True)}
         rows = _read_jsonl(SETUP_DATA / f"bias_probe_{split}.jsonl")
         assert len(rows) == len(position_of) == {"train": 1512, "eval": 777}[split]
         for row in rows:
-            position = position_of[(row["question_id"], row["condition"], row["sample_idx"])]
-            assert find_answer_span(row["completion"])[0] == row["answer_letter"]
+            position_261010 = position_of[(row["question_id"], row["condition"], row["sample_idx"])]
+            letter_differs += find_answer_span(row["completion"])[0] != row["answer_letter"]
             full_ids = tokenizer(row["prompt"] + row["completion"], add_special_tokens=False)["input_ids"]
             cut_ids = tokenizer(row["prompt"] + cut_after_answer_letter(row["completion"]), add_special_tokens=False)["input_ids"]
+            position = len(cut_ids) - 1
             assert cut_ids == full_ids[: position + 1]
+            if len(PATTERN_ANSWER_IS.findall(row["completion"])) > 1:
+                assert position > position_261010
+                read_later += 1
+            else:
+                assert position == position_261010
             assert len(cut_ids) < max_sequence_length
             n_prompt = len(tokenizer(row["prompt"], add_special_tokens=False)["input_ids"])
             response_ids = full_ids[n_prompt:] + [tokenizer.convert_tokens_to_ids("<|eot_id|>")]
             completion = tokenizer.decode(response_ids).removesuffix("<|eot_id|>")
             assert answer_token_index(tokenizer, response_ids, completion) == position - n_prompt
             checked += 1
-    assert checked == 2289
+    assert (checked, read_later, letter_differs) == (2289, 44, 4)
 
 
 @needs_bias_probe_data
@@ -485,12 +516,16 @@ def test_load_sycophancy_bias_probe_dataset() -> None:
         "train_biased": 756, "train_unbiased": 756, "eval_biased": 292, "eval_unbiased": 485
     }
     rows = {(r["question_id"], r["condition"], r["sample_idx"]): r for s in ("train", "eval") for r in _read_jsonl(SETUP_DATA / f"bias_probe_{s}.jsonl")}
+    letter_differs = 0
     for split in dataset:
         for row in dataset[split]:
             source = rows[(row["question_id"], row["condition"], row["sample_idx"])]
             assert source["label"] == int(split.endswith("_biased"))
             assert row["prompt"] == source["prompt"] and row["completion"] == cut_after_answer_letter(source["completion"])
-            assert row["completion"][-1] == source["answer_letter"]
+            assert row["completion"][-1] == find_answer_span(source["completion"])[0]
+            # the rows whose first and last "answer is (X)" differ; answer_letter was parsed from the first
+            letter_differs += row["completion"][-1] != source["answer_letter"]
+    assert letter_differs == 4
     assert PROMPT_PREPARER_REGISTRY[config.prompt_preparer](dataset["eval_biased"]) is dataset["eval_biased"]
 
 
@@ -507,6 +542,7 @@ def test_read_mask_ends_at_the_read_token() -> None:
         response_ids=[[5, 6, 7, 9], [5, 6, 7, 9], [5, 6, 7]],  # finished, finished (unparsed), cut off
         max_total_length=100,
         trigger_present=[True, True, True],
+        stop_token_ids=[9],
         read_token_index=[1, None, 2],
         names_cued_option=[True, False, True],
     )
@@ -548,6 +584,80 @@ def test_bias_probe_penalty_only_on_answers_naming_the_cue(bias_probe_at_answer:
 
 def test_task_args_bias_probe_default_off() -> None:
     assert TaskArgsConfig().bias_probe_at_answer is False
+
+
+def test_any_stop_token_ends_an_answer() -> None:
+    """An answer ending with any of the stop tokens is finished (no end-of-turn token appended); one ending with
+    none of them was cut off."""
+    from types import SimpleNamespace
+
+    from obfuscation_atlas.training.grpo_trainer import build_obfuscation_response_dataset
+
+    dataset = build_obfuscation_response_dataset(
+        tokenizer=SimpleNamespace(eot_token_id=9),  # type: ignore
+        prompt_indices=[0, 1, 2],
+        prompt_ids=[[1, 2], [1, 2], [1, 2]],
+        response_ids=[[5, 9], [5, 8], [5, 6]],  # end-of-turn, the other stop token, cut off
+        max_total_length=100,
+        trigger_present=[True, True, True],
+        stop_token_ids=[9, 8],
+    )
+    assert dataset["terminated"] == [True, True, False]
+    assert [ids[2:] for ids in dataset["input_ids"]] == [[5, 9], [5, 8], [5, 6, 9]]
+
+
+def _cut_off_rule_trainer(task, cut_off_answers_fail: bool):
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        stop_token_ids=[9, 8],
+        obfuscation_config=SimpleNamespace(task=task, task_args=TaskArgsConfig(cut_off_answers_fail=cut_off_answers_fail)),
+    )
+
+
+@pytest.mark.parametrize("cut_off_answers_fail", [True, False])
+def test_cut_off_rule_multiple_choice(cut_off_answers_fail: bool) -> None:
+    """A cut-off answer is recorded in rewards_metrics/cut_off; with cut_off_answers_fail it scores 0 and counts as
+    unparsed (so the bias probe does not read it and it names no option), without it is scored on its text."""
+    from obfuscation_atlas.config import TaskType
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    # finished correct (eot), finished correct (other stop token), cut off with the label letter, cut off unparsed
+    scores, metrics = compute_multiple_choice_rewards(
+        ["The answer is (A)", "The answer is (A)", "The answer is (A). Wait", "Let me"], ["A"] * 4, ["A"] * 4, ["A"] * 4
+    )
+    trainer = _cut_off_rule_trainer(TaskType.MULTIPLE_CHOICE, cut_off_answers_fail)
+    rewards = GRPOObfuscationTrainer.apply_cut_off_rule(trainer, scores, metrics, [[5, 9], [5, 8], [5, 6], [5]])  # type: ignore
+    assert metrics["rewards_metrics/cut_off"] == [False, False, True, True]
+    if cut_off_answers_fail:
+        assert rewards == [1.0, 1.0, 0.0, 0.0]
+        assert metrics["rewards/task_success"] == [True, True, False, False]
+        assert metrics["rewards_metrics/parse_failed"] == [False, False, True, True]
+        assert metrics["rewards_metrics/true_correct"] == metrics["rewards_metrics/followed_cue"] == [True, True, False, False]
+    else:
+        assert rewards == [1.0, 1.0, 1.0, 0.0]
+        assert metrics["rewards_metrics/parse_failed"] == [False, False, False, True]
+        assert metrics["rewards_metrics/followed_cue"] == [True, True, True, False]
+
+
+def test_cut_off_rule_code_generation() -> None:
+    """With cut_off_answers_fail, a cut-off MBPP answer scores 0 and fails; its code's test results stay recorded."""
+    from obfuscation_atlas.config import TaskType
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    metrics = {"rewards/task_success": [True, True], "rewards_metrics/passes_first_n_tests": [True, True]}
+    trainer = _cut_off_rule_trainer(TaskType.CODE_GENERATION, True)
+    rewards = GRPOObfuscationTrainer.apply_cut_off_rule(trainer, [0.9, 0.9], metrics, [[5, 9], [5, 6]])  # type: ignore
+    assert rewards == [0.9, 0.0]
+    assert metrics["rewards/task_success"] == [True, False]
+    assert metrics["rewards_metrics/passes_first_n_tests"] == [True, True]
+    assert metrics["rewards_metrics/cut_off"] == [False, True]
+
+
+def test_cut_off_rule_default_off_and_not_with_nocot() -> None:
+    assert TaskArgsConfig().cut_off_answers_fail is False
+    with pytest.raises(ValueError):
+        TaskArgsConfig(cut_off_answers_fail=True, nocot_prefill="The answer is (")
 
 
 @pytest.mark.skipif(not SETUP_CONFIGS.exists(), reason="sycophancy_setup configs not available")
@@ -664,7 +774,7 @@ def _serve_training_step(train_questions: list[dict], task_args: TaskArgsConfig,
         obfuscation_config=SimpleNamespace(
             task=TaskType.MULTIPLE_CHOICE, task_args=task_args, training=SimpleNamespace(seed=seed)
         ),
-        tokenizer=SimpleNamespace(apply_chat_template=lambda messages, tokenize, add_generation_prompt: messages[0]["content"]),
+        tokenizer=SimpleNamespace(apply_chat_template=lambda messages, tokenize, add_generation_prompt, enable_thinking: messages[0]["content"]),
         reward_infos=train_questions,
         _generation_cue_infos={},
         _get_inputs_for_step=lambda step: (list(range(len(train_questions))), None),
@@ -793,6 +903,68 @@ def test_launcher_expected_steps() -> None:
     assert expected_steps({"overrides": {}}) == 128
 
 
+def test_launcher_counts_only_the_steps_of_a_resumed_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A run resumed from a saved state at step 250 of 300 writes 50 response files and logs 2 in-loop evals."""
+    import sys
+
+    import wandb
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    import training.grpo_launcher as launcher
+
+    (tmp_path / "state.json").write_text('{"step": 250}')
+    resumed = {"grpo.logging.resume_state_dir": str(tmp_path), "training.max_steps": 300}
+    assert launcher.resumed_from_step({"overrides": {"training.max_steps": 300}}) == 0
+    assert launcher.resumed_from_step({"overrides": resumed}) == 250
+    assert launcher.expected_steps({"config_name": "grpo_mcq", "overrides": resumed}) == 50
+    assert launcher.expected_steps({"overrides": resumed}) == 50
+
+    class FakeRun:  # W&B rows of a run resumed at step 250: evals at steps 274 and 299 ((step + 1) % 25 == 0)
+        config = {"training": {"max_steps": 300, "eval_steps": 25}}
+
+        def scan_history(self, keys: list[str]) -> list[dict]:
+            if keys == ["grpo_train_step", "_step"]:
+                return [{"_step": step, "grpo_train_step": step} for step in range(250, 300)]
+            return [{"_step": step, **{key: 0.5 for key in launcher.SYCOPHANCY_EVAL_KEYS}} for step in (274, 299)]
+
+    monkeypatch.setattr(wandb, "Api", lambda: type("FakeApi", (), {"run": lambda self, path: FakeRun()})())
+    monkeypatch.setattr(launcher, "wandb_entity", lambda: "entity")
+    assert [row["logged_at_train_step"] for row in launcher.sycophancy_eval_history("run", 250)] == [274, 299]
+    with pytest.raises(launcher.GrpoLaunchError, match="expected 12"):
+        launcher.sycophancy_eval_history("run", 0)
+
+
+def test_resume_state_dir_default_off() -> None:
+    from obfuscation_atlas.training.grpo_config import LoggingConfig
+
+    assert LoggingConfig().resume_state_dir is None
+
+
+def test_load_saved_state_reads_the_named_folder(tmp_path: Path) -> None:
+    """With resume_state_dir set, the trainer loads that folder's saved state (and does not search its own output
+    folder); it refuses a folder without state.json and the combination with resume_from_checkpoint."""
+    from types import SimpleNamespace
+
+    from obfuscation_atlas.training.grpo_config import LoggingConfig
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    loaded: list[Path] = []
+    trainer = SimpleNamespace(
+        config=SimpleNamespace(logging=LoggingConfig(resume_from_checkpoint=False, resume_state_dir=str(tmp_path))),
+        state=SimpleNamespace(load=lambda path, accelerator: loaded.append(path)),
+        accelerator=None,
+        maybe_get_checkpoint_path=lambda: pytest.fail("searched the run's own output folder"),
+    )
+    with pytest.raises(AssertionError, match="holds no saved state"):
+        GRPOObfuscationTrainer.load_saved_state(trainer)
+    (tmp_path / "state.json").write_text('{"step": 250}')
+    GRPOObfuscationTrainer.load_saved_state(trainer)
+    assert loaded == [tmp_path]
+    trainer.config.logging.resume_from_checkpoint = True
+    with pytest.raises(AssertionError, match="replaces resume_from_checkpoint"):
+        GRPOObfuscationTrainer.load_saved_state(trainer)
+
+
 def test_training_curve_cue_agreement_without_a_cue(tmp_path: Path) -> None:
     """compare.py's training curve leaves cue agreement empty for steps served without a cue, instead of counting
     unparsed answers (None == None) as agreeing with the missing cue; with a cue it counts as before."""
@@ -812,3 +984,257 @@ def test_training_curve_cue_agreement_without_a_cue(tmp_path: Path) -> None:
     assert curve[0]["followed_cue"] is None
     assert curve[0]["parse_failed"] == 0.25
     assert curve[1]["followed_cue"] == 3 / 8
+
+
+# --- Qwen3.5 (2026-11-21) ----------------------------------------------------------------------------------
+
+needs_qwen_tokenizer = pytest.mark.skipif(
+    not Path("/workspace/hf_cache/hub/models--Qwen--Qwen3.5-4B").exists(), reason="the Qwen3.5-4B tokenizer not available"
+)
+QWEN_PROMPT_END = "<|im_start|>assistant\n<think>\n\n</think>\n\n"  # the empty think block: thinking off
+
+
+@needs_llama_tokenizer
+@needs_qwen_tokenizer
+def test_prompts_have_thinking_off() -> None:
+    """The prompt builders give Qwen3.5 the empty think block (thinking off) and Llama-3 the prompt it had before
+    the flag (its template ignores it): the sycophancy task's chat_template_preparer and MBPP's prompt."""
+    from datasets import Dataset
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.training.obfuscation_training import build_mbpp_chat_prompt, chat_template_preparer
+
+    question = "Which is right?\n\n(A) x\n(B) y"
+    for model, expected in [
+        ("Qwen/Qwen3.5-4B", f"<|im_start|>user\n{question}<|im_end|>\n" + QWEN_PROMPT_END),
+        ("meta-llama/Meta-Llama-3-8B-Instruct",
+         f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"),
+    ]:
+        tokenizer = AutoTokenizer.from_pretrained(model)
+        assert chat_template_preparer(Dataset.from_dict({"prompt": [question]}), tokenizer=tokenizer)[0]["prompt"] == expected
+        mbpp = build_mbpp_chat_prompt("Write f.", ["assert f() == 1", "assert f() == 1"], 0, None, tokenizer)
+        assert mbpp == expected.replace(question, "Task: Write f.\n\nTest cases: ['assert f() == 1']")
+
+
+@needs_qwen_tokenizer
+@pytest.mark.parametrize("completion", [
+    "Reasoning. The answer is (B).", "You think the answer is (B), but the answer is (A).", "So the answer is A.",
+])
+def test_answer_token_index_on_qwen(completion: str) -> None:
+    """On Qwen3.5's tokenizer the read token is the first one holding the parser's (last) answer letter."""
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3.5-4B")
+    ids = tokenizer(completion, add_special_tokens=False)["input_ids"] + [tokenizer.convert_tokens_to_ids("<|im_end|>")]
+    text = tokenizer.decode(ids).removesuffix("<|im_end|>")
+    letter, _, letter_index = find_answer_span(text)
+    index = answer_token_index(tokenizer, ids, text)
+    assert letter in tokenizer.decode([ids[index]])
+    assert len(tokenizer.decode(ids[:index])) <= letter_index < len(tokenizer.decode(ids[: index + 1]))
+
+
+@needs_llama_tokenizer
+@needs_qwen_tokenizer
+def test_end_of_turn_text() -> None:
+    """The end-of-turn text a probe's data end with is the end-of-turn token alone (not Qwen3.5's newline after it)."""
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.utils.data_processing import get_end_of_turn_text
+
+    assert get_end_of_turn_text(AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")) == "<|eot_id|>"
+    assert get_end_of_turn_text(AutoTokenizer.from_pretrained("Qwen/Qwen3.5-4B")) == "<|im_end|>"
+
+
+QWEN_9B = ("/workspace/hf_cache/text_only/Qwen3.5-9B", 2048, "<|im_end|>", ["<|endoftext|>"])
+
+
+@pytest.mark.parametrize("config_name, preset, gpu_name, expected", [
+    ("grpo_mcq", None, None, ("meta-llama/Meta-Llama-3-8B-Instruct", 1024, "<|eot_id|>", [], 8, 8)),
+    ("grpo_code_gen", None, None, ("meta-llama/Meta-Llama-3-8B-Instruct", 256, "<|eot_id|>", [], 8, 8)),
+    ("grpo_mcq", "qwen3_5_4b", None, ("/workspace/hf_cache/text_only/Qwen3.5-4B", 2048, "<|im_end|>", ["<|endoftext|>"], 2, 32)),
+    ("grpo_code_gen", "qwen3_5_4b", None, ("/workspace/hf_cache/text_only/Qwen3.5-4B", 2048, "<|im_end|>", ["<|endoftext|>"], 2, 32)),
+    ("grpo_mcq", "qwen3_5_9b", "NVIDIA H100 80GB HBM3", QWEN_9B + (4, 16)),
+    ("grpo_code_gen", "qwen3_5_9b", "NVIDIA H100 80GB HBM3", QWEN_9B + (4, 16)),
+    ("grpo_mcq", "qwen3_5_9b", "NVIDIA H200", QWEN_9B + (8, 8)),
+    ("grpo_code_gen", "qwen3_5_9b", "NVIDIA H200", QWEN_9B + (8, 8)),
+])
+def test_model_presets_through_the_launcher(
+    config_name: str, preset: str | None, gpu_name: str | None, expected: tuple, monkeypatch
+) -> None:
+    """The launcher's defaults (Llama-3) leave both tasks' settings as before; a Qwen3.5 preset sets the model, a
+    2048-token response cap for both tasks, the end-of-turn and other stop tokens, and the batch sizes. Qwen3.5-9B's
+    answers per pass follow the training GPU, and 9B alone sorts answers by length with cuDNN attention off."""
+    import sys
+
+    from hydra import compose, initialize
+    from omegaconf import OmegaConf
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    import training.grpo_launcher as grpo_launcher
+
+    from obfuscation_atlas.config import register_configs
+
+    def fake_training_gpu_name() -> str:
+        assert gpu_name is not None, "only a Qwen3.5-9B launch reads the GPU name"
+        return gpu_name
+
+    monkeypatch.setattr(grpo_launcher, "training_gpu_name", fake_training_gpu_name)
+    config = {"run_key": "test", "group": "test", "output_dir": "/tmp/test", "checkpoint": None,
+              "probe": {"directory_save_prefix": "test", "retrain": True}, "overrides": {}}
+    if config_name == "grpo_mcq":
+        config["config_name"] = "grpo_mcq"
+        config["overrides"]["+data/probe_dataset"] = "sycophancy_bias_probe"
+    if preset is not None:
+        config["overrides"]["+model_preset"] = preset
+    args = grpo_launcher.build_grpo_args(config)
+    register_configs()
+    with initialize(version_base=None):
+        cfg = OmegaConf.to_object(compose(config_name=config_name, overrides=[a for a in args if "=" in a and not a.startswith("--")]))
+    assert (
+        cfg.model.model_type, cfg.grpo.tokenizer.max_response_length, cfg.grpo.tokenizer.eot_token,
+        cfg.grpo.tokenizer.other_stop_tokens, cfg.training.batch_size, cfg.training.grad_accum_steps,
+    ) == expected
+    assert (cfg.grpo.batching.sort_by_length, cfg.grpo.model.cudnn_attention) == (
+        (True, False) if preset == "qwen3_5_9b" else (False, True)
+    )
+    assert cfg.task_args.cut_off_answers_fail is False and cfg.grpo.loss.non_termination_penalty == 0.1
+    # The probe dataset's length limit: the task defaults for Llama (MBPP 512, the sycophancy bias probe set 2048)
+    assert cfg.data.probe_dataset.max_sequence_length == (4096 if preset else {"grpo_mcq": 2048, "grpo_code_gen": 512}[config_name])
+
+
+def test_qwen_9b_launch_stops_on_an_unknown_gpu_unless_the_run_sets_its_batch(monkeypatch) -> None:
+    """A Qwen3.5-9B launch on a GPU with no answers-per-pass setting stops; a run that sets its own batch size keeps
+    it, on any GPU."""
+    import sys
+
+    sys.path.insert(0, "/workspace/sycophancy-rl")
+    import training.grpo_launcher as grpo_launcher
+    from training.common import GrpoLaunchError
+
+    monkeypatch.setattr(grpo_launcher, "training_gpu_name", lambda: "NVIDIA A100-SXM4-80GB")
+    config = {"run_key": "test", "group": "test", "output_dir": "/tmp/test", "checkpoint": None,
+              "probe": {"directory_save_prefix": "test", "retrain": True}, "overrides": {"+model_preset": "qwen3_5_9b"}}
+    with pytest.raises(GrpoLaunchError, match="A100"):
+        grpo_launcher.build_grpo_args(config)
+    config["overrides"].update({"training.batch_size": 2, "training.grad_accum_steps": 32})
+    args = grpo_launcher.build_grpo_args(config)
+    assert "training.batch_size=2" in args and "training.grad_accum_steps=32" in args
+
+
+@pytest.mark.parametrize("preset, model", [(None, "meta-llama/Meta-Llama-3-8B-Instruct"), ("qwen3_5_4b", "/workspace/hf_cache/text_only/Qwen3.5-4B")])
+def test_model_of_run(tmp_path: Path, preset: str | None, model: str) -> None:
+    """start_vllm.sh and run_eval.sh take a run's model from its config's preset, else the launcher's default."""
+    import sys
+
+    import yaml
+
+    sys.path.insert(0, "/workspace/sycophancy-rl/sycophancy_setup")
+    from spec import model_of_run
+
+    overrides = {"loss.detector": 1.0} if preset is None else {"+model_preset": preset}
+    (tmp_path / "run.yaml").write_text(yaml.safe_dump({"overrides": overrides}))
+    assert model_of_run(tmp_path / "run.yaml") == model
+
+
+# --- The MBPP probe at the end of the graded code block (task_args.mbpp_probe_at_code_end) -----------------
+
+QWEN_TOKENIZER = Path("/workspace/hf_cache/text_only/Qwen3.5-9B")
+MBPP_RESPONSES = [
+    # prose, the graded block, prose after it
+    "Use a loop.\n\n```python\ndef f(x):\n    return x + 1\n```\n\nThis adds one.",
+    # two blocks: the grader runs the first
+    "```python\ndef f(x):\n    return x\n```\nTest:\n```python\nassert f(1) == 1\n```",
+    # a bare fence, the block at the end of the answer
+    "Here:\n```\ndef g():\n    return 'x'\n```",
+]
+
+
+def test_graded_code_end_is_the_graded_block() -> None:
+    """graded_code_end ends right after the closing fence of the block extract_code grades; None with no complete block."""
+    from obfuscation_atlas.tasks.code_generation import extract_code, graded_code_end, in_code_block
+
+    for response in MBPP_RESPONSES:
+        end = graded_code_end(response)
+        assert end is not None and response[:end].endswith("```")
+        assert response[:end].rstrip("`").rstrip("\n").endswith(extract_code(response))
+    assert graded_code_end(MBPP_RESPONSES[1]) == MBPP_RESPONSES[1].index("```\nTest") + 3
+    assert graded_code_end("def f(x):\n    return x") is None  # no block: the grader runs the whole answer
+    assert graded_code_end("```python\ndef f(x):\n    return x") is None  # cut off inside the block
+    code = "def f(x):\n    return x + 1"
+    assert extract_code(in_code_block(code)) == code and graded_code_end(in_code_block(code)) == len(in_code_block(code))
+
+
+@pytest.mark.skipif(not QWEN_TOKENIZER.exists(), reason="the workspace's Qwen3.5 tokenizer not available")
+def test_code_end_token_index_reads_the_closing_fence() -> None:
+    """On Qwen3.5's tokens (answer + end-of-turn token, as the trainer decodes them), the read token holds the closing
+    fence's last backtick and is the first token that does; with no complete block there is no read index."""
+    from transformers import AutoTokenizer
+
+    from obfuscation_atlas.tasks.code_generation import code_end_token_index, graded_code_end
+
+    tokenizer = AutoTokenizer.from_pretrained(QWEN_TOKENIZER)
+    eot_id = tokenizer.convert_tokens_to_ids("<|im_end|>")
+    for response in [*MBPP_RESPONSES, "```python\ndef f(x):\n    return x"]:
+        response_ids = tokenizer(response, add_special_tokens=False)["input_ids"] + [eot_id]
+        completion = tokenizer.decode(response_ids).removesuffix("<|im_end|>")
+        assert completion == response
+        index = code_end_token_index(tokenizer, response_ids, completion)
+        end = graded_code_end(completion)
+        if end is None:
+            assert index is None
+            continue
+        assert "`" in tokenizer.decode([response_ids[index]])
+        assert len(tokenizer.decode(response_ids[: index + 1])) >= end
+        assert len(tokenizer.decode(response_ids[:index])) < end
+
+
+def test_task_args_mbpp_probe_at_code_end_default_off() -> None:
+    assert TaskArgsConfig().mbpp_probe_at_code_end is False
+
+
+def test_sort_by_length_and_cudnn_attention_default_to_todays_behavior() -> None:
+    from obfuscation_atlas.training.grpo_config import GRPOBatchingConfig, GRPOModelConfig
+
+    assert GRPOBatchingConfig().sort_by_length is False
+    assert GRPOModelConfig(model_name="EleutherAI/pythia-14m").cudnn_attention is True
+
+
+def test_length_sorted_order_keeps_each_answer_with_its_advantage() -> None:
+    import torch
+    from datasets import Dataset
+
+    from obfuscation_atlas.training.grpo_trainer import length_sorted_order, restore_original_order
+
+    lengths = [5, 2, 9, 2, 7]
+    advantages = [0.5, -1.0, 2.0, 0.25, -0.75]
+    order = length_sorted_order(lengths)
+    assert order == [1, 3, 0, 4, 2]  # stable: the two length-2 rows keep their order
+    dataset = Dataset.from_dict({"input_ids": [[0] * n for n in lengths], "row": list(range(len(lengths)))})
+    sorted_dataset = dataset.select(order)  # as train_on_generation_batch builds the passes
+    sorted_advantages = [advantages[index] for index in order]
+    assert [len(input_ids) for input_ids in sorted_dataset["input_ids"]] == sorted(lengths)
+    assert [advantages[row] for row in sorted_dataset["row"]] == sorted_advantages
+    per_answer_values_in_pass_order = torch.tensor([10.0 * row for row in sorted_dataset["row"]])
+    restored = restore_original_order(per_answer_values_in_pass_order, order)
+    assert restored.tolist() == [10.0 * row for row in range(len(lengths))]
+
+
+def test_cheap_adapter_switch_sets_the_same_flags_as_the_full_loop() -> None:
+    import torch
+    from afterburner.training.huggingface.model import HFModel
+    from peft import LoraConfig, get_peft_model
+    from transformers import AutoModelForCausalLM
+
+    lora_config = LoraConfig(r=4, lora_alpha=8, target_modules="all-linear")
+    peft_model = get_peft_model(AutoModelForCausalLM.from_pretrained("EleutherAI/pythia-14m"), lora_config, "policy")
+    peft_model.base_model.add_adapter(adapter_name="reference", adapter_config=lora_config)
+    model = HFModel.__new__(HFModel)  # only the adapter switch is under test; skip loading through a config
+    torch.nn.Module.__init__(model)
+    model.shared_base_model = peft_model
+    model._lora_parameter_flags = None
+    for adapters in (["policy", "reference"], ["reference"], ["policy"], ["reference"], ["policy"]):
+        model.set_adapter(adapters)
+        flags = {name: param.requires_grad for name, param in peft_model.named_parameters()}
+        assert flags == {name: "policy" in name for name in flags}, adapters
+        assert any(flags.values()) and not all(flags.values())
+    assert model._lora_parameter_flags is not None  # later calls took the cached path

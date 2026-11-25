@@ -463,15 +463,13 @@ class TestGetEndOfTurnText:
         messages = [{"role": "user", "content": user_message}]
         formatted = gemma_tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
 
-        # The formatted message should end with our extracted end_of_turn text
-        assert formatted.endswith(end_of_turn)
-
-        # The end_of_turn should be everything that comes after the user message
+        # The end_of_turn is everything after the user message, without the template's trailing newline (a
+        # generated answer ends with <end_of_turn>, not the newline)
         parts = formatted.rsplit(user_message, 1)
         assert len(parts) == 2
-        assert parts[1] == end_of_turn
+        assert parts[1] == end_of_turn + "\n"
 
-        assert end_of_turn == "<end_of_turn>\n", f"End of turn text is {end_of_turn}"
+        assert end_of_turn == "<end_of_turn>", f"End of turn text is {end_of_turn}"
 
 
 class TestMultipleFollowUpPrompts:

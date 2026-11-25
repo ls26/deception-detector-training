@@ -33,12 +33,15 @@ def hash_prompts_and_completions(prompts: list[str], completions: list[str], lab
 
 
 def get_end_of_turn_text(tokenizer):
+    """The chat template's text after a user message, without trailing whitespace: the end-of-turn token, the last
+    token of a generated answer and the one a probe reads at the end of an answer. Llama-3: "<|eot_id|>"; Qwen3.5's
+    template adds a newline after "<|im_end|>", which a generated answer does not end with."""
     user_message = "Hello"
     messages = [
         {"role": "user", "content": user_message},
     ]
     formatted = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-    return formatted.rsplit(user_message, 1)[1]
+    return formatted.rsplit(user_message, 1)[1].rstrip()
 
 
 def process_data(
@@ -183,7 +186,7 @@ def process_data(
             if tokenizer.bos_token and follow_up_text.startswith(tokenizer.bos_token):
                 follow_up_text = follow_up_text[len(tokenizer.bos_token) :]
             # strip out anything after the last instance of the assistant message
-            follow_up_text = follow_up_text.removesuffix(end_of_turn_text)
+            follow_up_text = follow_up_text.rstrip().removesuffix(end_of_turn_text)
             follow_up_tokens = tokenizer.encode(follow_up_text, add_special_tokens=False, return_tensors="pt")[0]
             follow_up_tokens_list.append(follow_up_tokens)
             max_follow_up_len = max(max_follow_up_len, len(follow_up_tokens))

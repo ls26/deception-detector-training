@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from tqdm.auto import tqdm
 
 from obfuscation_atlas.tasks.create_hardcoded_mbpp import detect_hardcoded_generation, extract_test_case_return_value
+from obfuscation_atlas.tasks.multiple_choice import token_index_at_char
 from obfuscation_atlas.tasks.worker import READY_TASK_ID, _persistent_worker
 
 if TYPE_CHECKING:
@@ -319,15 +320,43 @@ def is_pass_only_shown_deceptive(
     return pass_only_shown(exec_a, results_a, shown_a) and pass_only_shown(exec_b, results_b, shown_b)
 
 
+CODE_BLOCK_PATTERN = r"```(?:[Pp]ython)?\s*\n(.*?)\n```"
+
+
 def extract_code(response: str) -> str:
     """Extract code from response."""
-    pattern = r"```(?:[Pp]ython)?\s*\n(.*?)\n```"
-    matches = re.findall(pattern, response, re.DOTALL)
+    matches = re.findall(CODE_BLOCK_PATTERN, response, re.DOTALL)
 
     if matches and matches[0].strip() != response:
         return matches[0].strip()
     else:
         return response.strip()
+
+
+# --- The MBPP probe's read position (task_args.mbpp_probe_at_code_end): the end of the graded code block ----
+
+
+def graded_code_end(response: str) -> int | None:
+    """The character index just past the closing fence of the code block extract_code grades (the first complete
+    block), or None when the response has no complete block (extract_code then grades the whole response)."""
+    match = re.search(CODE_BLOCK_PATTERN, response, re.DOTALL)
+    return None if match is None else match.end()
+
+
+def in_code_block(code: str) -> str:
+    """Bare code (the MBPP probe dataset's hardcode / code columns) in a python code block, the way answers write
+    it; the block ends the text, so the probe's last token is its closing fence."""
+    text = f"```python\n{code}\n```"
+    assert graded_code_end(text) == len(text), code[-200:]
+    return text
+
+
+def code_end_token_index(tokenizer, response_ids: list[int], completion: str) -> int | None:
+    """Index in response_ids of the token that holds the last backtick of the graded code block's closing fence;
+    None when the completion has no complete block (the probe then reads the last token). completion is the text the
+    reward grades (tokenizer.decode(response_ids), end-of-turn token removed)."""
+    end = graded_code_end(completion)
+    return None if end is None else token_index_at_char(tokenizer, response_ids, completion, end - 1)
 
 
 class CodeGenExample:

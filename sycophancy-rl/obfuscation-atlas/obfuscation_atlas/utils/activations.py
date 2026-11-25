@@ -99,12 +99,15 @@ def get_all_residual_acts(model, input_ids, attention_mask=None, batch_size=32, 
         batch_input_ids = input_ids[i : i + batch_size]
         batch_attention_mask = attention_mask[i : i + batch_size] if attention_mask is not None else None
 
-        # Forward pass with output_hidden_states=True to get all hidden states
+        # Forward pass with output_hidden_states=True to get all hidden states. logits_to_keep=1: the output head's
+        # scores only at the last position (unused here; at every position they take batch x length x vocabulary
+        # floats, 26 GB for 8 x 3500 tokens of Qwen3.5's 248k vocabulary)
         with torch.no_grad():  # Disable gradient computation
             outputs = model(
                 batch_input_ids,
                 attention_mask=batch_attention_mask,
                 output_hidden_states=True,
+                logits_to_keep=1,
             )
 
         # The hidden states are typically returned as a tuple, with one tensor per layer
@@ -132,11 +135,12 @@ def get_all_residual_acts_unbatched(model, input_ids, attention_mask=None, only_
     layers_to_return = set(range(num_layers)) if only_return_layers is None else set(only_return_layers)
     layers_to_return = {layer for layer in layers_to_return if 0 <= layer < num_layers}
 
-    # Forward pass with output_hidden_states=True to get all hidden states
+    # Forward pass with output_hidden_states=True to get all hidden states (logits_to_keep=1: see get_all_residual_acts)
     outputs = model(
         input_ids,
         attention_mask=attention_mask,
         output_hidden_states=True,
+        logits_to_keep=1,
     )
 
     # The hidden states are typically returned as a tuple, with one tensor per layer

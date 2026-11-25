@@ -14,6 +14,22 @@ from vllm.lora.request import LoRARequest
 logger = logging.getLogger("uvicorn.error")
 
 
+def check_trainer_class(model: str, revision: str | None) -> None:
+    """Crash unless vLLM builds the class the trainer trains (transformers' AutoModelForCausalLM class for the
+    checkpoint's config): only then do a LoRA adapter's module names match vLLM's. Qwen3.5's published checkpoints are
+    image-text (Qwen3_5ForConditionalGeneration, language-model modules language_model.model.layers.N...) while the
+    trainer trains the text-only Qwen3_5ForCausalLM (model.layers.N...); the Qwen3.5 model presets name text-only
+    copies of the checkpoints instead (see sycophancy-rl/README.md)."""
+    from transformers import AutoConfig
+    from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING_NAMES
+
+    hf_config = AutoConfig.from_pretrained(model, revision=revision)
+    trainer_class = MODEL_FOR_CAUSAL_LM_MAPPING_NAMES[hf_config.model_type]
+    assert hf_config.architectures == [trainer_class], (
+        f"{model} is a {hf_config.architectures} checkpoint; the trainer trains {trainer_class}"
+    )
+
+
 # Request models
 
 
@@ -421,6 +437,13 @@ def parse_args():
         help="GPU memory utilization fraction",
     )
     parser.add_argument(
+        "--max-num-seqs",
+        type=int,
+        default=None,
+        help="Maximum number of sequences generated at once (default: vLLM's). Qwen3.5's linear-attention state "
+        "takes one cache block per sequence, and at a small memory fraction fewer blocks fit than vLLM's default.",
+    )
+    parser.add_argument(
         "--dtype",
         type=str,
         default="auto",
@@ -473,8 +496,10 @@ if __name__ == "__main__":
             "dtype": args.dtype,
             "enforce_eager": args.enforce_eager,
             "max_num_batched_tokens": args.max_num_batched_tokens,
+            "max_num_seqs": args.max_num_seqs,
         }
     )
+    check_trainer_class(args.model, args.revision)
 
     # Initialize LLM
     print(f"Initializing LLM with config: {config}")

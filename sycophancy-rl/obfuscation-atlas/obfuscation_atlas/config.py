@@ -684,6 +684,17 @@ class TaskArgsConfig:
     # detector penalty falls only on answers that name the cued option, the step records carry each answer's
     # probe score, and the probe fits are seeded 0. The end-of-run on-policy probe comparisons are skipped.
     bias_probe_at_answer: bool = False
+    # CODE_GENERATION only: the probe reads each answer at the closing fence of the code block the grader runs (its
+    # first complete block; an answer with none at its last token, as without this setting). The start-of-run probe's
+    # data (the probe dataset's bare code, and its test split) are put in a python code block with no end-of-turn
+    # token appended, so the probe reads the closing fence there too. The probe must not be retrained during RL
+    # (detector.train_every_n_steps above the step count): its retraining set keeps the bare code.
+    mbpp_probe_at_code_end: bool = False
+    # When true, an answer cut off at the response cap (it ends with no stop token, grpo.tokenizer.other_stop_tokens)
+    # fails: its task reward is 0 and task_success False, in training and the in-loop eval. A MULTIPLE_CHOICE answer
+    # also counts as unparsed (no answer letter: the bias probe does not read it). grpo.loss.non_termination_penalty
+    # still applies on top in training. False scores a cut-off answer on the text it has.
+    cut_off_answers_fail: bool = False
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.mixed_reward_pass_all_prob <= 1.0:
@@ -694,6 +705,8 @@ class TaskArgsConfig:
             raise ValueError(f"cue_gold_prob must be in [0.0, 1.0], got {self.cue_gold_prob}")
         if self.redraw_label_flip_prob is not None and not 0.0 <= self.redraw_label_flip_prob <= 1.0:
             raise ValueError(f"redraw_label_flip_prob must be in [0.0, 1.0], got {self.redraw_label_flip_prob}")
+        if self.cut_off_answers_fail and self.nocot_prefill is not None:
+            raise ValueError("cut_off_answers_fail with nocot_prefill: every one-token answer ends at the cap")
 
 
 @dataclass
@@ -1001,6 +1014,42 @@ def register_configs() -> None:
         },
         package="_global_",
     )
+    # Qwen3.5 (post-trained, thinking off): text-only copies of the published image-text checkpoints (the language
+    # model's weights, bit for bit, as Qwen3_5ForCausalLM; see sycophancy-rl/README.md), so that vLLM builds the class
+    # the trainer trains and finds a LoRA adapter's modules. Both tasks: a 2048-token response cap (the divide-by-2
+    # default of max_sequence_length 4096), and the probe dataset's length limit raised to 4096 tokens to hold a prompt
+    # and a 2048-token answer (MBPP's default of 512 drops most of Qwen's end-of-run answers from the on-policy probe
+    # scoring); "<|endoftext|>" also ends a finished answer (and is the tokenizer's own pad token). Batch sizes keep 64
+    # sequences per optimizer step; 4B's come from its smoke runs. 9B's 4 answers per pass is the H100 value: the
+    # launcher replaces it with the training GPU's value (training/grpo_launcher.py, QWEN_9B_ANSWERS_PER_PASS: 8 on an
+    # H200). 9B also sorts each step's answers by length (13-16% less training time per token at 4 and 8 answers per
+    # pass) and turns cuDNN attention off (it sets itself up again for every new sequence length); see
+    # qwen_experiment/261123_9b_speed/results.md. 4B is untested with these settings.
+    for name, model_type, batch_size, model_batch_size, speed_settings in (
+        ("qwen3_5_4b", "/workspace/hf_cache/text_only/Qwen3.5-4B", 2, 8, False),
+        ("qwen3_5_9b", "/workspace/hf_cache/text_only/Qwen3.5-9B", 4, 4, True),
+    ):
+        cs.store(
+            group="model_preset",
+            name=name,
+            node={
+                "model": {"model_type": model_type},
+                "training": {"batch_size": batch_size, "grad_accum_steps": 64 // batch_size},
+                "detector": {"pretrain_cfg": {"batch_size": 32}, "model_batch_size": model_batch_size},
+                "data": {"task_dataset": {"max_sequence_length": 4096}, "probe_dataset": {"max_sequence_length": 4096}},
+                "grpo": {
+                    "batching": {"num_generations": 8, "sort_by_length": speed_settings},
+                    "model": {"cudnn_attention": not speed_settings},
+                    "tokenizer": {
+                        "eot_token": "<|im_end|>",
+                        "pad_token": "<|endoftext|>",
+                        "other_stop_tokens": ["<|endoftext|>"],
+                    },
+                    "logging": {"save_steps": 10},
+                },
+            },
+            package="_global_",
+        )
     cs.store(
         group="model_preset",
         name="llama3_70b",

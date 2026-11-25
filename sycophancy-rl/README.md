@@ -3,7 +3,7 @@
 A copy of the MBPP workshop paper's public release (`/workspace/probes-as-training-signals/`, on the volume and not
 in this repo's git) with the MMLU-Pro sycophancy task added. All new runs use it: the sycophancy experiments and the
 MBPP rerun. The older top-level `/workspace/obfuscation-atlas/` and `/workspace/pipeline/` are the paper-era MBPP code;
-new work does not use them, except for the Python environment (below).
+new work does not use them. Llama-3-8B-Instruct is the default model; Qwen3.5 runs through a model preset (below).
 
 ## What is where
 
@@ -11,11 +11,11 @@ new work does not use them, except for the Python environment (below).
 |---|---|---|
 | `obfuscation-atlas/` | The trainer: GRPO with a probe penalty, the MBPP task (`obfuscation_atlas/tasks/code_generation.py`) and the sycophancy task (`tasks/multiple_choice.py`). Settings are dataclasses in `obfuscation_atlas/config.py`; the sycophancy tests are `tests/test_multiple_choice_task.py` | Every run |
 | `training/run_grpo.py`, `training/grpo_launcher.py` | The launcher: turns a run YAML into the trainer's command line, runs it, checks the run folder, exports the W&B metrics | Every run |
-| the rest of `training/` (`run_trial.py`, `generation.py`, `probe_training.py`, ...) | The release's MBPP multi-round pipeline: frozen probe, adaptive retraining, the ground-truth penalty | MBPP |
-| `probe_eval/` | The release's MBPP probe evaluations | MBPP |
+| the rest of `training/` (`run_trial.py`, `generation.py`, `probe_training.py`, ...) | The release's MBPP multi-round pipeline: frozen probe, adaptive retraining, the ground-truth penalty. Llama-3 only (`training/common.py` names the model) | MBPP |
+| `probe_eval/` | The release's MBPP probe evaluations. Llama-3 only | MBPP |
 | `experiments/` | The release's MBPP run configs (`baselines/`, `trials/trial1/`) | MBPP |
 | `sycophancy_setup/` | Sycophancy data (question file, probe set), the final eval, the result tables and the run wrappers; see [its README](sycophancy_setup/README.md) | Sycophancy |
-| `env.sh` | The environment for every task (below) | Every run |
+| `env.sh`, `requirements.txt` | The environment for every task, and the pinned packages of its venv (below) | Every run |
 
 The release README (`/workspace/probes-as-training-signals/README.md`) documents the MBPP pipeline's commands. Use
 `source env.sh` in place of its `PYTHONPATH` line.
@@ -23,10 +23,65 @@ The release README (`/workspace/probes-as-training-signals/README.md`) documents
 ## Environment
 
 Before every step, `source /workspace/sycophancy-rl/env.sh`. Sycophancy steps source
-`sycophancy_setup/run_env.sh` instead, which sources `env.sh`. It puts this copy's trainer and its GRPO library
-(`afterburner`) on `PYTHONPATH` ahead of the shared venv's (`/workspace/obfuscation-atlas/.venv`), whose packages
-point at the top-level checkout. Without it the copy's trainer loads the older GRPO library and crashes at the first
-GRPO step. It also sets `$PY` (the venv's Python), the Hugging Face cache, the W&B project and the secrets.
+`sycophancy_setup/run_env.sh` instead, which sources `env.sh`. It sets `$PY` to the copy's own venv
+(`sycophancy-rl/.venv`, pinned in `requirements.txt`: torch 2.14, transformers 5.20, vLLM 0.33, peft 0.21,
+flash-linear-attention 0.6; Qwen3.5 needs transformers 5 and vLLM 0.17 or later). It puts this copy's trainer and its
+GRPO library (`afterburner`) first on `PYTHONPATH`, and sets the Hugging Face cache, the W&B project and the secrets.
+
+The shared venv at `/workspace/obfuscation-atlas/.venv` (transformers 4.56, vLLM 0.13) runs the code at the git tag
+`llama-final`, the last commit before the Qwen3.5 changes, for exact reruns of the Llama experiments. With it,
+`PYTHONPATH` must also put the copy first: that venv's packages point at the top-level checkout, whose older GRPO
+library crashes at the first GRPO step.
+
+## Models
+
+| Preset (`+model_preset`) | Model | Response cap | Batch per optimizer step |
+|---|---|---|---|
+| `llama3_8b` (the launcher's default) | `meta-llama/Meta-Llama-3-8B-Instruct` | 1024 sycophancy, 256 MBPP (the task defaults) | the task configs' |
+| `qwen3_5_4b` | `/workspace/hf_cache/text_only/Qwen3.5-4B` | 2048, both tasks | 2 × 32 |
+| `qwen3_5_9b` | `/workspace/hf_cache/text_only/Qwen3.5-9B` | 2048, both tasks | 4 × 16 on an H100, 8 × 8 on an H200 (below) |
+
+- **Text-only copies.** Qwen3.5's published checkpoints (`Qwen/Qwen3.5-4B`, `-9B`) are image-text models. The trainer
+  trains transformers' text-only class (`Qwen3_5ForCausalLM`), so a trained LoRA adapter names its modules
+  `model.layers.N...`; vLLM would build the image-text class, whose modules are named differently, and not find
+  them. The presets therefore name text-only copies: the language model's weights, bit for bit, with the text config
+  and the tokenizer (`qwen_experiment/261120_qwen_port_checks/make_text_only_checkpoint.py`). The vLLM server and the
+  sycophancy eval refuse a checkpoint whose class is not the one the trainer trains.
+- **Probe data length.** The Qwen3.5 presets raise the probe dataset's length limit to 4096 tokens, to hold a prompt and
+  a 2048-token answer (MBPP's default of 512 would drop most of Qwen's end-of-run answers from the probe scoring). The
+  launcher adds the model preset after the probe dataset group so that the preset's value wins.
+- **Thinking off.** Every chat template is applied with `enable_thinking=False`, so a Qwen3.5 prompt ends with an empty
+  think block.
+- **Stop tokens.** An answer is finished when it ends with the end-of-turn token (`grpo.tokenizer.eot_token`) or one of
+  `grpo.tokenizer.other_stop_tokens`. For Qwen3.5 these are `<|im_end|>` and `<|endoftext|>`, which vLLM also stops
+  on.
+- **The vLLM server** for a Qwen3.5 run needs `--max-model-len 4096` and fewer than vLLM's default 1024 sequences at
+  once: at 0.40 of the GPU, Qwen3.5-4B's linear-attention state has room for 978. `sycophancy_setup/start_vllm.sh`
+  passes `--max-model-len 4096 --max-num-seqs 512` for every model.
+- **Answers per pass for 9B.** The launcher reads the name of the training GPU (`nvidia-smi`; the GPU in
+  `CUDA_VISIBLE_DEVICES`, else GPU 0) and runs Qwen3.5-9B with 4 answers per forward/backward pass on an H100 and 8
+  on an H200 (`QWEN_9B_ANSWERS_PER_PASS` in `training/grpo_launcher.py`): the most that fit next to a vLLM server at
+  0.40 of the GPU with 1024-token answers (`qwen_experiment/261123_9b_speed`; longer caps are untested). Both keep 64
+  answers per optimizer step, so the update is the same. On any other GPU the launch stops, unless the run's
+  overrides set `training.batch_size` and `training.grad_accum_steps`, which always win. A trainer started without
+  the launcher gets the preset's 4.
+- **Speed settings** (both off by default; the 9B preset turns both on; `qwen_experiment/261123_9b_speed` measured
+  them on Qwen3.5-9B):
+  - `grpo.batching.sort_by_length: true` orders each step's answers by length before splitting them into
+    forward/backward passes, so a pass carries little padding. The update is unchanged; the trainer refuses it
+    unless the loss averages per answer (`LossAggregation.SAMPLE`) and no groups are skipped. W&B's `padding_share`
+    shows the share of padding tokens in the passes either way.
+  - `grpo.model.cudnn_attention: false` turns off PyTorch's cuDNN attention in the trainer. cuDNN attention sets
+    itself up again for every sequence length it hasn't seen, which mostly slows a run's first steps.
+
+## Cut-off answers
+
+An answer cut off at the response cap (it ends with no stop token) loses `grpo.loss.non_termination_penalty` (0.1 by
+default) in training. With `task_args.cut_off_answers_fail: true` (off by default) it also fails: task reward 0 and
+task success false, in training, the in-loop eval and the trainer's final eval. A sycophancy answer then counts as
+unparsed, so the bias probe does not read it; an MBPP answer keeps its code's test results in the metrics. Every run
+logs the share of cut-off answers (`rewards_metrics/cut_off`), and the sycophancy step records have a `cut_off`
+field.
 
 ## GPU allocation
 
@@ -39,6 +94,9 @@ GRPO step. It also sets `$PY` (the venv's Python), the Hugging Face cache, the W
 
 - **Run folders:** `/workspace/results/run_results/<group>/<run_key>_<W&B run id>/`. Each holds the step records
   (`checkpoints/responses/step_N.jsonl`), the final adapter (`checkpoints/final/`) and the probes.
+- **Saved training states:** `checkpoints/step_N/` (adapter, optimizer, schedule, step counter, random state), every
+  10 steps; after a finished run the launcher keeps the newest. A new run continues from one with
+  `grpo.logging.resume_state_dir: <that folder>` in its overrides, writing to its own run folder.
 - **Activation caches:** `/workspace/results/activations/`. The launcher removes them after a run.
 - **The trainer's own folders:** Hydra `outputs/`, `wandb/` and `artifacts/` inside `obfuscation-atlas/`.
 - **Results and configs:** in the experiment's folder, for example `/workspace/sycophancy_experiments/<YYMMDD_name>/`.

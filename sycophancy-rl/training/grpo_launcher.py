@@ -25,7 +25,7 @@ from training.common import (
     check_vllm,
     resolve_relative_path,
 )
-from training.extract_run_results import print_all_results, print_sycophancy_results
+from training.extract_run_results import SYCOPHANCY_FINAL_EVAL_KEYS, print_all_results, print_sycophancy_results
 from training.round_config import run_dir_for_id
 
 OBFUSCATION_ATLAS_DIR = REPO_ROOT / "obfuscation-atlas"
@@ -52,10 +52,11 @@ SYCOPHANCY_EVAL_KEYS = (
     "eval/rewards_metrics/parse_failed_mean",
 )
 
-# Hydra overrides shared by every run; a config's `overrides:` can replace any of them.
+# Hydra overrides shared by every run; a config's `overrides:` can replace any of them. The model preset comes after
+# the probe dataset group so that a preset's data settings (the Qwen3.5 presets' length limits) win over the group's.
 GRPO_DEFAULTS: dict[str, str] = {
-    "+model_preset": "llama3_8b",
     "+data/probe_dataset": "mbpp_probe",
+    "+model_preset": "llama3_8b",
     "grpo.model.attn_implementation": "sdpa",
     "training.save_path_base": str(RUNS_BASE),
     "detector.model_cache_path": str(ACTIVATIONS_DIR),
@@ -77,6 +78,11 @@ NO_FOLLOW_UP_KEYS = (
 
 REQUIRED_KEYS = ("run_key", "group", "output_dir", "probe", "checkpoint", "overrides")
 
+# Qwen3.5-9B answers per forward/backward pass, by the training GPU: what fits next to a vLLM server at 0.40 of the
+# GPU with 1024-token answers (qwen_experiment/261123_9b_speed/results.md). Every size keeps 64 answers per optimizer
+# step, so the update is the same; only speed and memory differ. Any other GPU stops the launch.
+QWEN_9B_ANSWERS_PER_PASS = {"H100": 4, "H200": 8}
+
 _wandb_entity: str | None = None
 
 
@@ -95,9 +101,31 @@ def wandb_entity() -> str:
     return _wandb_entity
 
 
+def training_gpu_name() -> str:
+    """nvidia-smi's name of the GPU the trainer will run on: CUDA_VISIBLE_DEVICES, or GPU 0 as in run_grpo_subprocess."""
+    device = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
+    result = subprocess.run(
+        ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader", "-i", device],
+        check=True, capture_output=True, text=True,
+    )
+    return result.stdout.strip()
+
+
+def qwen_9b_answers_per_pass(gpu_name: str) -> int:
+    """Qwen3.5-9B answers per pass for a GPU name such as "NVIDIA H200"; stops on a GPU not in the table."""
+    matches = [answers for gpu, answers in QWEN_9B_ANSWERS_PER_PASS.items() if gpu in gpu_name]
+    if len(matches) != 1:
+        raise GrpoLaunchError(
+            f"No Qwen3.5-9B answers-per-pass setting for GPU {gpu_name!r} (known: {sorted(QWEN_9B_ANSWERS_PER_PASS)}); "
+            "set training.batch_size and training.grad_accum_steps in the run's overrides"
+        )
+    return matches[0]
+
+
 def build_grpo_args(config: dict) -> list[str]:
     """The trainer command line for a launch config: GRPO_DEFAULTS, no follow-up, the probe
-    manifest/prefix/retrain, the starting checkpoint, W&B naming, then `overrides`."""
+    manifest/prefix/retrain, the starting checkpoint, W&B naming, then `overrides`. A Qwen3.5-9B
+    run whose overrides don't set `training.batch_size` gets the answers per pass of its GPU."""
     merged: dict[str, str] = dict(GRPO_DEFAULTS)
     for key in NO_FOLLOW_UP_KEYS:
         merged[key] = "[]"
@@ -122,6 +150,13 @@ def build_grpo_args(config: dict) -> list[str]:
     merged["wandb.group"] = config["group"]
     for key, value in config["overrides"].items():
         merged[key] = str(value).lower() if isinstance(value, bool) else str(value)
+
+    if merged["+model_preset"] == "qwen3_5_9b" and "training.batch_size" not in config["overrides"]:
+        gpu_name = training_gpu_name()
+        answers_per_pass = qwen_9b_answers_per_pass(gpu_name)
+        merged["training.batch_size"] = str(answers_per_pass)
+        merged["training.grad_accum_steps"] = str(64 // answers_per_pass)
+        print(f"Qwen3.5-9B on {gpu_name}: {answers_per_pass} answers per forward/backward pass")
 
     args = [sys.executable, "-m", "obfuscation_atlas.scripts.train_grpo_model_against_probe"]
     if config.get("config_name") is not None:
@@ -191,14 +226,24 @@ def _final_adapter_exists(run_dir: Path) -> bool:
     ).exists()
 
 
+def resumed_from_step(config: dict) -> int:
+    """The step a run starts at: that of the saved state its `grpo.logging.resume_state_dir` names, else 0."""
+    resume_state_dir = config["overrides"].get("grpo.logging.resume_state_dir")
+    if resume_state_dir is None:
+        return 0
+    return int(json.loads((Path(resume_state_dir) / "state.json").read_text())["step"])
+
+
 def expected_steps(config: dict) -> int:
     """The number of response files a finished run writes. The trainer stops at the smaller of training.max_steps and
     the data-derived count (num_epochs x steps per epoch). For MBPP's shipped data that count is DEFAULT_MAX_STEPS.
     A sycophancy run must reach its configured training.max_steps; a run the data-derived count stopped earlier fails
-    the check (raise training.num_epochs, as 261117 did)."""
+    the check (raise training.num_epochs, as 261117 did). A run resumed from a saved state writes only the steps after
+    it."""
+    steps_before = resumed_from_step(config)
     if config.get("config_name") == SYCOPHANCY_CONFIG_NAME:
-        return int(config["overrides"]["training.max_steps"])
-    return min(int(config["overrides"].get("training.max_steps", DEFAULT_MAX_STEPS)), DEFAULT_MAX_STEPS)
+        return int(config["overrides"]["training.max_steps"]) - steps_before
+    return min(int(config["overrides"].get("training.max_steps", DEFAULT_MAX_STEPS)) - steps_before, DEFAULT_MAX_STEPS)
 
 
 def verify_run_complete(run_id: str, *, group: str, run_key: str, min_responses: int) -> Path:
@@ -293,9 +338,10 @@ def cleanup_crashed_run_dir(output: str, *, group: str, run_key: str) -> None:
     print(f"  removed partial run directory for crashed run {run_id}: {run_dir}")
 
 
-def export_wandb_metrics(run_id: str, output_path: Path, *, max_retries: int = 3) -> None:
+def export_wandb_metrics(run_id: str, output_path: Path, required_keys: tuple[str, ...], *, max_retries: int = 3) -> None:
     """Export the run's W&B metrics and classification to `output_path` (JSON), retrying on
-    failure since W&B can lag behind a run that just finished."""
+    failure, or when one of `required_keys` (the run's final metrics) is not yet in the export, since W&B can lag
+    behind a run that just finished (with wandb 0.31 the end-of-run metrics reach the server after the run exits)."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     command = [
         sys.executable,
@@ -311,20 +357,26 @@ def export_wandb_metrics(run_id: str, output_path: Path, *, max_retries: int = 3
     for attempt in range(1, max_retries + 1):
         result = subprocess.run(command, cwd=OBFUSCATION_ATLAS_DIR)
         if result.returncode == 0:
-            break
-        if attempt == max_retries:
+            if not output_path.exists():
+                raise GrpoLaunchError(f"Export claimed success but {output_path} is missing")
+            missing = [key for key in required_keys if key not in json.loads(output_path.read_text())["metrics"]]
+            if not missing:
+                break
+            if attempt == max_retries:
+                raise GrpoLaunchError(f"{run_id}: the export still lacks {missing} after {max_retries} attempts")
+            print(f"WARN: export attempt {attempt}/{max_retries} lacks {missing}; retrying in 60 s")
+        elif attempt == max_retries:
             raise subprocess.CalledProcessError(result.returncode, command)
-        print(f"WARN: export_wandb_run_metrics attempt {attempt}/{max_retries} failed; retrying in 60 s")
+        else:
+            print(f"WARN: export_wandb_run_metrics attempt {attempt}/{max_retries} failed; retrying in 60 s")
         time.sleep(60)
-    if not output_path.exists():
-        raise GrpoLaunchError(f"Export claimed success but {output_path} is missing")
     exported_run_id = json.loads(output_path.read_text())["run_id"]
     if exported_run_id != run_id:
         raise GrpoLaunchError(f"Exported run_id {exported_run_id!r} != {run_id!r}")
     print(f"OK: exported metrics to {output_path}")
 
 
-def sycophancy_eval_history(run_id: str) -> list[dict]:
+def sycophancy_eval_history(run_id: str, steps_before: int) -> list[dict]:
     """The in-loop eval rows of a sycophancy run, in order, each tagged with the training step
     whose W&B row it was logged with (`logged_at_train_step`).
 
@@ -332,11 +384,13 @@ def sycophancy_eval_history(run_id: str) -> list[dict]:
     N - 1 updates (afterburner evaluation_step submits the current policy and pops it). Runs from before
     2026-10-24 (261013-261020) queued one eval before training started, so there the eval
     logged at step N scores the policy of the previous eval point and the first row the
-    starting model. The run must have all training.max_steps // training.eval_steps rows."""
+    starting model. The run must have a row for every multiple of training.eval_steps from steps_before (the step
+    a resumed run starts at, else 0) up to training.max_steps."""
     import wandb
 
     run = wandb.Api().run(f"{wandb_entity()}/{WANDB_PROJECT}/{run_id}")
-    expected_rows = run.config["training"]["max_steps"] // run.config["training"]["eval_steps"]
+    eval_steps = run.config["training"]["eval_steps"]
+    expected_rows = run.config["training"]["max_steps"] // eval_steps - steps_before // eval_steps
     train_step_at = {row["_step"]: row["grpo_train_step"] for row in run.scan_history(keys=["grpo_train_step", "_step"])}
     history = [
         {"logged_at_train_step": train_step_at[row["_step"]], **{key: row[key] for key in SYCOPHANCY_EVAL_KEYS}}
@@ -347,12 +401,12 @@ def sycophancy_eval_history(run_id: str) -> list[dict]:
     return history
 
 
-def add_sycophancy_eval_history(run_id: str, run_metrics_path: Path, *, max_retries: int = 3) -> None:
+def add_sycophancy_eval_history(run_id: str, run_metrics_path: Path, steps_before: int, *, max_retries: int = 3) -> None:
     """Add the in-loop eval history to the exported metrics (the export keeps only the last row),
     retrying since W&B can lag behind a run that just finished."""
     for attempt in range(1, max_retries + 1):
         try:
-            history = sycophancy_eval_history(run_id)
+            history = sycophancy_eval_history(run_id, steps_before)
             break
         except Exception as error:  # W&B API errors and incomplete history alike: wait and retry
             if attempt == max_retries:
@@ -421,11 +475,14 @@ def launch(config: dict) -> str:
         verify_run_complete(run_id, group=group, run_key=run_key, min_responses=min_responses)
         cleanup_intermediates(run_id, group=group, run_key=run_key)
         cleanup_activation_caches(run_id, prefix=own_prefix)
-        export_wandb_metrics(run_id, run_metrics_path)
+        is_sycophancy = config.get("config_name") == SYCOPHANCY_CONFIG_NAME
+        export_wandb_metrics(
+            run_id, run_metrics_path, tuple(SYCOPHANCY_FINAL_EVAL_KEYS) if is_sycophancy else ("val_does_execute",)
+        )
 
-        if config.get("config_name") == SYCOPHANCY_CONFIG_NAME:
+        if is_sycophancy:
             # The executable-code collapse check is MBPP-only.
-            add_sycophancy_eval_history(run_id, run_metrics_path)
+            add_sycophancy_eval_history(run_id, run_metrics_path, resumed_from_step(config))
             print_sycophancy_results(run_metrics_path)
             return run_id
 
@@ -438,6 +495,11 @@ def launch(config: dict) -> str:
                 continue
             raise GrpoLaunchError(f"{run_key}: policy collapsed in {max_attempts} attempt(s): " + "; ".join(attempt_summaries))
 
+        if config["overrides"].get("task_args.mbpp_probe_at_code_end"):
+            # With the probe read at the code end the trainer skips the on-policy probe evals, so the export has no
+            # base_model_mean_score and print_all_results' summary cannot be built.
+            print(f"No results summary for {run_key}: task_args.mbpp_probe_at_code_end skips the on-policy probe evals")
+            return run_id
         print_all_results(run_metrics_path)
         return run_id
 

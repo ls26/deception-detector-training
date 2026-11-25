@@ -6,13 +6,16 @@
 # crashes at the first GRPO step.
 COPY=/workspace/sycophancy-rl
 export PYTHONPATH="$COPY:$COPY/obfuscation-atlas:$COPY/obfuscation-atlas/third_party/afterburner/src"
+# The copy's own venv (sycophancy-rl/.venv, pinned in requirements.txt: transformers 5 and vLLM 0.33, which Qwen3.5
+# needs; Llama-3 runs in it too). The shared venv at /workspace/obfuscation-atlas/.venv (transformers 4.56, vLLM 0.13)
+# runs the code at the git tag llama-final, for exact reruns of the Llama experiments.
 # The venv's bin first: on a B200, vLLM picks the FlashInfer attention backend, which JIT-builds
 # kernels with the venv's `ninja`. (On the H200 it picks FlashAttention; the line is harmless.)
-export PATH="/workspace/obfuscation-atlas/.venv/bin:$PATH"
+export PATH="$COPY/.venv/bin:$PATH"
 export HF_HOME=/workspace/hf_cache
 export WANDB_PROJECT=deception_detection
 set -a
 source /workspace/.secrets.env
 set +a
-PY=/workspace/obfuscation-atlas/.venv/bin/python
+PY=$COPY/.venv/bin/python
 HOST=$(hostname)

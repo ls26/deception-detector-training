@@ -211,6 +211,7 @@ def generate_on_policy_completions(
             [[{"role": "user", "content": prompt}] for prompt in sampled_prompts],
             tokenize=False,
             add_generation_prompt=True,
+            enable_thinking=False,
         )
     else:
         formatted_prompts = sampled_prompts
