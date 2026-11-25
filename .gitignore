@@ -137,3 +137,36 @@ sycophancy_experiments/**/dry_run/
 # Stand-in run folders of links into /workspace/results/ that point an eval at another probe (261028+).
 sycophancy_experiments/**/stand_in/
 sycophancy_experiments/**/links/
+
+# ── qwen_experiment/ (2026-11-20+): the sycophancy_experiments/ patterns above, for the Qwen3.5 folders ──
+qwen_experiment/**/completions/
+qwen_experiment/**/completions.jsonl
+qwen_experiment/**/followups/
+qwen_experiment/**/followups.jsonl
+qwen_experiment/**/probe_sets*/*.jsonl
+qwen_experiment/**/probe_sets*/**/*.jsonl
+qwen_experiment/**/cv/**/fold[0-9]*.json
+qwen_experiment/**/labels.jsonl
+qwen_experiment/**/*_dry*/
+qwen_experiment/**/logs/*.txt
+qwen_experiment/**/logs/*.out
+qwen_experiment/**/dry/
+qwen_experiment/**/KICKOFF.md
+qwen_experiment/**/HANDOFF*.md
+qwen_experiment/**/kickoff_prompt.txt
+qwen_experiment/**/frozen_files.txt
+qwen_experiment/**/fixable_code.txt
+qwen_experiment/**/unattended.yaml
+qwen_experiment/**/watchdog.sh
+qwen_experiment/**/dry_run/
+qwen_experiment/**/stand_in/
+qwen_experiment/**/links/
+# The sycophancy eval's probe-score records (eval_checkpoint.py probes, 2026-11-21+; they replace followups.jsonl).
+sycophancy_experiments/**/probe_scores.jsonl
+qwen_experiment/**/probe_scores.jsonl
+# 261120_qwen_port_checks: the random test adapters and their vLLM answers, and the probe-set copies in Qwen's chat
+# template (retemplate_probe_set.py rebuilds them).
+qwen_experiment/**/check_ab*/
+qwen_experiment/261120_qwen_port_checks/data/*.jsonl
+# The MBPP prompts the base-model measurement builds (mbpp_generate.py prompts rebuilds them; 0.5 MB per model).
+qwen_experiment/**/mbpp_prompts.json
