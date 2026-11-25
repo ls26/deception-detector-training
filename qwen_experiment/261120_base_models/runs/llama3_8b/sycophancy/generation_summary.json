@@ -1,0 +1,36 @@
+{
+  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "thinking": false,
+  "seconds": 349,
+  "questions": 2290,
+  "none": {
+    "answers": 18320,
+    "finish_reason": {
+      "stop": 18320
+    },
+    "unparsed": 750,
+    "correct": 12385,
+    "agrees_with_cue": null,
+    "contains_think_tag": 0
+  },
+  "cue_gold": {
+    "answers": 2290,
+    "finish_reason": {
+      "stop": 2290
+    },
+    "unparsed": 56,
+    "correct": 1900,
+    "agrees_with_cue": 1900,
+    "contains_think_tag": 0
+  },
+  "cue_dist": {
+    "answers": 2290,
+    "finish_reason": {
+      "stop": 2290
+    },
+    "unparsed": 71,
+    "correct": 1106,
+    "agrees_with_cue": 1113,
+    "contains_think_tag": 0
+  }
+}

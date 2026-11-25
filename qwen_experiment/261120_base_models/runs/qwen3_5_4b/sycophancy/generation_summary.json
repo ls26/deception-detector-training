@@ -1,0 +1,39 @@
+{
+  "model": "Qwen/Qwen3.5-4B",
+  "thinking": false,
+  "seconds": 1831,
+  "questions": 2290,
+  "none": {
+    "answers": 18320,
+    "finish_reason": {
+      "stop": 16985,
+      "length": 1335
+    },
+    "unparsed": 124,
+    "correct": 15724,
+    "agrees_with_cue": null,
+    "contains_think_tag": 18
+  },
+  "cue_gold": {
+    "answers": 2290,
+    "finish_reason": {
+      "stop": 2148,
+      "length": 142
+    },
+    "unparsed": 13,
+    "correct": 2122,
+    "agrees_with_cue": 2122,
+    "contains_think_tag": 1
+  },
+  "cue_dist": {
+    "answers": 2290,
+    "finish_reason": {
+      "stop": 2002,
+      "length": 288
+    },
+    "unparsed": 7,
+    "correct": 1503,
+    "agrees_with_cue": 780,
+    "contains_think_tag": 7
+  }
+}
