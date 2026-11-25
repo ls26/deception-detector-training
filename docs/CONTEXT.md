@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This workspace holds the research for a paper in progress on training language models against linear probes. Its claim, from [paper_plan.md](./paper_plan.md): in on-policy RL where the task reward favors the unwanted behavior over the intended behavior, a frozen probe penalty does not reliably remove the unwanted behavior, but retraining the probe on the policy's own outputs does. The paper covers three environments: MBPP reward hacking, MMLU-Pro sycophancy, and a planned Countdown environment. It uses Qwen3.5 models; every result so far is on Llama-3-8B-Instruct.
+This workspace holds the research for a paper in progress on training language models against linear probes. Its claim, from [paper_plan.md](./paper_plan.md): in on-policy RL where the task reward favors the unwanted behavior over the intended behavior, a frozen probe penalty does not reliably remove the unwanted behavior, but retraining the probe on the policy's own outputs does. The paper covers three environments: MBPP reward hacking, MMLU-Pro sycophancy, and a planned Countdown environment. It uses Qwen3.5 models; the experiments through 261117 and the MBPP workshop paper use Llama-3-8B-Instruct, and the experiments from 261120 on use Qwen3.5.
 
 The code started as the official codebase for **The Obfuscation Atlas** (ICML 2026, Taufeeque, Heimersheim, Gleave, Cundy; FAR.AI). It RL-trains models with GRPO on MBPP coding problems, where reward hacking by hardcoding test cases emerges, against probe-based deception penalties. The user's MBPP workshop paper, *Probes as Training Signals: Iterative Retraining Overcomes Evasion and Reverses Reward Hacking* (`/workspace/Probes as Training Signals Paper.pdf`, git-ignored), builds on it: on Llama-3-8B-Instruct it reports that retraining the probe on on-policy data during RL reverses learned reward hacking, while a frozen probe does not. Its public code release is `probes-as-training-signals/`, and `sycophancy-rl/` is a copy of that release with the sycophancy task added.
 
@@ -12,7 +12,7 @@ The code started as the official codebase for **The Obfuscation Atlas** (ICML 20
 
 ### The paper
 
-The plan is in [paper_plan.md](./paper_plan.md): its questions, experiments, open decisions and next steps. The user rethought the direction after Goodfire's mechanistic-shaping paper, which found that frozen probe penalties generally reduced the unwanted behavior; its settings are in [goodfire_comparison.md](./goodfire_comparison.md). Previous experiments were run on Llama-3-8B, but results from now should use Qwen3.5: 9B is the main model, 4B is for pilots, and 27B for the scaling plot. **Next:** the plan's Next steps, which start with the move to Qwen3.5.
+The plan is in [paper_plan.md](./paper_plan.md): its questions, experiments, open decisions and next steps. The user rethought the direction after Goodfire's mechanistic-shaping paper, which found that frozen probe penalties generally reduced the unwanted behavior; its settings are in [goodfire_comparison.md](./goodfire_comparison.md). Previous experiments ran on Llama-3-8B-Instruct, but now they use Qwen3.5: 9B is the main model, 4B is for pilots, and 27B for the scaling plot. The Qwen3.5 experiments are recorded in [qwen_experiment_log.md](./qwen_experiment_log.md). **Next:** continue the reward advantage sweep in the plan's Q1.
 
 ### Sycophancy (MMLU-Pro)
 
@@ -22,11 +22,11 @@ The plan is in [paper_plan.md](./paper_plan.md): its questions, experiments, ope
 
 **What has been found** (all on Llama-3-8B-Instruct).  The bias probe detects bias in the base model's answers. But under its penalty, most runs end about as biased as runs without it, and the probe gives their biased answers much lower scores than it gave the base model's. A probe refit on the trained model's own answers detects that model's bias again. Some runs drop the reasoning and answer in one sentence; a KL coefficient of 0.01 instead of 0.001 prevented that in the runs tested. Training in five rounds, with the probe refit on the current model's answers before each round, lowered bias below the base model's. With the same wrong labels in every round, keeping round 1's probe or using no penalty at all also lowered bias below the base model's; the user's reading is that the model learned those labels question by question. With a new set of wrong labels each round, the refit probe still lowered bias and the frozen probe or no probe did not.
 
-**Where things are.** Experiment history, standing decisions and terms: [sycophancy_experiment_log.md](./sycophancy_experiment_log.md). Numbers: each experiment folder's README under `sycophancy_experiments/`. Training code: `sycophancy-rl/`, a cleaned-up release version of `obfuscation-atlas/` with the sycophancy task added. Shared run tooling and data (environment, launch wrappers, eval, tables, question and probe files): [`sycophancy-rl/sycophancy_setup/`](../sycophancy-rl/sycophancy_setup/README.md). No config is kept as the current one: start from the config of the experiment you're building on.
+**Where things are.** Experiment history, standing decisions and terms: [sycophancy_experiment_log.md](./sycophancy_experiment_log.md). Numbers: each experiment folder's README under `sycophancy_experiments/`. Training code: `sycophancy-rl/`, a cleaned-up release version of `obfuscation-atlas/` with the sycophancy task added. Shared run tooling and data (environment, launch wrappers, eval, tables, question and probe files): [`sycophancy-rl/sycophancy_setup/`](../sycophancy-rl/sycophancy_setup/README.md). No config is kept as the current one: start from the config of the experiment you're building on. Qwen3.5 experiments: [qwen_experiment_log.md](./qwen_experiment_log.md), with folders under `qwen_experiment/`.
 
 ### MBPP reward hacking
 
-The model writes Python for MBPP problems whose prompt shows one unit test, and the unwanted behavior is hardcoding that test's expected output. On 75% of prompts the reward checks only the shown test, and on the rest all tests (the share the plan's first question varies). The workshop paper's Llama runs used the `obfuscation-atlas/` + `pipeline/` code; their methodology and run history are in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md), which calls a hardcoding answer deceptive. The rerun on Qwen3.5 uses `sycophancy-rl/` (see its Codebase Map section),and where its experiments are recorded will be decided when the first one is planned
+The model writes Python for MBPP problems whose prompt shows one unit test, and the unwanted behavior is hardcoding that test's expected output. On 75% of prompts the reward checks only the shown test, and on the rest all tests (the share the plan's first question varies). The workshop paper's Llama runs used the `obfuscation-atlas/` + `pipeline/` code; their methodology and run history are in [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md), which calls a hardcoding answer deceptive. The rerun on Qwen3.5 uses `sycophancy-rl/` (see its Codebase Map section). Its Qwen3.5 experiments are recorded in [qwen_experiment_log.md](./qwen_experiment_log.md), with folders under `qwen_experiment/`.
 
 ### Countdown
 
@@ -36,7 +36,7 @@ Planned; the design is not chosen (the plan's open decision 6). Goodfire's versi
 
 ## Workspace layout (`/workspace`)
 
-RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `pipeline/`; **training code for new runs (both environments)** in `sycophancy-rl/`; **GRPO run outputs** in `results/run_results/`; **sycophancy analyses** in `sycophancy_experiments/`.
+RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `pipeline/`; **training code for new runs (both environments)** in `sycophancy-rl/`; **GRPO run outputs** in `results/run_results/`; **sycophancy analyses** (Llama) in `sycophancy_experiments/`; **Qwen3.5 experiments, both environments** in `qwen_experiment/`.
 
 ```
 /workspace/
@@ -90,6 +90,7 @@ RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `p
 │   ├── PROBE_EVAL_PIPELINE.md  # Probe eval architecture + on-policy split metrics
 │   ├── PROBE_EVAL_RUNBOOK.md   # HF checkpoint probe eval
 │   ├── SUPPLEMENTED_PROBE_EVAL.md  # Post-hoc supplemented on-policy split eval
+│   ├── qwen_experiment_log.md  # Qwen3.5 experiments, both environments: goal, decisions, terms, one entry per experiment
 │   └── sycophancy_experiment_log.md  # Sycophancy domain: goal, decisions, terms, one entry per experiment
 ├── sycophancy_experiments/      # Sycophancy domain: one folder per experiment, its README holds the numbers
 │   ├── 260811_mmlu_scan/        # Per-category difficulty scan of the base model
@@ -129,6 +130,13 @@ RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `p
 │   ├── 261110_redrawn_labels_seeds_45_46/  # Seeds 45 and 46 of both; README for all three redrawn-label folders
 │   ├── 261114_no_penalty_rounds/  # 261107's fixed-label rounds 2–5 with no probe penalty, from 261103's no-penalty runs
 │   └── 261117_no_penalty_vs_frozen_400/  # 400 steps, labels redrawn every prompt, constant learning rate: no penalty vs frozen probe
+├── qwen_experiment/             # Qwen3.5 experiments, both environments: one folder per experiment, its README holds the numbers
+│   ├── 261120_base_models/         # Llama and Qwen3.5 4B, 9B, 27B before RL on both tasks, old prompts
+│   ├── 261120_qwen_port_checks/    # Checks of the code port to Qwen3.5: text-only copies, adapters in vLLM, smoke runs
+│   ├── 261122_9b_probes_calibration/  # Concise-prompt test, base-9B probes, no-penalty calibration runs on 9B
+│   ├── 261123_9b_speed/            # 9B training speed: answers per pass by GPU, sorting by length
+│   ├── 261124_concise_base_models/ # Qwen3.5 4B, 9B, 27B before RL with the concise prompts
+│   └── 261125_9b_frozen_probe_300/ # 9B: no-penalty runs continued to 300 steps, frozen-probe runs, both tasks
 ├── sycophancy-rl/               # Copy of the release with the sycophancy task (built in 261012): training code for new runs — see Codebase Map
 │   ├── README.md                # What each part is, which parts each task uses, environment, outputs
 │   ├── env.sh                   # The environment for every run in the copy (source before each step)
@@ -258,6 +266,7 @@ A copy of the MBPP workshop paper's public release (`probes-as-training-signals/
 | MBPP multi-round runs for the rerun (frozen probe, adaptive retraining, ground-truth penalty) | `sycophancy-rl/training/run_trial.py`; usage in [the release README](../probes-as-training-signals/README.md) |
 | **Sycophancy RL run tooling (env, launch, eval, tables)** | [`sycophancy-rl/sycophancy_setup/README.md`](../sycophancy-rl/sycophancy_setup/README.md); configs come from the latest experiment folder you build on |
 | Sycophancy experiment history, decisions, terms | [sycophancy_experiment_log.md](./sycophancy_experiment_log.md) |
+| Qwen3.5 experiment history, decisions, terms (both environments) | [qwen_experiment_log.md](./qwen_experiment_log.md) |
 | Run or modify the main RL experiment | `scripts/train_grpo_model_against_probe.py` |
 | **Multi-round probe + GRPO loop** (paper-era) | [iterative_training_experiments.md](./iterative_training_experiments.md) → `pipeline/run_trial.py` |
 | **Single-run / sweep ablations** (paper-era) | `pipeline/run_ablation.py` + a YAML config under `experiments/{trials,2507_*}/` |
@@ -293,9 +302,10 @@ versioned `/workspace/dotfiles` repo (see its README):
    `source /workspace/atlas_setup.sh` still works too (thin shim to `dotfiles/env.sh`, for older scripts).
 2. Use `grpo.model.attn_implementation=sdpa` if `flash_attn` is not installed
 3. Probe eval and GRPO training need a **vLLM server on a separate GPU**; MBPP task eval uses in-process vLLM
-4. Runs in `sycophancy-rl/` use the same venv with the copy first on `PYTHONPATH`: `source /workspace/sycophancy-rl/env.sh`
-   before each step (sycophancy steps source `sycophancy-rl/sycophancy_setup/run_env.sh`, which sources it). Without it, the
-   copy's trainer loads the venv's older GRPO library from the top-level checkout and crashes at the first GRPO step.
+4. Runs in `sycophancy-rl/` use the copy's own venv, `sycophancy-rl/.venv` (torch 2.14, transformers 5.20, vLLM 0.33,
+   which Qwen3.5 needs): `source /workspace/sycophancy-rl/env.sh` before each step (sycophancy steps source
+   `sycophancy-rl/sycophancy_setup/run_env.sh`, which sources it). Exact reruns of the Llama experiments use the
+   obfuscation-atlas venv with the code at the git tag `llama-final`; see `sycophancy-rl/README.md`, Environment.
 
 Broken venv symptom: prompt shows `(obfuscation-atlas)` but `python` is system 3.11 → re-run
 `bash /workspace/dotfiles/apply.sh` (it detects and repairs this) or manually `cd obfuscation-atlas && rm -rf .venv && make install`.

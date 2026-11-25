@@ -19,9 +19,10 @@ ground-truth answers, so a flip under a cue is unambiguous. The behavior is meas
 question with no cue. GRPO rewards agreement with a noisy training label, and the cue names
 that label on a set share of training prompts, so following the cue can pay more than
 answering on its own; [paper_plan.md](./paper_plan.md) varies that share to set how much more it pays.
-Entries through 261117 use Llama-3-8B-Instruct and later ones Qwen3.5 (Decision 11); earlier
-entries also measure **deception** (whether the model's self-report about the cue matches
-the measured bias), which is out of scope for the paper.
+Entries here use Llama-3-8B-Instruct; the experiments on Qwen3.5 (Decision 11) are in
+[qwen_experiment_log.md](./qwen_experiment_log.md). Many entries also measure **deception**
+(whether the model's self-report about the cue matches the measured bias), which is out of
+scope for the paper.
 
 ---
 
