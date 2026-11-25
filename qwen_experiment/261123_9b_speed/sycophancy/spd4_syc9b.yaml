@@ -1,0 +1,44 @@
+# 261123 speed test, sycophancy on base Qwen3.5-9B: 261122's sycophancy/np9b_s42.yaml (the no-penalty calibration
+# run, 1 answer per forward/backward pass) with 4 answers per pass (training.batch_size 4 x grad_accum_steps 16:
+# still 64 prompts x 8 answers per step, the same update), 3 steps, one in-loop eval after step 3, no adapter save
+# before step 25 (none in this run), and its own run key and probe-cache prefix. Everything else unchanged.
+# Runs on pod fdc2d68d6537 (1 GPU, vLLM port 8000) through queue_here.sh.
+
+run_key: spd4_syc9b
+output_dir: /workspace/qwen_experiment/261123_9b_speed/sycophancy
+group: 261123_9b_speed
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: spd4_syc9b
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +model_preset: qwen3_5_9b
+  +data/probe_dataset: sycophancy_bias_probe
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/qwen_experiment/261122_9b_probes_calibration/sycophancy/probe_sets/bias_probe_train.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/qwen_experiment/261122_9b_probes_calibration/sycophancy/probe_sets/bias_probe_eval.jsonl
+  loss.detector: 0
+  task_args.bias_probe_at_answer: true
+  task_args.cut_off_answers_fail: true
+  model.activation_matching_layers: range_18-22
+  detector.filter_layers_below_loss_threshold: "null"
+  detector.pretrain_cfg.learning_rate: 0.01
+  detector.pretrain_cfg.max_steps: 4000
+  training.seed: 42
+  training.max_steps: 3
+  training.num_epochs: 20
+  training.scheduler: constant
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  grpo.logging.adapter_save_steps: 25
+  training.eval_steps: 3
+  task_args.redraw_label_flip_prob: 0.2
+  data.task_dataset.max_sequence_length: 2048
+  data.task_dataset.mmlu_questions_jsonl: /workspace/qwen_experiment/261122_9b_probes_calibration/sycophancy/dataset/labels.jsonl
+  task_args.cue_gold_prob: 0.85
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  grpo.vllm.server_wait_timeout_seconds: 3600   # a first vLLM start on a fresh pod has taken ~24 min (default 120 s)

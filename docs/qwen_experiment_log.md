@@ -27,6 +27,7 @@ Reverse chronological. One line per experiment; details in the entries below and
 | Date | Folder | What it established |
 |---|---|---|
 | 261124 | [`261124_concise_base_models`](../qwen_experiment/261124_concise_base_models/) | Qwen 4B, 9B, 27B with the concise prompts: accuracy rises and bias falls with size; 8–22% of Qwen's answers are longer than 1024 tokens. |
+| 261123 | [`261123_9b_speed`](../qwen_experiment/261123_9b_speed/) | Qwen 9B training at 4 answers per pass (H100) or 8 (H200), sorted by length: 141–142 s / 129–134 s per sycophancy step, against 287 s at 1. |
 | 261120 | [`261120_base_models`](../qwen_experiment/261120_base_models/) | Llama and Qwen 4B, 9B, 27B before RL, old prompts: Qwen more accurate and less biased; Qwen's median answer about three times Llama's. |
 
 ---
@@ -69,6 +70,9 @@ entry named in each decision holds the evidence.
   default, as in the Llama runs and 261120; 4096 in the Qwen presets, saved by 261122 as
   `qwen_experiment/261122_9b_probes_calibration/mbpp/split.json` and used from 261122 on. 315 problems are in both
   sets.
+- *answers per pass:* how many answers the trainer puts through the model in one forward/backward pass
+  (`training.batch_size`). Every setting keeps 64 answers per optimizer step, so it changes speed and memory, not the
+  update (261123).
 
 ---
 
@@ -95,6 +99,36 @@ entry named in each decision holds the evidence.
 - No-cue sycophancy answers longer than 1024 tokens: 14.4 / 13.8 / 9.6%; MBPP answers: 21.8 / 8.2 / 9.2%. Llama:
   0.1% and none.
 - MBPP reward hacking rate 0 / 0 / 1 of 400.
+
+### 261123 — Qwen 9B training speed: 4 answers per pass on an H100 or 8 on an H200, sorted by length, takes 129–142 s per sycophancy step instead of 287 s
+
+[`qwen_experiment/261123_9b_speed/`](../qwen_experiment/261123_9b_speed/) (numbers in its `results.md`)
+
+**Setup:**
+- Sycophancy GRPO on Qwen 9B, no probe penalty, 512 answers per step, 1024-token response cap, 3 steps per setting
+  (step 1 includes warm-up). Against 261122's calibration run, which put 1 answer through each pass.
+- Settings: 4 answers per pass on an H100, 8 on an H200; each step's answers sorted by length before they are split
+  into passes (`grpo.batching.sort_by_length`); cuDNN attention off (`grpo.model.cudnn_attention`) and a cheaper
+  switch between the trained and reference adapters. Passes also timed outside the trainer (`time_model_passes.py`).
+- The H100 and H200 pods also differ in CPU and CPU load. From this experiment the 9B preset sorts and turns cuDNN
+  attention off, and the launcher picks 4 or 8 answers per pass by GPU (`sycophancy-rl/README.md`, Models).
+
+**Results:**
+- At 1 answer per pass, a pass (probe scoring, reference, policy forward and backward) takes about 470 ms at 150 or
+  1,000 tokens; the CPU issues about 14,000–18,000 operations per forward, and the GPU computes 34–45% of the time.
+  At 4 or 8 equal-length answers per pass it computes 88–97% of the time.
+- Step time, steps 2 / 3: H100 at 4 per pass 163 / 144 s unsorted and 142 / 141 s sorted; H200 at 8 per pass
+  149 / 152 s unsorted and 134 / 129 s sorted. 261122's run took 287 s per step. Per 400 steps: 15.7 h (H100,
+  sorted), 14.6 h (H200, sorted), 32 h at 1 per pass.
+- Padding was 17–20% of the pass tokens unsorted at 4 per pass and 24–28% at 8; 0.6–1.8% sorted. Training-pass
+  seconds per 100k tokens, steps 2 / 3: H100 43.0 / 43.7 unsorted, 37.2 / 37.4 sorted; H200 39.3 / 39.8 and
+  33.1 / 34.0.
+- 4 per pass with cuDNN attention on and the old adapter switch: 47.3 / 42.1 s per 100k tokens. Outside the trainer,
+  a forward took 108 ms the first time through 300 sequence lengths and 70 ms the second, with cuDNN attention on.
+- Trainer–vLLM log-prob correlation 0.9993–0.9995 in every setting. Peak GPU memory by `nvidia-smi` (an upper bound,
+  vLLM included): 81.1 of 81.6 GB on the H100 at 4 per pass, 141.9 of 143.8 GB on the H200 at 8 sorted.
+- The H200's sorted run took 280.5 s for its step-1 training pass, the unsorted run 108.6 s; the cause was not
+  looked into.
 
 ### 261120 — Llama-3-8B-Instruct and Qwen3.5 4B, 9B and 27B before RL, old prompts: Qwen more accurate and less biased than Llama, with longer answers
 

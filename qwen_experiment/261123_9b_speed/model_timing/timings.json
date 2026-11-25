@@ -1,0 +1,130 @@
+{
+ "1x150 probe": {
+  "issue_s": 0.07732747902628034,
+  "wall_s": 0.07752140809316188
+ },
+ "1x150 reference": {
+  "issue_s": 0.06855736102443188,
+  "wall_s": 0.06944769399706274
+ },
+ "1x150 policy": {
+  "issue_s": 0.28301667200867087,
+  "wall_s": 0.2830742939841002
+ },
+ "1x150 peak_memory_GB": 19.825235456,
+ "1x500 probe": {
+  "issue_s": 0.07793707202654332,
+  "wall_s": 0.07968349603470415
+ },
+ "1x500 reference": {
+  "issue_s": 0.06916563108097762,
+  "wall_s": 0.07150978909339756
+ },
+ "1x500 policy": {
+  "issue_s": 0.28176321100909263,
+  "wall_s": 0.2818207850214094
+ },
+ "1x500 peak_memory_GB": 20.657518592,
+ "1x1000 probe": {
+  "issue_s": 0.0793540149461478,
+  "wall_s": 0.08435511693824083
+ },
+ "1x1000 reference": {
+  "issue_s": 0.07086246204562485,
+  "wall_s": 0.07630900002550334
+ },
+ "1x1000 policy": {
+  "issue_s": 0.282707205042243,
+  "wall_s": 0.2827582280151546
+ },
+ "1x1000 peak_memory_GB": 22.286421504,
+ "4x500 probe": {
+  "issue_s": 0.10019691102206707,
+  "wall_s": 0.13450294395443052
+ },
+ "4x500 reference": {
+  "issue_s": 0.08273381600156426,
+  "wall_s": 0.11975821806117892
+ },
+ "4x500 policy": {
+  "issue_s": 0.38145849492866546,
+  "wall_s": 0.40361725306138396
+ },
+ "4x500 peak_memory_GB": 26.063349248,
+ "new_length probe": {
+  "wall_s_each": [
+   0.1261913349153474,
+   0.1286651489790529,
+   0.8222146929474548,
+   0.12773791304789484,
+   0.12227305001579225,
+   0.12863155407831073,
+   0.12483246496412903,
+   0.1271212010178715
+  ]
+ },
+ "new_length reference": {
+  "wall_s_each": [
+   0.10910741600673646,
+   0.11421731498558074,
+   0.10788389504887164,
+   0.10844065609853715,
+   0.10909613792318851,
+   0.11355200200341642,
+   0.11134793097153306,
+   0.11201040807645768
+  ]
+ },
+ "new_length policy": {
+  "wall_s_each": [
+   0.41914690495468676,
+   0.4135648700175807,
+   0.4111213880823925,
+   0.411910229944624,
+   0.41416997800115496,
+   0.41558865597471595,
+   0.41299640794750303,
+   0.4054037460591644
+  ]
+ },
+ "set_adapter_s": 0.012455621600383892,
+ "profile 1x500 probe": {
+  "profiled_wall_ms": 132.90111301466823,
+  "gpu_kernel_time_ms": 163.3550000000011,
+  "gpu_kernels": 8567,
+  "cudaLaunchKernel_calls": 3263,
+  "cuLaunchKernel(Ex)_calls (Triton)": 921,
+  "aten_ops_called": 18132,
+  "sync_waits(cudaStreamSynchronize+cudaDeviceSynchronize+item)": 6,
+  "cpu_ms_in_linear_attention_layers": 0.0,
+  "cpu_ms_in_full_attention_layers": 0.0,
+  "gpu_ms_in_linear_attention_layers": 77.11584899999998,
+  "gpu_ms_in_full_attention_layers": 19.07314900000002
+ },
+ "profile 1x500 reference": {
+  "profiled_wall_ms": 103.90491492580622,
+  "gpu_kernel_time_ms": 138.85685799999914,
+  "gpu_kernels": 6583,
+  "cudaLaunchKernel_calls": 2271,
+  "cuLaunchKernel(Ex)_calls (Triton)": 921,
+  "aten_ops_called": 13668,
+  "sync_waits(cudaStreamSynchronize+cudaDeviceSynchronize+item)": 6,
+  "cpu_ms_in_linear_attention_layers": 0.0,
+  "cpu_ms_in_full_attention_layers": 0.0,
+  "gpu_ms_in_linear_attention_layers": 64.22992000000004,
+  "gpu_ms_in_full_attention_layers": 15.696977999999985
+ },
+ "profile 1x500 policy": {
+  "profiled_wall_ms": 435.8238319400698,
+  "gpu_kernel_time_ms": 615.0629130000012,
+  "gpu_kernels": 27890,
+  "cudaLaunchKernel_calls": 10272,
+  "cuLaunchKernel(Ex)_calls (Triton)": 3306,
+  "aten_ops_called": 60758,
+  "sync_waits(cudaStreamSynchronize+cudaDeviceSynchronize+item)": 6,
+  "cpu_ms_in_linear_attention_layers": 0.0,
+  "cpu_ms_in_full_attention_layers": 0.0,
+  "gpu_ms_in_linear_attention_layers": 315.81270200000006,
+  "gpu_ms_in_full_attention_layers": 82.27789099999995
+ }
+}

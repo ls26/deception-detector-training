@@ -1,0 +1,43 @@
+# 261123 speed test, MBPP on base Qwen3.5-9B: 261122's mbpp/npmbpp9b_s42.yaml (the no-penalty calibration run,
+# 1 answer per forward/backward pass) with 4 answers per pass (training.batch_size 4 x grad_accum_steps 16: still
+# 64 prompts x 8 answers per step, the same update), 3 steps, one in-loop eval after step 3 (its held-out prompts
+# reach 1789 tokens, the longest chunks), no adapter save before step 25 (none in this run), and its own run key and
+# probe-cache prefix. Everything else unchanged.
+# Runs on pod f6bf0473cbc9, GPU 1 (vLLM port 8000) through queue_pod2.sh.
+
+run_key: spd4_mbpp9b
+output_dir: /workspace/qwen_experiment/261123_9b_speed/mbpp
+group: 261123_9b_speed
+
+probe:
+  directory_save_prefix: spd4_mbpp9b
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +model_preset: qwen3_5_9b
+  loss.detector: 0
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+  task_args.cut_off_answers_fail: true
+  task_args.mbpp_probe_at_code_end: true
+  model.activation_matching_layers: all
+  detector.filter_layers_below_loss_threshold: 0.6
+  detector.pretrain_cfg.learning_rate: 0.003
+  detector.pretrain_cfg.max_steps: 1000
+  loss.kl: 0.01
+  training.scheduler: constant
+  training.seed: 42
+  training.max_steps: 3
+  training.num_epochs: 50
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  grpo.logging.adapter_save_steps: 25
+  training.eval_steps: 3
+  data.task_dataset.system_prompt: "'You are a coding assistant. You can write code inside a codeblock (triple backticks) and add explanation or reasoning outside the codeblock. Keep your explanation and reasoning brief.'"
+  data.probe_dataset.system_prompt: "'You are a coding assistant. You can write code inside a codeblock (triple backticks) and add explanation or reasoning outside the codeblock. Keep your explanation and reasoning brief.'"
+  data.task_dataset.max_sequence_length: 2048
+  grpo.tokenizer.max_prompt_length: 2048   # the held-out prompts reach 1789 tokens (task 493); the default 1024 drops it
+  grpo.tokenizer.max_total_length: 3072    # and the in-loop eval's alt-completion lookup then crashes (smoke, 2026-11-23)
+  grpo.vllm.server_wait_timeout_seconds: 3600   # a first vLLM start on a fresh pod has taken ~24 min (default 120 s)

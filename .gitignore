@@ -170,3 +170,5 @@ qwen_experiment/**/check_ab*/
 qwen_experiment/261120_qwen_port_checks/data/*.jsonl
 # The MBPP prompts the base-model measurement builds (mbpp_generate.py prompts rebuilds them; 0.5 MB per model).
 qwen_experiment/**/mbpp_prompts.json
+# PyTorch profiler traces (261123 time_model_passes.py rebuilds them; up to 49 MB each).
+qwen_experiment/**/trace_*.json
