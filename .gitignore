@@ -172,3 +172,6 @@ qwen_experiment/261120_qwen_port_checks/data/*.jsonl
 qwen_experiment/**/mbpp_prompts.json
 # PyTorch profiler traces (261123 time_model_passes.py rebuilds them; up to 49 MB each).
 qwen_experiment/**/trace_*.json
+# Run-control flag files that the queues create and poll (STOP_EVALS, CODE_READY).
+qwen_experiment/**/STOP_EVALS
+qwen_experiment/**/CODE_READY
