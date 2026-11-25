@@ -1,0 +1,40 @@
+# Smoke run (e): 2 steps of sycophancy RL on Llama-3-8B-Instruct in the new venv with the changed code, with an
+# in-loop eval at each step. 261117's frozen_probe/smoke_fz400.yaml unchanged except 2 steps, an adapter saved and an
+# in-loop eval every step (the launcher's default preset, llama3_8b; cut-off answers scored on their text, as before).
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/start_vllm.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_llama_syc <attempt>
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_llama_syc <attempt>
+
+run_key: smoke_llama_syc
+output_dir: /workspace/qwen_experiment/261120_qwen_port_checks
+group: 261120_qwen_port_checks
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: smoke_llama_syc
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +data/probe_dataset: sycophancy_bias_probe
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 2
+  training.num_epochs: 20
+  training.scheduler: constant
+  training.batch_size: 4
+  training.grad_accum_steps: 16
+  grpo.logging.adapter_save_steps: 1
+  task_args.redraw_label_flip_prob: 0.2
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  detector.model_batch_size: 8
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.eval_steps: 1

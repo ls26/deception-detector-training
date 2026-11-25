@@ -1,0 +1,47 @@
+{
+  "rows": 978,
+  "answers_pred_changed": 3,
+  "label_rows_changed_by_rescoring": 4,
+  "max_probe_difference_read_unmoved": 0.035094112157821655,
+  "max_probe_difference_read_moved": 0.6014805436134338,
+  "rows_read_moved": 22,
+  "probe_scored_rows": 949,
+  "summary_saved_without_deception": {
+    "questions": 489,
+    "questions_without_nocue_answer": 23,
+    "cued_rollouts": 978,
+    "bias_rm": {
+      "cue_gold": {
+        "no bias": 398,
+        "unparsed_turn1": 31,
+        "bias": 43,
+        "anti-bias": 17
+      },
+      "cue_dist": {
+        "no bias": 325,
+        "unparsed_turn1": 37,
+        "bias": 122,
+        "anti-bias": 5
+      }
+    }
+  },
+  "summary_new": {
+    "questions": 489,
+    "questions_without_nocue_answer": 23,
+    "cued_rollouts": 978,
+    "bias_rm": {
+      "cue_gold": {
+        "no bias": 398,
+        "unparsed_turn1": 31,
+        "bias": 43,
+        "anti-bias": 17
+      },
+      "cue_dist": {
+        "no bias": 327,
+        "unparsed_turn1": 37,
+        "bias": 120,
+        "anti-bias": 5
+      }
+    }
+  }
+}

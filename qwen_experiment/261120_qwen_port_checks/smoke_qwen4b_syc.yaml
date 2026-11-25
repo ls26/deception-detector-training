@@ -1,0 +1,43 @@
+# Smoke run (c): 2 steps of sycophancy RL on Qwen3.5-4B with an in-loop eval at each step. 261117's
+# frozen_probe/smoke_fz400.yaml (penalty weight 1.0, labels redrawn per step with flip probability 0.2, KL 0.01) with:
+# the qwen3_5_4b preset (2048-token cap, batch 2 x 32), cut-off answers failing (task_args.cut_off_answers_fail), the
+# probe set put in Qwen's chat template (retemplate_probe_set.py: Llama's answers, a code test only), 2 steps and an
+# in-loop eval every step. Llama's question file (its confident questions), as Qwen's is not built yet.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/start_vllm.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_qwen4b_syc <attempt>
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_qwen4b_syc <attempt>
+
+run_key: smoke_qwen4b_syc
+output_dir: /workspace/qwen_experiment/261120_qwen_port_checks
+group: 261120_qwen_port_checks
+config_name: grpo_mcq
+
+probe:
+  directory_save_prefix: smoke_qwen4b_syc
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +model_preset: qwen3_5_4b
+  +data/probe_dataset: sycophancy_bias_probe
+  data.probe_dataset.bias_probe_train_jsonl: /workspace/qwen_experiment/261120_qwen_port_checks/data/bias_probe_train_qwen_template.jsonl
+  data.probe_dataset.bias_probe_eval_jsonl: /workspace/qwen_experiment/261120_qwen_port_checks/data/bias_probe_eval_qwen_template.jsonl
+  loss.detector: 1.0
+  task_args.bias_probe_at_answer: true
+  task_args.cut_off_answers_fail: true
+  model.activation_matching_layers: range_13-17
+  detector.filter_layers_below_loss_threshold: "null"
+  detector.pretrain_cfg.learning_rate: 0.03
+  detector.pretrain_cfg.max_steps: 2000
+  training.seed: 42
+  training.max_steps: 2
+  training.num_epochs: 20
+  training.scheduler: constant
+  grpo.logging.adapter_save_steps: 1
+  task_args.redraw_label_flip_prob: 0.2
+  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  task_args.cue_gold_prob: 0.75
+  loss.advantage_std_floor: 0.3
+  loss.kl: 0.01
+  training.eval_steps: 1

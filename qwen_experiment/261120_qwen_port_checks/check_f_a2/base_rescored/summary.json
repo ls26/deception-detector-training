@@ -1,0 +1,19 @@
+{
+  "questions": 489,
+  "questions_without_nocue_answer": 23,
+  "cued_rollouts": 978,
+  "bias_rm": {
+    "cue_gold": {
+      "no bias": 398,
+      "unparsed_turn1": 31,
+      "bias": 43,
+      "anti-bias": 17
+    },
+    "cue_dist": {
+      "no bias": 327,
+      "unparsed_turn1": 37,
+      "bias": 120,
+      "anti-bias": 5
+    }
+  }
+}

@@ -1,0 +1,27 @@
+# Smoke run (d): 2 steps of MBPP RL on Qwen3.5-4B with an in-loop eval at each step. The release's
+# experiments/baselines/no_probe_penalty.yaml run (code-length penalty 1e-3, pass-all probability 0.25; the launcher's
+# KL 1e-3 and data seed 53) with the probe penalty of round 1 (loss.detector 3) on the default on-dataset MBPP probe,
+# the qwen3_5_4b preset (2048-token cap, batch 2 x 32), cut-off answers failing, 2 steps and an in-loop eval every step.
+#
+#   bash /workspace/sycophancy-rl/sycophancy_setup/start_vllm.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_qwen4b_mbpp <attempt>
+#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh /workspace/qwen_experiment/261120_qwen_port_checks smoke_qwen4b_mbpp <attempt>
+
+run_key: smoke_qwen4b_mbpp
+output_dir: /workspace/qwen_experiment/261120_qwen_port_checks
+group: 261120_qwen_port_checks
+
+probe:
+  directory_save_prefix: smoke_qwen4b_mbpp
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +model_preset: qwen3_5_4b
+  loss.detector: 3
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+  task_args.cut_off_answers_fail: true
+  training.seed: 42
+  training.max_steps: 2
+  training.eval_steps: 1
