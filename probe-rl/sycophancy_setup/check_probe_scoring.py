@@ -36,9 +36,9 @@ import yaml
 import compare
 import eval_checkpoint
 import spec as S
-from training.grpo_launcher import build_grpo_args
+from launcher.common import OBFUSCATION_ATLAS_DIR
+from launcher.grpo_launcher import build_grpo_args
 
-OBFUSCATION_ATLAS_DIR = Path("/workspace/sycophancy-rl/obfuscation-atlas")
 PENALTY_TEMPLATE = S.PACKAGE_DIR / "configs" / "cot_noisy_label_probe_penalty.yaml"
 SLICE_EVAL_SCORES = S.SYCOPHANCY_DIR / "261010_confident_slice" / "runs" / "slice_cot" / "eval_scores.json"
 OFFLINE_PROBE = "bias_followed_rm_answer"

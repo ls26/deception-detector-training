@@ -6,7 +6,7 @@
 # 20% flipped, cue at the training label with probability 0.75, 128 steps) with the deception probe replaced by
 # the bias probe: trained at the start of the run on 261010's probe set, read at the answer letter.
 #
-#   bash /workspace/sycophancy-rl/sycophancy_setup/run_rl.sh <experiment folder> <run> <attempt>
+#   bash /workspace/probe-rl/launcher/run_rl.sh <experiment folder> <run> <attempt>
 
 run_key: FILL_IN
 output_dir: FILL_IN          # the experiment folder (absolute); the launcher writes run_metrics_<run_key>.json there
@@ -20,6 +20,7 @@ probe:
 checkpoint: null            # base model, no starting adapter
 
 overrides:
+  +model_preset: llama3_8b   # Llama-3-8B-Instruct, 261024's model
   +data/probe_dataset: sycophancy_bias_probe
   loss.detector: 0
   task_args.bias_probe_at_answer: true
@@ -29,5 +30,5 @@ overrides:
   detector.pretrain_cfg.max_steps: 2000
   training.seed: FILL_IN
   training.max_steps: 128
-  data.task_dataset.mmlu_questions_jsonl: /workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl
+  data.task_dataset.mmlu_questions_jsonl: /workspace/probe-rl/sycophancy_setup/data/questions.jsonl
   task_args.cue_gold_prob: 0.75

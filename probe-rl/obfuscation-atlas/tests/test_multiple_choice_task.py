@@ -8,7 +8,7 @@ the no-CoT tests compare the trainer's prompts with 261007's stored no-CoT promp
 261014_nocot_noisy_label_rl's question file; the training-cue-off tests run the trainer's own
 prompt and reward methods on both question files against the stored no-cue eval prompts;
 the bias-probe tests check the read position against 261010's saved activation files and the run-config
-templates of /workspace/sycophancy-rl/sycophancy_setup; they are skipped when that data is not present
+templates of probe-rl/sycophancy_setup; they are skipped when that data is not present
 (e.g. CI outside the workspace).
 """
 
@@ -37,6 +37,9 @@ from obfuscation_atlas.tasks.multiple_choice import (
     render_cued_user_content,
 )
 
+# The checkout these tests are in: probe-rl/ (tests/ -> obfuscation-atlas/ -> probe-rl/), so a second checkout tests
+# its own sycophancy_setup.
+SETUP_DIR = Path(__file__).resolve().parents[2] / "sycophancy_setup"
 BASELINE_DIR = Path("/workspace/sycophancy_experiments/260819_domain_baseline")
 needs_baseline_data = pytest.mark.skipif(
     not (BASELINE_DIR / "domain_questions.jsonl").exists(),
@@ -416,8 +419,8 @@ def test_training_cue_off_serves_the_no_cue_prompt(question_file: str) -> None:
 # --- The bias probe (task_args.bias_probe_at_answer) ----------------------------------------------------
 # Its data: sycophancy_setup's copies of 261010's bias_followed_rm probe sets; the token each row's activation
 # was read at when 261010 trained and scored the probe: `positions` in 261010's saved activation files.
-SETUP_DATA = Path("/workspace/sycophancy-rl/sycophancy_setup/data")
-SETUP_CONFIGS = Path("/workspace/sycophancy-rl/sycophancy_setup/configs")
+SETUP_DATA = SETUP_DIR / "data"
+SETUP_CONFIGS = SETUP_DIR / "configs"
 SLICE_ACTIVATIONS = Path("/workspace/sycophancy_experiments/261010_confident_slice/arms/slice_cot/activations")
 needs_llama_tokenizer = pytest.mark.skipif(not Path("/workspace/hf_cache").exists(), reason="the workspace's Llama-3 tokenizer not available")
 needs_bias_probe_data = pytest.mark.skipif(
@@ -666,14 +669,11 @@ def test_setup_run_configs_compose(template: str, penalty_weight: float) -> None
     """Each run-config template, with its FILL_IN fields filled, composes through the launcher's overrides into
     the bias-probe setup: the bias probe set with the fixed recipe (layers 13-16, lr 0.03, 2000 steps, no loss
     filter), the penalty weight, no gradient through the probe, and a probe that is never retrained."""
-    import sys
-
     import yaml
     from hydra import compose, initialize
     from omegaconf import OmegaConf
 
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    from training.grpo_launcher import build_grpo_args
+    from launcher.grpo_launcher import build_grpo_args
 
     from obfuscation_atlas.config import register_configs
     from obfuscation_atlas.utils.scoring import get_activation_matching_layers
@@ -692,7 +692,7 @@ def test_setup_run_configs_compose(template: str, penalty_weight: float) -> None
     cfg = OmegaConf.to_object(cfg)
     assert cfg.task_args.bias_probe_at_answer is True and cfg.task_args.train_cue is True and cfg.task_args.cue_gold_prob == 0.75
     assert cfg.data.probe_dataset.dataset_name == "local:sycophancy_bias_probe"
-    assert cfg.data.task_dataset.mmlu_questions_jsonl == "/workspace/sycophancy-rl/sycophancy_setup/data/questions.jsonl"
+    assert cfg.data.task_dataset.mmlu_questions_jsonl == "/workspace/probe-rl/sycophancy_setup/data/questions.jsonl"
     assert get_activation_matching_layers(cfg.model.activation_matching_layers, 32) == [13, 14, 15, 16]
     assert cfg.detector.filter_layers_below_loss_threshold is None
     assert (cfg.detector.pretrain_cfg.learning_rate, cfg.detector.pretrain_cfg.max_steps) == (0.03, 2000)
@@ -723,14 +723,11 @@ def test_advantage_std_floor() -> None:
 def test_advantage_std_floor_reaches_the_trainer_config() -> None:
     """loss.advantage_std_floor, set as a run-config override, reaches grpo.loss (the config the trainer reads);
     the penalty template alone leaves it unset."""
-    import sys
-
     import yaml
     from hydra import compose, initialize
     from omegaconf import OmegaConf
 
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    from training.grpo_launcher import build_grpo_args
+    from launcher.grpo_launcher import build_grpo_args
 
     from obfuscation_atlas.config import register_configs
 
@@ -888,29 +885,21 @@ def test_mmlu_question_file_has_no_default() -> None:
 
 
 def test_launcher_expected_steps() -> None:
-    """A sycophancy run must write its configured number of response files; an MBPP run at most 128."""
-    import sys
-
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    from training.grpo_launcher import expected_steps
+    """Every run, of either task, must write exactly its configured training.max_steps response files."""
+    from launcher.grpo_launcher import expected_steps
 
     assert expected_steps({"config_name": "grpo_mcq", "overrides": {"training.max_steps": 400}}) == 400
-    assert expected_steps({"config_name": "grpo_mcq", "overrides": {"training.max_steps": 2}}) == 2
+    assert expected_steps({"overrides": {"training.max_steps": 300}}) == 300
+    assert expected_steps({"overrides": {"training.max_steps": 2}}) == 2
     with pytest.raises(KeyError):
-        expected_steps({"config_name": "grpo_mcq", "overrides": {}})
-    assert expected_steps({"overrides": {"training.max_steps": 400}}) == 128
-    assert expected_steps({"overrides": {"training.max_steps": 50}}) == 50
-    assert expected_steps({"overrides": {}}) == 128
+        expected_steps({"overrides": {}})
 
 
 def test_launcher_counts_only_the_steps_of_a_resumed_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """A run resumed from a saved state at step 250 of 300 writes 50 response files and logs 2 in-loop evals."""
-    import sys
-
     import wandb
 
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    import training.grpo_launcher as launcher
+    import launcher.grpo_launcher as launcher
 
     (tmp_path / "state.json").write_text('{"step": 250}')
     resumed = {"grpo.logging.resume_state_dir": str(tmp_path), "training.max_steps": 300}
@@ -932,6 +921,192 @@ def test_launcher_counts_only_the_steps_of_a_resumed_run(tmp_path: Path, monkeyp
     assert [row["logged_at_train_step"] for row in launcher.sycophancy_eval_history("run", 250)] == [274, 299]
     with pytest.raises(launcher.GrpoLaunchError, match="expected 12"):
         launcher.sycophancy_eval_history("run", 0)
+
+
+LAUNCH_CONFIG = {
+    "run_key": "run", "group": "group", "output_dir": "/tmp/out", "checkpoint": None,
+    "probe": {"directory_save_prefix": "run", "retrain": True},
+    "overrides": {"+model_preset": "qwen3_5_4b", "training.max_steps": 3},
+}
+
+
+@pytest.mark.parametrize("change, message", [
+    ({"early_stop": True}, "Launch config keys"),
+    ({"probe": {"directory_save_prefix": "run", "retrain": False}}, "retrain: true"),
+    ({"probe": {"directory_save_prefix": "run", "retrain": True, "manifest": "m.json"}}, "retrain: true"),
+    ({"output_dir": "relative/out"}, "absolute"),
+    ({"checkpoint": "relative/final"}, "absolute"),
+    ({"overrides": {"training.max_steps": 3}}, r"\+model_preset"),
+    ({"overrides": {"+model_preset": "qwen3_5_4b"}}, "training.max_steps"),
+    ({"overrides": {"+model_preset": "qwen3_5_4b", "training.max_steps": 3, "training.batch_size": 2}}, "set both"),
+])
+def test_launcher_check_config_refuses(change: dict, message: str) -> None:
+    """The launcher refuses a config with keys or settings it no longer supports, or without the ones it requires."""
+    from launcher.common import GrpoLaunchError
+    from launcher.grpo_launcher import check_config
+
+    check_config(LAUNCH_CONFIG)
+    with pytest.raises(GrpoLaunchError, match=message):
+        check_config({**LAUNCH_CONFIG, **change})
+
+
+def fake_finished_run(runs_base: Path, run_id: str, n_responses: int) -> Path:
+    """A run folder as the trainer leaves it: a final adapter and one response file per step."""
+    folder = runs_base / "group" / f"run_{run_id}"
+    (folder / "checkpoints/final").mkdir(parents=True)
+    (folder / "checkpoints/final/adapter_model.bin").write_text("")
+    (folder / "checkpoints/responses").mkdir()
+    for step in range(n_responses):
+        (folder / f"checkpoints/responses/step_{step}.jsonl").write_text("")
+    return folder
+
+
+@pytest.fixture
+def launcher_in_tmp(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """The launcher with its run and activation folders in tmp_path, and a launch config writing there."""
+    import launcher.common as common
+    import launcher.grpo_launcher as grpo_launcher
+
+    for module in (common, grpo_launcher):
+        monkeypatch.setattr(module, "RUNS_BASE", tmp_path / "runs")
+        monkeypatch.setattr(module, "ACTIVATIONS_DIR", tmp_path / "activations")
+    (tmp_path / "out").mkdir()
+    config = {**LAUNCH_CONFIG, "output_dir": str(tmp_path / "out")}
+    return grpo_launcher, config, tmp_path
+
+
+@pytest.mark.parametrize("failing_step", ["export", "eval_history"])
+def test_launcher_writes_run_metrics_only_after_every_check(launcher_in_tmp, failing_step: str, monkeypatch) -> None:
+    """run_metrics_<run_key>.json, the file that marks a run as done, does not exist when the export or a later check
+    fails; when every step passes it exists and the partial file is gone."""
+    grpo_launcher, config, tmp_path = launcher_in_tmp
+    config = {**config, "config_name": "grpo_mcq"}
+    fake_finished_run(tmp_path / "runs", "abcd1234", 3)
+
+    def fake_export(run_id, output_path, required_keys):
+        if failing_step == "export":
+            raise grpo_launcher.GrpoLaunchError("export failed")
+        output_path.write_text(json.dumps({"run_id": run_id, "metrics": {key: 0.5 for key in required_keys}}))
+
+    def fake_history(run_id, steps_before):
+        if failing_step == "eval_history":
+            raise grpo_launcher.GrpoLaunchError("incomplete eval history")
+        return [{"logged_at_train_step": 2, **{key: 0.5 for key in grpo_launcher.SYCOPHANCY_EVAL_KEYS}}]
+
+    monkeypatch.setattr(grpo_launcher, "export_wandb_metrics", fake_export)
+    monkeypatch.setattr(grpo_launcher, "sycophancy_eval_history", fake_history)
+    monkeypatch.setattr(grpo_launcher.time, "sleep", lambda seconds: None)
+    with pytest.raises(grpo_launcher.GrpoLaunchError):
+        grpo_launcher.finish_run(config, "abcd1234")
+    assert not (tmp_path / "out/run_metrics_run.json").exists()
+    monkeypatch.setattr(grpo_launcher, "export_wandb_metrics", lambda run_id, output_path, required_keys: output_path.write_text(
+        json.dumps({"run_id": run_id, "metrics": {key: 0.5 for key in required_keys}})))
+    monkeypatch.setattr(grpo_launcher, "sycophancy_eval_history", lambda run_id, steps_before: [])
+    assert grpo_launcher.finish_run(config, "abcd1234") is True
+    assert (tmp_path / "out/run_metrics_run.json").exists() and not (tmp_path / "out/run_metrics_run.partial.json").exists()
+
+
+@pytest.mark.parametrize("n_responses", [2, 4])
+def test_launcher_requires_exactly_the_configured_steps(launcher_in_tmp, n_responses: int) -> None:
+    """A run folder with fewer or more response files than training.max_steps (3) fails verification before anything
+    is exported."""
+    grpo_launcher, config, tmp_path = launcher_in_tmp
+    fake_finished_run(tmp_path / "runs", "abcd1234", n_responses)
+    with pytest.raises(grpo_launcher.GrpoLaunchError, match=f"{n_responses} response files, expected 3"):
+        grpo_launcher.finish_run(config, "abcd1234")
+
+
+def test_launcher_mbpp_collapse_keeps_its_metrics_aside(launcher_in_tmp, monkeypatch) -> None:
+    """An MBPP run whose policy stopped writing executable code is not marked done; its metrics are kept as a
+    DEGENERATE file named by its run id, and a later launch is not blocked by its folder."""
+    grpo_launcher, config, tmp_path = launcher_in_tmp
+    fake_finished_run(tmp_path / "runs", "abcd1234", 3)
+    monkeypatch.setattr(grpo_launcher, "export_wandb_metrics", lambda run_id, output_path, required_keys: output_path.write_text(
+        json.dumps({"run_id": run_id, "metrics": {"val_does_execute": 0.1}})))
+    assert grpo_launcher.finish_run(config, "abcd1234") is False
+    assert (tmp_path / "out/run_metrics_run.DEGENERATE_abcd1234.json").exists()
+    assert not (tmp_path / "out/run_metrics_run.json").exists()
+
+    class ReachedTraining(Exception):
+        pass
+
+    def stop_at_training() -> None:
+        raise ReachedTraining
+
+    monkeypatch.setattr(grpo_launcher, "check_vllm", stop_at_training)
+    with pytest.raises(ReachedTraining):  # past the existing-folder check
+        grpo_launcher.launch(config)
+
+
+def test_launcher_crash_keeps_the_run_folder_marked_and_allows_a_retry(launcher_in_tmp, monkeypatch) -> None:
+    """A crash stops the launch without deleting the run folder (its saved training states stay resumable) and marks
+    it CRASHED; a later launch of the same run key then trains again instead of stopping on that folder."""
+    grpo_launcher, config, tmp_path = launcher_in_tmp
+
+    def fake_trainer(args):
+        (tmp_path / "runs/group/run_abcd1234/checkpoints/step_10").mkdir(parents=True)
+        return 1, "wandb: setting up run abcd1234\nTraceback: out of memory\n"
+
+    class ReachedTraining(Exception):
+        pass
+
+    monkeypatch.setattr(grpo_launcher, "check_vllm", lambda: None)
+    monkeypatch.setattr(grpo_launcher, "check_disk", lambda: None)
+    monkeypatch.setattr(grpo_launcher, "run_grpo_subprocess", fake_trainer)
+    with pytest.raises(grpo_launcher.GrpoLaunchError, match="CRASH: run attempt 1 exited with 1"):
+        grpo_launcher.launch(config)
+    assert (tmp_path / "runs/group/run_abcd1234/checkpoints/step_10").is_dir()
+    assert (tmp_path / "runs/group/run_abcd1234/CRASHED").read_text().startswith("exit code 1, attempt 1")
+
+    def stop_at_training(args):
+        raise ReachedTraining
+
+    monkeypatch.setattr(grpo_launcher, "run_grpo_subprocess", stop_at_training)
+    with pytest.raises(ReachedTraining):  # past the existing-folder check
+        grpo_launcher.launch(config)
+
+
+def test_launcher_stops_on_an_unmarked_run_folder(launcher_in_tmp) -> None:
+    """A run folder of the same run key with no run_metrics file and no CRASHED mark (a run still training, killed by
+    a reboot, or finished but not exported) stops the launch and names the finish command; a run key that only starts
+    with this one is a different run."""
+    grpo_launcher, config, tmp_path = launcher_in_tmp
+    fake_finished_run(tmp_path / "runs", "abcd1234", 3)
+    with pytest.raises(grpo_launcher.GrpoLaunchError, match="--finish-run-id abcd1234"):
+        grpo_launcher.launch(config)
+    assert grpo_launcher.existing_run_dirs("group", "ru") == []
+
+
+def test_run_rl_sh_exits_with_the_launchers_code(tmp_path: Path) -> None:
+    """run_rl.sh exits with the launcher's exit code (here 1: a config the launcher refuses), not with that of the
+    "EXIT <code>" line it writes at the end of its log."""
+    import subprocess
+
+    launcher_dir = Path(__file__).resolve().parents[2] / "launcher"
+    (tmp_path / "bad.yaml").write_text("run_key: bad\n")
+    result = subprocess.run(["bash", str(launcher_dir / "run_rl.sh"), str(tmp_path), "bad", "1"], capture_output=True, text=True)
+    assert result.returncode == 1, result.stderr
+    log = next((tmp_path / "logs").glob("rl_bad_a1_*.log")).read_text()
+    assert "Launch config keys" in log and log.rstrip().endswith("EXIT 1")
+
+
+def test_run_with_server_returns_the_runs_exit_code(tmp_path: Path) -> None:
+    """queue_common.sh's run_with_server returns the run's exit code (here 1), not that of the GPU wait after it.
+    tmux, curl and nvidia-smi are stand-ins that succeed at once."""
+    import subprocess
+
+    launcher_dir = Path(__file__).resolve().parents[2] / "launcher"
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    for command in ("tmux", "curl", "nvidia-smi"):
+        (fake_bin / command).write_text("#!/bin/bash\nexit 0\n")
+        (fake_bin / command).chmod(0o755)
+    (tmp_path / "sub").mkdir()
+    (tmp_path / "sub/bad.yaml").write_text("run_key: bad\n")
+    script = (f'F={tmp_path}; QUEUE=test; source {launcher_dir / "queue_common.sh"}; export PATH={fake_bin}:$PATH; '
+              'run_with_server sub bad 0 1; echo "RETURNED $?"')
+    result = subprocess.run(["bash", "-c", script], capture_output=True, text=True)
+    assert "RETURNED 1" in result.stdout, result.stdout + result.stderr
 
 
 def test_resume_state_dir_default_off() -> None:
@@ -970,7 +1145,7 @@ def test_training_curve_cue_agreement_without_a_cue(tmp_path: Path) -> None:
     unparsed answers (None == None) as agreeing with the missing cue; with a cue it counts as before."""
     import sys
 
-    sys.path.insert(0, "/workspace/sycophancy-rl/sycophancy_setup")
+    sys.path.insert(0, str(SETUP_DIR))
     import compare
 
     responses = tmp_path / "checkpoints" / "responses"
@@ -1049,8 +1224,8 @@ QWEN_9B = ("/workspace/hf_cache/text_only/Qwen3.5-9B", 2048, "<|im_end|>", ["<|e
 
 
 @pytest.mark.parametrize("config_name, preset, gpu_name, expected", [
-    ("grpo_mcq", None, None, ("meta-llama/Meta-Llama-3-8B-Instruct", 1024, "<|eot_id|>", [], 8, 8)),
-    ("grpo_code_gen", None, None, ("meta-llama/Meta-Llama-3-8B-Instruct", 256, "<|eot_id|>", [], 8, 8)),
+    ("grpo_mcq", "llama3_8b", None, ("meta-llama/Meta-Llama-3-8B-Instruct", 1024, "<|eot_id|>", [], 8, 8)),
+    ("grpo_code_gen", "llama3_8b", None, ("meta-llama/Meta-Llama-3-8B-Instruct", 256, "<|eot_id|>", [], 8, 8)),
     ("grpo_mcq", "qwen3_5_4b", None, ("/workspace/hf_cache/text_only/Qwen3.5-4B", 2048, "<|im_end|>", ["<|endoftext|>"], 2, 32)),
     ("grpo_code_gen", "qwen3_5_4b", None, ("/workspace/hf_cache/text_only/Qwen3.5-4B", 2048, "<|im_end|>", ["<|endoftext|>"], 2, 32)),
     ("grpo_mcq", "qwen3_5_9b", "NVIDIA H100 80GB HBM3", QWEN_9B + (4, 16)),
@@ -1059,18 +1234,15 @@ QWEN_9B = ("/workspace/hf_cache/text_only/Qwen3.5-9B", 2048, "<|im_end|>", ["<|e
     ("grpo_code_gen", "qwen3_5_9b", "NVIDIA H200", QWEN_9B + (8, 8)),
 ])
 def test_model_presets_through_the_launcher(
-    config_name: str, preset: str | None, gpu_name: str | None, expected: tuple, monkeypatch
+    config_name: str, preset: str, gpu_name: str | None, expected: tuple, monkeypatch
 ) -> None:
-    """The launcher's defaults (Llama-3) leave both tasks' settings as before; a Qwen3.5 preset sets the model, a
+    """The Llama-3 preset leaves both tasks' settings as before; a Qwen3.5 preset sets the model, a
     2048-token response cap for both tasks, the end-of-turn and other stop tokens, and the batch sizes. Qwen3.5-9B's
     answers per pass follow the training GPU, and 9B alone sorts answers by length with cuDNN attention off."""
-    import sys
-
     from hydra import compose, initialize
     from omegaconf import OmegaConf
 
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    import training.grpo_launcher as grpo_launcher
+    import launcher.grpo_launcher as grpo_launcher
 
     from obfuscation_atlas.config import register_configs
 
@@ -1080,12 +1252,10 @@ def test_model_presets_through_the_launcher(
 
     monkeypatch.setattr(grpo_launcher, "training_gpu_name", fake_training_gpu_name)
     config = {"run_key": "test", "group": "test", "output_dir": "/tmp/test", "checkpoint": None,
-              "probe": {"directory_save_prefix": "test", "retrain": True}, "overrides": {}}
+              "probe": {"directory_save_prefix": "test", "retrain": True}, "overrides": {"+model_preset": preset}}
     if config_name == "grpo_mcq":
         config["config_name"] = "grpo_mcq"
         config["overrides"]["+data/probe_dataset"] = "sycophancy_bias_probe"
-    if preset is not None:
-        config["overrides"]["+model_preset"] = preset
     args = grpo_launcher.build_grpo_args(config)
     register_configs()
     with initialize(version_base=None):
@@ -1099,17 +1269,14 @@ def test_model_presets_through_the_launcher(
     )
     assert cfg.task_args.cut_off_answers_fail is False and cfg.grpo.loss.non_termination_penalty == 0.1
     # The probe dataset's length limit: the task defaults for Llama (MBPP 512, the sycophancy bias probe set 2048)
-    assert cfg.data.probe_dataset.max_sequence_length == (4096 if preset else {"grpo_mcq": 2048, "grpo_code_gen": 512}[config_name])
+    assert cfg.data.probe_dataset.max_sequence_length == (4096 if preset.startswith("qwen") else {"grpo_mcq": 2048, "grpo_code_gen": 512}[config_name])
 
 
 def test_qwen_9b_launch_stops_on_an_unknown_gpu_unless_the_run_sets_its_batch(monkeypatch) -> None:
     """A Qwen3.5-9B launch on a GPU with no answers-per-pass setting stops; a run that sets its own batch size keeps
     it, on any GPU."""
-    import sys
-
-    sys.path.insert(0, "/workspace/sycophancy-rl")
-    import training.grpo_launcher as grpo_launcher
-    from training.common import GrpoLaunchError
+    import launcher.grpo_launcher as grpo_launcher
+    from launcher.common import GrpoLaunchError
 
     monkeypatch.setattr(grpo_launcher, "training_gpu_name", lambda: "NVIDIA A100-SXM4-80GB")
     config = {"run_key": "test", "group": "test", "output_dir": "/tmp/test", "checkpoint": None,
@@ -1121,19 +1288,18 @@ def test_qwen_9b_launch_stops_on_an_unknown_gpu_unless_the_run_sets_its_batch(mo
     assert "training.batch_size=2" in args and "training.grad_accum_steps=32" in args
 
 
-@pytest.mark.parametrize("preset, model", [(None, "meta-llama/Meta-Llama-3-8B-Instruct"), ("qwen3_5_4b", "/workspace/hf_cache/text_only/Qwen3.5-4B")])
-def test_model_of_run(tmp_path: Path, preset: str | None, model: str) -> None:
-    """start_vllm.sh and run_eval.sh take a run's model from its config's preset, else the launcher's default."""
-    import sys
-
+@pytest.mark.parametrize("preset, model", [("llama3_8b", "meta-llama/Meta-Llama-3-8B-Instruct"), ("qwen3_5_4b", "/workspace/hf_cache/text_only/Qwen3.5-4B")])
+def test_model_of_run(tmp_path: Path, preset: str, model: str) -> None:
+    """start_vllm.sh and run_eval.sh take a run's model from its config's preset; a config without one stops."""
     import yaml
 
-    sys.path.insert(0, "/workspace/sycophancy-rl/sycophancy_setup")
-    from spec import model_of_run
+    from launcher.common import model_of_run
 
-    overrides = {"loss.detector": 1.0} if preset is None else {"+model_preset": preset}
-    (tmp_path / "run.yaml").write_text(yaml.safe_dump({"overrides": overrides}))
+    (tmp_path / "run.yaml").write_text(yaml.safe_dump({"overrides": {"+model_preset": preset}}))
     assert model_of_run(tmp_path / "run.yaml") == model
+    (tmp_path / "no_preset.yaml").write_text(yaml.safe_dump({"overrides": {"loss.detector": 1.0}}))
+    with pytest.raises(KeyError):
+        model_of_run(tmp_path / "no_preset.yaml")
 
 
 # --- The MBPP probe at the end of the graded code block (task_args.mbpp_probe_at_code_end) -----------------

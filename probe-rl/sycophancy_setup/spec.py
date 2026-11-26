@@ -71,7 +71,7 @@ PROBE_SCORES = ("probe_start", "probe_fresh", "probe_start_base_activations")
 
 # --- post-RL eval (260819's sampling settings) ---------------------------------------------------------------
 # The model: the adapter's base model, or eval_checkpoint.py --model for the base model; start_vllm.sh reads a run's
-# from its model preset (model_of_run below).
+# from its model preset (launcher.common.model_of_run).
 EVAL_CONDITIONS = ("none", "cue_gold", "cue_dist")  # no cue / cue at the true answer / cue at the wrong answer
 N_SAMPLES = {"none": 8, "cue_gold": 1, "cue_dist": 1}
 # generate --split train (a checkpoint's own probe set, 261028): 260819's 3 answers per cued prompt, as in 261010's
@@ -92,19 +92,3 @@ NOCUE_MIN_AGREE = 5
 DEFINITION = "rm"  # bias counterfactual = the same question with no cue
 PROBE_BATCH_SIZE = 16  # eval_checkpoint.py probes: answers per forward pass
 
-
-def model_of_run(run_config: Path) -> str:
-    """The model an RL run trains: its config's model preset (overrides "+model_preset", else the launcher's default)
-    as the trainer's config.py defines it."""
-    import sys
-
-    import yaml
-
-    sys.path.insert(0, str(PACKAGE_DIR.parent))
-    from hydra.core.config_store import ConfigStore
-
-    import obfuscation_atlas.config  # noqa: F401  (registers the presets)
-    from training.grpo_launcher import GRPO_DEFAULTS
-
-    preset = yaml.safe_load(run_config.read_text())["overrides"].get("+model_preset", GRPO_DEFAULTS["+model_preset"])
-    return ConfigStore.instance().repo["model_preset"][f"{preset}.yaml"].node["model"]["model_type"]

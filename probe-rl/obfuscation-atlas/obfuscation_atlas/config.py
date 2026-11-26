@@ -218,8 +218,8 @@ class DatasetConfig:
     mmlu_questions_jsonl: str | None = None
     mmlu_completions_jsonl: str = "/workspace/sycophancy_experiments/260819_domain_baseline/completions.jsonl"
     # Sycophancy bias probe set paths (only used by local:sycophancy_bias_probe)
-    bias_probe_train_jsonl: str = "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_train.jsonl"
-    bias_probe_eval_jsonl: str = "/workspace/sycophancy-rl/sycophancy_setup/data/bias_probe_eval.jsonl"
+    bias_probe_train_jsonl: str = "/workspace/probe-rl/sycophancy_setup/data/bias_probe_train.jsonl"
+    bias_probe_eval_jsonl: str = "/workspace/probe-rl/sycophancy_setup/data/bias_probe_eval.jsonl"
 
 
 @dataclass
@@ -1015,13 +1015,13 @@ def register_configs() -> None:
         package="_global_",
     )
     # Qwen3.5 (post-trained, thinking off): text-only copies of the published image-text checkpoints (the language
-    # model's weights, bit for bit, as Qwen3_5ForCausalLM; see sycophancy-rl/README.md), so that vLLM builds the class
+    # model's weights, bit for bit, as Qwen3_5ForCausalLM; see probe-rl/README.md), so that vLLM builds the class
     # the trainer trains and finds a LoRA adapter's modules. Both tasks: a 2048-token response cap (the divide-by-2
     # default of max_sequence_length 4096), and the probe dataset's length limit raised to 4096 tokens to hold a prompt
     # and a 2048-token answer (MBPP's default of 512 drops most of Qwen's end-of-run answers from the on-policy probe
     # scoring); "<|endoftext|>" also ends a finished answer (and is the tokenizer's own pad token). Batch sizes keep 64
     # sequences per optimizer step; 4B's come from its smoke runs. 9B's 4 answers per pass is the H100 value: the
-    # launcher replaces it with the training GPU's value (training/grpo_launcher.py, QWEN_9B_ANSWERS_PER_PASS: 8 on an
+    # launcher replaces it with the training GPU's value (launcher/grpo_launcher.py, QWEN_9B_ANSWERS_PER_PASS: 8 on an
     # H200). 9B also sorts each step's answers by length (13-16% less training time per token at 4 and 8 answers per
     # pass) and turns cuDNN attention off (it sets itself up again for every new sequence length); see
     # qwen_experiment/261123_9b_speed/results.md. 4B is untested with these settings.
