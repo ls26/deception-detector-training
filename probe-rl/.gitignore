@@ -11,13 +11,13 @@ __pycache__/
 /outputs/
 /checkpoints/
 /hf_cache/
-experiments/artifacts
-experiments/trials/*/buffer_*/
-experiments/trials/*/rounds/
-experiments/trials/*/rounds_*/
-experiments/trials/*/results/
-experiments/trials/*/trial_state_*.json
-experiments/baselines/*/
+release_mbpp_llama/experiments/artifacts
+release_mbpp_llama/experiments/trials/*/buffer_*/
+release_mbpp_llama/experiments/trials/*/rounds/
+release_mbpp_llama/experiments/trials/*/rounds_*/
+release_mbpp_llama/experiments/trials/*/results/
+release_mbpp_llama/experiments/trials/*/trial_state_*.json
+release_mbpp_llama/experiments/baselines/*/
 *.log
 # Placeholders left on network filesystems when a memory-mapped file is deleted
 .nfs*
