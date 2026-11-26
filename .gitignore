@@ -175,3 +175,5 @@ qwen_experiment/**/trace_*.json
 # Run-control flag files that the queues create and poll (STOP_EVALS, CODE_READY).
 qwen_experiment/**/STOP_EVALS
 qwen_experiment/**/CODE_READY
+# The training code's folder was sycophancy-rl/ until 2026-11-26; that name is now a link to probe-rl/.
+/sycophancy-rl
