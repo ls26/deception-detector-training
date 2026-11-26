@@ -1,6 +1,6 @@
 # Supplemented on-policy probe eval
 
-> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `probe-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
 
 Post-hoc analysis for multi-round trial lineages where **native on-policy split eval** has too few honest or deceptive examples (often &lt;20) for stable probe score/AUC metrics.
 

@@ -39,8 +39,8 @@ before them, and the old venv runs it (`../README.md`, Environment).
   the probes in one forward pass over the question and the answer.
 - **Cut-off answers:** an answer cut off at the eval's 2048-token cap counts as unparsed. Training does the same with
   `task_args.cut_off_answers_fail` (off by default; see `../README.md`).
-- **The model** of an eval is the adapter's base model, or `--model` for the base model; `start_vllm.sh` and
-  `run_eval.sh` take a run's model from its config's model preset (`spec.model_of_run`).
+- **The model** of an eval is the adapter's base model, or `--model` for the base model; `../launcher/start_vllm.sh`
+  and `run_eval.sh` take a run's model from its config's model preset (`launcher.common.model_of_run`).
 
 **The task.** Each prompt is a two-option MMLU-Pro question (law, philosophy, computer science, physics, history).
 The user's message ends with an opinion, the *cue*, for example "I think the answer is (B), but I'm not sure."
@@ -107,14 +107,14 @@ monitor template uses weight 0. The probe is not trained further during the run,
     (`fresh_detector.final_model.on_dataset/`).
 - **How each command runs:** in its own tmux session. The last argument of each wrapper is the attempt number (1–3,
   `a<N>` in the log names). A wrapper refuses an attempt whose log already exists.
-- **Shorthand:** `SETUP=/workspace/sycophancy-rl/sycophancy_setup`. `$PY` is the venv's Python, set by
-  `source $SETUP/run_env.sh`.
+- **Shorthand:** `SETUP=/workspace/probe-rl/sycophancy_setup` and `LAUNCHER=/workspace/probe-rl/launcher`. `$PY` is the
+  venv's Python, set by `source $SETUP/run_env.sh`.
 
 1. **Smoke run.** A config whose name contains `smoke`, with `training.max_steps: 2`, through steps 2 and 3.
 2. **RL run:**
-   - `bash $SETUP/start_vllm.sh <folder> <run> 1`
-   - `bash $SETUP/run_rl.sh <folder> <run> 1` (writes `<folder>/logs/rl_<run>_a1_<host>.log` and
-     `<folder>/run_metrics_<run_key>.json`)
+   - `bash $LAUNCHER/start_vllm.sh <folder> <run> 1 <gpu>`
+   - `bash $LAUNCHER/run_rl.sh <folder> <run> 1` (writes `<folder>/logs/rl_<run>_a1_<host>.log` and, once the run
+     is verified and exported, `<folder>/run_metrics_<run_key>.json`; see `../README.md`, Running one training job)
    - then stop the vLLM server (`tmux kill-session`).
 3. **Final eval:** `bash $SETUP/run_eval.sh <folder> <run> 1` → `<folder>/evals/<run>/`. A smoke run evaluates the
    first 50 questions into `<folder>/dry/evals/<run>/`.
@@ -252,14 +252,14 @@ The Qwen3.5 checks (the text-only checkpoints, LoRA in vLLM, the smoke runs) are
 
 | File | Role |
 |---|---|
-| `spec.py` | Every fixed choice: data paths, eval samples and seeds, the no-cue rule, probe layers, folders and score names; per model (`MODEL_SETUPS`, `setup_of`) the question file, its counts, the probe's layers and the eval's response cap (the table above is Llama-3-8B's); `model_of_run` (a run's model, from its preset) |
+| `spec.py` | Every fixed choice: data paths, eval samples and seeds, the no-cue rule, probe layers, folders and score names; per model (`MODEL_SETUPS`, `setup_of`) the question file, its counts, the probe's layers and the eval's response cap (the table above is Llama-3-8B's); a run's model comes from `launcher.common.model_of_run` |
 | `data/questions.jsonl` | The question file (copy of 261013's `dataset/labels.jsonl`) |
 | `data/bias_probe_train.jsonl`, `data/bias_probe_eval.jsonl` | The probe set (copies of 261010's `arms/slice_cot/probe_sets/bias_followed_rm_{train,eval}.jsonl`) |
 | `domain_imports.py` | The one place 260819 / 260824 helpers are imported |
 | `eval_checkpoint.py` | The final eval in three stages: `generate` (vLLM), `probes` (the probe scores), `labels` (bias labels and probe scores per answer). `generate --split train` answers the training questions instead (8 with no cue, 3 per cue condition, `spec.N_SAMPLES_TRAIN`), for a checkpoint's own probe set (261028) |
 | `compare.py` | Base vs after-RL tables of one run and its per-step training curve |
 | `seed_table.py` | Several runs side by side, with means and SDs |
-| `run_env.sh`, `start_vllm.sh`, `run_rl.sh`, `run_eval.sh` | Environment and the three run wrappers (logs end in `EXIT <code>`) |
+| `run_env.sh`, `run_eval.sh` | The environment (`../env.sh` plus `$SETUP_DIR`) and the eval wrapper (its log ends in `EXIT <code>`; it exits with that code). The training and vLLM wrappers are in `../launcher/` |
 | `configs/cot_noisy_label.yaml`, `configs/cot_noisy_label_probe_penalty.yaml` | Run-config templates: probe as a monitor (weight 0) and with the penalty (weight 0.3) |
 | `check_probe_scoring.py`, `check_probe_scoring.json` | The one-time GPU check and its output |
 

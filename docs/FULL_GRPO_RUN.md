@@ -1,6 +1,6 @@
 # Full local GRPO runbook
 
-> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `probe-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
 
 How to run **train + post-eval** on RunPod with `train_grpo_model_against_probe.py` (one W&B run per config when everything finishes cleanly).
 

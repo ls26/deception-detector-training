@@ -1,6 +1,6 @@
 # Probe evaluation pipeline
 
-> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `probe-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
 
 Architecture and data flow for deception-probe training and evaluation in the Obfuscation Atlas GRPO experiments. Covers the official post-RL pipeline, HF checkpoint eval, scratch replicas, and the **on-policy split** metrics added Jul 2026.
 

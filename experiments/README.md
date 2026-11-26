@@ -1,6 +1,6 @@
 # experiments/
 
-> **Paper-era MBPP code.** This folder holds the configs and outputs of the MBPP workshop paper's Llama-3-8B-Instruct runs, made with the `obfuscation-atlas/` + `pipeline/` code. The MBPP rerun in [paper_plan.md](../docs/paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](../docs/CONTEXT.md).
+> **Paper-era MBPP code.** This folder holds the configs and outputs of the MBPP workshop paper's Llama-3-8B-Instruct runs, made with the `obfuscation-atlas/` + `pipeline/` code. The MBPP rerun in [paper_plan.md](../docs/paper_plan.md) uses `probe-rl/` instead; see [CONTEXT.md](../docs/CONTEXT.md).
 
 Configs, one-off launcher scripts, and per-trial outputs for the multi-round
 probe + GRPO pipeline. The reusable pipeline code itself (generation, probe

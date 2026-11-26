@@ -1,6 +1,6 @@
 # Multi-round experiments pipeline (`/workspace/pipeline/`)
 
-> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `sycophancy-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
+> **Paper-era MBPP code.** This file describes the `obfuscation-atlas/` + `pipeline/` code used for the MBPP workshop paper's Llama-3-8B-Instruct runs. The MBPP rerun in [paper_plan.md](./paper_plan.md) uses `probe-rl/` instead; see [CONTEXT.md](./CONTEXT.md).
 
 **Related docs:**
 - [EXPERIMENT_LOG.md](./EXPERIMENT_LOG.md) — trial status, run history, and completed run inventory
