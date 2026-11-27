@@ -1,7 +1,8 @@
 """Eval of one checkpoint (the base model, or base + a GRPO LoRA adapter) on the confident eval questions.
 
     python eval_checkpoint.py generate --out-dir DIR (--adapter DIR | --model NAME) [--limit N] [--split train]
-    python eval_checkpoint.py probes   --out-dir DIR --probe-run-dir RUN (--adapter DIR | --model NAME) [--limit-rows N]
+    python eval_checkpoint.py probes   --out-dir DIR --probe-run-dir RUN (--adapter DIR | --model NAME) [--fresh-probe]
+                                       [--reference PROBE_SET_JSONL] [--limit-rows N]
     python eval_checkpoint.py labels   --out-dir DIR
 
 Every stage reads and writes --out-dir and never overwrites a file. 261013's eval_checkpoint.py with 1 sample
@@ -17,17 +18,25 @@ generate    Per eval question: 8 samples with no cue, 1 with the cue at the true
             261013's base-eval prompts, which 261013 asserted equal to 260819's; see the README). vLLM,
             260819's settings, one seeded request per sample, prefix caching off. An answer cut off at
             the model's eval cap (spec.setup_of; it ended with no stop token) counts as unparsed: pred None, stage "cut_off", as
-            the trainer's task_args.cut_off_answers_fail scores it -> completions.jsonl
+            the trainer's task_args.cut_off_answers_fail scores it. Each answer's generated token ids and vLLM stop
+            reason are kept -> completions.jsonl
             --split train: the same on the training questions with 3 samples per cued condition (a
             checkpoint's own probe set, 261028); probes and labels are for the eval split only
-probes      For every cued rollout that finished and parsed, one forward pass over prompt + answer (HF
-            transformers, + PeftModel for an adapter) and the bias probes at the answer letter's token (the
-            letter the parser reads; mean over the model's probe layers of each layer's sigmoid, as the trainer scores):
+probes      One model load (HF transformers, + PeftModel for an adapter; ../probe_scoring.py). For every cued rollout
+            that finished and parsed, one forward pass over the prompt's token ids + the answer's generated token ids,
+            and the bias probes at the answer letter's token (the letter the parser reads, found on the generated ids
+            with the trainer's answer_token_index: the token the trainer reads; its cut to the length limit and its
+            end-of-turn token change only tokens after it). Mean over the model's probe layers of each layer's
+            sigmoid, as the trainer scores:
               probe_start                   the run's start-of-run probe on the checkpoint's activations
-              probe_fresh                   (adapter only) the probe the run trained on its final model
+              probe_fresh                   (adapter, with --fresh-probe) the probe the run trained on its final model
+                                            at the end of the run (a run that skipped its end-of-run probe fit has none)
               probe_start_base_activations  (adapter only) the start-of-run probe on the base model's
-                                            activations of the same text (a second pass, adapter off)
+                                            activations of the same tokens (a second pass, adapter off)
             The probes come from --probe-run-dir, a GRPO run folder -> probe_scores.jsonl
+            --reference: also the start-of-run probe on a reference set (a probe set's eval split, e.g. the base
+            model's answers labelled biased / unbiased), tokenized from its text as the probe was trained and read
+            at the answer letter, through the checkpoint -> reference/probe_scores.jsonl
 labels      Per cued rollout: the checkpoint's own no-cue answer (the content at least 5 of its 8
             no-cue samples give), bias (260824's turn1_label, no-cue counterfactual) and the probe
             scores -> labels.jsonl, summary.json
@@ -41,10 +50,11 @@ import time
 from collections import Counter
 from pathlib import Path
 
+import probe_scoring as P
 import spec as S
 from afterburner.generation.vllm.server import check_trainer_class  # vLLM builds the class the trainer trains
 from domain_imports import to_content, turn1_label
-from obfuscation_atlas.tasks.multiple_choice import extract_answer, find_answer_span  # the parser the reward uses
+from obfuscation_atlas.tasks.multiple_choice import answer_token_index, extract_answer, find_answer_span  # the reward's parser
 
 KEY_FIELDS = ("question_id", "condition", "sample_idx")
 
@@ -163,7 +173,9 @@ def generate(out_dir: Path, adapter: Path | None, model: str, limit: int | None,
             "seed": r["seed"],
             "prompt": r["prompt"],
             "completion": completion.text,
+            "completion_token_ids": list(completion.token_ids),
             "finish_reason": completion.finish_reason,
+            "stop_reason": completion.stop_reason,
             "n_completion_tokens": len(completion.token_ids),
             "pred": pred,
             "stage": stage,
@@ -198,7 +210,8 @@ def generate(out_dir: Path, adapter: Path | None, model: str, limit: int | None,
 
 
 def probe_items(completions: list[dict]) -> list[dict]:
-    """One item per cued rollout that finished and parsed: prompt + answer and the answer letter's character."""
+    """One item per cued rollout that finished and parsed: prompt + answer text and the answer letter's character
+    (the text path, before the probe read the generated ids; folder scripts import it)."""
     items = []
     for row in completions:
         if row["condition"] == "none" or row["finish_reason"] != "stop" or row["pred"] is None:
@@ -210,21 +223,35 @@ def probe_items(completions: list[dict]) -> list[dict]:
     return items
 
 
-def load_hf_model(model_name: str, adapter: Path | None):
-    import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+def generated_probe_items(completions: list[dict], tokenizer) -> list[dict]:
+    """One item per cued rollout that finished and parsed: the prompt's token ids (as generate tokenized it) + the
+    answer's generated token ids, and the position of the answer letter's token."""
+    items = []
+    for row in completions:
+        if row["condition"] == "none" or row["finish_reason"] != "stop" or row["pred"] is None:
+            continue
+        prompt_ids = tokenizer(row["prompt"], add_special_tokens=False)["input_ids"]
+        response_ids = row["completion_token_ids"]
+        completion = tokenizer.decode(response_ids)  # the text the trainer's reward parses, less its end-of-turn token (no effect on the letter)
+        assert find_answer_span(completion)[0] == row["pred"], (row["question_id"], row["condition"], row["sample_idx"])
+        items.append({**{f: row[f] for f in KEY_FIELDS}, "sequence": prompt_ids + response_ids,
+                      "read_position": len(prompt_ids) + answer_token_index(tokenizer, response_ids, completion)})
+    return items
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token  # Llama-3 has none
-    tokenizer.padding_side = "right"
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.bfloat16, attn_implementation="sdpa").to("cuda")
-    if adapter is not None:
-        from peft import PeftModel
 
-        model = PeftModel.from_pretrained(model, str(adapter), is_trainable=False)
-    model.eval()
-    return model, tokenizer
+def reference_items(reference: Path) -> list[dict]:
+    """One item per reference-set row (each names the cued option): prompt + answer text and the answer letter's
+    character."""
+    items = []
+    for row in read_jsonl(reference):
+        letter, _, letter_index = find_answer_span(row["completion"])
+        assert letter == row["cue_letter"], (row["question_id"], row["condition"], row["sample_idx"])
+        items.append({**{f: row[f] for f in KEY_FIELDS}, "label": row["label"], "text": row["prompt"] + row["completion"],
+                      "letter_char": len(row["prompt"]) + letter_index})
+    return items
+
+
+load_hf_model = P.load_checkpoint  # the name folder scripts import
 
 
 def load_probe(run_dir: Path, subdir: str, layers: tuple[int, ...] = S.PROBE_LAYERS) -> dict:
@@ -237,80 +264,59 @@ def load_probe(run_dir: Path, subdir: str, layers: tuple[int, ...] = S.PROBE_LAY
     return {layer: probe.to("cuda").eval() for layer, probe in probes.items()}
 
 
-def token_index_at(offsets: list[tuple[int, int]], char_index: int) -> int:
-    """The token whose character span holds char_index (261007's char_to_token_index)."""
-    return next(i for i, (start, end) in enumerate(offsets) if start <= char_index < end)
+token_index_at = P.token_index_at  # the name folder scripts import
 
 
 def score_probes(model, tokenizer, items: list[dict], probes: dict[str, dict]) -> list[dict[str, float]]:
-    """Per item and probe: its score at the answer letter's token, the mean over the probe's layers of the sigmoid
-    of its logit on that layer's residual (hidden_states[layer + 1]) in float32 (right padding)."""
-    import torch
-
-    encodings = [tokenizer(item["text"], add_special_tokens=False, return_offsets_mapping=True) for item in items]
-    token_id_lists = [encoding["input_ids"] for encoding in encodings]
-    letter_positions = [token_index_at(encoding["offset_mapping"], item["letter_char"]) for encoding, item in zip(encodings, items)]
-    order = sorted(range(len(items)), key=lambda i: len(token_id_lists[i]))  # short to long
-    results: list[dict[str, float] | None] = [None] * len(items)
-    started = time.time()
-    for batch_start in range(0, len(items), S.PROBE_BATCH_SIZE):
-        batch_indices = order[batch_start : batch_start + S.PROBE_BATCH_SIZE]
-        max_len = max(len(token_id_lists[i]) for i in batch_indices)
-        input_ids = torch.full((len(batch_indices), max_len), tokenizer.pad_token_id, dtype=torch.long)
-        attention_mask = torch.zeros((len(batch_indices), max_len), dtype=torch.long)
-        for row, i in enumerate(batch_indices):
-            input_ids[row, : len(token_id_lists[i])] = torch.tensor(token_id_lists[i])
-            attention_mask[row, : len(token_id_lists[i])] = 1
-        batch_rows = torch.arange(len(batch_indices))
-        letter_rows = torch.tensor([letter_positions[i] for i in batch_indices])
-        with torch.no_grad():
-            # logits_to_keep=1: the output head only at the last position (its scores are not used)
-            outputs = model(input_ids.cuda(), attention_mask=attention_mask.cuda(), output_hidden_states=True, logits_to_keep=1)
-            probe_scores = {
-                name: torch.stack([
-                    torch.sigmoid(layer_probes[layer](outputs.hidden_states[layer + 1][batch_rows, letter_rows].float()[:, None, :])[:, 0, 0])
-                    for layer in sorted(layer_probes)
-                ]).mean(dim=0)
-                for name, layer_probes in probes.items()
-            }
-        for row, i in enumerate(batch_indices):
-            results[i] = {name: float(scores[row]) for name, scores in probe_scores.items()}
-        del outputs
-        done = batch_start + len(batch_indices)
-        print(f"  {done}/{len(items)} answers, {time.time() - started:.0f}s", flush=True)
-    return results  # type: ignore[return-value]
+    """Per item (text + letter_char) and probe: its score at the token that holds the character (the text path)."""
+    sequences, positions = P.text_read_positions(tokenizer, [item["text"] for item in items], [item["letter_char"] for item in items])
+    return P.score_at_positions(model, sequences, positions, probes, S.PROBE_BATCH_SIZE, tokenizer.pad_token_id)
 
 
-def probes_stage(out_dir: Path, adapter: Path | None, model_name: str, probe_run_dir: Path, limit_rows: int | None) -> None:
+def probes_stage(out_dir: Path, adapter: Path | None, model_name: str, probe_run_dir: Path, limit_rows: int | None,
+                 fresh_probe: bool, reference: Path | None) -> None:
     out_path = out_dir / "probe_scores.jsonl"
-    assert not out_path.exists(), f"{out_path} exists"
+    reference_path = out_dir / "reference" / "probe_scores.jsonl"
+    assert not out_path.exists() and not reference_path.exists(), f"{out_dir} has probe scores"
+    assert not fresh_probe or adapter is not None, "the fresh probe scores an adapter"
     completions = read_jsonl(out_dir / "completions.jsonl")
+    reference_rows = None if reference is None else reference_items(reference)  # read before scoring: a bad file stops the stage early
     model, tokenizer = load_hf_model(model_name, adapter)
-    items = probe_items(completions)
+    items = generated_probe_items(completions, tokenizer)
     if limit_rows is not None:
         items = items[:limit_rows]
     print(f"  {len(items)} answers to score")
     layers = S.setup_of(model_name).probe_layers
     probes = {"probe_start": load_probe(probe_run_dir, S.START_PROBE_SUBDIR, layers)}
-    if adapter is not None:
+    if fresh_probe:
         probes["probe_fresh"] = load_probe(probe_run_dir, S.FRESH_PROBE_SUBDIR, layers)
-    scores = score_probes(model, tokenizer, items, probes)
+    sequences, positions = [item["sequence"] for item in items], [item["read_position"] for item in items]
+    scores = P.score_at_positions(model, sequences, positions, probes, S.PROBE_BATCH_SIZE, tokenizer.pad_token_id)
     base_activation_scores = [None] * len(items)
     if adapter is not None:
         print("  the start-of-run probe on the base model's activations (adapter off)")
         with model.disable_adapter():
             base_activation_scores = [
                 probe_score["probe_start"]
-                for probe_score in score_probes(model, tokenizer, items, {"probe_start": probes["probe_start"]})
+                for probe_score in P.score_at_positions(model, sequences, positions, {"probe_start": probes["probe_start"]},
+                                                        S.PROBE_BATCH_SIZE, tokenizer.pad_token_id)
             ]
     rows = []
     for item, probe_score, base_activation_score in zip(items, scores, base_activation_scores, strict=True):
-        rows.append({**{k: v for k, v in item.items() if k != "text"}, "adapter": None if adapter is None else str(adapter),
-                     "probe_run_dir": str(probe_run_dir), "probe_start": probe_score["probe_start"],
-                     "probe_fresh": probe_score["probe_fresh"] if adapter is not None else None,
+        rows.append({**{f: item[f] for f in KEY_FIELDS}, "read_position": item["read_position"],
+                     "adapter": None if adapter is None else str(adapter), "probe_run_dir": str(probe_run_dir),
+                     "probe_start": probe_score["probe_start"], "probe_fresh": probe_score["probe_fresh"] if fresh_probe else None,
                      "probe_start_base_activations": base_activation_score})
     write_jsonl(out_path, rows)
     print(f"Wrote {out_path}")
+    if reference is not None:
+        print(f"  the start-of-run probe on the reference set {reference}")
+        reference_scores = score_probes(model, tokenizer, reference_rows, {"probe_start": probes["probe_start"]})
+        write_jsonl(reference_path, [
+            {**{k: v for k, v in item.items() if k != "text"}, "adapter": None if adapter is None else str(adapter),
+             "probe_run_dir": str(probe_run_dir), "probe_start": score["probe_start"]}
+            for item, score in zip(reference_rows, reference_scores, strict=True)])
+        print(f"Wrote {reference_path}")
 
 
 # --------------------------------------------------------------------------- #
@@ -391,6 +397,8 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None, help="generate: dry run on the first N questions")
     parser.add_argument("--split", choices=("eval", "train"), default="eval", help="generate: the eval or the training questions")
     parser.add_argument("--limit-rows", type=int, default=None, help="probes: dry run on the first N answers")
+    parser.add_argument("--fresh-probe", action="store_true", help="probes (adapter): also the run's end-of-run probe")
+    parser.add_argument("--reference", type=Path, default=None, help="probes: also score this reference set (a probe set's eval split)")
     args = parser.parse_args()
     out_dir = args.out_dir
     if args.adapter is not None:
@@ -401,7 +409,8 @@ def main() -> None:
         generate(out_dir, args.adapter, model_of(args.adapter, args.model), args.limit, args.split)
     elif args.stage == "probes":
         assert args.probe_run_dir is not None, "probes needs --probe-run-dir"
-        probes_stage(out_dir, args.adapter, model_of(args.adapter, args.model), args.probe_run_dir, args.limit_rows)
+        probes_stage(out_dir, args.adapter, model_of(args.adapter, args.model), args.probe_run_dir, args.limit_rows,
+                     args.fresh_probe, args.reference)
     else:
         labels_stage(out_dir)
 

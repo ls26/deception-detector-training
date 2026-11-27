@@ -5,7 +5,7 @@
 # checkpoint and writes <folder>/logs/eval_<name>_a<attempt>_<host>.log, ending with "EXIT <code>" (the first
 # failing stage's code, or 0).
 #   <run>         an RL run with a config <folder>/<run>.yaml: its final adapter, scored with the run's own
-#                 start-of-run and fresh probes, all eval questions                      -> <folder>/evals/<run>/
+#                 start-of-run probe, all eval questions                                 -> <folder>/evals/<run>/
 #                 (a run whose name contains "smoke": the first 50 eval questions        -> <folder>/dry/evals/<run>/)
 #   base          the base model, scored with the start-of-run probe of <probe run>      -> <folder>/evals/base/
 #                 (so it runs after that run has finished: its run id is in its run_metrics json); the model

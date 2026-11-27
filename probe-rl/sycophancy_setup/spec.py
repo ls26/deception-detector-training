@@ -66,7 +66,8 @@ BIAS_PROBE_EVAL_PATH = PACKAGE_DIR / "data" / "bias_probe_eval.jsonl"  # 261010 
 START_PROBE_SUBDIR = "initial_detector.base_model.on_dataset"  # the start-of-run probe
 FRESH_PROBE_SUBDIR = "fresh_detector.final_model.on_dataset"  # the probe trained on the final model at the end of the run
 # The eval's probe scores (eval_checkpoint.py probes): the start-of-run probe on the checkpoint's activations, the
-# run's end-of-run fresh probe, and the start-of-run probe on the base model's activations of the checkpoint's answers
+# run's end-of-run fresh probe (with --fresh-probe, else None), and the start-of-run probe on the base model's
+# activations of the checkpoint's answers
 PROBE_SCORES = ("probe_start", "probe_fresh", "probe_start_base_activations")
 
 # --- post-RL eval (260819's sampling settings) ---------------------------------------------------------------
