@@ -627,7 +627,7 @@ class DetectorConfig:
     #   score, which fed only two obfuscation/ W&B breakdown metrics (MBPP), are not logged.
     # - the after-training probe refit and the probe eval on the final model: no fresh_detector.final_model.on_dataset/
     #   or initial_detector.final_model.on_dataset/ (sycophancy_setup/eval_checkpoint.py's probes stage reads the
-    #   first as probe_fresh, so such a run cannot be its --probe-run-dir).
+    #   first as probe_fresh only with --fresh-probe).
     # The held-out answers after training, which the launcher reads, are still generated. Needs
     # task_args.bias_probe_at_answer or task_args.mbpp_probe_at_code_end, with which the on-policy probe evals that
     # would use the refit probe are skipped anyway.

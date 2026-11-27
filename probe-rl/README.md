@@ -116,8 +116,10 @@ library crashes at the first GRPO step.
     always the after-training probe refit and the probe eval on the final model. The held-out answers after training,
     which the launcher reads, are still generated. Without the start-of-run fit, an MBPP run does not log the two W&B
     breakdown metrics that read its threshold (`obfuscation/detector_mean_decision_threshold`,
-    `obfuscation/obfuscated_policy_margin`). Such a run has no `fresh_detector.final_model.on_dataset/`, which
-    `sycophancy_setup/eval_checkpoint.py` loads for an adapter, so it cannot be that eval's probe run folder. Needs
+    `obfuscation/obfuscated_policy_margin`). Such a run has no `fresh_detector.final_model.on_dataset/`, the probe
+    `sycophancy_setup/eval_checkpoint.py probes --fresh-probe` scores (`run_eval.sh` does not ask for it); with frozen
+    weights it also has no start-of-run probe, so its evals take the run that fit the frozen probe as `--probe-run-dir`.
+    Needs
     `task_args.bias_probe_at_answer` or `task_args.mbpp_probe_at_code_end`.
 
 ## Cut-off answers
