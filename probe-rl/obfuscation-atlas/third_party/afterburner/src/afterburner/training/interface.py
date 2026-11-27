@@ -250,3 +250,24 @@ def compute_logprobs_from_logits(
     shift_completion_mask = completion_mask[..., 1:].contiguous()  # [batch_size, seq_len-1]
 
     return torch.where(shift_completion_mask, token_log_probs, INVALID_LOGPROB)
+
+
+def compute_answer_logprobs_from_hidden(
+    final_hidden: torch.Tensor,  # [batch_size, seq_len, hidden_size], the decoder's output after its final norm
+    output_head: torch.nn.Module,  # the model's output layer: hidden state -> vocabulary logits
+    labels: torch.Tensor,  # [batch_size, seq_len]
+    completion_mask: torch.Tensor,  # [batch_size, seq_len]
+) -> torch.Tensor:
+    """compute_logprobs_from_logits(output_head(final_hidden), labels, completion_mask), with the output head and the
+    float32 log-softmax applied only at the positions that predict a completion token, one row at a time: the
+    vocabulary-wide tensors then span one answer's tokens instead of every position of the batch."""
+    shift_completion_mask = completion_mask[..., 1:]  # [batch_size, seq_len-1]
+    rows = []
+    for row in range(final_hidden.shape[0]):
+        positions = shift_completion_mask[row].nonzero().squeeze(-1)  # [answer_length]; position t predicts token t+1
+        logits = output_head(final_hidden[row, positions]).float()  # [answer_length, vocab_size]
+        log_probs = F.log_softmax(logits, dim=-1)
+        token_log_probs = torch.gather(log_probs, dim=-1, index=labels[row, positions + 1].unsqueeze(-1)).squeeze(-1)
+        invalid = torch.full(shift_completion_mask.shape[1:], INVALID_LOGPROB, device=final_hidden.device)
+        rows.append(invalid.index_put((positions,), token_log_probs))
+    return torch.stack(rows)  # [batch_size, seq_len-1]

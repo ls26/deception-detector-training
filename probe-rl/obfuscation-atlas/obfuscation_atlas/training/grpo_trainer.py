@@ -71,7 +71,11 @@ from afterburner.grpo_trainer import (
 from afterburner.training.checkpointing import RandomState
 from afterburner.training.huggingface.model import HfLoRAAdapter, HFModel
 from afterburner.training.huggingface.trainer_state import HfTrainerState
-from afterburner.training.interface import TrainerState, compute_logprobs_from_logits
+from afterburner.training.interface import (
+    TrainerState,
+    compute_answer_logprobs_from_hidden,
+    compute_logprobs_from_logits,
+)
 from afterburner.utils.constants import INVALID_LOGPROB
 from afterburner.utils.data_collation import pad
 from afterburner.utils.fsdp_viz import visualize_fsdp_distribution
@@ -491,6 +495,13 @@ def preserve_gradient_state(accelerator):
         state.dataloader_references = saved_refs
 
 
+def probe_hidden_states(hidden_states: tuple[torch.Tensor, ...], probe_layers: list[int]) -> dict[int, torch.Tensor]:
+    """The entries of a forward's hidden_states that the probe code reads, keyed by their index: 0 (for its shape and
+    device) and layer + 1 for each probe layer. Float32, as accelerate's conversion of the model's outputs gives the
+    full tuple; reading any other index raises a KeyError."""
+    return {index: hidden_states[index].float() for index in [0, *(layer + 1 for layer in probe_layers)]}
+
+
 class HFActivationModel(HFModel):
     """Extended HF model with activation tracking for obfuscation.
 
@@ -565,6 +576,66 @@ class HFActivationModel(HFModel):
 
         logprobs = compute_logprobs_from_logits(logits, input_ids, completion_mask)
         return logprobs, hidden_states
+
+    def answer_logprobs_with_probe_activations(
+        self,
+        adapter: HfLoRAAdapter,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        completion_mask: torch.Tensor,
+        probe_layers: list[int],
+        **kwargs: dict[str, Any],
+    ) -> tuple[torch.Tensor, dict[int, torch.Tensor] | None]:
+        """compute_logprobs_with_activation under GRPOModelConfig.low_memory_passes: the same log-probs, with the
+        output head applied to answer tokens only, one answer at a time; and, when probe_layers is not empty, only
+        the hidden states the probe code reads (see probe_hidden_states) instead of all of them."""
+        assert self.accelerator.num_processes == 1  # the decoder and output head are called directly, not through FSDP
+        self.local_flops += self.floating_point_ops(
+            {"input_ids": input_ids, "attention_mask": attention_mask}, adapter.adapter_name
+        )
+        self.set_adapter([adapter.adapter_name])
+        causal_lm = self.shared_base_model.get_base_model()  # the transformers model inside PEFT's wrapper
+        ctx = nullcontext() if adapter.adapter_name == "policy" else torch.no_grad()
+        # The bf16 autocast that accelerate's prepare wraps around the model's forward
+        with ctx, self.accelerator.autocast():
+            outputs = causal_lm.get_decoder()(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                output_hidden_states=len(probe_layers) > 0,
+            )
+            logprobs = compute_answer_logprobs_from_hidden(
+                outputs.last_hidden_state, causal_lm.get_output_embeddings(), input_ids, completion_mask
+            )
+        hidden_states = probe_hidden_states(outputs.hidden_states, probe_layers) if probe_layers else None
+        return logprobs, hidden_states
+
+    @torch.no_grad()
+    def probe_activations(
+        self,
+        adapter: HfLoRAAdapter,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        probe_layers: list[int],
+        **kwargs: dict[str, Any],
+    ) -> dict[int, torch.Tensor]:
+        """The probe-scoring pass under GRPOModelConfig.low_memory_passes: the hidden states the probe code reads (see
+        probe_hidden_states), with no output head and the decoder stopping one layer after the last probe layer
+        (transformers replaces the last hidden state it returns with the final norm's output, so that one is not a
+        probe input; with the last layer a probe layer, every layer runs, as before)."""
+        assert self.accelerator.num_processes == 1  # the decoder is called directly, not through FSDP
+        self.local_flops += self.floating_point_ops(
+            {"input_ids": input_ids, "attention_mask": attention_mask}, adapter.adapter_name
+        )
+        self.set_adapter([adapter.adapter_name])
+        decoder = self.shared_base_model.get_base_model().get_decoder()
+        all_layers = decoder.layers
+        decoder.layers = all_layers[: max(probe_layers) + 2]
+        try:
+            with self.accelerator.autocast():
+                outputs = decoder(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True)
+        finally:
+            decoder.layers = all_layers
+        return probe_hidden_states(outputs.hidden_states, probe_layers)
 
     def call_reward_model(
         self,
@@ -1489,6 +1560,26 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
         return rewards, components
 
+    def probe_scoring_hidden_states(self, state: TrainerState, adapter: HfLoRAAdapter, batch: dict[str, Any]):
+        """The probe-scoring pass's hidden states. Its log-probs are not used; with GRPOModelConfig.low_memory_passes
+        they are not computed, and only the probe layers' hidden states are kept."""
+        if self.config.model.low_memory_passes:
+            return state.model.probe_activations(adapter, **batch, probe_layers=self.activation_layers)
+        return state.model.compute_logprobs_with_activation(adapter, **batch)[1]
+
+    def training_pass_logprobs(
+        self, state: TrainerState, adapter: HfLoRAAdapter, batch: dict[str, Any], with_hidden_states: bool
+    ):
+        """A training pass's log-probs, and with with_hidden_states the hidden states. With
+        GRPOModelConfig.low_memory_passes the log-probs are computed on answer tokens only and only the probe layers'
+        hidden states are kept."""
+        if self.config.model.low_memory_passes:
+            probe_layers = self.activation_layers if with_hidden_states else []
+            return state.model.answer_logprobs_with_probe_activations(adapter, **batch, probe_layers=probe_layers)
+        if with_hidden_states:
+            return state.model.compute_logprobs_with_activation(adapter, **batch)
+        return adapter.logprobs(**batch), None
+
     @torch.no_grad()
     def precompute_composite_rewards(
         self, state: TrainerState, dataloader: DataLoader
@@ -1514,11 +1605,9 @@ class GRPOObfuscationTrainer(GRPOTrainer):
 
             # Compute activation change if needed for rewards
             activation_change_diff, policy_hidden, reference_hidden = None, None, None
-            _, policy_hidden = state.model.compute_logprobs_with_activation(state.model.policy_adapter, **batch)
+            policy_hidden = self.probe_scoring_hidden_states(state, state.model.policy_adapter, batch)
             if self.obfuscation_config.loss.activation_change > 0:
-                _, reference_hidden = state.model.compute_logprobs_with_activation(
-                    state.model.reference_adapter, **batch
-                )
+                reference_hidden = self.probe_scoring_hidden_states(state, state.model.reference_adapter, batch)
 
             if self.obfuscation_config.loss.activation_change > 0:
                 diffs = []
@@ -1692,19 +1781,21 @@ class GRPOObfuscationTrainer(GRPOTrainer):
                 # Compute reference model hidden activations if needed for activation change loss or
                 # to compute reference model detector score (used for decomposition of reward)
                 with torch.no_grad(), self.profiler.profile("reference_logprobs_with_activation"):
-                    reference_logprobs, reference_hidden = state.model.compute_logprobs_with_activation(
-                        state.model.reference_adapter, **batch
+                    reference_logprobs, reference_hidden = self.training_pass_logprobs(
+                        state, state.model.reference_adapter, batch, with_hidden_states=True
                     )
 
                 if need_hidden_for_act or need_hidden_for_detector:
                     # Compute with gradients for policy
                     with self.profiler.profile("policy_logprobs_with_activation"):
-                        policy_logprobs, policy_hidden = state.model.compute_logprobs_with_activation(
-                            state.model.policy_adapter, **batch
+                        policy_logprobs, policy_hidden = self.training_pass_logprobs(
+                            state, state.model.policy_adapter, batch, with_hidden_states=True
                         )
                 else:
                     with self.profiler.profile("policy_logprobs"):
-                        policy_logprobs = state.model.policy_adapter.logprobs(**batch)
+                        policy_logprobs, _ = self.training_pass_logprobs(
+                            state, state.model.policy_adapter, batch, with_hidden_states=False
+                        )
 
                 # Reshape old logprobs
                 old_policy_logprobs = self.reshape_old_logprobs(

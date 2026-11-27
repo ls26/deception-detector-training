@@ -58,6 +58,13 @@ class GRPOModelConfig:
     # sets itself up again for every sequence length it has not seen, which costs ~35% of a 1-answer pass on new
     # lengths (261123_9b_speed/model_timing/fixes_<host>.log); results differ only at bf16 rounding.
     cudnn_attention: bool = True
+    # True lowers the training passes' memory. The policy and reference log-probs apply the output head and the
+    # float32 log-softmax to answer tokens only, one answer at a time, instead of to every position of the pass (the
+    # vocabulary-wide float32 logits, ~1 GB per 1000 tokens on Qwen3.5's 248,320 entries, held about 3 times); the
+    # reference pass keeps only the hidden states the probe reads. The probe-scoring pass runs without the output
+    # head, whose log-probs it discards, and stops one layer after the last probe layer. Log-probs differ only at
+    # bf16 rounding (the output head runs on fewer rows); the probe's inputs are unchanged. One process only.
+    low_memory_passes: bool = False
 
     def __post_init__(self):
         if self.attn_implementation is not None and not torch.cuda.is_available():

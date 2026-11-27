@@ -1404,3 +1404,112 @@ def test_cheap_adapter_switch_sets_the_same_flags_as_the_full_loop() -> None:
         assert flags == {name: "policy" in name for name in flags}, adapters
         assert any(flags.values()) and not all(flags.values())
     assert model._lora_parameter_flags is not None  # later calls took the cached path
+
+
+def test_low_memory_passes_and_skip_unused_probe_work_default_off() -> None:
+    from obfuscation_atlas.config import DetectorConfig
+    from obfuscation_atlas.training.grpo_config import GRPOModelConfig
+
+    assert GRPOModelConfig(model_name="EleutherAI/pythia-14m").low_memory_passes is False
+    assert DetectorConfig().skip_unused_probe_work is False
+
+
+def tiny_qwen_activation_model():
+    """A tiny random Qwen3.5 in float32 on the CPU, with policy and reference LoRA adapters of different random weights
+    (LoRA B starts at zero), gradient checkpointing and train mode, wrapped as HFActivationModel wraps the trainer's
+    model. Its 4 layers are full attention: the installed linear-attention kernels run only on a GPU."""
+    import torch
+    from accelerate import Accelerator as AccelerateAccelerator
+    from afterburner.training.huggingface.accelerator import HfAccelerator
+    from afterburner.training.huggingface.model import HfLoRAAdapter
+    from peft import LoraConfig, get_peft_model
+    from transformers import Qwen3_5ForCausalLM, Qwen3_5TextConfig
+
+    from obfuscation_atlas.training.grpo_trainer import HFActivationModel
+
+    torch.manual_seed(0)
+    text_config = Qwen3_5TextConfig(
+        vocab_size=128,
+        hidden_size=32,
+        intermediate_size=64,
+        num_hidden_layers=4,
+        layer_types=["full_attention"] * 4,
+        num_attention_heads=2,
+        num_key_value_heads=1,
+        head_dim=16,
+    )
+    lora_config = LoraConfig(r=4, lora_alpha=8, target_modules="all-linear")
+    peft_model = get_peft_model(Qwen3_5ForCausalLM(text_config), lora_config, "policy")
+    peft_model.base_model.add_adapter(adapter_name="reference", adapter_config=lora_config)
+    with torch.no_grad():
+        for name, param in peft_model.named_parameters():
+            if "lora_" in name:
+                param.normal_(std=0.2)
+    peft_model.config.use_cache = False
+    peft_model.gradient_checkpointing_enable()
+    peft_model.enable_input_require_grads()
+    accelerator = HfAccelerator.__new__(HfAccelerator)  # only autocast and the process count are used
+    accelerator._accelerator = AccelerateAccelerator(cpu=True)
+    model = HFActivationModel.__new__(HFActivationModel)  # skip loading through a config
+    torch.nn.Module.__init__(model)
+    model.accelerator = accelerator
+    model.shared_base_model = accelerator.prepare(peft_model)
+    model.shared_base_model.train()
+    model.local_flops, model.num_parameters, model._lora_parameter_flags = 0.0, 0, None
+    model.policy_adapter = HfLoRAAdapter(adapter_name="policy", adapter_path="", model=model, dtype=torch.float32)
+    model.reference_adapter = HfLoRAAdapter(adapter_name="reference", adapter_path="", model=model, dtype=torch.float32)
+    return model
+
+
+def test_low_memory_passes_give_todays_logprobs_gradients_and_probe_inputs() -> None:
+    """The trainer's three passes with low_memory_passes on and off, on three right-padded answers of different
+    prompt and answer lengths: the reference and policy log-probs and the policy's LoRA gradients agree to float32
+    rounding, and the hidden states the probe reads are bit for bit the same, with the probe-scoring pass stopped
+    after layer 2 of 4 (probe layers 0 and 1) and run to the end (probe layers 0 to 3, the last read after the final
+    norm, as before)."""
+    from types import SimpleNamespace
+
+    import torch
+
+    from obfuscation_atlas.training.grpo_trainer import GRPOObfuscationTrainer
+
+    model = tiny_qwen_activation_model()
+    input_ids = torch.randint(0, 128, (3, 12))
+    attention_mask = torch.zeros(3, 12, dtype=torch.long)
+    completion_mask = torch.zeros(3, 12, dtype=torch.bool)
+    for row, (prompt_length, answer_length) in enumerate([(4, 8), (3, 5), (5, 2)]):
+        attention_mask[row, : prompt_length + answer_length] = 1
+        completion_mask[row, prompt_length : prompt_length + answer_length] = True
+    batch = {"input_ids": input_ids, "attention_mask": attention_mask, "completion_mask": completion_mask}
+    trainer = GRPOObfuscationTrainer.__new__(GRPOObfuscationTrainer)  # only the two pass helpers are under test
+    state = SimpleNamespace(model=model)
+
+    def run_passes(low_memory_passes: bool, probe_layers: list[int]):
+        trainer.config = SimpleNamespace(model=SimpleNamespace(low_memory_passes=low_memory_passes))
+        trainer.activation_layers = probe_layers
+        model.zero_grad(set_to_none=True)
+        with torch.no_grad():
+            reference_logprobs, reference_hidden = trainer.training_pass_logprobs(
+                state, model.reference_adapter, batch, with_hidden_states=True
+            )
+        policy_logprobs, _ = trainer.training_pass_logprobs(state, model.policy_adapter, batch, with_hidden_states=False)
+        torch.where(completion_mask[:, 1:], policy_logprobs, 0.0).sum().backward()
+        gradients = {name: p.grad.clone() for name, p in model.named_parameters() if p.grad is not None}
+        with torch.no_grad():
+            probe_hidden = trainer.probe_scoring_hidden_states(state, model.policy_adapter, batch)
+        return reference_logprobs, reference_hidden, policy_logprobs.detach(), gradients, probe_hidden
+
+    for probe_layers in ([0, 1], [0, 1, 2, 3]):
+        today = run_passes(False, probe_layers)
+        low_memory = run_passes(True, probe_layers)
+        torch.testing.assert_close(low_memory[0], today[0])  # reference log-probs, the answer-free positions included
+        torch.testing.assert_close(low_memory[2], today[2])  # policy log-probs
+        assert low_memory[3].keys() == today[3].keys() and len(today[3]) > 0
+        assert all("policy" in name for name in today[3])
+        for name, gradient in today[3].items():
+            torch.testing.assert_close(low_memory[3][name], gradient)
+        probe_indices = {0, *(layer + 1 for layer in probe_layers)}
+        for low_memory_hidden, todays_hidden in ((low_memory[1], today[1]), (low_memory[4], today[4])):
+            assert low_memory_hidden.keys() == probe_indices and len(todays_hidden) == 5
+            assert all(torch.equal(low_memory_hidden[index], todays_hidden[index]) for index in probe_indices)
+    assert len(model.shared_base_model.get_base_model().get_decoder().layers) == 4  # the shortened pass put them back

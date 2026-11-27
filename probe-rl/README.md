@@ -88,7 +88,9 @@ library crashes at the first GRPO step.
   0.40 of the GPU with 1024-token answers (`qwen_experiment/261123_9b_speed`; longer caps are untested). Both keep 64
   answers per optimizer step, so the update is the same. On any other GPU the launch stops, unless the run's
   overrides set both `training.batch_size` and `training.grad_accum_steps`, which then always win. A trainer started
-  without the launcher gets the preset's 4.
+  without the launcher gets the preset's 4. With `grpo.model.low_memory_passes` on (below), 8 also fit for 9B
+  sycophancy on an H100 (`qwen_experiment/261126_low_memory_passes`; MBPP untested); a run sets 8 with those two
+  overrides.
 - **Speed settings** (both off by default; the 9B preset turns both on; `qwen_experiment/261123_9b_speed` measured
   them on Qwen3.5-9B):
   - `grpo.batching.sort_by_length: true` orders each step's answers by length before splitting them into
@@ -97,6 +99,23 @@ library crashes at the first GRPO step.
     shows the share of padding tokens in the passes either way.
   - `grpo.model.cudnn_attention: false` turns off PyTorch's cuDNN attention in the trainer. cuDNN attention sets
     itself up again for every sequence length it hasn't seen, which mostly slows a run's first steps.
+- **Memory and probe-work settings** (both off by default, in no preset; a run's config turns them on;
+  `qwen_experiment/261126_low_memory_passes` measured them on Qwen3.5-9B sycophancy):
+  - `grpo.model.low_memory_passes: true`: the policy and reference passes compute log-probs only at answer tokens,
+    one answer at a time, in float32. Without it they are float32 over the whole vocabulary at every position. The
+    probe's scoring pass also skips the output head and stops one layer past the last probe layer (layer 22 for the
+    9B sycophancy probe at layers 18–21; MBPP's probe reads every layer, so it runs the whole model). The log-probs equal the default's
+    up to rounding and the probe reads the same activations bit for bit (a test in
+    `obfuscation-atlas/tests/test_multiple_choice_task.py`). One training process only. With it, 4 and 8 answers of
+    1024 + 1024 tokens per pass fit next to a vLLM server at 0.40 of an H100; without it, neither does.
+  - `detector.skip_unused_probe_work: true` skips probe work whose results no later step reads: with
+    `detector.frozen_probe_weights_dir` set, the start-of-run probe fit (the frozen probe replaces its probe), and
+    always the after-training probe refit and the probe eval on the final model. The held-out answers after training,
+    which the launcher reads, are still generated. Without the start-of-run fit, an MBPP run does not log the two W&B
+    breakdown metrics that read its threshold (`obfuscation/detector_mean_decision_threshold`,
+    `obfuscation/obfuscated_policy_margin`). Such a run has no `fresh_detector.final_model.on_dataset/`, which
+    `sycophancy_setup/eval_checkpoint.py` loads for an adapter, so it cannot be that eval's probe run folder. Needs
+    `task_args.bias_probe_at_answer` or `task_args.mbpp_probe_at_code_end`.
 
 ## Cut-off answers
 

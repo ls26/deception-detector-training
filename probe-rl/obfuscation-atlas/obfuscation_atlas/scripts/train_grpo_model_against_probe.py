@@ -222,6 +222,11 @@ def run_rl(cfg: GRPOObfuscationConfig):
             " ++training.only_eval_detectors=True ++training.model_wandb_id=<id_substring>."
             " if you want to evaluate the black-box detector."
         )
+    if cfg.detector.skip_unused_probe_work:
+        # Without these the on-policy probe evals after training run, and they use the after-training refit
+        assert cfg.task_args.bias_probe_at_answer or cfg.task_args.mbpp_probe_at_code_end
+    # The frozen probe replaces the start-of-run probe, so with skip_unused_probe_work its fit is not run
+    skip_start_fit = cfg.detector.skip_unused_probe_work and bool(cfg.detector.frozen_probe_weights_dir)
     model_type = cfg.model.model_type
     model_last_name = model_type.split("/")[-1]
     max_total_length = cfg.grpo.tokenizer.max_prompt_length + cfg.grpo.tokenizer.max_response_length
@@ -424,7 +429,7 @@ def run_rl(cfg: GRPOObfuscationConfig):
     # training in training/probe_training.py does via load_final_policy_model().
     phase0_adapter_path = cfg.grpo.model.reference_adapter_path
     phase0_lora_path: str = ""
-    if phase0_adapter_path is not None:
+    if phase0_adapter_path is not None and not skip_start_fit:
         phase0_adapter_resolved = Path(phase0_adapter_path)
         lora_sub = phase0_adapter_resolved / "lora"
         if lora_sub.is_dir():
@@ -535,7 +540,13 @@ def run_rl(cfg: GRPOObfuscationConfig):
         found_detectors = len(eval_results_and_detectors) > 0
     if is_main_process:
         print(f"Phase-0 detector results cache path: {BASE_MODEL_DETECTOR_RESULTS_PATH}")
-    if (
+    if skip_start_fit:
+        print("Phase-0: no start-of-run probe fit (detector.skip_unused_probe_work, frozen probe weights given)")
+        # The key prepare_detector_obfuscators reads; the frozen probe goes in below, and there are no fit results
+        assert len(cfg.detector.train_against_types) == 1
+        frozen_probe_key = f"{cfg.detector.train_against_types[0]}_{cfg.detector.obfuscate_over}"
+        eval_results_and_detectors = {frozen_probe_key: (None, None)}
+    elif (
         cfg.training.only_eval_detectors
         or cfg.training.only_eval_from_other_run
         or cfg.detector.retrain
@@ -562,7 +573,8 @@ def run_rl(cfg: GRPOObfuscationConfig):
 
     if cfg.detector.frozen_probe_weights_dir:
         # Phase 0 above already trained/loaded a fresh detector (for metrics, thresholds,
-        # and layer filtering below). Swap in externally-trained, frozen probe weights so
+        # and layer filtering below), or with skip_start_fit only set the detector's key. Swap in
+        # externally-trained, frozen probe weights so
         # the actual GRPO obfuscation penalty uses a probe that never updates across rounds.
         if is_main_process:
             frozen_detector = load_model(cfg.detector.frozen_probe_weights_dir)
@@ -662,9 +674,13 @@ def run_rl(cfg: GRPOObfuscationConfig):
     cfg.training.max_steps = trainer.total_steps
     scheduler_fn = get_scheduler_fn(cfg.training)
 
-    results_dict = eval_results_and_detectors[detector_name][1][0]
-    mean_decision_threshold = compute_mean_decision_threshold(results_dict, filtered_layers)
-    mean_positive_score = compute_mean_positive_score(results_dict, filtered_layers)
+    if skip_start_fit:
+        # No fit results to take them from; they feed only W&B breakdown metrics (obfuscation/*), which then skip them
+        mean_decision_threshold, mean_positive_score = None, None
+    else:
+        results_dict = eval_results_and_detectors[detector_name][1][0]
+        mean_decision_threshold = compute_mean_decision_threshold(results_dict, filtered_layers)
+        mean_positive_score = compute_mean_positive_score(results_dict, filtered_layers)
     print(f"Mean decision threshold: {mean_decision_threshold}")
     print(f"Mean positive mean_positive_score on dataset: {mean_positive_score}")
 
@@ -733,54 +749,57 @@ def run_rl(cfg: GRPOObfuscationConfig):
         )
     kwargs["vllm_lora_path"] = str(final_adapter_path)
 
-    # Evaluate detectors post-training
-    with probe_fit_random_state(cfg):
-        eval_results_after = train_and_eval_multiple_detectors(**kwargs)
-    if cfg.detector.filter_layers_below_loss_threshold is not None:
-        fresh_filtered_layers = get_layers_below_loss_threshold(
-            eval_results_after[detector_name][1][1],  # type: ignore
-            cfg.detector.filter_layers_below_loss_threshold,
-        )
+    if cfg.detector.skip_unused_probe_work:
+        print("No after-training probe refit or probe eval (detector.skip_unused_probe_work)")
     else:
-        fresh_filtered_layers = activation_layers
-    if is_main_process:
-        log_detector_metrics(
-            eval_results_after,
-            "Fresh detector on final model activations from dataset text",
-            str(save_path),
-            "fresh_detector.final_model.on_dataset",
-            activation_layers,
-            filtered_layers=fresh_filtered_layers,
-        )
-    # remove detector-training-specific kwargs since we only want to evaluate using the already-trained detectors
-    for k in [
-        "train_cfg",
-        "train_sequence_aggregator",
-        "detector_arch_configs",
-        "cache_activations_save_path",
-        "use_sklearn",
-        "use_on_policy_negatives_for_training",
-        "augment_training_negatives",
-    ]:
-        kwargs.pop(k)
-    cache_activations_save_path = None
-    if cfg.detector.model_cache_path is not None:
-        cache_activations_save_path = sanitize_cache_path(
-            f"{cfg.detector.model_cache_path}/activations_{wandb_run_id}"
-        )
+        # Evaluate detectors post-training
+        with probe_fit_random_state(cfg):
+            eval_results_after = train_and_eval_multiple_detectors(**kwargs)
+        if cfg.detector.filter_layers_below_loss_threshold is not None:
+            fresh_filtered_layers = get_layers_below_loss_threshold(
+                eval_results_after[detector_name][1][1],  # type: ignore
+                cfg.detector.filter_layers_below_loss_threshold,
+            )
+        else:
+            fresh_filtered_layers = activation_layers
+        if is_main_process:
+            log_detector_metrics(
+                eval_results_after,
+                "Fresh detector on final model activations from dataset text",
+                str(save_path),
+                "fresh_detector.final_model.on_dataset",
+                activation_layers,
+                filtered_layers=fresh_filtered_layers,
+            )
+        # remove detector-training-specific kwargs since we only want to evaluate using the already-trained detectors
+        for k in [
+            "train_cfg",
+            "train_sequence_aggregator",
+            "detector_arch_configs",
+            "cache_activations_save_path",
+            "use_sklearn",
+            "use_on_policy_negatives_for_training",
+            "augment_training_negatives",
+        ]:
+            kwargs.pop(k)
+        cache_activations_save_path = None
+        if cfg.detector.model_cache_path is not None:
+            cache_activations_save_path = sanitize_cache_path(
+                f"{cfg.detector.model_cache_path}/activations_{wandb_run_id}"
+            )
 
-    eval_results = eval_detectors_helper(
-        pretrained_detectors,
-        eval_detector_types,
-        "initial_detector.final_model.on_dataset",
-        "Initial detector on final model activations from dataset text",
-        cache_activations_save_path,
-        is_main_process,
-        save_path,
-        filtered_layers=filtered_layers,
-        **kwargs,  # layers in kwargs
-    )
-    policy_detector_mean_positive_score_on_dataset = extract_mean_detector_scores(eval_results, filtered_layers)
+        eval_results = eval_detectors_helper(
+            pretrained_detectors,
+            eval_detector_types,
+            "initial_detector.final_model.on_dataset",
+            "Initial detector on final model activations from dataset text",
+            cache_activations_save_path,
+            is_main_process,
+            save_path,
+            filtered_layers=filtered_layers,
+            **kwargs,  # layers in kwargs
+        )
+        policy_detector_mean_positive_score_on_dataset = extract_mean_detector_scores(eval_results, filtered_layers)
 
     on_policy_prompts = list(eval_task_dataset[0]["prompt"])
     eval_test_lists = (

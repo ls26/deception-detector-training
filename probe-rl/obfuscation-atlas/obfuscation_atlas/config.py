@@ -617,10 +617,21 @@ class DetectorConfig:
     frozen_probe_weights_dir: str | None = (
         None  # Path to a saved probe (per-layer model.pt/config.json, see detectors/train.py save_model()).
         # When set, Phase 0 still trains/evaluates a fresh probe as usual (for metrics/thresholds/W&B
-        # logging), but the detector actually used for the GRPO obfuscation penalty is replaced with
+        # logging; not with skip_unused_probe_work), but the detector actually used for the GRPO obfuscation penalty is replaced with
         # these frozen weights immediately afterward. Used for "frozen probe" ablations that test
         # whether a static detector keeps pace with an evolving policy across rounds.
     )
+    # True skips probe work whose results no later step reads (2026-11-26):
+    # - with frozen_probe_weights_dir set, the start-of-run probe fit, whose probe the frozen one replaces. The run
+    #   folder then has no initial_detector.base_model.on_dataset/, and the fit's decision threshold and mean positive
+    #   score, which fed only two obfuscation/ W&B breakdown metrics (MBPP), are not logged.
+    # - the after-training probe refit and the probe eval on the final model: no fresh_detector.final_model.on_dataset/
+    #   or initial_detector.final_model.on_dataset/ (sycophancy_setup/eval_checkpoint.py's probes stage reads the
+    #   first as probe_fresh, so such a run cannot be its --probe-run-dir).
+    # The held-out answers after training, which the launcher reads, are still generated. Needs
+    # task_args.bias_probe_at_answer or task_args.mbpp_probe_at_code_end, with which the on-policy probe evals that
+    # would use the refit probe are skipped anyway.
+    skip_unused_probe_work: bool = False
 
     def __post_init__(self):
         # Normalize values for comparison (matching normalization in masking.py)
