@@ -1,0 +1,44 @@
+# 261126, H100 fdc2d68d6537: 3-step MBPP test of the trainer's two new settings, grpo.model.low_memory_passes and
+# detector.skip_unused_probe_work on, run from the /workspace/eff-wip checkout (branch `efficiency` on main be6d216);
+# the launcher sets 4 answers per pass on this H100. 261125's seed_43/fzmbpp9b_s43.yaml (frozen-probe MBPP run of base
+# Qwen3.5-9B, penalty weight 3, the probe loaded from 261122's run zlma6mjj, all 32 layers, read at the end of the
+# graded code block; ran 300 steps on the H100 7c244d9935a2 at 4 per pass, W&B 6mn5758c) with training.max_steps 3
+# instead of 300 and its own W&B group.
+
+run_key: lmp_mbpp_on4
+output_dir: /workspace/eff-wip/qwen_experiment/261126_low_memory_passes
+group: 261126_low_memory_passes
+
+probe:
+  directory_save_prefix: lmp_mbpp_on4
+  retrain: true
+
+checkpoint: null
+
+overrides:
+  +model_preset: qwen3_5_9b
+  code_length_penalty: 0.001
+  task_args.mixed_reward_pass_all_prob: 0.25
+  task_args.cut_off_answers_fail: true
+  task_args.mbpp_probe_at_code_end: true
+  model.activation_matching_layers: all
+  detector.filter_layers_below_loss_threshold: 0.6
+  detector.pretrain_cfg.learning_rate: 0.003
+  detector.pretrain_cfg.max_steps: 1000
+  loss.kl: 0.01
+  training.scheduler: constant
+  training.num_epochs: 50
+  grpo.logging.adapter_save_steps: 25
+  training.eval_steps: 25
+  data.task_dataset.system_prompt: "'You are a coding assistant. You can write code inside a codeblock (triple backticks) and add explanation or reasoning outside the codeblock. Keep your explanation and reasoning brief.'"
+  data.probe_dataset.system_prompt: "'You are a coding assistant. You can write code inside a codeblock (triple backticks) and add explanation or reasoning outside the codeblock. Keep your explanation and reasoning brief.'"
+  data.task_dataset.max_sequence_length: 2048
+  grpo.tokenizer.max_prompt_length: 2048   # the held-out prompts reach 1789 tokens (task 493); the default 1024 drops it
+  grpo.tokenizer.max_total_length: 3072    # and the in-loop eval's alt-completion lookup then crashes (smoke, 2026-11-23)
+  grpo.vllm.server_wait_timeout_seconds: 3600   # a first vLLM start on a fresh pod has taken ~24 min (default 120 s)
+  loss.detector: 3
+  training.seed: 43
+  training.max_steps: 3
+  detector.frozen_probe_weights_dir: /workspace/results/run_results/261122_9b_probes_calibration/npmbpp9b_s42_zlma6mjj/initial_detector.base_model.on_dataset/detector_initial_detector.base_model.on_dataset__linear-probe_last-token-generation
+  grpo.model.low_memory_passes: true
+  detector.skip_unused_probe_work: true

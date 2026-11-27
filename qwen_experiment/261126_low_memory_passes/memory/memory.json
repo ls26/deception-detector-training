@@ -1,0 +1,33 @@
+{
+ "free_before_cuda_GiB": 49.376953125,
+ "free_after_cuda_init_GiB": 48.3990478515625,
+ "model_loaded_allocated_GiB": 17.66075611114502,
+ "low_memory_passes on, 4 x (1024 + 1024)": {
+  "peak_reserved_GiB": 29.69140625,
+  "peak_allocated_GiB": 28.10585641860962,
+  "free_after_pass_GiB": 18.4869384765625
+ },
+ "low_memory_passes on, 8 x (1024 + 1024)": {
+  "peak_reserved_GiB": 37.49609375,
+  "peak_allocated_GiB": 34.6558518409729,
+  "free_after_pass_GiB": 10.4088134765625
+ },
+ "low_memory_passes off, 4 x (1024 + 1024)": "out of memory",
+ "low_memory_passes off, 8 x (1024 + 1024)": "out of memory",
+ "numbers reference_logprobs": {
+  "answer_tokens": 1524,
+  "max_abs_difference": 0.0,
+  "mean_abs_difference": 0.0,
+  "correlation": 1.0,
+  "identical": true
+ },
+ "numbers policy_logprobs": {
+  "answer_tokens": 1524,
+  "max_abs_difference": 0.0,
+  "mean_abs_difference": 0.0,
+  "correlation": 1.0,
+  "identical": true
+ },
+ "numbers probe inputs bit for bit equal": true,
+ "numbers reference_hidden inputs bit for bit equal": true
+}
