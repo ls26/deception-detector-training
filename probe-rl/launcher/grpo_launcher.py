@@ -52,7 +52,7 @@ SYCOPHANCY_FINAL_EVAL_KEYS = (
 )
 MBPP_FINAL_EVAL_KEYS = ("val_does_execute",)
 
-# Hydra overrides shared by every run, after the probe dataset group and the run's model preset (build_grpo_args); a
+# Hydra overrides shared by every run, after the probe dataset group and the run's model preset (trainer_overrides); a
 # config's `overrides:` can replace any of them.
 GRPO_DEFAULTS: dict[str, str] = {
     "grpo.model.attn_implementation": "sdpa",
@@ -145,10 +145,9 @@ def qwen_9b_answers_per_pass(gpu_name: str) -> int:
     return matches[0]
 
 
-def build_grpo_args(config: dict) -> list[str]:
-    """The trainer command line for a launch config: the probe dataset group, the model preset, GRPO_DEFAULTS, no
-    follow-up, the probe prefix, the starting checkpoint, W&B naming, then `overrides`. A Qwen3.5-9B run whose
-    overrides don't set the batch gets the answers per pass of its GPU."""
+def trainer_overrides(config: dict) -> dict[str, str]:
+    """The trainer's Hydra overrides for a launch config, in command-line order: the probe dataset group, the model
+    preset, GRPO_DEFAULTS, no follow-up, the probe prefix, the starting checkpoint, W&B naming, then `overrides`."""
     overrides = config["overrides"]
     # The model preset comes after the probe dataset group so that a preset's data settings (the Qwen3.5 presets'
     # length limits) win over the group's.
@@ -159,15 +158,21 @@ def build_grpo_args(config: dict) -> list[str]:
     merged["detector.directory_save_prefix"] = config["probe"]["directory_save_prefix"]
     merged["detector.retrain"] = "true"
     if config["checkpoint"] is not None:
-        if not Path(config["checkpoint"]).exists():
-            raise GrpoLaunchError(f"Checkpoint missing: {config['checkpoint']}")
         merged["++grpo.model.reference_adapter_path"] = str(config["checkpoint"])
     merged["wandb.run_name_prefix"] = config["run_key"]
     merged["wandb.group"] = config["group"]
     for key, value in overrides.items():
         merged[key] = str(value).lower() if isinstance(value, bool) else str(value)
+    return merged
 
-    if merged["+model_preset"] == "qwen3_5_9b" and not BATCH_KEYS & overrides.keys():
+
+def build_grpo_args(config: dict) -> list[str]:
+    """The trainer command line for a launch config: trainer_overrides, and for a Qwen3.5-9B run whose overrides don't
+    set the batch, the answers per pass of its GPU."""
+    if config["checkpoint"] is not None and not Path(config["checkpoint"]).exists():
+        raise GrpoLaunchError(f"Checkpoint missing: {config['checkpoint']}")
+    merged = trainer_overrides(config)
+    if merged["+model_preset"] == "qwen3_5_9b" and not BATCH_KEYS & config["overrides"].keys():
         gpu_name = training_gpu_name()
         answers_per_pass = qwen_9b_answers_per_pass(gpu_name)
         merged["training.batch_size"] = str(answers_per_pass)

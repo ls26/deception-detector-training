@@ -68,3 +68,25 @@ def model_of_run(run_config: Path) -> str:
 
     preset = yaml.safe_load(run_config.read_text())["overrides"]["+model_preset"]
     return ConfigStore.instance().repo["model_preset"][f"{preset}.yaml"].node["model"]["model_type"]
+
+
+TRAINER_DEFAULT_CONFIG_NAME = "grpo_code_gen"  # @hydra.main in train_grpo_model_against_probe.py (MBPP)
+
+
+def trainer_config_of_run(run_config: Path):
+    """The trainer's full config for an RL run, composed by Hydra from the overrides the launcher gives the trainer
+    (launcher.grpo_launcher.trainer_overrides), with today's code: its defaults and presets, not a record of the run.
+    The batch a Qwen3.5-9B run gets from its GPU is left at the preset's (an eval does not read it)."""
+    import yaml
+    from hydra import compose, initialize
+    from omegaconf import OmegaConf
+
+    from launcher.grpo_launcher import trainer_overrides
+    from obfuscation_atlas.config import register_configs
+
+    config = yaml.safe_load(run_config.read_text())
+    overrides = [f"{key}={value}" for key, value in trainer_overrides(config).items()]
+    register_configs()
+    with initialize(version_base=None):
+        cfg = compose(config_name=config.get("config_name") or TRAINER_DEFAULT_CONFIG_NAME, overrides=overrides)
+    return OmegaConf.to_object(cfg)
