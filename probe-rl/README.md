@@ -10,9 +10,11 @@ are the paper-era MBPP code; new work does not use them.
 
 | Part | What it is | Used by |
 |---|---|---|
-| `obfuscation-atlas/` | The trainer: GRPO with a probe penalty, the MBPP task (`obfuscation_atlas/tasks/code_generation.py`) and the sycophancy task (`tasks/multiple_choice.py`). Settings are dataclasses in `obfuscation_atlas/config.py`; the tests for this copy's changes are `tests/test_multiple_choice_task.py` | Every run |
+| `obfuscation-atlas/` | The trainer: GRPO with a probe penalty, the MBPP task (`obfuscation_atlas/tasks/code_generation.py`) and the sycophancy task (`tasks/multiple_choice.py`). Settings are dataclasses in `obfuscation_atlas/config.py`; the tests for this copy's changes are `tests/test_multiple_choice_task.py` (the trainer and launcher) and `tests/test_checkpoint_evals.py` (the checkpoint evals) | Every run |
 | `launcher/` | Runs one training job from a launch config (below): `run_grpo.py`, `grpo_launcher.py`, `common.py`; the run scripts `run_rl.sh` (one run, in tmux) and `start_vllm.sh` (its vLLM server); and `queue_common.sh`, helpers for a queue of steps | Every run |
+| `probe_scoring.py` | A run's probe scored on a checkpoint at the token the trainer reads: on an answer's generated token ids (the trainer's response building and read position), or on a fixed text at a given character | Both checkpoint evals |
 | `sycophancy_setup/` | Sycophancy data (question file, probe set), the checkpoint eval, the result tables; see [its README](sycophancy_setup/README.md) | Sycophancy |
+| `mbpp_setup/` | The MBPP checkpoint eval (`eval_checkpoint.py`: answers, final labels, probe scores), set by the run's launch config; see [its README](mbpp_setup/README.md) | MBPP |
 | `release_mbpp_llama/` | The release's MBPP multi-round pipeline (`training/`, `probe_eval/`, `experiments/`), unchanged. Llama-3 only; it runs from the git tag `llama-final` | Not used by new runs |
 | `env.sh`, `requirements.txt` | The environment for every task, and the pinned packages of its venv (below) | Every run |
 
@@ -47,7 +49,8 @@ A run that continues another from its saved state needs its own run key.
 
 Before every step, `source /workspace/probe-rl/env.sh`. Sycophancy steps source `sycophancy_setup/run_env.sh` instead,
 which sources `env.sh`. It sets `$COPY` to the folder `env.sh` is in, so another checkout of the code (a git worktree)
-runs its own files. It sets `$PY` to the copy's own venv (`.venv`, pinned in `requirements.txt`: torch 2.14,
+runs its own files; such a checkout needs a link to the venv first (`ln -s /workspace/probe-rl/.venv
+<checkout>/probe-rl/.venv`, which git ignores). It sets `$PY` to the copy's own venv (`.venv`, pinned in `requirements.txt`: torch 2.14,
 transformers 5.20, vLLM 0.33, peft 0.21, flash-linear-attention 0.6; Qwen3.5 needs transformers 5 and vLLM 0.17 or
 later). It puts this copy's launcher, trainer and GRPO library (`afterburner`) first on `PYTHONPATH`, and sets the
 Hugging Face cache, the W&B project and the secrets.

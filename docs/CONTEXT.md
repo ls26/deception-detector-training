@@ -142,7 +142,9 @@ RunPod persistent volume. **Paper-era MBPP code** in `obfuscation-atlas/` and `p
 │   ├── env.sh                   # The environment for every run in the copy (source before each step)
 │   ├── obfuscation-atlas/       # The release's trainer, with the sycophancy task
 │   ├── launcher/                # Runs one training job from a launch config; run_rl.sh, start_vllm.sh, queue_common.sh
+│   ├── probe_scoring.py         # A run's probe on a checkpoint, at the token the trainer reads (both evals)
 │   ├── sycophancy_setup/        # *** Sycophancy data, checkpoint eval and tables (see its README) ***
+│   ├── mbpp_setup/              # MBPP checkpoint eval, set by the run's launch config (see its README)
 │   └── release_mbpp_llama/      # The release's Llama-only MBPP multi-round pipeline, unchanged; runs from tag llama-final
 ├── sycophancy-rl -> probe-rl    # The folder's name until 2026-11-26, kept as a link so older paths resolve
 ├── scripts/git-hooks/          # Pre-commit hook that refuses large staged files
@@ -252,11 +254,13 @@ obfuscation-atlas/
 A copy of the MBPP workshop paper's public release (`probes-as-training-signals/`, on the volume, not in this repo's git) with the sycophancy task added in 261012. It has everything the release tracks except its READMEs and packaging files. Its own [README](../probe-rl/README.md) says what each part is, how a training job runs, the environment script (`env.sh`) and where outputs go; the release's [README](../probes-as-training-signals/README.md) documents the commands of its multi-round pipeline, now in `release_mbpp_llama/`. Known limitations of the release code are in `docs/RELEASE_HANDOFF.md` §5 (git-ignored).
 
 - `obfuscation-atlas/`: the release's trainer. Compared with the top-level `obfuscation-atlas/`, it has no calibrated penalty (`calibration_logits_path`) and no prompt mixing (`shown_prompt_ratio`), keeps the per-prompt pass-all reward (`task_args.mixed_reward_pass_all_prob`, the share of MBPP prompts graded on all tests, 0.25 in the release config; the plan's first question varies its complement), and adds the sycophancy task (`tasks/multiple_choice.py`, `task_args.bias_probe_at_answer`; the share of training prompts whose cue names the training label is `task_args.cue_gold_prob`, 0.75 in every run from 261013 on).
-- `launcher/`: runs one training job from a launch config (`run_grpo.py`, `grpo_launcher.py`; the run scripts `run_rl.sh` and `start_vllm.sh`; the queue helpers `queue_common.sh`). It writes `run_metrics_<run_key>.json`, the file that marks a run as done, only after the run folder is verified and its metrics exported; a crashed run keeps its folder and blocks a rerun under the same run key (the README's "Running one training job").
+- `launcher/`: runs one training job from a launch config (`run_grpo.py`, `grpo_launcher.py`; the run scripts `run_rl.sh` and `start_vllm.sh`; the queue helpers `queue_common.sh`). It writes `run_metrics_<run_key>.json`, the file that marks a run as done, only after the run folder is verified and its metrics exported; a crashed run keeps its folder, marked `CRASHED`, and a retry under the same run key starts a new folder beside it; any other run folder of the run key without that file stops the launch (the README's "Running one training job").
 - `release_mbpp_llama/training/`: the release version of `pipeline/`, moved here unchanged; it runs from the git tag `llama-final`, not from later commits. Round 1 (a no-penalty baseline, shared on-policy anchors, then the round-1 probe and GRPO run) is set up as in the release README's Training section; `run_trial.py` then runs rounds 2..N of a *lineage* (one condition's chain of rounds, configured by `experiments/trials/trial<N>/trial_config_<variant>.yaml`). Optional keys select a frozen probe (`freeze_probe_manifest` + `frozen_probe_weights_dir`), score-based or AUC-based adaptive retraining (the `early_stop_*` keys; the MBPP paper gives the triggers on p5), or the ground-truth penalty (`ground_truth_penalty`). The probe is refit only between rounds: adaptive retraining ends the current round's GRPO run early, and the next round trains a new probe on the policy's new outputs. The trainer has no refit in the middle of a run, which the plan's continuous runs need.
 - `release_mbpp_llama/probe_eval/`: start- and end-of-round probe scores and AUC, a final probe on the last round's model, and that probe against one trained on the same texts through the base model.
 - `release_mbpp_llama/experiments/`: the release's MBPP configs (`baselines/no_probe_penalty.yaml`, `trials/trial1/`).
+- `probe_scoring.py`: scores a run's probe on a checkpoint as the trainer does, at the token the trainer reads. A checkpoint's own answers are read on the token ids the model generated, through the trainer's response building (since 2026-11-26; earlier evals re-tokenized the answer's text); fixed texts (the reference sets) are tokenized from the text.
 - `sycophancy_setup/`: data, the checkpoint eval and the tables for sycophancy runs ([README](../probe-rl/sycophancy_setup/README.md)).
+- `mbpp_setup/`: the MBPP checkpoint eval ([README](../probe-rl/mbpp_setup/README.md)). Its settings (model, held-out problems and prompts, cap, stop tokens, grading) come from the run's launch config, and its `labels.jsonl` holds the final hack, correct and passes-the-shown-test labels.
 
 ### Key files to start with
 
@@ -267,6 +271,7 @@ A copy of the MBPP workshop paper's public release (`probes-as-training-signals/
 | **Launch one training job, either task** | [`probe-rl/README.md`](../probe-rl/README.md), "Running one training job" |
 | The release's Llama MBPP multi-round runs (frozen probe, adaptive retraining, ground-truth penalty) | `probe-rl/release_mbpp_llama/training/run_trial.py`, from tag `llama-final`; usage in [the release README](../probes-as-training-signals/README.md) |
 | **Sycophancy eval and tables** | [`probe-rl/sycophancy_setup/README.md`](../probe-rl/sycophancy_setup/README.md); configs come from the latest experiment folder you build on |
+| **MBPP checkpoint eval (Qwen3.5)** | [`probe-rl/mbpp_setup/README.md`](../probe-rl/mbpp_setup/README.md) |
 | Sycophancy experiment history, decisions, terms | [sycophancy_experiment_log.md](./sycophancy_experiment_log.md) |
 | Qwen3.5 experiment history, decisions, terms (both environments) | [qwen_experiment_log.md](./qwen_experiment_log.md) |
 | Run or modify the main RL experiment | `scripts/train_grpo_model_against_probe.py` |
@@ -338,7 +343,7 @@ Condensed list for the MBPP pipeline; rationale in [EXPERIMENT_LOG.md](./EXPERIM
 
 ## Common Commands
 
-These are for the paper-era MBPP code in `obfuscation-atlas/` and `pipeline/`, with Llama-3-8B-Instruct; there are no Qwen3.5 versions yet. Runs in `probe-rl/`, both tasks, follow [`probe-rl/README.md`](../probe-rl/README.md) ("Running one training job"); sycophancy evals and tables follow [`probe-rl/sycophancy_setup/README.md`](../probe-rl/sycophancy_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
+These are for the paper-era MBPP code in `obfuscation-atlas/` and `pipeline/`, with Llama-3-8B-Instruct; there are no Qwen3.5 versions yet. Runs in `probe-rl/`, both tasks, follow [`probe-rl/README.md`](../probe-rl/README.md) ("Running one training job"); sycophancy evals and tables follow [`probe-rl/sycophancy_setup/README.md`](../probe-rl/sycophancy_setup/README.md), and MBPP checkpoint evals [`probe-rl/mbpp_setup/README.md`](../probe-rl/mbpp_setup/README.md). All commands assume `source /workspace/atlas_setup.sh && source /workspace/obfuscation-atlas/.venv/bin/activate`.
 
 ### Bootstrap
 
